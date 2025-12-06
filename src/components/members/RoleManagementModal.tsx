@@ -20,6 +20,7 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "@/hooks/use-toast";
 import type { Member } from "./MembersTable";
+import { useT } from "@/hooks/useT";
 
 interface RoleManagementModalProps {
   open: boolean;
@@ -28,6 +29,7 @@ interface RoleManagementModalProps {
 }
 
 export function RoleManagementModal({ open, onOpenChange, member }: RoleManagementModalProps) {
+  const t = useT();
   const [selectedRole, setSelectedRole] = useState<string>(member?.role || "member");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -35,13 +37,12 @@ export function RoleManagementModal({ open, onOpenChange, member }: RoleManageme
     if (!member) return;
     
     setIsLoading(true);
-    // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1000));
     setIsLoading(false);
     
     toast({
-      title: "Role updated",
-      description: `${member.name}'s role has been changed to ${selectedRole}.`,
+      title: t.roleUpdated,
+      description: `${member.name}${t.roleChangedTo} ${selectedRole}.`,
     });
     
     onOpenChange(false);
@@ -54,23 +55,23 @@ export function RoleManagementModal({ open, onOpenChange, member }: RoleManageme
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md surface-default">
         <DialogHeader>
-          <DialogTitle className="label-large text-text-primary">Change Role</DialogTitle>
+          <DialogTitle className="label-large text-text-primary">{t.changeRole}</DialogTitle>
           <DialogDescription className="body-small text-text-secondary">
-            Update the role for {member?.name}.
+            {t.updateRole} {member?.name}.
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label className="label-small text-text-primary">Select Role</Label>
+            <Label className="label-small text-text-primary">{t.selectRole}</Label>
             <Select value={selectedRole} onValueChange={setSelectedRole}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="surface-default">
-                <SelectItem value="member">Member</SelectItem>
-                <SelectItem value="sub-admin">Sub-admin</SelectItem>
-                <SelectItem value="admin">Admin</SelectItem>
+                <SelectItem value="member">{t.member}</SelectItem>
+                <SelectItem value="sub-admin">{t.subAdmin}</SelectItem>
+                <SelectItem value="admin">{t.admin}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -79,7 +80,7 @@ export function RoleManagementModal({ open, onOpenChange, member }: RoleManageme
             <Alert className="surface-warning border-border-warning">
               <AlertTriangle className="h-4 w-4 text-text-warning" />
               <AlertDescription className="body-small text-text-warning">
-                Promoting a member to Admin gives them full control over the association.
+                {t.promotingToAdmin}
               </AlertDescription>
             </Alert>
           )}
@@ -88,7 +89,7 @@ export function RoleManagementModal({ open, onOpenChange, member }: RoleManageme
             <Alert className="surface-warning border-border-warning">
               <AlertTriangle className="h-4 w-4 text-text-warning" />
               <AlertDescription className="body-small text-text-warning">
-                Demoting an Admin may lock you out if no admins remain.
+                {t.demotingAdmin}
               </AlertDescription>
             </Alert>
           )}
@@ -96,13 +97,13 @@ export function RoleManagementModal({ open, onOpenChange, member }: RoleManageme
 
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Cancel
+            {t.cancel}
           </Button>
           <Button 
             onClick={handleUpdateRole} 
             disabled={isLoading || selectedRole === member?.role}
           >
-            {isLoading ? "Updating..." : "Update Role"}
+            {isLoading ? t.updating : t.updateRole}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -44,6 +44,7 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Post } from "@/types/posts";
 import { toast } from "@/hooks/use-toast";
+import { useT } from "@/hooks/useT";
 
 interface CreateEditPostModalProps {
   open: boolean;
@@ -58,6 +59,7 @@ export function CreateEditPostModal({
   post,
   onSave,
 }: CreateEditPostModalProps) {
+  const t = useT();
   const isEdit = !!post;
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
@@ -75,7 +77,6 @@ export function CreateEditPostModal({
   const [uploadedVideo, setUploadedVideo] = useState<string | null>(null);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
 
-  // Reset form when modal opens/closes or post changes
   useEffect(() => {
     if (open) {
       if (post) {
@@ -88,7 +89,6 @@ export function CreateEditPostModal({
         setPinned(post.pinned);
         setContentWarning(post.contentWarning || "none");
       } else {
-        // Reset to defaults for new post
         setTitle("");
         setBody("");
         setTags([]);
@@ -106,7 +106,6 @@ export function CreateEditPostModal({
     }
   }, [open, post]);
 
-  // Autosave simulation
   useEffect(() => {
     if (open && (title || body)) {
       const interval = setInterval(() => {
@@ -130,8 +129,8 @@ export function CreateEditPostModal({
   const handleSubmit = (action: "draft" | "publish" | "schedule") => {
     if (action !== "draft" && !title.trim()) {
       toast({
-        title: "Title Required",
-        description: "Please enter a title before publishing.",
+        title: t.titleRequired,
+        description: t.titleRequiredDesc,
         variant: "destructive",
       });
       return;
@@ -139,8 +138,8 @@ export function CreateEditPostModal({
 
     if (action !== "draft" && !body.trim() && uploadedImages.length === 0 && !uploadedVideo) {
       toast({
-        title: "Content Required",
-        description: "Please add body text or media before publishing.",
+        title: t.contentRequired,
+        description: t.contentRequiredDesc,
         variant: "destructive",
       });
       return;
@@ -168,10 +167,10 @@ export function CreateEditPostModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl max-h-[90vh] p-0">
         <DialogHeader className="px-6 pt-6 pb-2">
-          <DialogTitle>{isEdit ? "Edit Post" : "Create Post"}</DialogTitle>
+          <DialogTitle>{isEdit ? t.editPost : t.createPost}</DialogTitle>
           {lastSaved && (
             <p className="text-xs text-muted-foreground">
-              Draft saved at {format(lastSaved, "h:mm a")}
+              {t.draftSavedAt} {format(lastSaved, "h:mm a")}
             </p>
           )}
         </DialogHeader>
@@ -179,19 +178,19 @@ export function CreateEditPostModal({
         <ScrollArea className="max-h-[calc(90vh-180px)]">
           <Tabs defaultValue="content" className="px-6">
             <TabsList className="mb-4">
-              <TabsTrigger value="content">Content</TabsTrigger>
-              <TabsTrigger value="media">Media</TabsTrigger>
-              <TabsTrigger value="options">Options</TabsTrigger>
-              <TabsTrigger value="moderation">Moderation</TabsTrigger>
+              <TabsTrigger value="content">{t.content}</TabsTrigger>
+              <TabsTrigger value="media">{t.media}</TabsTrigger>
+              <TabsTrigger value="options">{t.options}</TabsTrigger>
+              <TabsTrigger value="moderation">{t.moderation}</TabsTrigger>
             </TabsList>
 
             {/* Content Tab */}
             <TabsContent value="content" className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="title">Title *</Label>
+                <Label htmlFor="title">{t.title} *</Label>
                 <Input
                   id="title"
-                  placeholder="Short, descriptive title (max 150 chars)"
+                  placeholder={t.titlePlaceholder}
                   value={title}
                   onChange={(e) => setTitle(e.target.value.slice(0, 150))}
                   maxLength={150}
@@ -202,10 +201,10 @@ export function CreateEditPostModal({
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="body">Body</Label>
+                <Label htmlFor="body">{t.body}</Label>
                 <Textarea
                   id="body"
-                  placeholder="Write your post here... Use @ to mention, # for tags"
+                  placeholder={t.bodyPlaceholder}
                   value={body}
                   onChange={(e) => setBody(e.target.value.slice(0, 5000))}
                   rows={8}
@@ -217,16 +216,16 @@ export function CreateEditPostModal({
               </div>
 
               <div className="space-y-2">
-                <Label>Tags</Label>
+                <Label>{t.tags}</Label>
                 <div className="flex gap-2">
                   <Input
-                    placeholder="Add a tag"
+                    placeholder={t.addTag}
                     value={tagInput}
                     onChange={(e) => setTagInput(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleAddTag())}
                   />
                   <Button type="button" variant="secondary" onClick={handleAddTag}>
-                    Add
+                    {t.add}
                   </Button>
                 </div>
                 {tags.length > 0 && (
@@ -245,29 +244,29 @@ export function CreateEditPostModal({
                     ))}
                   </div>
                 )}
-                <p className="text-xs text-muted-foreground">{tags.length}/10 tags</p>
+                <p className="text-xs text-muted-foreground">{tags.length}/10 {t.tags.toLowerCase()}</p>
               </div>
 
               <div className="space-y-2">
-                <Label>Visibility</Label>
+                <Label>{t.visibility}</Label>
                 <Select value={visibility} onValueChange={(v) => setVisibility(v as "members" | "public")}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="members">Members Only</SelectItem>
-                    <SelectItem value="public">Public</SelectItem>
+                    <SelectItem value="members">{t.membersOnly}</SelectItem>
+                    <SelectItem value="public">{t.public}</SelectItem>
                   </SelectContent>
                 </Select>
                 <p className="text-xs text-muted-foreground">
-                  Members limits visibility to association members only
+                  {t.membersLimitVisibility}
                 </p>
               </div>
 
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label>Allow Comments</Label>
-                  <p className="text-xs text-muted-foreground">Let members comment on this post</p>
+                  <Label>{t.allowComments}</Label>
+                  <p className="text-xs text-muted-foreground">{t.letMembersCommentPost}</p>
                 </div>
                 <Switch checked={allowComments} onCheckedChange={setAllowComments} />
               </div>
@@ -277,26 +276,26 @@ export function CreateEditPostModal({
             <TabsContent value="media" className="space-y-4">
               <div className="rounded-lg border border-dashed border-border p-8 text-center">
                 <Upload className="mx-auto mb-4 h-10 w-10 text-muted-foreground" />
-                <p className="mb-2 font-medium">Upload Images or Video</p>
+                <p className="mb-2 font-medium">{t.uploadImagesVideo}</p>
                 <p className="mb-4 text-sm text-muted-foreground">
-                  Max 8 images (10MB each) or 1 video (500MB). Cannot mix both.
+                  {t.maxMediaSize}
                 </p>
                 <div className="flex justify-center gap-3">
                   <Button variant="outline" className="gap-2">
                     <ImageIcon className="h-4 w-4" />
-                    Upload Images
+                    {t.uploadImages}
                   </Button>
                   <Button variant="outline" className="gap-2">
                     <Video className="h-4 w-4" />
-                    Upload Video
+                    {t.uploadVideo}
                   </Button>
                 </div>
               </div>
 
               <div className="rounded-lg bg-muted/50 p-4">
-                <p className="text-sm font-medium mb-2">Accessibility Requirement</p>
+                <p className="text-sm font-medium mb-2">{t.accessibilityRequirement}</p>
                 <p className="text-xs text-muted-foreground">
-                  All images require alt text for accessibility. You'll be prompted to add descriptions after upload.
+                  {t.accessibilityNote}
                 </p>
               </div>
             </TabsContent>
@@ -305,9 +304,9 @@ export function CreateEditPostModal({
             <TabsContent value="options" className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label>Pin to Top</Label>
+                  <Label>{t.pinToTopLabel}</Label>
                   <p className="text-xs text-muted-foreground">
-                    Only one pinned post allowed. Pinning will unpin previous.
+                    {t.pinToTopNote}
                   </p>
                 </div>
                 <Checkbox checked={pinned} onCheckedChange={(c) => setPinned(!!c)} />
@@ -315,24 +314,24 @@ export function CreateEditPostModal({
 
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label>Allow Reactions</Label>
-                  <p className="text-xs text-muted-foreground">Let members react to this post</p>
+                  <Label>{t.allowReactions}</Label>
+                  <p className="text-xs text-muted-foreground">{t.letMembersReact}</p>
                 </div>
                 <Switch checked={allowReactions} onCheckedChange={setAllowReactions} />
               </div>
 
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label>Notify Members</Label>
+                  <Label>{t.notifyMembersLabel}</Label>
                   <p className="text-xs text-muted-foreground">
-                    Send in-app & email notifications based on preferences
+                    {t.notifyMembersNote}
                   </p>
                 </div>
                 <Switch checked={notifyMembers} onCheckedChange={setNotifyMembers} />
               </div>
 
               <div className="space-y-2">
-                <Label>Schedule Publish</Label>
+                <Label>{t.schedulePublish}</Label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
@@ -343,7 +342,7 @@ export function CreateEditPostModal({
                       )}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {scheduleDate ? format(scheduleDate, "PPP 'at' p") : "Set schedule (optional)"}
+                      {scheduleDate ? format(scheduleDate, "PPP 'at' p") : t.setScheduleOptional}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0">
@@ -351,7 +350,7 @@ export function CreateEditPostModal({
                   </PopoverContent>
                 </Popover>
                 <p className="text-xs text-muted-foreground">
-                  Set a future date/time to auto-publish
+                  {t.autoPublishNote}
                 </p>
               </div>
             </TabsContent>
@@ -360,24 +359,24 @@ export function CreateEditPostModal({
             <TabsContent value="moderation" className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label>Require Review Before Publish</Label>
+                  <Label>{t.requireReview}</Label>
                   <p className="text-xs text-muted-foreground">
-                    Post will be pending until approved
+                    {t.requireReviewNote}
                   </p>
                 </div>
                 <Switch checked={requireReview} onCheckedChange={setRequireReview} />
               </div>
 
               <div className="space-y-2">
-                <Label>Content Warning</Label>
+                <Label>{t.contentWarning}</Label>
                 <Select value={contentWarning} onValueChange={(v) => setContentWarning(v as any)}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="none">None</SelectItem>
-                    <SelectItem value="sensitive">Contains Sensitive Content</SelectItem>
-                    <SelectItem value="age_restricted">Age 18+</SelectItem>
+                    <SelectItem value="none">{t.contentWarningNone}</SelectItem>
+                    <SelectItem value="sensitive">{t.contentWarningSensitive}</SelectItem>
+                    <SelectItem value="age_restricted">{t.contentWarningAge}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -386,7 +385,7 @@ export function CreateEditPostModal({
                 <div className="flex items-start gap-2 rounded-lg bg-warning/10 p-3">
                   <AlertTriangle className="h-4 w-4 text-warning mt-0.5" />
                   <p className="text-xs text-muted-foreground">
-                    Posts with content warnings will display a warning before showing content
+                    {t.contentWarningNote}
                   </p>
                 </div>
               )}
@@ -398,27 +397,27 @@ export function CreateEditPostModal({
           <div className="flex w-full justify-between">
             <div className="flex gap-2">
               <Button variant="outline" onClick={() => onOpenChange(false)}>
-                Cancel
+                {t.cancel}
               </Button>
               <Button variant="ghost" className="gap-2">
                 <Eye className="h-4 w-4" />
-                Preview
+                {t.preview}
               </Button>
             </div>
             <div className="flex gap-2">
               <Button variant="secondary" className="gap-2" onClick={() => handleSubmit("draft")}>
                 <Save className="h-4 w-4" />
-                Save Draft
+                {t.saveDraft}
               </Button>
               {scheduleDate && (
                 <Button variant="secondary" className="gap-2" onClick={() => handleSubmit("schedule")}>
                   <Clock className="h-4 w-4" />
-                  Schedule
+                  {t.schedule}
                 </Button>
               )}
               <Button className="gap-2" onClick={() => handleSubmit("publish")}>
                 <Send className="h-4 w-4" />
-                Publish
+                {t.publish}
               </Button>
             </div>
           </div>

@@ -12,6 +12,7 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "@/hooks/use-toast";
 import type { Member } from "./MembersTable";
+import { useT } from "@/hooks/useT";
 
 interface RemoveMemberModalProps {
   open: boolean;
@@ -26,19 +27,19 @@ export function RemoveMemberModal({
   member,
   isPaidAssociation = false,
 }: RemoveMemberModalProps) {
+  const t = useT();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleRemove = async () => {
     if (!member) return;
     
     setIsLoading(true);
-    // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1000));
     setIsLoading(false);
     
     toast({
-      title: "Member removed",
-      description: `${member.name} has been removed from the association.`,
+      title: t.memberRemoved,
+      description: `${member.name} ${t.memberRemovedDesc}`,
     });
     
     onOpenChange(false);
@@ -51,9 +52,9 @@ export function RemoveMemberModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md surface-default">
         <DialogHeader>
-          <DialogTitle className="label-large text-text-primary">Remove Member</DialogTitle>
+          <DialogTitle className="label-large text-text-primary">{t.removeMember}</DialogTitle>
           <DialogDescription className="body-small text-text-secondary">
-            Are you sure you want to remove {member?.name} from the association? They will lose access immediately.
+            {t.removeConfirm} {member?.name} {t.loseAccessImmediately}
           </DialogDescription>
         </DialogHeader>
 
@@ -62,7 +63,7 @@ export function RemoveMemberModal({
             <Alert className="surface-warning border-border-warning">
               <AlertTriangle className="h-4 w-4 text-text-warning" />
               <AlertDescription className="body-small text-text-warning">
-                Removing an admin requires confirmation. Make sure there is at least one admin remaining.
+                {t.removingAdminWarning}
               </AlertDescription>
             </Alert>
           )}
@@ -71,7 +72,7 @@ export function RemoveMemberModal({
             <Alert className="surface-info border-border-info">
               <AlertTriangle className="h-4 w-4 text-text-info" />
               <AlertDescription className="body-small text-text-info">
-                This member has an active subscription. It will be automatically canceled upon removal.
+                {t.activeSubscriptionWarning}
               </AlertDescription>
             </Alert>
           )}
@@ -79,14 +80,14 @@ export function RemoveMemberModal({
 
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Cancel
+            {t.cancel}
           </Button>
           <Button 
             variant="destructive"
             onClick={handleRemove} 
             disabled={isLoading}
           >
-            {isLoading ? "Removing..." : "Remove Member"}
+            {isLoading ? t.removing : t.removeMember}
           </Button>
         </DialogFooter>
       </DialogContent>

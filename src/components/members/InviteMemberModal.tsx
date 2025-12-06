@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "@/hooks/use-toast";
+import { useT } from "@/hooks/useT";
 
 interface InviteMemberModalProps {
   open: boolean;
@@ -26,6 +27,7 @@ interface InviteMemberModalProps {
 }
 
 export function InviteMemberModal({ open, onOpenChange }: InviteMemberModalProps) {
+  const t = useT();
   const [inviteMethod, setInviteMethod] = useState<"email" | "phone" | "link">("email");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -42,15 +44,12 @@ export function InviteMemberModal({ open, onOpenChange }: InviteMemberModalProps
 
   const handleSendInvite = async () => {
     setIsLoading(true);
-    // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1000));
     setIsLoading(false);
     
     toast({
-      title: "Invitation sent successfully",
-      description: inviteMethod === "email" 
-        ? `Invite sent to ${email}` 
-        : `Invite sent to ${phone}`,
+      title: t.invitationSent,
+      description: `${t.inviteSentTo} ${inviteMethod === "email" ? email : phone}`,
     });
     
     onOpenChange(false);
@@ -69,30 +68,30 @@ export function InviteMemberModal({ open, onOpenChange }: InviteMemberModalProps
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md surface-default">
         <DialogHeader>
-          <DialogTitle className="label-large text-text-primary">Invite Member</DialogTitle>
+          <DialogTitle className="label-large text-text-primary">{t.inviteMember}</DialogTitle>
           <DialogDescription className="body-small text-text-secondary">
-            Send an invitation to join your association.
+            {t.shareLinkNote}
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label className="label-small text-text-primary">Invite Via</Label>
+            <Label className="label-small text-text-primary">{t.inviteVia}</Label>
             <Select value={inviteMethod} onValueChange={(v) => setInviteMethod(v as "email" | "phone" | "link")}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="surface-default">
-                <SelectItem value="email">Email</SelectItem>
-                <SelectItem value="phone">Phone Number</SelectItem>
-                <SelectItem value="link">Shareable Link</SelectItem>
+                <SelectItem value="email">{t.email}</SelectItem>
+                <SelectItem value="phone">{t.phoneNumber}</SelectItem>
+                <SelectItem value="link">{t.shareableLink}</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           {inviteMethod === "email" && (
             <div className="space-y-2">
-              <Label className="label-small text-text-primary">Email Address</Label>
+              <Label className="label-small text-text-primary">{t.emailAddress}</Label>
               <Input
                 type="email"
                 placeholder="member@example.com"
@@ -104,7 +103,7 @@ export function InviteMemberModal({ open, onOpenChange }: InviteMemberModalProps
 
           {inviteMethod === "phone" && (
             <div className="space-y-2">
-              <Label className="label-small text-text-primary">Phone Number</Label>
+              <Label className="label-small text-text-primary">{t.phoneNumber}</Label>
               <Input
                 type="tel"
                 placeholder="+233 55 555 5555"
@@ -116,7 +115,7 @@ export function InviteMemberModal({ open, onOpenChange }: InviteMemberModalProps
 
           {inviteMethod === "link" && (
             <div className="space-y-2">
-              <Label className="label-small text-text-primary">Join Link</Label>
+              <Label className="label-small text-text-primary">{t.joinLink}</Label>
               <div className="flex gap-2">
                 <Input
                   readOnly
@@ -128,7 +127,7 @@ export function InviteMemberModal({ open, onOpenChange }: InviteMemberModalProps
                 </Button>
               </div>
               <p className="caption-small text-text-secondary">
-                Share this link with anyone you want to invite.
+                {t.shareLinkNote}
               </p>
             </div>
           )}
@@ -136,14 +135,14 @@ export function InviteMemberModal({ open, onOpenChange }: InviteMemberModalProps
 
         <DialogFooter>
           <Button variant="outline" onClick={handleClose}>
-            Cancel
+            {t.cancel}
           </Button>
           {inviteMethod !== "link" && (
             <Button 
               onClick={handleSendInvite} 
               disabled={isLoading || (inviteMethod === "email" ? !email : !phone)}
             >
-              {isLoading ? "Sending..." : "Send Invite"}
+              {isLoading ? t.sending : t.sendInvite}
             </Button>
           )}
         </DialogFooter>

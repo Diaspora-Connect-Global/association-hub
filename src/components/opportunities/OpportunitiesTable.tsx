@@ -31,6 +31,7 @@ import {
   Briefcase,
 } from "lucide-react";
 import { Opportunity, OpportunityType } from "@/types/opportunities";
+import { useT } from "@/hooks/useT";
 
 interface OpportunitiesTableProps {
   opportunities: Opportunity[];
@@ -54,15 +55,6 @@ const statusMap = {
   removed: "inactive" as const,
 };
 
-const typeLabels: Record<OpportunityType, string> = {
-  job: "Job",
-  volunteer: "Volunteer",
-  training: "Training",
-  funding: "Funding",
-  scholarship: "Scholarship",
-  other: "Other",
-};
-
 export function OpportunitiesTable({
   opportunities,
   selectedOpportunities,
@@ -75,16 +67,40 @@ export function OpportunitiesTable({
   onViewApplicants,
   onDelete,
 }: OpportunitiesTableProps) {
+  const t = useT();
   const allSelected = opportunities.length > 0 && selectedOpportunities.length === opportunities.length;
   const someSelected = selectedOpportunities.length > 0 && selectedOpportunities.length < opportunities.length;
+
+  const typeLabels: Record<OpportunityType, string> = {
+    job: t.job,
+    volunteer: t.volunteer,
+    training: t.training,
+    funding: t.funding,
+    scholarship: t.scholarship,
+    other: t.other,
+  };
+
+  const statusLabels: Record<string, string> = {
+    published: t.published,
+    draft: t.draft,
+    scheduled: t.scheduled,
+    closed: t.closed,
+    archived: t.archived,
+    removed: t.removed,
+  };
+
+  const visibilityLabels: Record<string, string> = {
+    public: t.public,
+    members: t.membersOnly,
+  };
 
   if (opportunities.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border bg-card py-16">
         <Briefcase className="mb-4 h-12 w-12 text-muted-foreground" />
-        <h3 className="mb-2 text-lg font-semibold text-foreground">No opportunities yet</h3>
+        <h3 className="mb-2 text-lg font-semibold text-foreground">{t.noOpportunitiesYet}</h3>
         <p className="mb-4 text-sm text-muted-foreground">
-          Create your first opportunity to start receiving applicants
+          {t.createFirstOpportunity}
         </p>
       </div>
     );
@@ -99,18 +115,18 @@ export function OpportunitiesTable({
               <Checkbox
                 checked={allSelected}
                 onCheckedChange={onSelectAll}
-                aria-label="Select all"
+                aria-label={t.selectAll}
                 className={someSelected ? "opacity-50" : ""}
               />
             </TableHead>
-            <TableHead className="w-24">Status</TableHead>
-            <TableHead className="min-w-[250px]">Title</TableHead>
-            <TableHead className="w-28">Type</TableHead>
-            <TableHead className="w-28">Applicants</TableHead>
-            <TableHead className="w-24">Visibility</TableHead>
-            <TableHead className="w-28">Deadline</TableHead>
-            <TableHead className="w-28">Published</TableHead>
-            <TableHead className="w-16">Actions</TableHead>
+            <TableHead className="w-24">{t.status}</TableHead>
+            <TableHead className="min-w-[250px]">{t.title}</TableHead>
+            <TableHead className="w-28">{t.type}</TableHead>
+            <TableHead className="w-28">{t.applicants}</TableHead>
+            <TableHead className="w-24">{t.visibility}</TableHead>
+            <TableHead className="w-28">{t.deadline}</TableHead>
+            <TableHead className="w-28">{t.publishedAt}</TableHead>
+            <TableHead className="w-16">{t.actions}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -127,12 +143,12 @@ export function OpportunitiesTable({
                   <Checkbox
                     checked={isSelected}
                     onCheckedChange={() => onSelectOpportunity(opp.id)}
-                    aria-label={`Select ${opp.title}`}
+                    aria-label={`${t.select} ${opp.title}`}
                   />
                 </TableCell>
                 <TableCell>
                   <StatusBadge variant={statusMap[opp.status]}>
-                    {opp.status}
+                    {statusLabels[opp.status] || opp.status}
                   </StatusBadge>
                 </TableCell>
                 <TableCell>
@@ -160,13 +176,13 @@ export function OpportunitiesTable({
                       <Lock className="h-4 w-4 text-muted-foreground" />
                     )}
                     <span className="text-xs capitalize text-muted-foreground">
-                      {opp.visibility}
+                      {visibilityLabels[opp.visibility] || opp.visibility}
                     </span>
                   </div>
                 </TableCell>
                 <TableCell>
                   <span className="text-sm text-muted-foreground">
-                    {opp.deadline || "Open"}
+                    {opp.deadline || t.open}
                   </span>
                 </TableCell>
                 <TableCell>
@@ -184,32 +200,32 @@ export function OpportunitiesTable({
                     <DropdownMenuContent align="end" className="w-48">
                       <DropdownMenuItem onClick={() => onOpenDrawer(opp)}>
                         <Eye className="mr-2 h-4 w-4" />
-                        Open Details
+                        {t.openDetails}
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => onEdit(opp)}>
                         <Edit className="mr-2 h-4 w-4" />
-                        Edit
+                        {t.edit}
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => onTogglePublish(opp)}>
                         {opp.status === "published" ? (
                           <>
                             <ToggleLeft className="mr-2 h-4 w-4" />
-                            Unpublish
+                            {t.unpublish}
                           </>
                         ) : (
                           <>
                             <ToggleRight className="mr-2 h-4 w-4" />
-                            Publish
+                            {t.publish}
                           </>
                         )}
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => onClose(opp)}>
                         <XCircle className="mr-2 h-4 w-4" />
-                        Close Applications
+                        {t.closeApplications}
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => onViewApplicants(opp)}>
                         <Users className="mr-2 h-4 w-4" />
-                        View Applicants
+                        {t.viewApplicants}
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
@@ -217,7 +233,7 @@ export function OpportunitiesTable({
                         onClick={() => onDelete(opp)}
                       >
                         <Trash2 className="mr-2 h-4 w-4" />
-                        Delete
+                        {t.delete}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>

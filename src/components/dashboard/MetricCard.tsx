@@ -1,5 +1,6 @@
 import { LucideIcon, TrendingUp, TrendingDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useT } from "@/hooks/useT";
 
 interface MetricCardProps {
   label: string;
@@ -21,6 +22,8 @@ export function MetricCard({
   onClick,
   className,
 }: MetricCardProps) {
+  const t = useT();
+
   return (
     <button
       onClick={onClick}
@@ -50,7 +53,7 @@ export function MetricCard({
                 {trend.isPositive ? "+" : ""}
                 {trend.value}%
               </span>
-              <span className="caption-small text-muted-foreground">vs last month</span>
+              <span className="caption-small text-muted-foreground">{t.vsLastMonth}</span>
             </div>
           )}
         </div>
