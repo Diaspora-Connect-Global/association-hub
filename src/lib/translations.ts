@@ -249,7 +249,148 @@ type TranslationKeys = {
   unpin: string;
   pinToTop: string;
 
-  // Events page
+  // Opportunities
+  noOpportunitiesYet: string;
+  createFirstOpportunity: string;
+  opportunityActions: string;
+  closed: string;
+  openDetails: string;
+  closeApplications: string;
+  viewApplicants: string;
+  applicants: string;
+  deadline: string;
+  open: string;
+  other: string;
+  quickTips: string;
+  tipScreeningQuestions: string;
+  tipDeadline: string;
+  tipCVUploads: string;
+
+  // Dashboard
+  vsLastMonth: string;
+
+  // Modal translations
+  editEventLabel: string;
+  basicInformation: string;
+  scheduleLocation: string;
+  ticketingCapacity: string;
+  visibilitySettings: string;
+  eventTitle: string;
+  enterEventTitle: string;
+  eventDescription: string;
+  enterEventDescription: string;
+  bannerImageLabel: string;
+  clickToUpload: string;
+  dragAndDrop: string;
+  imageFormat: string;
+  eventDate: string;
+  pickDate: string;
+  startTime: string;
+  endTime: string;
+  eventTypeLabel: string;
+  inPerson: string;
+  virtual: string;
+  location: string;
+  enterVenueAddress: string;
+  virtualLinkLabel: string;
+  addVirtualLink: string;
+  isPaidEvent: string;
+  enableTicketPrice: string;
+  currency: string;
+  ticketPrice: string;
+  limitParticipants: string;
+  setMaxAttendees: string;
+  maxParticipants: string;
+  publishEventNow: string;
+  makeEventVisible: string;
+  sendNotification: string;
+  notifyAllMembers: string;
+  allowCommentsLabel: string;
+  letMembersComment: string;
+  back: string;
+  next: string;
+
+  // Delete modal translations
+  deleteEventTitle: string;
+  deleteEventConfirm: string;
+  allRegistrationsLost: string;
+  eventRemovedFromFeeds: string;
+
+  // Post modal translations
+  editPost: string;
+  draftSavedAt: string;
+  content: string;
+  options: string;
+  moderation: string;
+  title: string;
+  titlePlaceholder: string;
+  body: string;
+  bodyPlaceholder: string;
+  tags: string;
+  addTag: string;
+  membersLimitVisibility: string;
+  allowComments: string;
+  letMembersCommentPost: string;
+  uploadImagesVideo: string;
+  maxMediaSize: string;
+  uploadImages: string;
+  uploadVideo: string;
+  accessibilityRequirement: string;
+  accessibilityNote: string;
+  pinToTopLabel: string;
+  pinToTopNote: string;
+  allowReactions: string;
+  letMembersReact: string;
+  notifyMembersLabel: string;
+  notifyMembersNote: string;
+  schedulePublish: string;
+  setScheduleOptional: string;
+  autoPublishNote: string;
+  requireReview: string;
+  requireReviewNote: string;
+  contentWarning: string;
+  contentWarningNone: string;
+  contentWarningSensitive: string;
+  contentWarningAge: string;
+  contentWarningNote: string;
+  preview: string;
+  saveDraft: string;
+  titleRequired: string;
+  titleRequiredDesc: string;
+  contentRequired: string;
+  contentRequiredDesc: string;
+
+  // Delete post modal
+  deletePost: string;
+  deletePostConfirm: string;
+  commentsReactionsRemoved: string;
+  auditRecordKept: string;
+
+  // Member modals
+  inviteVia: string;
+  emailAddress: string;
+  phoneNumber: string;
+  shareableLink: string;
+  joinLink: string;
+  shareLinkNote: string;
+  sendInvite: string;
+  sending: string;
+  invitationSent: string;
+  inviteSentTo: string;
+  selectRole: string;
+  roleUpdated: string;
+  roleChangedTo: string;
+  updateRole: string;
+  updating: string;
+  promotingToAdmin: string;
+  demotingAdmin: string;
+  removeConfirm: string;
+  loseAccessImmediately: string;
+  removingAdminWarning: string;
+  activeSubscriptionWarning: string;
+  memberRemoved: string;
+  memberRemovedDesc: string;
+  removing: string;
   eventsTitle: string;
   eventsSubtitle: string;
   createEvent: string;
@@ -733,6 +874,149 @@ const translations: Record<Language, TranslationKeys> = {
     deleteEvent: "Delete Event",
     registered: "registered",
     virtualEvent: "Virtual Event",
+
+    // Opportunities
+    noOpportunitiesYet: "No opportunities yet",
+    createFirstOpportunity: "Create your first opportunity to start receiving applicants",
+    opportunityActions: "Opportunity Actions",
+    closed: "Closed",
+    openDetails: "Open Details",
+    closeApplications: "Close Applications",
+    viewApplicants: "View Applicants",
+    applicants: "Applicants",
+    deadline: "Deadline",
+    open: "Open",
+    other: "Other",
+    quickTips: "Quick Tips",
+    tipScreeningQuestions: "Use screening questions to reduce irrelevant applications.",
+    tipDeadline: "Set an application deadline to automatically close applications.",
+    tipCVUploads: "Require CV uploads for job applications.",
+
+    // Dashboard
+    vsLastMonth: "vs last month",
+
+    // Modal translations
+    editEventLabel: "Edit Event",
+    basicInformation: "Basic Information",
+    scheduleLocation: "Schedule & Location",
+    ticketingCapacity: "Ticketing & Capacity",
+    visibilitySettings: "Visibility & Settings",
+    eventTitle: "Event Title",
+    enterEventTitle: "Enter event title",
+    eventDescription: "Description",
+    enterEventDescription: "Enter a detailed description of the event",
+    bannerImageLabel: "Banner Image",
+    clickToUpload: "Click to upload or drag and drop",
+    dragAndDrop: "drag and drop",
+    imageFormat: "PNG, JPG up to 5MB",
+    eventDate: "Event Date",
+    pickDate: "Pick a date",
+    startTime: "Start Time",
+    endTime: "End Time",
+    eventTypeLabel: "Event Type",
+    inPerson: "In-Person",
+    virtual: "Virtual",
+    location: "Location",
+    enterVenueAddress: "Enter physical venue address",
+    virtualLinkLabel: "Virtual Link",
+    addVirtualLink: "Add Zoom/Google Meet link",
+    isPaidEvent: "Is this a paid event?",
+    enableTicketPrice: "Enable to set a ticket price",
+    currency: "Currency",
+    ticketPrice: "Ticket Price",
+    limitParticipants: "Limit Participants?",
+    setMaxAttendees: "Set a maximum number of attendees",
+    maxParticipants: "Max Participants",
+    publishEventNow: "Publish Event Now?",
+    makeEventVisible: "Make the event visible to members immediately",
+    sendNotification: "Send Notification to Members?",
+    notifyAllMembers: "Notify all association members about this event",
+    allowCommentsLabel: "Allow Comments",
+    letMembersComment: "Let members comment on this event",
+    back: "Back",
+    next: "Next",
+
+    // Delete modal translations
+    deleteEventTitle: "Delete Event",
+    deleteEventConfirm: "Are you sure you want to delete",
+    allRegistrationsLost: "All registrations will be lost.",
+    eventRemovedFromFeeds: "Event will be removed from member feeds.",
+
+    // Post modal translations
+    editPost: "Edit Post",
+    draftSavedAt: "Draft saved at",
+    content: "Content",
+    options: "Options",
+    moderation: "Moderation",
+    title: "Title",
+    titlePlaceholder: "Short, descriptive title (max 150 chars)",
+    body: "Body",
+    bodyPlaceholder: "Write your post here... Use @ to mention, # for tags",
+    tags: "Tags",
+    addTag: "Add a tag",
+    membersLimitVisibility: "Members limits visibility to association members only",
+    allowComments: "Allow Comments",
+    letMembersCommentPost: "Let members comment on this post",
+    uploadImagesVideo: "Upload Images or Video",
+    maxMediaSize: "Max 8 images (10MB each) or 1 video (500MB). Cannot mix both.",
+    uploadImages: "Upload Images",
+    uploadVideo: "Upload Video",
+    accessibilityRequirement: "Accessibility Requirement",
+    accessibilityNote: "All images require alt text for accessibility. You'll be prompted to add descriptions after upload.",
+    pinToTopLabel: "Pin to Top",
+    pinToTopNote: "Only one pinned post allowed. Pinning will unpin previous.",
+    allowReactions: "Allow Reactions",
+    letMembersReact: "Let members react to this post",
+    notifyMembersLabel: "Notify Members",
+    notifyMembersNote: "Send in-app & email notifications based on preferences",
+    schedulePublish: "Schedule Publish",
+    setScheduleOptional: "Set schedule (optional)",
+    autoPublishNote: "Set a future date/time to auto-publish",
+    requireReview: "Require Review Before Publish",
+    requireReviewNote: "Post will be pending until approved",
+    contentWarning: "Content Warning",
+    contentWarningNone: "None",
+    contentWarningSensitive: "Contains Sensitive Content",
+    contentWarningAge: "Age 18+",
+    contentWarningNote: "Posts with content warnings will display a warning before showing content",
+    preview: "Preview",
+    saveDraft: "Save Draft",
+    titleRequired: "Title Required",
+    titleRequiredDesc: "Please enter a title before publishing.",
+    contentRequired: "Content Required",
+    contentRequiredDesc: "Please add body text or media before publishing.",
+
+    // Delete post modal
+    deletePost: "Delete Post",
+    deletePostConfirm: "Are you sure you want to delete",
+    commentsReactionsRemoved: "All comments and reactions will be removed",
+    auditRecordKept: "An audit record will be kept for compliance",
+
+    // Member modals
+    inviteVia: "Invite Via",
+    emailAddress: "Email Address",
+    phoneNumber: "Phone Number",
+    shareableLink: "Shareable Link",
+    joinLink: "Join Link",
+    shareLinkNote: "Share this link with anyone you want to invite.",
+    sendInvite: "Send Invite",
+    sending: "Sending...",
+    invitationSent: "Invitation sent successfully",
+    inviteSentTo: "Invite sent to",
+    selectRole: "Select Role",
+    roleUpdated: "Role updated",
+    roleChangedTo: "'s role has been changed to",
+    updateRole: "Update Role",
+    updating: "Updating...",
+    promotingToAdmin: "Promoting a member to Admin gives them full control over the association.",
+    demotingAdmin: "Demoting an Admin may lock you out if no admins remain.",
+    removeConfirm: "Are you sure you want to remove",
+    loseAccessImmediately: "from the association? They will lose access immediately.",
+    removingAdminWarning: "Removing an admin requires confirmation. Make sure there is at least one admin remaining.",
+    activeSubscriptionWarning: "This member has an active subscription. It will be automatically canceled upon removal.",
+    memberRemoved: "Member removed",
+    memberRemovedDesc: "has been removed from the association.",
+    removing: "Removing...",
   },
   fr: {
     // Navigation
@@ -1100,6 +1384,149 @@ const translations: Record<Language, TranslationKeys> = {
     deleteEvent: "Supprimer l'événement",
     registered: "inscrit(s)",
     virtualEvent: "Événement virtuel",
+
+    // Opportunities
+    noOpportunitiesYet: "Pas encore d'opportunités",
+    createFirstOpportunity: "Créez votre première opportunité pour recevoir des candidatures",
+    opportunityActions: "Actions opportunités",
+    closed: "Fermé",
+    openDetails: "Ouvrir les détails",
+    closeApplications: "Fermer les candidatures",
+    viewApplicants: "Voir les candidats",
+    applicants: "Candidats",
+    deadline: "Date limite",
+    open: "Ouvert",
+    other: "Autre",
+    quickTips: "Conseils rapides",
+    tipScreeningQuestions: "Utilisez des questions de sélection pour réduire les candidatures non pertinentes.",
+    tipDeadline: "Définissez une date limite pour fermer automatiquement les candidatures.",
+    tipCVUploads: "Exigez le téléchargement du CV pour les offres d'emploi.",
+
+    // Dashboard
+    vsLastMonth: "vs mois dernier",
+
+    // Modal translations
+    editEventLabel: "Modifier l'événement",
+    basicInformation: "Informations de base",
+    scheduleLocation: "Horaire et lieu",
+    ticketingCapacity: "Billetterie et capacité",
+    visibilitySettings: "Visibilité et paramètres",
+    eventTitle: "Titre de l'événement",
+    enterEventTitle: "Entrez le titre de l'événement",
+    eventDescription: "Description",
+    enterEventDescription: "Entrez une description détaillée de l'événement",
+    bannerImageLabel: "Image de bannière",
+    clickToUpload: "Cliquez pour télécharger ou glisser-déposer",
+    dragAndDrop: "glisser-déposer",
+    imageFormat: "PNG, JPG jusqu'à 5Mo",
+    eventDate: "Date de l'événement",
+    pickDate: "Choisir une date",
+    startTime: "Heure de début",
+    endTime: "Heure de fin",
+    eventTypeLabel: "Type d'événement",
+    inPerson: "En personne",
+    virtual: "Virtuel",
+    location: "Lieu",
+    enterVenueAddress: "Entrez l'adresse du lieu",
+    virtualLinkLabel: "Lien virtuel",
+    addVirtualLink: "Ajouter un lien Zoom/Google Meet",
+    isPaidEvent: "Est-ce un événement payant ?",
+    enableTicketPrice: "Activer pour définir un prix de billet",
+    currency: "Devise",
+    ticketPrice: "Prix du billet",
+    limitParticipants: "Limiter les participants ?",
+    setMaxAttendees: "Définir un nombre maximum de participants",
+    maxParticipants: "Participants max",
+    publishEventNow: "Publier l'événement maintenant ?",
+    makeEventVisible: "Rendre l'événement visible aux membres immédiatement",
+    sendNotification: "Envoyer une notification aux membres ?",
+    notifyAllMembers: "Notifier tous les membres de l'association",
+    allowCommentsLabel: "Autoriser les commentaires",
+    letMembersComment: "Permettre aux membres de commenter cet événement",
+    back: "Retour",
+    next: "Suivant",
+
+    // Delete modal translations
+    deleteEventTitle: "Supprimer l'événement",
+    deleteEventConfirm: "Êtes-vous sûr de vouloir supprimer",
+    allRegistrationsLost: "Toutes les inscriptions seront perdues.",
+    eventRemovedFromFeeds: "L'événement sera supprimé des fils des membres.",
+
+    // Post modal translations
+    editPost: "Modifier la publication",
+    draftSavedAt: "Brouillon enregistré à",
+    content: "Contenu",
+    options: "Options",
+    moderation: "Modération",
+    title: "Titre",
+    titlePlaceholder: "Titre court et descriptif (max 150 caractères)",
+    body: "Corps",
+    bodyPlaceholder: "Écrivez votre publication ici... Utilisez @ pour mentionner, # pour les tags",
+    tags: "Tags",
+    addTag: "Ajouter un tag",
+    membersLimitVisibility: "Membres limite la visibilité aux membres de l'association uniquement",
+    allowComments: "Autoriser les commentaires",
+    letMembersCommentPost: "Permettre aux membres de commenter cette publication",
+    uploadImagesVideo: "Télécharger des images ou une vidéo",
+    maxMediaSize: "Max 8 images (10Mo chacune) ou 1 vidéo (500Mo). Pas de mélange.",
+    uploadImages: "Télécharger des images",
+    uploadVideo: "Télécharger une vidéo",
+    accessibilityRequirement: "Exigence d'accessibilité",
+    accessibilityNote: "Toutes les images nécessitent un texte alternatif. Vous serez invité à ajouter des descriptions après le téléchargement.",
+    pinToTopLabel: "Épingler en haut",
+    pinToTopNote: "Une seule publication épinglée autorisée. L'épinglage désépinglera la précédente.",
+    allowReactions: "Autoriser les réactions",
+    letMembersReact: "Permettre aux membres de réagir à cette publication",
+    notifyMembersLabel: "Notifier les membres",
+    notifyMembersNote: "Envoyer des notifications in-app et par email selon les préférences",
+    schedulePublish: "Programmer la publication",
+    setScheduleOptional: "Définir un calendrier (optionnel)",
+    autoPublishNote: "Définir une date/heure future pour la publication automatique",
+    requireReview: "Exiger une révision avant publication",
+    requireReviewNote: "La publication sera en attente jusqu'à approbation",
+    contentWarning: "Avertissement de contenu",
+    contentWarningNone: "Aucun",
+    contentWarningSensitive: "Contient du contenu sensible",
+    contentWarningAge: "18+ ans",
+    contentWarningNote: "Les publications avec avertissement afficheront un avertissement avant le contenu",
+    preview: "Aperçu",
+    saveDraft: "Enregistrer le brouillon",
+    titleRequired: "Titre requis",
+    titleRequiredDesc: "Veuillez entrer un titre avant de publier.",
+    contentRequired: "Contenu requis",
+    contentRequiredDesc: "Veuillez ajouter du texte ou des médias avant de publier.",
+
+    // Delete post modal
+    deletePost: "Supprimer la publication",
+    deletePostConfirm: "Êtes-vous sûr de vouloir supprimer",
+    commentsReactionsRemoved: "Tous les commentaires et réactions seront supprimés",
+    auditRecordKept: "Un enregistrement d'audit sera conservé pour la conformité",
+
+    // Member modals
+    inviteVia: "Inviter via",
+    emailAddress: "Adresse email",
+    phoneNumber: "Numéro de téléphone",
+    shareableLink: "Lien partageable",
+    joinLink: "Lien d'inscription",
+    shareLinkNote: "Partagez ce lien avec toute personne que vous souhaitez inviter.",
+    sendInvite: "Envoyer l'invitation",
+    sending: "Envoi...",
+    invitationSent: "Invitation envoyée avec succès",
+    inviteSentTo: "Invitation envoyée à",
+    selectRole: "Sélectionner un rôle",
+    roleUpdated: "Rôle mis à jour",
+    roleChangedTo: " a été changé en",
+    updateRole: "Mettre à jour le rôle",
+    updating: "Mise à jour...",
+    promotingToAdmin: "Promouvoir un membre au rang d'admin lui donne le contrôle total de l'association.",
+    demotingAdmin: "Rétrograder un admin peut vous bloquer s'il ne reste plus d'admins.",
+    removeConfirm: "Êtes-vous sûr de vouloir supprimer",
+    loseAccessImmediately: "de l'association ? Il perdra l'accès immédiatement.",
+    removingAdminWarning: "La suppression d'un admin nécessite une confirmation. Assurez-vous qu'il reste au moins un admin.",
+    activeSubscriptionWarning: "Ce membre a un abonnement actif. Il sera automatiquement annulé lors de la suppression.",
+    memberRemoved: "Membre supprimé",
+    memberRemovedDesc: "a été supprimé de l'association.",
+    removing: "Suppression...",
   },
   de: {
     // Navigation
@@ -1467,6 +1894,149 @@ const translations: Record<Language, TranslationKeys> = {
     deleteEvent: "Veranstaltung löschen",
     registered: "registriert",
     virtualEvent: "Virtuelle Veranstaltung",
+
+    // Opportunities
+    noOpportunitiesYet: "Noch keine Möglichkeiten",
+    createFirstOpportunity: "Erstellen Sie Ihre erste Möglichkeit, um Bewerber zu erhalten",
+    opportunityActions: "Möglichkeitsaktionen",
+    closed: "Geschlossen",
+    openDetails: "Details öffnen",
+    closeApplications: "Bewerbungen schließen",
+    viewApplicants: "Bewerber anzeigen",
+    applicants: "Bewerber",
+    deadline: "Frist",
+    open: "Offen",
+    other: "Andere",
+    quickTips: "Schnelle Tipps",
+    tipScreeningQuestions: "Verwenden Sie Screening-Fragen, um irrelevante Bewerbungen zu reduzieren.",
+    tipDeadline: "Setzen Sie eine Bewerbungsfrist, um Bewerbungen automatisch zu schließen.",
+    tipCVUploads: "Fordern Sie CV-Uploads für Stellenbewerbungen an.",
+
+    // Dashboard
+    vsLastMonth: "vs letzten Monat",
+
+    // Modal translations
+    editEventLabel: "Veranstaltung bearbeiten",
+    basicInformation: "Grundinformationen",
+    scheduleLocation: "Zeitplan & Ort",
+    ticketingCapacity: "Ticketing & Kapazität",
+    visibilitySettings: "Sichtbarkeit & Einstellungen",
+    eventTitle: "Veranstaltungstitel",
+    enterEventTitle: "Veranstaltungstitel eingeben",
+    eventDescription: "Beschreibung",
+    enterEventDescription: "Geben Sie eine detaillierte Beschreibung der Veranstaltung ein",
+    bannerImageLabel: "Bannerbild",
+    clickToUpload: "Klicken zum Hochladen oder ziehen und ablegen",
+    dragAndDrop: "ziehen und ablegen",
+    imageFormat: "PNG, JPG bis 5MB",
+    eventDate: "Veranstaltungsdatum",
+    pickDate: "Datum auswählen",
+    startTime: "Startzeit",
+    endTime: "Endzeit",
+    eventTypeLabel: "Veranstaltungstyp",
+    inPerson: "Persönlich",
+    virtual: "Virtuell",
+    location: "Ort",
+    enterVenueAddress: "Adresse des Veranstaltungsortes eingeben",
+    virtualLinkLabel: "Virtueller Link",
+    addVirtualLink: "Zoom/Google Meet Link hinzufügen",
+    isPaidEvent: "Ist dies eine kostenpflichtige Veranstaltung?",
+    enableTicketPrice: "Aktivieren, um einen Ticketpreis festzulegen",
+    currency: "Währung",
+    ticketPrice: "Ticketpreis",
+    limitParticipants: "Teilnehmer begrenzen?",
+    setMaxAttendees: "Maximale Anzahl von Teilnehmern festlegen",
+    maxParticipants: "Max Teilnehmer",
+    publishEventNow: "Veranstaltung jetzt veröffentlichen?",
+    makeEventVisible: "Die Veranstaltung sofort für Mitglieder sichtbar machen",
+    sendNotification: "Benachrichtigung an Mitglieder senden?",
+    notifyAllMembers: "Alle Vereinsmitglieder über diese Veranstaltung benachrichtigen",
+    allowCommentsLabel: "Kommentare erlauben",
+    letMembersComment: "Mitglieder können diese Veranstaltung kommentieren",
+    back: "Zurück",
+    next: "Weiter",
+
+    // Delete modal translations
+    deleteEventTitle: "Veranstaltung löschen",
+    deleteEventConfirm: "Sind Sie sicher, dass Sie löschen möchten",
+    allRegistrationsLost: "Alle Anmeldungen gehen verloren.",
+    eventRemovedFromFeeds: "Die Veranstaltung wird aus den Feeds der Mitglieder entfernt.",
+
+    // Post modal translations
+    editPost: "Beitrag bearbeiten",
+    draftSavedAt: "Entwurf gespeichert um",
+    content: "Inhalt",
+    options: "Optionen",
+    moderation: "Moderation",
+    title: "Titel",
+    titlePlaceholder: "Kurzer, beschreibender Titel (max 150 Zeichen)",
+    body: "Text",
+    bodyPlaceholder: "Schreiben Sie Ihren Beitrag hier... Verwenden Sie @ zum Erwähnen, # für Tags",
+    tags: "Tags",
+    addTag: "Tag hinzufügen",
+    membersLimitVisibility: "Mitglieder beschränkt die Sichtbarkeit nur auf Vereinsmitglieder",
+    allowComments: "Kommentare erlauben",
+    letMembersCommentPost: "Mitglieder können diesen Beitrag kommentieren",
+    uploadImagesVideo: "Bilder oder Video hochladen",
+    maxMediaSize: "Max 8 Bilder (je 10MB) oder 1 Video (500MB). Keine Mischung.",
+    uploadImages: "Bilder hochladen",
+    uploadVideo: "Video hochladen",
+    accessibilityRequirement: "Barrierefreiheitsanforderung",
+    accessibilityNote: "Alle Bilder benötigen Alt-Text. Sie werden nach dem Upload aufgefordert, Beschreibungen hinzuzufügen.",
+    pinToTopLabel: "Oben anheften",
+    pinToTopNote: "Nur ein angehefteter Beitrag erlaubt. Anheften wird den vorherigen lösen.",
+    allowReactions: "Reaktionen erlauben",
+    letMembersReact: "Mitglieder können auf diesen Beitrag reagieren",
+    notifyMembersLabel: "Mitglieder benachrichtigen",
+    notifyMembersNote: "In-App- und E-Mail-Benachrichtigungen basierend auf Präferenzen senden",
+    schedulePublish: "Veröffentlichung planen",
+    setScheduleOptional: "Zeitplan festlegen (optional)",
+    autoPublishNote: "Datum/Uhrzeit für automatische Veröffentlichung festlegen",
+    requireReview: "Überprüfung vor Veröffentlichung erforderlich",
+    requireReviewNote: "Beitrag bleibt ausstehend bis zur Genehmigung",
+    contentWarning: "Inhaltswarnung",
+    contentWarningNone: "Keine",
+    contentWarningSensitive: "Enthält sensible Inhalte",
+    contentWarningAge: "Ab 18 Jahren",
+    contentWarningNote: "Beiträge mit Inhaltswarnungen zeigen eine Warnung vor dem Inhalt an",
+    preview: "Vorschau",
+    saveDraft: "Entwurf speichern",
+    titleRequired: "Titel erforderlich",
+    titleRequiredDesc: "Bitte geben Sie einen Titel ein, bevor Sie veröffentlichen.",
+    contentRequired: "Inhalt erforderlich",
+    contentRequiredDesc: "Bitte fügen Sie Text oder Medien hinzu, bevor Sie veröffentlichen.",
+
+    // Delete post modal
+    deletePost: "Beitrag löschen",
+    deletePostConfirm: "Sind Sie sicher, dass Sie löschen möchten",
+    commentsReactionsRemoved: "Alle Kommentare und Reaktionen werden entfernt",
+    auditRecordKept: "Ein Audit-Eintrag wird zur Compliance aufbewahrt",
+
+    // Member modals
+    inviteVia: "Einladen über",
+    emailAddress: "E-Mail-Adresse",
+    phoneNumber: "Telefonnummer",
+    shareableLink: "Teilbarer Link",
+    joinLink: "Beitrittslink",
+    shareLinkNote: "Teilen Sie diesen Link mit jedem, den Sie einladen möchten.",
+    sendInvite: "Einladung senden",
+    sending: "Wird gesendet...",
+    invitationSent: "Einladung erfolgreich gesendet",
+    inviteSentTo: "Einladung gesendet an",
+    selectRole: "Rolle auswählen",
+    roleUpdated: "Rolle aktualisiert",
+    roleChangedTo: "'s Rolle wurde geändert zu",
+    updateRole: "Rolle aktualisieren",
+    updating: "Wird aktualisiert...",
+    promotingToAdmin: "Ein Mitglied zum Admin zu befördern gibt ihm die volle Kontrolle über den Verein.",
+    demotingAdmin: "Das Herabstufen eines Admins kann Sie aussperren, wenn keine Admins mehr übrig sind.",
+    removeConfirm: "Sind Sie sicher, dass Sie entfernen möchten",
+    loseAccessImmediately: "aus dem Verein? Der Zugang geht sofort verloren.",
+    removingAdminWarning: "Das Entfernen eines Admins erfordert eine Bestätigung. Stellen Sie sicher, dass mindestens ein Admin übrig bleibt.",
+    activeSubscriptionWarning: "Dieses Mitglied hat ein aktives Abonnement. Es wird bei der Entfernung automatisch gekündigt.",
+    memberRemoved: "Mitglied entfernt",
+    memberRemovedDesc: "wurde aus dem Verein entfernt.",
+    removing: "Wird entfernt...",
   },
   nl: {
     // Navigation
@@ -1834,6 +2404,149 @@ const translations: Record<Language, TranslationKeys> = {
     deleteEvent: "Evenement verwijderen",
     registered: "geregistreerd",
     virtualEvent: "Virtueel evenement",
+
+    // Opportunities
+    noOpportunitiesYet: "Nog geen kansen",
+    createFirstOpportunity: "Maak je eerste kans om sollicitanten te ontvangen",
+    opportunityActions: "Kansacties",
+    closed: "Gesloten",
+    openDetails: "Details openen",
+    closeApplications: "Sollicitaties sluiten",
+    viewApplicants: "Sollicitanten bekijken",
+    applicants: "Sollicitanten",
+    deadline: "Deadline",
+    open: "Open",
+    other: "Andere",
+    quickTips: "Snelle tips",
+    tipScreeningQuestions: "Gebruik screeningvragen om irrelevante sollicitaties te verminderen.",
+    tipDeadline: "Stel een sollicitatiedeadline in om sollicitaties automatisch te sluiten.",
+    tipCVUploads: "Vereist CV-uploads voor sollicitaties.",
+
+    // Dashboard
+    vsLastMonth: "vs vorige maand",
+
+    // Modal translations
+    editEventLabel: "Evenement bewerken",
+    basicInformation: "Basisinformatie",
+    scheduleLocation: "Schema & Locatie",
+    ticketingCapacity: "Ticketing & Capaciteit",
+    visibilitySettings: "Zichtbaarheid & Instellingen",
+    eventTitle: "Evenementtitel",
+    enterEventTitle: "Voer evenementtitel in",
+    eventDescription: "Beschrijving",
+    enterEventDescription: "Voer een gedetailleerde beschrijving van het evenement in",
+    bannerImageLabel: "Bannerafbeelding",
+    clickToUpload: "Klik om te uploaden of slepen en neerzetten",
+    dragAndDrop: "slepen en neerzetten",
+    imageFormat: "PNG, JPG tot 5MB",
+    eventDate: "Evenementdatum",
+    pickDate: "Kies een datum",
+    startTime: "Starttijd",
+    endTime: "Eindtijd",
+    eventTypeLabel: "Evenementtype",
+    inPerson: "Persoonlijk",
+    virtual: "Virtueel",
+    location: "Locatie",
+    enterVenueAddress: "Voer fysiek adres in",
+    virtualLinkLabel: "Virtuele link",
+    addVirtualLink: "Voeg Zoom/Google Meet link toe",
+    isPaidEvent: "Is dit een betaald evenement?",
+    enableTicketPrice: "Inschakelen om een ticketprijs in te stellen",
+    currency: "Valuta",
+    ticketPrice: "Ticketprijs",
+    limitParticipants: "Deelnemers beperken?",
+    setMaxAttendees: "Stel een maximum aantal deelnemers in",
+    maxParticipants: "Max deelnemers",
+    publishEventNow: "Evenement nu publiceren?",
+    makeEventVisible: "Maak het evenement onmiddellijk zichtbaar voor leden",
+    sendNotification: "Melding naar leden sturen?",
+    notifyAllMembers: "Informeer alle verenigingsleden over dit evenement",
+    allowCommentsLabel: "Reacties toestaan",
+    letMembersComment: "Laat leden reageren op dit evenement",
+    back: "Terug",
+    next: "Volgende",
+
+    // Delete modal translations
+    deleteEventTitle: "Evenement verwijderen",
+    deleteEventConfirm: "Weet je zeker dat je wilt verwijderen",
+    allRegistrationsLost: "Alle registraties gaan verloren.",
+    eventRemovedFromFeeds: "Evenement wordt verwijderd uit ledenfeeds.",
+
+    // Post modal translations
+    editPost: "Bericht bewerken",
+    draftSavedAt: "Concept opgeslagen om",
+    content: "Inhoud",
+    options: "Opties",
+    moderation: "Moderatie",
+    title: "Titel",
+    titlePlaceholder: "Korte, beschrijvende titel (max 150 tekens)",
+    body: "Tekst",
+    bodyPlaceholder: "Schrijf je bericht hier... Gebruik @ om te vermelden, # voor tags",
+    tags: "Tags",
+    addTag: "Tag toevoegen",
+    membersLimitVisibility: "Leden beperkt zichtbaarheid tot alleen verenigingsleden",
+    allowComments: "Reacties toestaan",
+    letMembersCommentPost: "Laat leden reageren op dit bericht",
+    uploadImagesVideo: "Afbeeldingen of video uploaden",
+    maxMediaSize: "Max 8 afbeeldingen (elk 10MB) of 1 video (500MB). Niet mengen.",
+    uploadImages: "Afbeeldingen uploaden",
+    uploadVideo: "Video uploaden",
+    accessibilityRequirement: "Toegankelijkheidsvereiste",
+    accessibilityNote: "Alle afbeeldingen vereisen alt-tekst. Je wordt gevraagd beschrijvingen toe te voegen na upload.",
+    pinToTopLabel: "Bovenaan vastzetten",
+    pinToTopNote: "Slechts één vastgezet bericht toegestaan. Vastzetten maakt vorige los.",
+    allowReactions: "Reacties toestaan",
+    letMembersReact: "Laat leden reageren op dit bericht",
+    notifyMembersLabel: "Leden informeren",
+    notifyMembersNote: "Stuur in-app en e-mailmeldingen op basis van voorkeuren",
+    schedulePublish: "Publicatie plannen",
+    setScheduleOptional: "Schema instellen (optioneel)",
+    autoPublishNote: "Stel een toekomstige datum/tijd in voor auto-publicatie",
+    requireReview: "Beoordeling vereisen voor publicatie",
+    requireReviewNote: "Bericht blijft in behandeling tot goedkeuring",
+    contentWarning: "Inhoudswaarschuwing",
+    contentWarningNone: "Geen",
+    contentWarningSensitive: "Bevat gevoelige inhoud",
+    contentWarningAge: "18+",
+    contentWarningNote: "Berichten met waarschuwingen tonen een waarschuwing voor de inhoud",
+    preview: "Voorbeeld",
+    saveDraft: "Concept opslaan",
+    titleRequired: "Titel vereist",
+    titleRequiredDesc: "Voer een titel in voordat je publiceert.",
+    contentRequired: "Inhoud vereist",
+    contentRequiredDesc: "Voeg tekst of media toe voordat je publiceert.",
+
+    // Delete post modal
+    deletePost: "Bericht verwijderen",
+    deletePostConfirm: "Weet je zeker dat je wilt verwijderen",
+    commentsReactionsRemoved: "Alle reacties worden verwijderd",
+    auditRecordKept: "Een auditrecord wordt bewaard voor compliance",
+
+    // Member modals
+    inviteVia: "Uitnodigen via",
+    emailAddress: "E-mailadres",
+    phoneNumber: "Telefoonnummer",
+    shareableLink: "Deelbare link",
+    joinLink: "Aanmeldlink",
+    shareLinkNote: "Deel deze link met iedereen die je wilt uitnodigen.",
+    sendInvite: "Uitnodiging versturen",
+    sending: "Wordt verzonden...",
+    invitationSent: "Uitnodiging succesvol verzonden",
+    inviteSentTo: "Uitnodiging verzonden naar",
+    selectRole: "Selecteer rol",
+    roleUpdated: "Rol bijgewerkt",
+    roleChangedTo: "'s rol is gewijzigd naar",
+    updateRole: "Rol bijwerken",
+    updating: "Wordt bijgewerkt...",
+    promotingToAdmin: "Een lid promoveren tot admin geeft volledige controle over de vereniging.",
+    demotingAdmin: "Een admin degraderen kan je buitensluiten als er geen admins meer zijn.",
+    removeConfirm: "Weet je zeker dat je wilt verwijderen",
+    loseAccessImmediately: "uit de vereniging? Toegang gaat onmiddellijk verloren.",
+    removingAdminWarning: "Het verwijderen van een admin vereist bevestiging. Zorg dat er minstens één admin overblijft.",
+    activeSubscriptionWarning: "Dit lid heeft een actief abonnement. Het wordt automatisch geannuleerd bij verwijdering.",
+    memberRemoved: "Lid verwijderd",
+    memberRemovedDesc: "is verwijderd uit de vereniging.",
+    removing: "Wordt verwijderd...",
   },
   es: {
     // Navigation
@@ -2201,6 +2914,137 @@ const translations: Record<Language, TranslationKeys> = {
     deleteEvent: "Eliminar evento",
     registered: "registrado(s)",
     virtualEvent: "Evento virtual",
+
+    // Opportunities
+    noOpportunitiesYet: "Aún no hay oportunidades",
+    createFirstOpportunity: "Crea tu primera oportunidad para recibir solicitantes",
+    opportunityActions: "Acciones de oportunidad",
+    closed: "Cerrado",
+    openDetails: "Abrir detalles",
+    closeApplications: "Cerrar solicitudes",
+    viewApplicants: "Ver solicitantes",
+    applicants: "Solicitantes",
+    deadline: "Fecha límite",
+    open: "Abierto",
+    other: "Otro",
+    quickTips: "Consejos rápidos",
+    tipScreeningQuestions: "Usa preguntas de selección para reducir solicitudes irrelevantes.",
+    tipDeadline: "Establece una fecha límite para cerrar automáticamente las solicitudes.",
+    tipCVUploads: "Requiere cargas de CV para solicitudes de empleo.",
+    vsLastMonth: "vs mes pasado",
+    editEventLabel: "Editar evento",
+    basicInformation: "Información básica",
+    scheduleLocation: "Horario y ubicación",
+    ticketingCapacity: "Entradas y capacidad",
+    visibilitySettings: "Visibilidad y configuración",
+    eventTitle: "Título del evento",
+    enterEventTitle: "Ingresa el título del evento",
+    eventDescription: "Descripción",
+    enterEventDescription: "Ingresa una descripción detallada del evento",
+    bannerImageLabel: "Imagen de banner",
+    clickToUpload: "Haz clic para subir o arrastra y suelta",
+    dragAndDrop: "arrastra y suelta",
+    imageFormat: "PNG, JPG hasta 5MB",
+    eventDate: "Fecha del evento",
+    pickDate: "Elige una fecha",
+    startTime: "Hora de inicio",
+    endTime: "Hora de fin",
+    eventTypeLabel: "Tipo de evento",
+    inPerson: "Presencial",
+    virtual: "Virtual",
+    location: "Ubicación",
+    enterVenueAddress: "Ingresa la dirección del lugar",
+    virtualLinkLabel: "Enlace virtual",
+    addVirtualLink: "Añadir enlace de Zoom/Google Meet",
+    isPaidEvent: "¿Es un evento de pago?",
+    enableTicketPrice: "Habilitar para establecer precio de entrada",
+    currency: "Moneda",
+    ticketPrice: "Precio de entrada",
+    limitParticipants: "¿Limitar participantes?",
+    setMaxAttendees: "Establecer número máximo de asistentes",
+    maxParticipants: "Máx participantes",
+    publishEventNow: "¿Publicar evento ahora?",
+    makeEventVisible: "Hacer el evento visible para los miembros inmediatamente",
+    sendNotification: "¿Enviar notificación a miembros?",
+    notifyAllMembers: "Notificar a todos los miembros de la asociación",
+    allowCommentsLabel: "Permitir comentarios",
+    letMembersComment: "Permitir que los miembros comenten este evento",
+    back: "Atrás",
+    next: "Siguiente",
+    deleteEventTitle: "Eliminar evento",
+    deleteEventConfirm: "¿Estás seguro de que quieres eliminar",
+    allRegistrationsLost: "Todas las inscripciones se perderán.",
+    eventRemovedFromFeeds: "El evento se eliminará de los feeds de miembros.",
+    editPost: "Editar publicación",
+    draftSavedAt: "Borrador guardado a las",
+    content: "Contenido",
+    options: "Opciones",
+    moderation: "Moderación",
+    title: "Título",
+    titlePlaceholder: "Título corto y descriptivo (máx 150 caracteres)",
+    body: "Cuerpo",
+    bodyPlaceholder: "Escribe tu publicación aquí... Usa @ para mencionar, # para etiquetas",
+    tags: "Etiquetas",
+    addTag: "Añadir etiqueta",
+    membersLimitVisibility: "Miembros limita la visibilidad solo a miembros de la asociación",
+    allowComments: "Permitir comentarios",
+    letMembersCommentPost: "Permitir que los miembros comenten esta publicación",
+    uploadImagesVideo: "Subir imágenes o video",
+    maxMediaSize: "Máx 8 imágenes (10MB cada una) o 1 video (500MB). No mezclar.",
+    uploadImages: "Subir imágenes",
+    uploadVideo: "Subir video",
+    accessibilityRequirement: "Requisito de accesibilidad",
+    accessibilityNote: "Todas las imágenes requieren texto alternativo. Se te pedirá añadir descripciones después de subir.",
+    pinToTopLabel: "Fijar arriba",
+    pinToTopNote: "Solo una publicación fijada permitida. Fijar desfijará la anterior.",
+    allowReactions: "Permitir reacciones",
+    letMembersReact: "Permitir que los miembros reaccionen a esta publicación",
+    notifyMembersLabel: "Notificar miembros",
+    notifyMembersNote: "Enviar notificaciones in-app y por email según preferencias",
+    schedulePublish: "Programar publicación",
+    setScheduleOptional: "Establecer horario (opcional)",
+    autoPublishNote: "Establecer fecha/hora futura para auto-publicar",
+    requireReview: "Requerir revisión antes de publicar",
+    requireReviewNote: "La publicación quedará pendiente hasta su aprobación",
+    contentWarning: "Advertencia de contenido",
+    contentWarningNone: "Ninguna",
+    contentWarningSensitive: "Contiene contenido sensible",
+    contentWarningAge: "Mayores de 18",
+    contentWarningNote: "Las publicaciones con advertencias mostrarán un aviso antes del contenido",
+    preview: "Vista previa",
+    saveDraft: "Guardar borrador",
+    titleRequired: "Título requerido",
+    titleRequiredDesc: "Por favor ingresa un título antes de publicar.",
+    contentRequired: "Contenido requerido",
+    contentRequiredDesc: "Por favor añade texto o medios antes de publicar.",
+    deletePost: "Eliminar publicación",
+    deletePostConfirm: "¿Estás seguro de que quieres eliminar",
+    commentsReactionsRemoved: "Todos los comentarios y reacciones serán eliminados",
+    auditRecordKept: "Se mantendrá un registro de auditoría para cumplimiento",
+    inviteVia: "Invitar vía",
+    emailAddress: "Correo electrónico",
+    phoneNumber: "Número de teléfono",
+    shareableLink: "Enlace compartible",
+    joinLink: "Enlace de unión",
+    shareLinkNote: "Comparte este enlace con quien quieras invitar.",
+    sendInvite: "Enviar invitación",
+    sending: "Enviando...",
+    invitationSent: "Invitación enviada exitosamente",
+    inviteSentTo: "Invitación enviada a",
+    selectRole: "Seleccionar rol",
+    roleUpdated: "Rol actualizado",
+    roleChangedTo: " ha sido cambiado a",
+    updateRole: "Actualizar rol",
+    updating: "Actualizando...",
+    promotingToAdmin: "Promover a admin da control total sobre la asociación.",
+    demotingAdmin: "Degradar a un admin puede bloquearte si no quedan admins.",
+    removeConfirm: "¿Estás seguro de que quieres eliminar a",
+    loseAccessImmediately: "de la asociación? Perderá el acceso inmediatamente.",
+    removingAdminWarning: "Eliminar un admin requiere confirmación. Asegúrate de que quede al menos un admin.",
+    activeSubscriptionWarning: "Este miembro tiene una suscripción activa. Se cancelará automáticamente al eliminarlo.",
+    memberRemoved: "Miembro eliminado",
+    memberRemovedDesc: "ha sido eliminado de la asociación.",
+    removing: "Eliminando...",
   },
 };
 
