@@ -564,6 +564,50 @@ type TranslationKeys = {
   deleteGroup: string;
   manageMembers: string;
   inviteLink: string;
+
+  // Marketplace translations
+  featured: string;
+  unlimited: string;
+  outOfStock: string;
+  inStock: string;
+  viewOrders: string;
+  editListing: string;
+  deleteListing: string;
+  unpublishListing: string;
+  publishListing: string;
+  addListing: string;
+  basicInformationStep: string;
+  pricingInventory: string;
+  visibilityOptions: string;
+  enterProductServiceName: string;
+  enterDetailedDescription: string;
+  selectCategory: string;
+  typeAndPressEnter: string;
+  mainImageRequired: string;
+  clickUploadOrDrag: string;
+  unlimitedInventory: string;
+  noStockLimit: string;
+  inventoryQuantity: string;
+  quantityAvailable: string;
+  allowPreorders: string;
+  acceptOrdersBeforeStock: string;
+  publishNow: string;
+  makeListingVisible: string;
+  allowReviews: string;
+  letCustomersReview: string;
+  featuredListing: string;
+  highlightListing: string;
+  saveDraftListing: string;
+  saveAndPublish: string;
+  listingDetails: string;
+  unlimitedStock: string;
+  overview: string;
+  reviews: string;
+  statistics: string;
+  views: string;
+  noReviewsYet: string;
+  reviewsDisabled: string;
+  clickOrdersToView: string;
 };
 
 const translations: Record<Language, TranslationKeys> = {
@@ -1135,6 +1179,50 @@ const translations: Record<Language, TranslationKeys> = {
     deleteGroup: "Delete Group",
     manageMembers: "Manage Members",
     inviteLink: "Invite Link",
+
+    // Marketplace translations
+    featured: "Featured",
+    unlimited: "Unlimited",
+    outOfStock: "Out of stock",
+    inStock: "in stock",
+    viewOrders: "View Orders",
+    editListing: "Edit Listing",
+    deleteListing: "Delete Listing",
+    unpublishListing: "Unpublish",
+    publishListing: "Publish",
+    addListing: "Add Product/Service",
+    basicInformationStep: "Basic Information",
+    pricingInventory: "Pricing & Inventory",
+    visibilityOptions: "Visibility & Options",
+    enterProductServiceName: "Enter product/service name",
+    enterDetailedDescription: "Enter a detailed description",
+    selectCategory: "Select category",
+    typeAndPressEnter: "Type and press Enter to add tags",
+    mainImageRequired: "Main Image",
+    clickUploadOrDrag: "Click to upload or drag and drop",
+    unlimitedInventory: "Unlimited Inventory",
+    noStockLimit: "No stock limit for this product",
+    inventoryQuantity: "Inventory Quantity",
+    quantityAvailable: "Quantity available",
+    allowPreorders: "Allow Pre-orders",
+    acceptOrdersBeforeStock: "Accept orders before stock is available",
+    publishNow: "Publish Now?",
+    makeListingVisible: "Make listing visible in the marketplace immediately",
+    allowReviews: "Allow Reviews?",
+    letCustomersReview: "Let customers leave reviews on this listing",
+    featuredListing: "Featured Listing?",
+    highlightListing: "Highlight this listing in the marketplace",
+    saveDraftListing: "Save Draft",
+    saveAndPublish: "Save & Publish",
+    listingDetails: "Listing Details",
+    unlimitedStock: "Unlimited stock",
+    overview: "Overview",
+    reviews: "Reviews",
+    statistics: "Statistics",
+    views: "Views",
+    noReviewsYet: "No reviews yet",
+    reviewsDisabled: "Reviews are disabled for this listing",
+    clickOrdersToView: "Click \"Orders\" button above to view all orders",
   },
   fr: {
     // Navigation
@@ -1704,6 +1792,50 @@ const translations: Record<Language, TranslationKeys> = {
     deleteGroup: "Supprimer le groupe",
     manageMembers: "Gérer les membres",
     inviteLink: "Lien d'invitation",
+
+    // Marketplace translations
+    featured: "En vedette",
+    unlimited: "Illimité",
+    outOfStock: "Rupture de stock",
+    inStock: "en stock",
+    viewOrders: "Voir les commandes",
+    editListing: "Modifier l'annonce",
+    deleteListing: "Supprimer l'annonce",
+    unpublishListing: "Dépublier",
+    publishListing: "Publier",
+    addListing: "Ajouter produit/service",
+    basicInformationStep: "Informations de base",
+    pricingInventory: "Prix & Inventaire",
+    visibilityOptions: "Visibilité & Options",
+    enterProductServiceName: "Entrez le nom du produit/service",
+    enterDetailedDescription: "Entrez une description détaillée",
+    selectCategory: "Sélectionner une catégorie",
+    typeAndPressEnter: "Tapez et appuyez sur Entrée pour ajouter des tags",
+    mainImageRequired: "Image principale",
+    clickUploadOrDrag: "Cliquez pour télécharger ou glissez-déposez",
+    unlimitedInventory: "Inventaire illimité",
+    noStockLimit: "Pas de limite de stock pour ce produit",
+    inventoryQuantity: "Quantité en stock",
+    quantityAvailable: "Quantité disponible",
+    allowPreorders: "Autoriser les précommandes",
+    acceptOrdersBeforeStock: "Accepter les commandes avant disponibilité du stock",
+    publishNow: "Publier maintenant ?",
+    makeListingVisible: "Rendre l'annonce visible sur le marché immédiatement",
+    allowReviews: "Autoriser les avis ?",
+    letCustomersReview: "Laisser les clients donner leur avis sur cette annonce",
+    featuredListing: "Annonce en vedette ?",
+    highlightListing: "Mettre en avant cette annonce sur le marché",
+    saveDraftListing: "Enregistrer le brouillon",
+    saveAndPublish: "Enregistrer & Publier",
+    listingDetails: "Détails de l'annonce",
+    unlimitedStock: "Stock illimité",
+    overview: "Aperçu",
+    reviews: "Avis",
+    statistics: "Statistiques",
+    views: "Vues",
+    noReviewsYet: "Pas encore d'avis",
+    reviewsDisabled: "Les avis sont désactivés pour cette annonce",
+    clickOrdersToView: "Cliquez sur \"Commandes\" ci-dessus pour voir toutes les commandes",
   },
   de: {
     // Navigation
@@ -2273,6 +2405,50 @@ const translations: Record<Language, TranslationKeys> = {
     deleteGroup: "Gruppe löschen",
     manageMembers: "Mitglieder verwalten",
     inviteLink: "Einladungslink",
+
+    // Marketplace translations
+    featured: "Hervorgehoben",
+    unlimited: "Unbegrenzt",
+    outOfStock: "Nicht vorrätig",
+    inStock: "auf Lager",
+    viewOrders: "Bestellungen ansehen",
+    editListing: "Angebot bearbeiten",
+    deleteListing: "Angebot löschen",
+    unpublishListing: "Veröffentlichung aufheben",
+    publishListing: "Veröffentlichen",
+    addListing: "Produkt/Dienstleistung hinzufügen",
+    basicInformationStep: "Grundlegende Informationen",
+    pricingInventory: "Preis & Inventar",
+    visibilityOptions: "Sichtbarkeit & Optionen",
+    enterProductServiceName: "Produkt-/Dienstleistungsname eingeben",
+    enterDetailedDescription: "Detaillierte Beschreibung eingeben",
+    selectCategory: "Kategorie auswählen",
+    typeAndPressEnter: "Eingeben und Enter drücken um Tags hinzuzufügen",
+    mainImageRequired: "Hauptbild",
+    clickUploadOrDrag: "Klicken zum Hochladen oder Drag & Drop",
+    unlimitedInventory: "Unbegrenzter Bestand",
+    noStockLimit: "Keine Bestandsbegrenzung für dieses Produkt",
+    inventoryQuantity: "Bestandsmenge",
+    quantityAvailable: "Verfügbare Menge",
+    allowPreorders: "Vorbestellungen erlauben",
+    acceptOrdersBeforeStock: "Bestellungen vor Verfügbarkeit akzeptieren",
+    publishNow: "Jetzt veröffentlichen?",
+    makeListingVisible: "Angebot sofort im Marktplatz sichtbar machen",
+    allowReviews: "Bewertungen erlauben?",
+    letCustomersReview: "Kunden Bewertungen für dieses Angebot abgeben lassen",
+    featuredListing: "Hervorgehobenes Angebot?",
+    highlightListing: "Dieses Angebot im Marktplatz hervorheben",
+    saveDraftListing: "Entwurf speichern",
+    saveAndPublish: "Speichern & Veröffentlichen",
+    listingDetails: "Angebotsdetails",
+    unlimitedStock: "Unbegrenzter Bestand",
+    overview: "Übersicht",
+    reviews: "Bewertungen",
+    statistics: "Statistiken",
+    views: "Aufrufe",
+    noReviewsYet: "Noch keine Bewertungen",
+    reviewsDisabled: "Bewertungen sind für dieses Angebot deaktiviert",
+    clickOrdersToView: "Klicken Sie oben auf \"Bestellungen\" um alle Bestellungen anzuzeigen",
   },
   nl: {
     // Navigation
@@ -2842,6 +3018,50 @@ const translations: Record<Language, TranslationKeys> = {
     deleteGroup: "Groep verwijderen",
     manageMembers: "Leden beheren",
     inviteLink: "Uitnodigingslink",
+
+    // Marketplace translations
+    featured: "Uitgelicht",
+    unlimited: "Onbeperkt",
+    outOfStock: "Niet op voorraad",
+    inStock: "op voorraad",
+    viewOrders: "Bestellingen bekijken",
+    editListing: "Aanbieding bewerken",
+    deleteListing: "Aanbieding verwijderen",
+    unpublishListing: "Publicatie ongedaan maken",
+    publishListing: "Publiceren",
+    addListing: "Product/Dienst toevoegen",
+    basicInformationStep: "Basisinformatie",
+    pricingInventory: "Prijs & Voorraad",
+    visibilityOptions: "Zichtbaarheid & Opties",
+    enterProductServiceName: "Voer product-/dienstnaam in",
+    enterDetailedDescription: "Voer een gedetailleerde beschrijving in",
+    selectCategory: "Selecteer categorie",
+    typeAndPressEnter: "Typ en druk op Enter om tags toe te voegen",
+    mainImageRequired: "Hoofdafbeelding",
+    clickUploadOrDrag: "Klik om te uploaden of sleep en zet neer",
+    unlimitedInventory: "Onbeperkte voorraad",
+    noStockLimit: "Geen voorraadlimiet voor dit product",
+    inventoryQuantity: "Voorraadhoeveelheid",
+    quantityAvailable: "Beschikbare hoeveelheid",
+    allowPreorders: "Pre-orders toestaan",
+    acceptOrdersBeforeStock: "Bestellingen accepteren vóór voorraad beschikbaar is",
+    publishNow: "Nu publiceren?",
+    makeListingVisible: "Aanbieding direct zichtbaar maken op de marktplaats",
+    allowReviews: "Reviews toestaan?",
+    letCustomersReview: "Klanten reviews laten achterlaten op deze aanbieding",
+    featuredListing: "Uitgelichte aanbieding?",
+    highlightListing: "Deze aanbieding uitlichten op de marktplaats",
+    saveDraftListing: "Concept opslaan",
+    saveAndPublish: "Opslaan & Publiceren",
+    listingDetails: "Aanbiedingsdetails",
+    unlimitedStock: "Onbeperkte voorraad",
+    overview: "Overzicht",
+    reviews: "Reviews",
+    statistics: "Statistieken",
+    views: "Weergaven",
+    noReviewsYet: "Nog geen reviews",
+    reviewsDisabled: "Reviews zijn uitgeschakeld voor deze aanbieding",
+    clickOrdersToView: "Klik op \"Bestellingen\" hierboven om alle bestellingen te bekijken",
   },
   es: {
     // Navigation
@@ -3399,6 +3619,50 @@ const translations: Record<Language, TranslationKeys> = {
     deleteGroup: "Eliminar grupo",
     manageMembers: "Gestionar miembros",
     inviteLink: "Enlace de invitación",
+
+    // Marketplace translations
+    featured: "Destacado",
+    unlimited: "Ilimitado",
+    outOfStock: "Sin stock",
+    inStock: "en stock",
+    viewOrders: "Ver pedidos",
+    editListing: "Editar anuncio",
+    deleteListing: "Eliminar anuncio",
+    unpublishListing: "Despublicar",
+    publishListing: "Publicar",
+    addListing: "Añadir producto/servicio",
+    basicInformationStep: "Información básica",
+    pricingInventory: "Precios e Inventario",
+    visibilityOptions: "Visibilidad y Opciones",
+    enterProductServiceName: "Ingrese el nombre del producto/servicio",
+    enterDetailedDescription: "Ingrese una descripción detallada",
+    selectCategory: "Seleccionar categoría",
+    typeAndPressEnter: "Escriba y presione Enter para agregar etiquetas",
+    mainImageRequired: "Imagen principal",
+    clickUploadOrDrag: "Haga clic para cargar o arrastre y suelte",
+    unlimitedInventory: "Inventario ilimitado",
+    noStockLimit: "Sin límite de stock para este producto",
+    inventoryQuantity: "Cantidad de inventario",
+    quantityAvailable: "Cantidad disponible",
+    allowPreorders: "Permitir pre-pedidos",
+    acceptOrdersBeforeStock: "Aceptar pedidos antes de que el stock esté disponible",
+    publishNow: "¿Publicar ahora?",
+    makeListingVisible: "Hacer el anuncio visible en el mercado inmediatamente",
+    allowReviews: "¿Permitir reseñas?",
+    letCustomersReview: "Permitir que los clientes dejen reseñas en este anuncio",
+    featuredListing: "¿Anuncio destacado?",
+    highlightListing: "Destacar este anuncio en el mercado",
+    saveDraftListing: "Guardar borrador",
+    saveAndPublish: "Guardar y Publicar",
+    listingDetails: "Detalles del anuncio",
+    unlimitedStock: "Stock ilimitado",
+    overview: "Resumen",
+    reviews: "Reseñas",
+    statistics: "Estadísticas",
+    views: "Vistas",
+    noReviewsYet: "Aún no hay reseñas",
+    reviewsDisabled: "Las reseñas están deshabilitadas para este anuncio",
+    clickOrdersToView: "Haga clic en \"Pedidos\" arriba para ver todos los pedidos",
   },
 };
 

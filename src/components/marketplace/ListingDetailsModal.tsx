@@ -21,6 +21,7 @@ import {
   Star,
   MessageSquare
 } from "lucide-react";
+import { useT } from "@/hooks/useT";
 
 interface ListingDetailsModalProps {
   open: boolean;
@@ -49,13 +50,14 @@ export function ListingDetailsModal({
 }: ListingDetailsModalProps) {
   if (!listing) return null;
 
+  const t = useT();
   const currencySymbol = listing.currency === "USD" ? "$" : listing.currency === "EUR" ? "€" : "₵";
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden flex flex-col p-0">
         <DialogHeader className="p-6 pb-0">
-          <DialogTitle>Listing Details</DialogTitle>
+          <DialogTitle>{t.listingDetails}</DialogTitle>
         </DialogHeader>
 
         <ScrollArea className="flex-1 px-6 pb-6">
@@ -79,12 +81,12 @@ export function ListingDetailsModal({
               </div>
 
               <div className="flex items-center gap-2">
-                <Badge variant="outline" className="capitalize">{listing.type}</Badge>
+                <Badge variant="outline" className="capitalize">{listing.type === "product" ? t.product : t.service}</Badge>
                 <Badge variant="secondary">{listing.category}</Badge>
                 {listing.isFeatured && (
                   <Badge className="bg-primary">
                     <Star className="h-3 w-3 mr-1" />
-                    Featured
+                    {t.featured}
                   </Badge>
                 )}
               </div>
@@ -96,8 +98,8 @@ export function ListingDetailsModal({
                 {listing.type === "product" && (
                   <span className="text-sm text-muted-foreground">
                     {listing.unlimitedInventory 
-                      ? "Unlimited stock" 
-                      : `${listing.inventory} in stock`}
+                      ? t.unlimitedStock 
+                      : `${listing.inventory} ${t.inStock}`}
                   </span>
                 )}
               </div>
@@ -115,15 +117,15 @@ export function ListingDetailsModal({
             <div className="flex flex-wrap gap-2">
               <Button variant="outline" size="sm" onClick={() => onEdit(listing)}>
                 <Edit className="h-4 w-4 mr-1.5" />
-                Edit
+                {t.edit}
               </Button>
               <Button variant="outline" size="sm" onClick={() => onTogglePublish(listing)}>
                 <ToggleLeft className="h-4 w-4 mr-1.5" />
-                {listing.status === "published" ? "Unpublish" : "Publish"}
+                {listing.status === "published" ? t.unpublishListing : t.publishListing}
               </Button>
               <Button variant="outline" size="sm" onClick={() => onViewOrders(listing)}>
                 <ShoppingCart className="h-4 w-4 mr-1.5" />
-                Orders
+                {t.orders}
               </Button>
               <Button 
                 variant="outline" 
@@ -132,47 +134,47 @@ export function ListingDetailsModal({
                 className="text-destructive hover:text-destructive"
               >
                 <Trash2 className="h-4 w-4 mr-1.5" />
-                Delete
+                {t.delete}
               </Button>
             </div>
 
             {/* Tabs */}
             <Tabs defaultValue="overview" className="w-full">
               <TabsList className="w-full grid grid-cols-3">
-                <TabsTrigger value="overview">Overview</TabsTrigger>
-                <TabsTrigger value="orders">Orders</TabsTrigger>
-                <TabsTrigger value="reviews">Reviews</TabsTrigger>
+                <TabsTrigger value="overview">{t.overview}</TabsTrigger>
+                <TabsTrigger value="orders">{t.orders}</TabsTrigger>
+                <TabsTrigger value="reviews">{t.reviews}</TabsTrigger>
               </TabsList>
 
               <TabsContent value="overview" className="mt-4 space-y-4">
                 <div>
-                  <h4 className="text-sm font-medium text-foreground mb-2">Description</h4>
+                  <h4 className="text-sm font-medium text-foreground mb-2">{t.description}</h4>
                   <p className="text-sm text-muted-foreground leading-relaxed">
                     {listing.description}
                   </p>
                 </div>
 
                 <div>
-                  <h4 className="text-sm font-medium text-foreground mb-3">Statistics</h4>
+                  <h4 className="text-sm font-medium text-foreground mb-3">{t.statistics}</h4>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="p-3 rounded-lg border border-border bg-card">
                       <div className="flex items-center gap-2 text-muted-foreground mb-1">
                         <Eye className="h-4 w-4" />
-                        <span className="text-xs">Views</span>
+                        <span className="text-xs">{t.views}</span>
                       </div>
                       <p className="text-lg font-semibold text-foreground">{listing.views}</p>
                     </div>
                     <div className="p-3 rounded-lg border border-border bg-card">
                       <div className="flex items-center gap-2 text-muted-foreground mb-1">
                         <ShoppingCart className="h-4 w-4" />
-                        <span className="text-xs">Orders</span>
+                        <span className="text-xs">{t.orders}</span>
                       </div>
                       <p className="text-lg font-semibold text-foreground">{listing.orders}</p>
                     </div>
                     <div className="p-3 rounded-lg border border-border bg-card">
                       <div className="flex items-center gap-2 text-muted-foreground mb-1">
                         <DollarSign className="h-4 w-4" />
-                        <span className="text-xs">Revenue</span>
+                        <span className="text-xs">{t.revenue}</span>
                       </div>
                       <p className="text-lg font-semibold text-foreground">
                         {currencySymbol}{listing.revenue.toLocaleString()}
@@ -182,7 +184,7 @@ export function ListingDetailsModal({
                       <div className="p-3 rounded-lg border border-border bg-card">
                         <div className="flex items-center gap-2 text-muted-foreground mb-1">
                           <Package className="h-4 w-4" />
-                          <span className="text-xs">Inventory</span>
+                          <span className="text-xs">{t.inventoryQuantity}</span>
                         </div>
                         <p className="text-lg font-semibold text-foreground">
                           {listing.unlimitedInventory ? "∞" : listing.inventory}
@@ -196,7 +198,7 @@ export function ListingDetailsModal({
               <TabsContent value="orders" className="mt-4">
                 <div className="text-center py-8 text-muted-foreground">
                   <ShoppingCart className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                  <p className="text-sm">Click "Orders" button above to view all orders</p>
+                  <p className="text-sm">{t.clickOrdersToView}</p>
                 </div>
               </TabsContent>
 
@@ -207,19 +209,19 @@ export function ListingDetailsModal({
                       <div className="flex items-center gap-2">
                         <Star className="h-5 w-5 fill-primary text-primary" />
                         <span className="text-lg font-semibold">{listing.averageRating?.toFixed(1)}</span>
-                        <span className="text-muted-foreground">({listing.reviewCount} reviews)</span>
+                        <span className="text-muted-foreground">({listing.reviewCount} {t.reviews.toLowerCase()})</span>
                       </div>
                     </div>
                   ) : (
                     <div className="text-center py-8 text-muted-foreground">
                       <MessageSquare className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                      <p className="text-sm">No reviews yet</p>
+                      <p className="text-sm">{t.noReviewsYet}</p>
                     </div>
                   )
                 ) : (
                   <div className="text-center py-8 text-muted-foreground">
                     <MessageSquare className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                    <p className="text-sm">Reviews are disabled for this listing</p>
+                    <p className="text-sm">{t.reviewsDisabled}</p>
                   </div>
                 )}
               </TabsContent>
