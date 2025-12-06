@@ -26,7 +26,8 @@ import {
   EyeOff,
   Sun,
   Moon,
-  Monitor
+  Monitor,
+  Wallet
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useSettings } from "@/contexts/SettingsContext";
@@ -41,6 +42,9 @@ import {
   fontSizeLabels,
   sessionTimeoutLabels
 } from "@/types/settings";
+import { AdminCurrencySettings } from "@/components/settings/AdminCurrencySettings";
+import { Currency } from "@/types/vendor";
+import { useNavigate } from "react-router-dom";
 
 const themeIcons: Record<Theme, React.ReactNode> = {
   light: <Sun className="h-4 w-4" />,
@@ -49,6 +53,7 @@ const themeIcons: Record<Theme, React.ReactNode> = {
 };
 
 export default function Settings() {
+  const navigate = useNavigate();
   const { 
     settings, 
     updateLanguage, 
@@ -65,6 +70,7 @@ export default function Settings() {
   const [showPassword, setShowPassword] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [defaultCurrency, setDefaultCurrency] = useState<Currency>("USD");
 
   const handleSave = () => {
     setIsSaving(true);
@@ -350,6 +356,31 @@ export default function Settings() {
                 </SelectContent>
               </Select>
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Currency & Exchange Rates (Admin) */}
+        <AdminCurrencySettings 
+          defaultCurrency={defaultCurrency} 
+          onCurrencyChange={setDefaultCurrency} 
+        />
+
+        {/* Vendor Escrow Settings Link */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Wallet className="h-5 w-5" />
+              Escrow & Payments
+            </CardTitle>
+            <CardDescription>
+              Configure escrow milestones and payment release settings for vendors
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button onClick={() => navigate("/vendor-escrow-settings")}>
+              <Wallet className="h-4 w-4 mr-2" />
+              Manage Escrow Settings
+            </Button>
           </CardContent>
         </Card>
 
