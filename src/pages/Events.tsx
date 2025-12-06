@@ -14,7 +14,7 @@ import { CalendarPlus, Search, Calendar, BarChart3 } from "lucide-react";
 import { Event, EventFormData } from "@/types/events";
 import { EventCard } from "@/components/events/EventCard";
 import { CreateEditEventModal } from "@/components/events/CreateEditEventModal";
-import { EventDetailsDrawer } from "@/components/events/EventDetailsDrawer";
+import { EventDetailsModal } from "@/components/events/EventDetailsModal";
 import { RegistrationsDrawer } from "@/components/events/RegistrationsDrawer";
 import { DeleteEventModal } from "@/components/events/DeleteEventModal";
 import { EventAnalyticsWidget } from "@/components/events/EventAnalyticsWidget";
@@ -391,7 +391,7 @@ export default function Events() {
         onSubmit={handleCreateSubmit}
       />
 
-      <EventDetailsDrawer
+      <EventDetailsModal
         open={detailsDrawerOpen}
         onOpenChange={setDetailsDrawerOpen}
         event={selectedEvent}

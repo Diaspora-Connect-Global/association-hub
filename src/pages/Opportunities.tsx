@@ -13,7 +13,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { OpportunitiesTable } from "@/components/opportunities/OpportunitiesTable";
 import { OpportunitiesCardView } from "@/components/opportunities/OpportunitiesCardView";
 import { CreateEditOpportunityModal } from "@/components/opportunities/CreateEditOpportunityModal";
-import { OpportunityDrawer } from "@/components/opportunities/OpportunityDrawer";
+import { OpportunityModal } from "@/components/opportunities/OpportunityModal";
 import { ApplicantsDrawer } from "@/components/opportunities/ApplicantsDrawer";
 import { ApplicationModal } from "@/components/opportunities/ApplicationModal";
 import { DeleteOpportunityModal } from "@/components/opportunities/DeleteOpportunityModal";
@@ -214,7 +214,7 @@ export default function Opportunities() {
         opportunity={editOpportunity}
         onSave={(data, action) => toast({ title: `Opportunity ${action}` })}
       />
-      <OpportunityDrawer
+      <OpportunityModal
         open={drawerOpen}
         onOpenChange={setDrawerOpen}
         opportunity={drawerOpportunity}
