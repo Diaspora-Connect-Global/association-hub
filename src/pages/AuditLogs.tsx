@@ -257,16 +257,16 @@ export default function AuditLogs() {
           <div className="flex items-center gap-2">
             <Button variant="outline" onClick={() => setShowAnalytics(!showAnalytics)}>
               <TrendingUp className="h-4 w-4 mr-1.5" />
-              {showAnalytics ? "Hide Analytics" : "Analytics"}
+              {showAnalytics ? t.hideAnalyticsButton : t.analyticsButton}
             </Button>
             <Button variant="outline" onClick={handleRefresh}>
               <RefreshCw className="h-4 w-4 mr-1.5" />
-              Refresh
+              {t.refreshLogsButton}
             </Button>
           </div>
           <Button onClick={handleExport}>
             <Download className="h-4 w-4 mr-1.5" />
-            Export Logs
+            {t.exportLogsButton}
           </Button>
         </div>
 
@@ -276,7 +276,7 @@ export default function AuditLogs() {
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-1.5">
                 <FileText className="h-4 w-4" />
-                Total Logs
+                {t.totalLogsLabel}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -287,7 +287,7 @@ export default function AuditLogs() {
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-1.5">
                 <Activity className="h-4 w-4" />
-                Today's Activity
+                {t.todaysActivity}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -298,7 +298,7 @@ export default function AuditLogs() {
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-1.5">
                 <Users className="h-4 w-4" />
-                Unique Users
+                {t.uniqueUsers}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -309,7 +309,7 @@ export default function AuditLogs() {
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-1.5">
                 <FileText className="h-4 w-4 text-destructive" />
-                Critical Actions
+                {t.criticalActions}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -326,7 +326,7 @@ export default function AuditLogs() {
           <div className="relative flex-1 min-w-[200px] max-w-sm">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search logs by user, action, or object"
+              placeholder={t.searchLogsPlaceholder}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-9"
@@ -335,50 +335,50 @@ export default function AuditLogs() {
 
           <Select value={userTypeFilter} onValueChange={setUserTypeFilter}>
             <SelectTrigger className="w-[150px]">
-              <SelectValue placeholder="User Type" />
+              <SelectValue placeholder={t.userTypeFilter} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Users</SelectItem>
-              <SelectItem value="individual">Individual</SelectItem>
-              <SelectItem value="association_admin">Admin</SelectItem>
-              <SelectItem value="association_member">Member</SelectItem>
+              <SelectItem value="all">{t.allUsersLabel}</SelectItem>
+              <SelectItem value="individual">{t.individualUser}</SelectItem>
+              <SelectItem value="association_admin">{t.admin}</SelectItem>
+              <SelectItem value="association_member">{t.member}</SelectItem>
             </SelectContent>
           </Select>
 
           <Select value={actionTypeFilter} onValueChange={setActionTypeFilter}>
             <SelectTrigger className="w-[140px]">
-              <SelectValue placeholder="Action" />
+              <SelectValue placeholder={t.actionColumn} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Actions</SelectItem>
-              <SelectItem value="create">Create</SelectItem>
-              <SelectItem value="update">Update</SelectItem>
-              <SelectItem value="delete">Delete</SelectItem>
-              <SelectItem value="login">Login</SelectItem>
-              <SelectItem value="logout">Logout</SelectItem>
+              <SelectItem value="all">{t.allActionsLabel}</SelectItem>
+              <SelectItem value="create">{t.create}</SelectItem>
+              <SelectItem value="update">{t.update}</SelectItem>
+              <SelectItem value="delete">{t.delete}</SelectItem>
+              <SelectItem value="login">{t.login}</SelectItem>
+              <SelectItem value="logout">{t.logout}</SelectItem>
               <SelectItem value="upload">Upload</SelectItem>
               <SelectItem value="download">Download</SelectItem>
-              <SelectItem value="comment">Comment</SelectItem>
+              <SelectItem value="comment">{t.comments}</SelectItem>
               <SelectItem value="approve">Approve</SelectItem>
-              <SelectItem value="reject">Reject</SelectItem>
+              <SelectItem value="reject">{t.reject}</SelectItem>
             </SelectContent>
           </Select>
 
           <Select value={moduleFilter} onValueChange={setModuleFilter}>
             <SelectTrigger className="w-[150px]">
-              <SelectValue placeholder="Module" />
+              <SelectValue placeholder={t.moduleColumn} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Modules</SelectItem>
-              <SelectItem value="users">Users</SelectItem>
-              <SelectItem value="groups">Groups</SelectItem>
-              <SelectItem value="posts">Posts</SelectItem>
-              <SelectItem value="opportunities">Opportunities</SelectItem>
-              <SelectItem value="events">Events</SelectItem>
-              <SelectItem value="marketplace">Marketplace</SelectItem>
-              <SelectItem value="orders">Orders</SelectItem>
-              <SelectItem value="support_tickets">Support Tickets</SelectItem>
-              <SelectItem value="settings">Settings</SelectItem>
+              <SelectItem value="all">{t.allModulesLabel}</SelectItem>
+              <SelectItem value="users">{t.members}</SelectItem>
+              <SelectItem value="groups">{t.groups}</SelectItem>
+              <SelectItem value="posts">{t.posts}</SelectItem>
+              <SelectItem value="opportunities">{t.opportunities}</SelectItem>
+              <SelectItem value="events">{t.events}</SelectItem>
+              <SelectItem value="marketplace">{t.marketplace}</SelectItem>
+              <SelectItem value="orders">{t.orders}</SelectItem>
+              <SelectItem value="support_tickets">{t.supportTickets}</SelectItem>
+              <SelectItem value="settings">{t.settings}</SelectItem>
             </SelectContent>
           </Select>
 
@@ -395,7 +395,7 @@ export default function AuditLogs() {
                     format(dateRange.from, "LLL dd, y")
                   )
                 ) : (
-                  <span>Date Range</span>
+                  <span>{t.dateRangeLabel}</span>
                 )}
               </Button>
             </PopoverTrigger>
@@ -414,11 +414,11 @@ export default function AuditLogs() {
         {selectedLogs.length > 0 && (
           <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50 border border-border">
             <span className="text-sm text-muted-foreground">
-              {selectedLogs.length} log(s) selected
+              {selectedLogs.length} {t.logsSelected}
             </span>
             <Button size="sm" variant="outline" onClick={handleExport}>
               <Download className="h-4 w-4 mr-1.5" />
-              Export Selected
+              {t.exportSelectedButton}
             </Button>
           </div>
         )}
@@ -435,12 +435,12 @@ export default function AuditLogs() {
                       onCheckedChange={handleSelectAll}
                     />
                   </TableHead>
-                  <TableHead>Timestamp</TableHead>
-                  <TableHead>User</TableHead>
-                  <TableHead>Action</TableHead>
-                  <TableHead>Module</TableHead>
-                  <TableHead>Object Affected</TableHead>
-                  <TableHead>IP Address</TableHead>
+                  <TableHead>{t.timestampColumn}</TableHead>
+                  <TableHead>{t.userColumn}</TableHead>
+                  <TableHead>{t.actionColumn}</TableHead>
+                  <TableHead>{t.moduleColumn}</TableHead>
+                  <TableHead>{t.objectAffectedColumn}</TableHead>
+                  <TableHead>{t.ipAddressColumn}</TableHead>
                   <TableHead className="w-[50px]"></TableHead>
                 </TableRow>
               </TableHeader>

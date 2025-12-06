@@ -114,19 +114,20 @@ const detailedAnalyticsData = [
   { date: "Dec 3, 2024", module: "Groups", item: "Tech Enthusiasts", category: "Community", action: "Created", user: "Alex Turner", value: 1 },
 ];
 
-const metricsConfig = [
-  { key: "users", title: "Total Users", icon: Users, value: 1247, change: 12.5, changeType: "increase" },
-  { key: "posts", title: "Active Posts", icon: FileText, value: 324, change: 8.2, changeType: "increase" },
-  { key: "opportunities", title: "Opportunities", icon: Briefcase, value: 89, change: -2.4, changeType: "decrease" },
-  { key: "events", title: "Events Created", icon: CalendarLucide, value: 56, change: 15.8, changeType: "increase" },
-  { key: "products", title: "Products/Services", icon: ShoppingBag, value: 178, change: 5.3, changeType: "increase" },
-  { key: "orders", title: "Orders Completed", icon: ShoppingCart, value: 432, change: 22.1, changeType: "increase" },
-  { key: "groups", title: "Active Groups", icon: Users, value: 28, change: 3.6, changeType: "increase" },
-  { key: "tickets", title: "Support Tickets", icon: HelpCircle, value: 67, change: -8.5, changeType: "decrease" },
+const getMetricsConfig = (t: any) => [
+  { key: "users", title: t.totalUsersLabel, icon: Users, value: 1247, change: 12.5, changeType: "increase" },
+  { key: "posts", title: t.activePostsLabel, icon: FileText, value: 324, change: 8.2, changeType: "increase" },
+  { key: "opportunities", title: t.opportunities, icon: Briefcase, value: 89, change: -2.4, changeType: "decrease" },
+  { key: "events", title: t.eventsCreated, icon: CalendarLucide, value: 56, change: 15.8, changeType: "increase" },
+  { key: "products", title: t.productsServices, icon: ShoppingBag, value: 178, change: 5.3, changeType: "increase" },
+  { key: "orders", title: t.ordersCompleted, icon: ShoppingCart, value: 432, change: 22.1, changeType: "increase" },
+  { key: "groups", title: t.activeGroupsLabel, icon: Users, value: 28, change: 3.6, changeType: "increase" },
+  { key: "tickets", title: t.supportTicketsLabel, icon: HelpCircle, value: 67, change: -8.5, changeType: "decrease" },
 ];
 
 export default function Analytics() {
   const t = useT();
+  const metricsConfig = getMetricsConfig(t);
   const [searchQuery, setSearchQuery] = useState("");
   const [moduleFilter, setModuleFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -135,14 +136,14 @@ export default function Analytics() {
 
   const handleExport = () => {
     toast({
-      title: "Export Started",
+      title: t.exportReportButton,
       description: "Analytics report is being generated and will download shortly.",
     });
   };
 
   const handleRefresh = () => {
     toast({
-      title: "Data Refreshed",
+      title: t.refreshButton,
       description: "Analytics data has been updated.",
     });
   };
@@ -158,12 +159,12 @@ export default function Analytics() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="today">Today</SelectItem>
-                <SelectItem value="week">This Week</SelectItem>
-                <SelectItem value="month">This Month</SelectItem>
-                <SelectItem value="quarter">This Quarter</SelectItem>
-                <SelectItem value="year">This Year</SelectItem>
-                <SelectItem value="custom">Custom Range</SelectItem>
+                <SelectItem value="today">{t.today}</SelectItem>
+                <SelectItem value="week">{t.thisWeek}</SelectItem>
+                <SelectItem value="month">{t.thisMonth}</SelectItem>
+                <SelectItem value="quarter">{t.thisQuarter}</SelectItem>
+                <SelectItem value="year">{t.thisYear}</SelectItem>
+                <SelectItem value="custom">{t.customRange}</SelectItem>
               </SelectContent>
             </Select>
             {dateRangeFilter === "custom" && (
@@ -196,12 +197,12 @@ export default function Analytics() {
             )}
             <Button variant="outline" onClick={handleRefresh}>
               <RefreshCw className="h-4 w-4 mr-1.5" />
-              Refresh
+              {t.refreshButton}
             </Button>
           </div>
           <Button onClick={handleExport}>
             <Download className="h-4 w-4 mr-1.5" />
-            Export Report
+            {t.exportReportButton}
           </Button>
         </div>
 
@@ -238,10 +239,10 @@ export default function Analytics() {
         {/* Charts */}
         <Tabs defaultValue="overview" className="space-y-4">
           <TabsList>
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="users">Users</TabsTrigger>
-            <TabsTrigger value="content">Content</TabsTrigger>
-            <TabsTrigger value="commerce">Commerce</TabsTrigger>
+            <TabsTrigger value="overview">{t.overviewTab}</TabsTrigger>
+            <TabsTrigger value="users">{t.usersTab}</TabsTrigger>
+            <TabsTrigger value="content">{t.contentTab}</TabsTrigger>
+            <TabsTrigger value="commerce">{t.commerceTab}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-4">
@@ -249,7 +250,7 @@ export default function Analytics() {
               {/* User Growth */}
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-base">User Growth Over Time</CardTitle>
+                  <CardTitle className="text-base">{t.userGrowthOverTime}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={250}>
@@ -273,7 +274,7 @@ export default function Analytics() {
               {/* Opportunities by Status */}
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-base">Opportunities by Status</CardTitle>
+                  <CardTitle className="text-base">{t.opportunitiesByStatus}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={250}>
@@ -308,7 +309,7 @@ export default function Analytics() {
               {/* Posts by Category */}
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-base">Posts by Category</CardTitle>
+                  <CardTitle className="text-base">{t.postsByCategory}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={250}>
@@ -332,7 +333,7 @@ export default function Analytics() {
               {/* Events Participation */}
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-base">Events Participation Over Time</CardTitle>
+                  <CardTitle className="text-base">{t.eventsParticipation}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={250}>
@@ -358,7 +359,7 @@ export default function Analytics() {
           <TabsContent value="users" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">User Growth Over Time</CardTitle>
+                <CardTitle className="text-base">{t.userGrowthOverTime}</CardTitle>
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={350}>
@@ -385,7 +386,7 @@ export default function Analytics() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-base">Posts by Category</CardTitle>
+                  <CardTitle className="text-base">{t.postsByCategory}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={300}>
