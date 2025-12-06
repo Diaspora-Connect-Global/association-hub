@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import {
   Home,
@@ -17,25 +18,60 @@ import {
   Tag,
   LogOut,
   User,
+  Store,
+  ChevronDown,
+  ChevronRight,
+  Shield,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useT } from "@/hooks/useT";
 import diaspoPlugLogo from "@/assets/diaspo-plug-logo.svg";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+
+interface NavItem {
+  id: string;
+  label: string;
+  icon: React.ElementType;
+  path?: string;
+  children?: NavItem[];
+}
 
 export function Sidebar() {
   const location = useLocation();
   const navigate = useNavigate();
   const t = useT();
 
-  const navItems = [
+  // Check if any vendor path is active
+  const vendorPaths = ["/marketplace", "/orders", "/vendor-escrow-settings"];
+  const isVendorActive = vendorPaths.some((path) => location.pathname === path);
+  
+  const [vendorOpen, setVendorOpen] = useState(isVendorActive);
+
+  const mainNavItems: NavItem[] = [
     { id: "dashboard", label: t.dashboard, icon: Home, path: "/" },
     { id: "profile", label: t.associationProfile, icon: FileText, path: "/profile" },
     { id: "members", label: t.members, icon: Users, path: "/members" },
     { id: "posts", label: t.posts, icon: MessageSquare, path: "/posts" },
     { id: "opportunities", label: t.opportunities, icon: Briefcase, path: "/opportunities" },
     { id: "events", label: t.events, icon: Calendar, path: "/events" },
-    { id: "marketplace", label: t.marketplace, icon: ShoppingCart, path: "/marketplace" },
-    { id: "orders", label: t.orders, icon: Package, path: "/orders" },
+  ];
+
+  const vendorNavItem: NavItem = {
+    id: "vendor",
+    label: t.vendor || "Vendor",
+    icon: Store,
+    children: [
+      { id: "marketplace", label: t.marketplace, icon: ShoppingCart, path: "/marketplace" },
+      { id: "orders", label: t.orders, icon: Package, path: "/orders" },
+      { id: "escrow", label: t.escrowSettings || "Escrow Settings", icon: Shield, path: "/vendor-escrow-settings" },
+    ],
+  };
+
+  const bottomNavItems: NavItem[] = [
     { id: "groups", label: t.groups, icon: Users, path: "/groups" },
     { id: "tickets", label: t.supportTickets, icon: LifeBuoy, path: "/tickets" },
     { id: "analytics", label: t.analytics, icon: BarChart2, path: "/analytics" },
@@ -59,6 +95,85 @@ export function Sidebar() {
         navigate("/marketplace", { state: { openCreate: true } });
         break;
     }
+  };
+
+  const renderNavItem = (item: NavItem) => {
+    const Icon = item.icon;
+    const isActive = item.path && location.pathname === item.path;
+
+    return (
+      <li key={item.id}>
+        <NavLink
+          to={item.path!}
+          className={cn(
+            "relative flex items-center gap-3 rounded-lg px-3 py-2.5 body-small font-medium transition-all duration-200",
+            isActive
+              ? "bg-sidebar-accent text-sidebar-foreground"
+              : "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground"
+          )}
+        >
+          {isActive && (
+            <span className="absolute left-0 h-6 w-1 rounded-r-full bg-primary" />
+          )}
+          <Icon className="h-4 w-4" />
+          {item.label}
+        </NavLink>
+      </li>
+    );
+  };
+
+  const renderVendorSubmenu = () => {
+    const Icon = vendorNavItem.icon;
+
+    return (
+      <li>
+        <Collapsible open={vendorOpen} onOpenChange={setVendorOpen}>
+          <CollapsibleTrigger asChild>
+            <button
+              className={cn(
+                "relative flex w-full items-center gap-3 rounded-lg px-3 py-2.5 body-small font-medium transition-all duration-200",
+                isVendorActive
+                  ? "bg-sidebar-accent text-sidebar-foreground"
+                  : "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground"
+              )}
+            >
+              {isVendorActive && (
+                <span className="absolute left-0 h-6 w-1 rounded-r-full bg-primary" />
+              )}
+              <Icon className="h-4 w-4" />
+              <span className="flex-1 text-left">{vendorNavItem.label}</span>
+              {vendorOpen ? (
+                <ChevronDown className="h-4 w-4" />
+              ) : (
+                <ChevronRight className="h-4 w-4" />
+              )}
+            </button>
+          </CollapsibleTrigger>
+          <CollapsibleContent className="pl-4 mt-1 space-y-1">
+            {vendorNavItem.children?.map((child) => {
+              const ChildIcon = child.icon;
+              const isChildActive = child.path && location.pathname === child.path;
+
+              return (
+                <NavLink
+                  key={child.id}
+                  to={child.path!}
+                  className={cn(
+                    "relative flex items-center gap-3 rounded-lg px-3 py-2 caption-small font-medium transition-all duration-200",
+                    isChildActive
+                      ? "bg-primary/10 text-primary"
+                      : "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground"
+                  )}
+                >
+                  <ChildIcon className="h-3.5 w-3.5" />
+                  {child.label}
+                </NavLink>
+              );
+            })}
+          </CollapsibleContent>
+        </Collapsible>
+      </li>
+    );
   };
 
   return (
@@ -118,30 +233,9 @@ export function Sidebar() {
       {/* Navigation */}
       <nav className="scrollbar-thin flex-1 overflow-y-auto p-4">
         <ul className="space-y-1">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = location.pathname === item.path;
-
-            return (
-              <li key={item.id}>
-                <NavLink
-                  to={item.path}
-                  className={cn(
-                    "relative flex items-center gap-3 rounded-lg px-3 py-2.5 body-small font-medium transition-all duration-200",
-                    isActive
-                      ? "bg-sidebar-accent text-sidebar-foreground"
-                      : "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground"
-                  )}
-                >
-                  {isActive && (
-                    <span className="absolute left-0 h-6 w-1 rounded-r-full bg-primary" />
-                  )}
-                  <Icon className="h-4 w-4" />
-                  {item.label}
-                </NavLink>
-              </li>
-            );
-          })}
+          {mainNavItems.map(renderNavItem)}
+          {renderVendorSubmenu()}
+          {bottomNavItems.map(renderNavItem)}
         </ul>
       </nav>
 

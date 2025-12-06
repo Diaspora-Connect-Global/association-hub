@@ -790,6 +790,78 @@ type TranslationKeys = {
   dateLatest: string;
   priceLowToHigh: string;
   priceHighToLow: string;
+
+  // Vendor / Escrow translations
+  vendor: string;
+  escrow: string;
+  escrowSettings: string;
+  escrowProtection: string;
+  escrowMilestones: string;
+  milestones: string;
+  milestone: string;
+  milestoneName: string;
+  milestoneDescription: string;
+  milestonePercentage: string;
+  addMilestone: string;
+  deleteMilestone: string;
+  editMilestone: string;
+  totalAllocation: string;
+  buyerProtected: string;
+  fundsHeldUntilDelivery: string;
+  disputeWindow: string;
+  timeToRaiseIssues: string;
+  escrowFee: string;
+  perTransaction: string;
+  defaultMilestoneTemplate: string;
+  setUpStandardMilestones: string;
+  escrowConfiguration: string;
+  fineTuneEscrowSettings: string;
+  preferredCurrency: string;
+  currencyForEscrow: string;
+  minimumOrderAmount: string;
+  ordersBelowSkipEscrow: string;
+  autoReleaseAfterDays: string;
+  autoReleaseNote: string;
+  manualReleaseOnly: string;
+  disputeWindowDays: string;
+  daysToDispute: string;
+  requireBuyerConfirmation: string;
+  buyerMustConfirm: string;
+  escrowFeeInfo: string;
+  escrowFeeDescription: string;
+  inEscrow: string;
+  heldAmount: string;
+  releasedAmount: string;
+  escrowStatus: string;
+  releasePayment: string;
+  releaseMilestone: string;
+  confirmRelease: string;
+  disputeOrder: string;
+  raiseDispute: string;
+  disputeReason: string;
+  held: string;
+  partiallyReleased: string;
+  fullyReleased: string;
+  disputed: string;
+  refunded: string;
+  pendingMilestone: string;
+  inProgressMilestone: string;
+  completedMilestone: string;
+  releasedMilestone: string;
+  disputedMilestone: string;
+  currencyRates: string;
+  exchangeRates: string;
+  refreshRates: string;
+  ratesUpdated: string;
+  currencyConverter: string;
+  convertAmounts: string;
+  convertedAmount: string;
+  platformDefaultCurrency: string;
+  allNewOrdersUseCurrency: string;
+  manualRateOverride: string;
+  manualRateNote: string;
+  secureTransactions: string;
+  milestoneBasedPayments: string;
 };
 
 const translations: Record<Language, TranslationKeys> = {
@@ -1587,6 +1659,78 @@ const translations: Record<Language, TranslationKeys> = {
     dateLatest: "Date (Latest)",
     priceLowToHigh: "Price: Low to High",
     priceHighToLow: "Price: High to Low",
+
+    // Vendor / Escrow translations
+    vendor: "Vendor",
+    escrow: "Escrow",
+    escrowSettings: "Escrow Settings",
+    escrowProtection: "Escrow Protection",
+    escrowMilestones: "Escrow & Milestones",
+    milestones: "Milestones",
+    milestone: "Milestone",
+    milestoneName: "Milestone Name",
+    milestoneDescription: "Description (optional)",
+    milestonePercentage: "Percentage",
+    addMilestone: "Add Milestone",
+    deleteMilestone: "Delete Milestone",
+    editMilestone: "Edit Milestone",
+    totalAllocation: "Total Allocation",
+    buyerProtected: "Buyer Protected",
+    fundsHeldUntilDelivery: "Funds held until delivery",
+    disputeWindow: "Dispute Window",
+    timeToRaiseIssues: "Time to raise issues",
+    escrowFee: "Escrow Fee",
+    perTransaction: "Per transaction",
+    defaultMilestoneTemplate: "Default Milestone Template",
+    setUpStandardMilestones: "Set up your standard payment milestones for new orders",
+    escrowConfiguration: "Escrow Configuration",
+    fineTuneEscrowSettings: "Fine-tune your escrow and release settings",
+    preferredCurrency: "Preferred Currency",
+    currencyForEscrow: "Currency for your escrow transactions",
+    minimumOrderAmount: "Minimum Order Amount",
+    ordersBelowSkipEscrow: "Orders below this amount skip escrow",
+    autoReleaseAfterDays: "Auto-Release After (Days)",
+    autoReleaseNote: "Days to auto-release funds if buyer doesn't confirm. Set 0 for manual only.",
+    manualReleaseOnly: "Manual release only - buyer must confirm each milestone",
+    disputeWindowDays: "Dispute Window (Days)",
+    daysToDispute: "Days buyer can dispute after delivery",
+    requireBuyerConfirmation: "Require Buyer Confirmation",
+    buyerMustConfirm: "Buyer must explicitly confirm each milestone before funds release",
+    escrowFeeInfo: "Escrow Fee Information",
+    escrowFeeDescription: "A fee is applied to each transaction to cover payment processing and dispute resolution services.",
+    inEscrow: "In Escrow",
+    heldAmount: "Held Amount",
+    releasedAmount: "Released Amount",
+    escrowStatus: "Escrow Status",
+    releasePayment: "Release Payment",
+    releaseMilestone: "Release Milestone",
+    confirmRelease: "Confirm Release",
+    disputeOrder: "Dispute Order",
+    raiseDispute: "Raise Dispute",
+    disputeReason: "Dispute Reason",
+    held: "Held",
+    partiallyReleased: "Partially Released",
+    fullyReleased: "Fully Released",
+    disputed: "Disputed",
+    refunded: "Refunded",
+    pendingMilestone: "Pending",
+    inProgressMilestone: "In Progress",
+    completedMilestone: "Completed",
+    releasedMilestone: "Released",
+    disputedMilestone: "Disputed",
+    currencyRates: "Currency & Exchange Rates",
+    exchangeRates: "Exchange Rates",
+    refreshRates: "Refresh Rates",
+    ratesUpdated: "Exchange rates have been refreshed from the latest market data.",
+    currencyConverter: "Currency Converter",
+    convertAmounts: "Convert amounts between currencies using current rates",
+    convertedAmount: "Converted Amount",
+    platformDefaultCurrency: "Platform Default Currency",
+    allNewOrdersUseCurrency: "All new orders will use this currency by default",
+    manualRateOverride: "Manual Rate Override",
+    manualRateNote: "Manually edited rates will not update when refreshing. Use this for custom rates or when API rates are unavailable.",
+    secureTransactions: "Secure your transactions with milestone-based payments",
+    milestoneBasedPayments: "Milestone-based payments",
   },
   fr: {
     // Navigation
@@ -2382,6 +2526,78 @@ const translations: Record<Language, TranslationKeys> = {
     dateLatest: "Date (Plus tard)",
     priceLowToHigh: "Prix: Croissant",
     priceHighToLow: "Prix: Décroissant",
+
+    // Vendor / Escrow translations
+    vendor: "Vendeur",
+    escrow: "Séquestre",
+    escrowSettings: "Paramètres Séquestre",
+    escrowProtection: "Protection Séquestre",
+    escrowMilestones: "Séquestre et Jalons",
+    milestones: "Jalons",
+    milestone: "Jalon",
+    milestoneName: "Nom du jalon",
+    milestoneDescription: "Description (optionnel)",
+    milestonePercentage: "Pourcentage",
+    addMilestone: "Ajouter un jalon",
+    deleteMilestone: "Supprimer le jalon",
+    editMilestone: "Modifier le jalon",
+    totalAllocation: "Allocation totale",
+    buyerProtected: "Acheteur protégé",
+    fundsHeldUntilDelivery: "Fonds retenus jusqu'à la livraison",
+    disputeWindow: "Fenêtre de litige",
+    timeToRaiseIssues: "Temps pour signaler des problèmes",
+    escrowFee: "Frais de séquestre",
+    perTransaction: "Par transaction",
+    defaultMilestoneTemplate: "Modèle de jalons par défaut",
+    setUpStandardMilestones: "Configurez vos jalons de paiement standard pour les nouvelles commandes",
+    escrowConfiguration: "Configuration du séquestre",
+    fineTuneEscrowSettings: "Affinez vos paramètres de séquestre et de libération",
+    preferredCurrency: "Devise préférée",
+    currencyForEscrow: "Devise pour vos transactions de séquestre",
+    minimumOrderAmount: "Montant minimum de commande",
+    ordersBelowSkipEscrow: "Les commandes inférieures à ce montant ignorent le séquestre",
+    autoReleaseAfterDays: "Libération auto après (jours)",
+    autoReleaseNote: "Jours pour libérer automatiquement si l'acheteur ne confirme pas. 0 pour manuel uniquement.",
+    manualReleaseOnly: "Libération manuelle uniquement - l'acheteur doit confirmer chaque jalon",
+    disputeWindowDays: "Fenêtre de litige (jours)",
+    daysToDispute: "Jours pour contester après livraison",
+    requireBuyerConfirmation: "Exiger confirmation de l'acheteur",
+    buyerMustConfirm: "L'acheteur doit confirmer chaque jalon avant la libération des fonds",
+    escrowFeeInfo: "Information sur les frais de séquestre",
+    escrowFeeDescription: "Des frais sont appliqués à chaque transaction pour couvrir le traitement et la résolution des litiges.",
+    inEscrow: "En séquestre",
+    heldAmount: "Montant retenu",
+    releasedAmount: "Montant libéré",
+    escrowStatus: "Statut du séquestre",
+    releasePayment: "Libérer le paiement",
+    releaseMilestone: "Libérer le jalon",
+    confirmRelease: "Confirmer la libération",
+    disputeOrder: "Contester la commande",
+    raiseDispute: "Ouvrir un litige",
+    disputeReason: "Raison du litige",
+    held: "Retenu",
+    partiallyReleased: "Partiellement libéré",
+    fullyReleased: "Entièrement libéré",
+    disputed: "Contesté",
+    refunded: "Remboursé",
+    pendingMilestone: "En attente",
+    inProgressMilestone: "En cours",
+    completedMilestone: "Terminé",
+    releasedMilestone: "Libéré",
+    disputedMilestone: "Contesté",
+    currencyRates: "Devises et taux de change",
+    exchangeRates: "Taux de change",
+    refreshRates: "Actualiser les taux",
+    ratesUpdated: "Les taux de change ont été actualisés.",
+    currencyConverter: "Convertisseur de devises",
+    convertAmounts: "Convertir les montants entre devises avec les taux actuels",
+    convertedAmount: "Montant converti",
+    platformDefaultCurrency: "Devise par défaut de la plateforme",
+    allNewOrdersUseCurrency: "Toutes les nouvelles commandes utiliseront cette devise par défaut",
+    manualRateOverride: "Modification manuelle des taux",
+    manualRateNote: "Les taux modifiés manuellement ne seront pas mis à jour lors de l'actualisation.",
+    secureTransactions: "Sécurisez vos transactions avec des paiements par jalons",
+    milestoneBasedPayments: "Paiements par jalons",
   },
   de: {
     // Navigation
@@ -3177,6 +3393,78 @@ const translations: Record<Language, TranslationKeys> = {
     dateLatest: "Datum (Später)",
     priceLowToHigh: "Preis: Aufsteigend",
     priceHighToLow: "Preis: Absteigend",
+
+    // Vendor / Escrow translations
+    vendor: "Verkäufer",
+    escrow: "Treuhand",
+    escrowSettings: "Treuhand-Einstellungen",
+    escrowProtection: "Treuhand-Schutz",
+    escrowMilestones: "Treuhand & Meilensteine",
+    milestones: "Meilensteine",
+    milestone: "Meilenstein",
+    milestoneName: "Meilensteinname",
+    milestoneDescription: "Beschreibung (optional)",
+    milestonePercentage: "Prozentsatz",
+    addMilestone: "Meilenstein hinzufügen",
+    deleteMilestone: "Meilenstein löschen",
+    editMilestone: "Meilenstein bearbeiten",
+    totalAllocation: "Gesamtzuweisung",
+    buyerProtected: "Käufer geschützt",
+    fundsHeldUntilDelivery: "Gelder bis zur Lieferung einbehalten",
+    disputeWindow: "Streitfenster",
+    timeToRaiseIssues: "Zeit für Problemmeldungen",
+    escrowFee: "Treuhandgebühr",
+    perTransaction: "Pro Transaktion",
+    defaultMilestoneTemplate: "Standard-Meilensteinvorlage",
+    setUpStandardMilestones: "Richten Sie Ihre Standard-Zahlungsmeilensteine für neue Bestellungen ein",
+    escrowConfiguration: "Treuhand-Konfiguration",
+    fineTuneEscrowSettings: "Verfeinern Sie Ihre Treuhand- und Freigabeeinstellungen",
+    preferredCurrency: "Bevorzugte Währung",
+    currencyForEscrow: "Währung für Ihre Treuhandtransaktionen",
+    minimumOrderAmount: "Mindestbestellbetrag",
+    ordersBelowSkipEscrow: "Bestellungen unter diesem Betrag überspringen Treuhand",
+    autoReleaseAfterDays: "Auto-Freigabe nach (Tagen)",
+    autoReleaseNote: "Tage bis zur automatischen Freigabe wenn der Käufer nicht bestätigt. 0 für nur manuell.",
+    manualReleaseOnly: "Nur manuelle Freigabe - Käufer muss jeden Meilenstein bestätigen",
+    disputeWindowDays: "Streitfenster (Tage)",
+    daysToDispute: "Tage für Streitfall nach Lieferung",
+    requireBuyerConfirmation: "Käuferbestätigung erforderlich",
+    buyerMustConfirm: "Käufer muss jeden Meilenstein vor Freigabe explizit bestätigen",
+    escrowFeeInfo: "Treuhandgebühr-Information",
+    escrowFeeDescription: "Eine Gebühr wird auf jede Transaktion erhoben für Zahlungsabwicklung und Streitbeilegung.",
+    inEscrow: "In Treuhand",
+    heldAmount: "Einbehaltener Betrag",
+    releasedAmount: "Freigegebener Betrag",
+    escrowStatus: "Treuhand-Status",
+    releasePayment: "Zahlung freigeben",
+    releaseMilestone: "Meilenstein freigeben",
+    confirmRelease: "Freigabe bestätigen",
+    disputeOrder: "Bestellung anfechten",
+    raiseDispute: "Streitfall eröffnen",
+    disputeReason: "Streitgrund",
+    held: "Einbehalten",
+    partiallyReleased: "Teilweise freigegeben",
+    fullyReleased: "Vollständig freigegeben",
+    disputed: "Angefochten",
+    refunded: "Erstattet",
+    pendingMilestone: "Ausstehend",
+    inProgressMilestone: "In Bearbeitung",
+    completedMilestone: "Abgeschlossen",
+    releasedMilestone: "Freigegeben",
+    disputedMilestone: "Angefochten",
+    currencyRates: "Währung & Wechselkurse",
+    exchangeRates: "Wechselkurse",
+    refreshRates: "Kurse aktualisieren",
+    ratesUpdated: "Wechselkurse wurden aktualisiert.",
+    currencyConverter: "Währungsrechner",
+    convertAmounts: "Beträge zwischen Währungen mit aktuellen Kursen umrechnen",
+    convertedAmount: "Umgerechneter Betrag",
+    platformDefaultCurrency: "Plattform-Standardwährung",
+    allNewOrdersUseCurrency: "Alle neuen Bestellungen verwenden diese Währung standardmäßig",
+    manualRateOverride: "Manuelle Kursüberschreibung",
+    manualRateNote: "Manuell bearbeitete Kurse werden beim Aktualisieren nicht geändert.",
+    secureTransactions: "Sichern Sie Ihre Transaktionen mit Meilenstein-Zahlungen",
+    milestoneBasedPayments: "Meilenstein-basierte Zahlungen",
   },
   nl: {
     // Navigation
@@ -3972,6 +4260,78 @@ const translations: Record<Language, TranslationKeys> = {
     dateLatest: "Datum (Later)",
     priceLowToHigh: "Prijs: Laag naar Hoog",
     priceHighToLow: "Prijs: Hoog naar Laag",
+
+    // Vendor / Escrow translations
+    vendor: "Verkoper",
+    escrow: "Escrow",
+    escrowSettings: "Escrow-instellingen",
+    escrowProtection: "Escrow-bescherming",
+    escrowMilestones: "Escrow & Mijlpalen",
+    milestones: "Mijlpalen",
+    milestone: "Mijlpaal",
+    milestoneName: "Mijlpaalnaam",
+    milestoneDescription: "Beschrijving (optioneel)",
+    milestonePercentage: "Percentage",
+    addMilestone: "Mijlpaal toevoegen",
+    deleteMilestone: "Mijlpaal verwijderen",
+    editMilestone: "Mijlpaal bewerken",
+    totalAllocation: "Totale toewijzing",
+    buyerProtected: "Koper beschermd",
+    fundsHeldUntilDelivery: "Gelden vastgehouden tot levering",
+    disputeWindow: "Geschilvenster",
+    timeToRaiseIssues: "Tijd om problemen te melden",
+    escrowFee: "Escrow-kosten",
+    perTransaction: "Per transactie",
+    defaultMilestoneTemplate: "Standaard mijlpaalsjabloon",
+    setUpStandardMilestones: "Stel uw standaard betalingsmijlpalen in voor nieuwe bestellingen",
+    escrowConfiguration: "Escrow-configuratie",
+    fineTuneEscrowSettings: "Verfijn uw escrow- en vrijgave-instellingen",
+    preferredCurrency: "Voorkeurvaluta",
+    currencyForEscrow: "Valuta voor uw escrow-transacties",
+    minimumOrderAmount: "Minimaal bestelbedrag",
+    ordersBelowSkipEscrow: "Bestellingen onder dit bedrag slaan escrow over",
+    autoReleaseAfterDays: "Auto-vrijgave na (dagen)",
+    autoReleaseNote: "Dagen tot auto-vrijgave als koper niet bevestigt. 0 voor alleen handmatig.",
+    manualReleaseOnly: "Alleen handmatige vrijgave - koper moet elke mijlpaal bevestigen",
+    disputeWindowDays: "Geschilvenster (dagen)",
+    daysToDispute: "Dagen om geschil te melden na levering",
+    requireBuyerConfirmation: "Kopersbevestiging vereist",
+    buyerMustConfirm: "Koper moet elke mijlpaal expliciet bevestigen voor vrijgave",
+    escrowFeeInfo: "Escrow-kosteninformatie",
+    escrowFeeDescription: "Er worden kosten in rekening gebracht per transactie voor betalingsverwerking en geschillenbeslechting.",
+    inEscrow: "In Escrow",
+    heldAmount: "Vastgehouden bedrag",
+    releasedAmount: "Vrijgegeven bedrag",
+    escrowStatus: "Escrow-status",
+    releasePayment: "Betaling vrijgeven",
+    releaseMilestone: "Mijlpaal vrijgeven",
+    confirmRelease: "Vrijgave bevestigen",
+    disputeOrder: "Bestelling betwisten",
+    raiseDispute: "Geschil openen",
+    disputeReason: "Reden van geschil",
+    held: "Vastgehouden",
+    partiallyReleased: "Gedeeltelijk vrijgegeven",
+    fullyReleased: "Volledig vrijgegeven",
+    disputed: "Betwist",
+    refunded: "Terugbetaald",
+    pendingMilestone: "In afwachting",
+    inProgressMilestone: "In uitvoering",
+    completedMilestone: "Voltooid",
+    releasedMilestone: "Vrijgegeven",
+    disputedMilestone: "Betwist",
+    currencyRates: "Valuta & Wisselkoersen",
+    exchangeRates: "Wisselkoersen",
+    refreshRates: "Koersen vernieuwen",
+    ratesUpdated: "Wisselkoersen zijn bijgewerkt.",
+    currencyConverter: "Valutaomrekener",
+    convertAmounts: "Bedragen omrekenen tussen valuta's met huidige koersen",
+    convertedAmount: "Omgerekend bedrag",
+    platformDefaultCurrency: "Standaard platformvaluta",
+    allNewOrdersUseCurrency: "Alle nieuwe bestellingen gebruiken standaard deze valuta",
+    manualRateOverride: "Handmatige koersoverschrijving",
+    manualRateNote: "Handmatig bewerkte koersen worden niet bijgewerkt bij vernieuwen.",
+    secureTransactions: "Beveilig uw transacties met mijlpaalbetalingen",
+    milestoneBasedPayments: "Mijlpaal-gebaseerde betalingen",
   },
   es: {
     // Navigation
@@ -4755,6 +5115,78 @@ const translations: Record<Language, TranslationKeys> = {
     dateLatest: "Fecha (Más tarde)",
     priceLowToHigh: "Precio: Menor a Mayor",
     priceHighToLow: "Precio: Mayor a Menor",
+
+    // Vendor / Escrow translations
+    vendor: "Vendedor",
+    escrow: "Fideicomiso",
+    escrowSettings: "Configuración de Fideicomiso",
+    escrowProtection: "Protección de Fideicomiso",
+    escrowMilestones: "Fideicomiso e Hitos",
+    milestones: "Hitos",
+    milestone: "Hito",
+    milestoneName: "Nombre del hito",
+    milestoneDescription: "Descripción (opcional)",
+    milestonePercentage: "Porcentaje",
+    addMilestone: "Agregar hito",
+    deleteMilestone: "Eliminar hito",
+    editMilestone: "Editar hito",
+    totalAllocation: "Asignación total",
+    buyerProtected: "Comprador protegido",
+    fundsHeldUntilDelivery: "Fondos retenidos hasta la entrega",
+    disputeWindow: "Ventana de disputa",
+    timeToRaiseIssues: "Tiempo para reportar problemas",
+    escrowFee: "Tarifa de fideicomiso",
+    perTransaction: "Por transacción",
+    defaultMilestoneTemplate: "Plantilla de hitos predeterminada",
+    setUpStandardMilestones: "Configure sus hitos de pago estándar para nuevos pedidos",
+    escrowConfiguration: "Configuración de fideicomiso",
+    fineTuneEscrowSettings: "Ajuste su configuración de fideicomiso y liberación",
+    preferredCurrency: "Moneda preferida",
+    currencyForEscrow: "Moneda para sus transacciones de fideicomiso",
+    minimumOrderAmount: "Monto mínimo de pedido",
+    ordersBelowSkipEscrow: "Pedidos por debajo de este monto omiten fideicomiso",
+    autoReleaseAfterDays: "Liberación automática después de (días)",
+    autoReleaseNote: "Días para liberar automáticamente si el comprador no confirma. 0 para solo manual.",
+    manualReleaseOnly: "Solo liberación manual - el comprador debe confirmar cada hito",
+    disputeWindowDays: "Ventana de disputa (días)",
+    daysToDispute: "Días para disputar después de la entrega",
+    requireBuyerConfirmation: "Requerir confirmación del comprador",
+    buyerMustConfirm: "El comprador debe confirmar cada hito antes de la liberación de fondos",
+    escrowFeeInfo: "Información de tarifa de fideicomiso",
+    escrowFeeDescription: "Se aplica una tarifa a cada transacción para cubrir el procesamiento y resolución de disputas.",
+    inEscrow: "En Fideicomiso",
+    heldAmount: "Monto retenido",
+    releasedAmount: "Monto liberado",
+    escrowStatus: "Estado del fideicomiso",
+    releasePayment: "Liberar pago",
+    releaseMilestone: "Liberar hito",
+    confirmRelease: "Confirmar liberación",
+    disputeOrder: "Disputar pedido",
+    raiseDispute: "Abrir disputa",
+    disputeReason: "Razón de la disputa",
+    held: "Retenido",
+    partiallyReleased: "Parcialmente liberado",
+    fullyReleased: "Completamente liberado",
+    disputed: "Disputado",
+    refunded: "Reembolsado",
+    pendingMilestone: "Pendiente",
+    inProgressMilestone: "En progreso",
+    completedMilestone: "Completado",
+    releasedMilestone: "Liberado",
+    disputedMilestone: "Disputado",
+    currencyRates: "Moneda y tipos de cambio",
+    exchangeRates: "Tipos de cambio",
+    refreshRates: "Actualizar tasas",
+    ratesUpdated: "Los tipos de cambio han sido actualizados.",
+    currencyConverter: "Conversor de moneda",
+    convertAmounts: "Convertir montos entre monedas con tasas actuales",
+    convertedAmount: "Monto convertido",
+    platformDefaultCurrency: "Moneda predeterminada de la plataforma",
+    allNewOrdersUseCurrency: "Todos los pedidos nuevos usarán esta moneda por defecto",
+    manualRateOverride: "Anulación manual de tasa",
+    manualRateNote: "Las tasas editadas manualmente no se actualizarán al refrescar.",
+    secureTransactions: "Asegure sus transacciones con pagos por hitos",
+    milestoneBasedPayments: "Pagos basados en hitos",
   },
 };
 
