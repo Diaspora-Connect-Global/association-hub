@@ -254,7 +254,7 @@ export default function Posts() {
           </Button>
           <Button className="gap-2" onClick={() => setCreateModalOpen(true)}>
             <Plus className="h-4 w-4" />
-            <span className="hidden sm:inline">New Post</span>
+            <span className="hidden sm:inline">{t.newPost}</span>
           </Button>
         </div>
       </div>
@@ -262,19 +262,19 @@ export default function Posts() {
       {/* Stats Summary */}
       <div className="mb-6 grid gap-4 sm:grid-cols-4">
         <div className="rounded-xl border border-border bg-card p-4">
-          <p className="text-sm text-muted-foreground">Total Posts</p>
+          <p className="text-sm text-muted-foreground">{t.totalPosts}</p>
           <p className="text-2xl font-semibold text-foreground">{posts.length}</p>
         </div>
         <div className="rounded-xl border border-border bg-card p-4">
-          <p className="text-sm text-muted-foreground">Published</p>
+          <p className="text-sm text-muted-foreground">{t.published}</p>
           <p className="text-2xl font-semibold text-foreground">{posts.filter(p => p.status === "published").length}</p>
         </div>
         <div className="rounded-xl border border-border bg-card p-4">
-          <p className="text-sm text-muted-foreground">Drafts</p>
+          <p className="text-sm text-muted-foreground">{t.drafts}</p>
           <p className="text-2xl font-semibold text-foreground">{posts.filter(p => p.status === "draft").length}</p>
         </div>
         <div className="rounded-xl border border-border bg-card p-4">
-          <p className="text-sm text-muted-foreground">Scheduled</p>
+          <p className="text-sm text-muted-foreground">{t.scheduled}</p>
           <p className="text-2xl font-semibold text-foreground">{posts.filter(p => p.status === "scheduled").length}</p>
         </div>
       </div>
@@ -282,7 +282,7 @@ export default function Posts() {
       {/* Results Info */}
       <div className="mb-4">
         <p className="text-sm text-muted-foreground">
-          Showing {filteredPosts.length} of {posts.length} posts
+          {t.showingXOfYPosts.replace("{filtered}", filteredPosts.length.toString()).replace("{total}", posts.length.toString())}
         </p>
       </div>
 

@@ -759,6 +759,14 @@ type TranslationKeys = {
   ipAddressColumn: string;
   noLogsFound: string;
   noLogsFoundDesc: string;
+  
+  // Additional page labels
+  totalPosts: string;
+  totalOpportunities: string;
+  showingXOfYPosts: string;
+  showingXOfYOpportunities: string;
+  revenueAllTime: string;
+  listings: string;
 };
 
 const translations: Record<Language, TranslationKeys> = {
@@ -1525,6 +1533,14 @@ const translations: Record<Language, TranslationKeys> = {
     ipAddressColumn: "IP Address",
     noLogsFound: "No logs found",
     noLogsFoundDesc: "No audit log entries match your current filters.",
+    
+    // Additional page labels
+    totalPosts: "Total Posts",
+    totalOpportunities: "Total Opportunities",
+    showingXOfYPosts: "Showing {filtered} of {total} posts",
+    showingXOfYOpportunities: "Showing {filtered} of {total} opportunities",
+    revenueAllTime: "Revenue (All Time)",
+    listings: "Listings",
   },
   fr: {
     // Navigation
@@ -2289,6 +2305,14 @@ const translations: Record<Language, TranslationKeys> = {
     ipAddressColumn: "Adresse IP",
     noLogsFound: "Aucun journal trouvé",
     noLogsFoundDesc: "Aucune entrée de journal ne correspond à vos filtres.",
+    
+    // Additional page labels
+    totalPosts: "Total des publications",
+    totalOpportunities: "Total des opportunités",
+    showingXOfYPosts: "Affichage de {filtered} sur {total} publications",
+    showingXOfYOpportunities: "Affichage de {filtered} sur {total} opportunités",
+    revenueAllTime: "Revenu (Tout temps)",
+    listings: "Annonces",
   },
   de: {
     // Navigation
@@ -3053,6 +3077,14 @@ const translations: Record<Language, TranslationKeys> = {
     ipAddressColumn: "IP-Adresse",
     noLogsFound: "Keine Protokolle gefunden",
     noLogsFoundDesc: "Keine Protokolleinträge entsprechen Ihren Filtern.",
+    
+    // Additional page labels
+    totalPosts: "Gesamtzahl Beiträge",
+    totalOpportunities: "Gesamtzahl Möglichkeiten",
+    showingXOfYPosts: "Zeige {filtered} von {total} Beiträgen",
+    showingXOfYOpportunities: "Zeige {filtered} von {total} Möglichkeiten",
+    revenueAllTime: "Umsatz (Gesamt)",
+    listings: "Angebote",
   },
   nl: {
     // Navigation
@@ -3817,6 +3849,14 @@ const translations: Record<Language, TranslationKeys> = {
     ipAddressColumn: "IP-adres",
     noLogsFound: "Geen logs gevonden",
     noLogsFoundDesc: "Geen logboekitems komen overeen met uw filters.",
+    
+    // Additional page labels
+    totalPosts: "Totaal berichten",
+    totalOpportunities: "Totaal kansen",
+    showingXOfYPosts: "Toont {filtered} van {total} berichten",
+    showingXOfYOpportunities: "Toont {filtered} van {total} kansen",
+    revenueAllTime: "Omzet (Totaal)",
+    listings: "Aanbiedingen",
   },
   es: {
     // Navigation
@@ -4569,6 +4609,14 @@ const translations: Record<Language, TranslationKeys> = {
     ipAddressColumn: "Dirección IP",
     noLogsFound: "No se encontraron registros",
     noLogsFoundDesc: "Ningún registro coincide con sus filtros actuales.",
+    
+    // Additional page labels
+    totalPosts: "Total de publicaciones",
+    totalOpportunities: "Total de oportunidades",
+    showingXOfYPosts: "Mostrando {filtered} de {total} publicaciones",
+    showingXOfYOpportunities: "Mostrando {filtered} de {total} oportunidades",
+    revenueAllTime: "Ingresos (Histórico)",
+    listings: "Anuncios",
   },
 };
 

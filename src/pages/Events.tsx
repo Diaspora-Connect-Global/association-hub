@@ -314,26 +314,26 @@ export default function Events() {
         </div>
         <Button onClick={() => setCreateModalOpen(true)}>
           <CalendarPlus className="h-4 w-4 mr-2" />
-          Create Event
+          {t.createEvent}
         </Button>
       </div>
 
       {/* Stats */}
       <div className="mb-6 grid gap-4 sm:grid-cols-4">
         <div className="rounded-lg border border-border bg-card p-4">
-          <p className="text-sm text-muted-foreground">Upcoming Events</p>
+          <p className="text-sm text-muted-foreground">{t.upcomingEvents}</p>
           <p className="text-2xl font-bold text-foreground">{upcomingCount}</p>
         </div>
         <div className="rounded-lg border border-border bg-card p-4">
-          <p className="text-sm text-muted-foreground">Total Registrations</p>
+          <p className="text-sm text-muted-foreground">{t.totalRegistrations}</p>
           <p className="text-2xl font-bold text-primary">{totalRegistrations.toLocaleString()}</p>
         </div>
         <div className="rounded-lg border border-border bg-card p-4">
-          <p className="text-sm text-muted-foreground">Ticket Revenue</p>
+          <p className="text-sm text-muted-foreground">{t.ticketRevenue}</p>
           <p className="text-2xl font-bold text-foreground">${totalRevenue.toLocaleString()}</p>
         </div>
         <div className="rounded-lg border border-border bg-card p-4">
-          <p className="text-sm text-muted-foreground">Avg. Attendance</p>
+          <p className="text-sm text-muted-foreground">{t.avgAttendance}</p>
           <p className="text-2xl font-bold text-foreground">{avgAttendance}%</p>
         </div>
       </div>
@@ -343,11 +343,11 @@ export default function Events() {
         <TabsList className="mb-6">
           <TabsTrigger value="events" className="gap-2">
             <Calendar className="h-4 w-4" />
-            Events
+            {t.events}
           </TabsTrigger>
           <TabsTrigger value="analytics" className="gap-2">
             <BarChart3 className="h-4 w-4" />
-            Analytics
+            {t.analytics}
           </TabsTrigger>
         </TabsList>
 
