@@ -17,11 +17,12 @@ import {
   CalendarPlus,
   Tag,
   LogOut,
-  User,
   Store,
   ChevronDown,
   ChevronRight,
   Shield,
+  PanelLeftClose,
+  PanelLeft,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useT } from "@/hooks/useT";
@@ -31,6 +32,12 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface NavItem {
   id: string;
@@ -40,7 +47,12 @@ interface NavItem {
   children?: NavItem[];
 }
 
-export function Sidebar() {
+interface SidebarProps {
+  collapsed: boolean;
+  onToggle: () => void;
+}
+
+export function Sidebar({ collapsed, onToggle }: SidebarProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const t = useT();
@@ -101,29 +113,83 @@ export function Sidebar() {
     const Icon = item.icon;
     const isActive = item.path && location.pathname === item.path;
 
-    return (
-      <li key={item.id}>
-        <NavLink
-          to={item.path!}
-          className={cn(
-            "relative flex items-center gap-3 rounded-lg px-3 py-2.5 body-small font-medium transition-all duration-200",
-            isActive
-              ? "bg-sidebar-accent text-sidebar-foreground"
-              : "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground"
-          )}
-        >
-          {isActive && (
-            <span className="absolute left-0 h-6 w-1 rounded-r-full bg-primary" />
-          )}
-          <Icon className="h-4 w-4" />
-          {item.label}
-        </NavLink>
-      </li>
+    const navContent = (
+      <NavLink
+        to={item.path!}
+        className={cn(
+          "relative flex items-center gap-3 rounded-lg px-3 py-2.5 body-small font-medium transition-all duration-200",
+          collapsed && "justify-center px-2",
+          isActive
+            ? "bg-sidebar-accent text-sidebar-foreground"
+            : "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground"
+        )}
+      >
+        {isActive && (
+          <span className="absolute left-0 h-6 w-1 rounded-r-full bg-primary" />
+        )}
+        <Icon className="h-4 w-4 flex-shrink-0" />
+        {!collapsed && item.label}
+      </NavLink>
     );
+
+    if (collapsed) {
+      return (
+        <li key={item.id}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              {navContent}
+            </TooltipTrigger>
+            <TooltipContent side="right">
+              {item.label}
+            </TooltipContent>
+          </Tooltip>
+        </li>
+      );
+    }
+
+    return <li key={item.id}>{navContent}</li>;
   };
 
   const renderVendorSubmenu = () => {
     const Icon = vendorNavItem.icon;
+
+    if (collapsed) {
+      // When collapsed, show vendor items directly with tooltips
+      return (
+        <>
+          {vendorNavItem.children?.map((child) => {
+            const ChildIcon = child.icon;
+            const isChildActive = child.path && location.pathname === child.path;
+
+            return (
+              <li key={child.id}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <NavLink
+                      to={child.path!}
+                      className={cn(
+                        "relative flex items-center justify-center gap-3 rounded-lg px-2 py-2.5 body-small font-medium transition-all duration-200",
+                        isChildActive
+                          ? "bg-sidebar-accent text-sidebar-foreground"
+                          : "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground"
+                      )}
+                    >
+                      {isChildActive && (
+                        <span className="absolute left-0 h-6 w-1 rounded-r-full bg-primary" />
+                      )}
+                      <ChildIcon className="h-4 w-4 flex-shrink-0" />
+                    </NavLink>
+                  </TooltipTrigger>
+                  <TooltipContent side="right">
+                    {child.label}
+                  </TooltipContent>
+                </Tooltip>
+              </li>
+            );
+          })}
+        </>
+      );
+    }
 
     return (
       <li>
@@ -177,91 +243,169 @@ export function Sidebar() {
   };
 
   return (
-    <aside className="fixed left-0 top-0 z-40 flex h-screen w-64 flex-col bg-sidebar border-r border-sidebar-border">
-      {/* App Logo */}
-      <div className="border-b border-sidebar-border p-4">
-        <div className="flex items-center gap-3 px-2">
-          <img 
-            src={diaspoPlugLogo} 
-            alt="DiaspoPlug" 
-            className="h-10 w-10 object-contain"
-          />
-          <div>
-            <h1 className="label-small font-bold text-sidebar-foreground">DiaspoPlug</h1>
-            <p className="caption-small text-muted-foreground">Admin Portal</p>
+    <TooltipProvider delayDuration={0}>
+      <aside 
+        className={cn(
+          "fixed left-0 top-0 z-40 flex h-screen flex-col bg-sidebar border-r border-sidebar-border transition-all duration-300",
+          collapsed ? "w-16" : "w-64"
+        )}
+      >
+        {/* App Logo */}
+        <div className="border-b border-sidebar-border p-4">
+          <div className={cn(
+            "flex items-center gap-3",
+            collapsed ? "justify-center" : "px-2"
+          )}>
+            <img 
+              src={diaspoPlugLogo} 
+              alt="DiaspoPlug" 
+              className="h-10 w-10 object-contain flex-shrink-0"
+            />
+            {!collapsed && (
+              <div>
+                <h1 className="label-small font-bold text-sidebar-foreground">DiaspoPlug</h1>
+                <p className="caption-small text-muted-foreground">Admin Portal</p>
+              </div>
+            )}
           </div>
         </div>
-      </div>
 
-      {/* Quick Actions */}
-      <div className="border-b border-sidebar-border p-4">
-        <p className="mb-3 caption-small uppercase tracking-wider text-muted-foreground">
-          {t.quickActions}
-        </p>
-        <div className="grid grid-cols-2 gap-2">
-          <button 
-            onClick={() => handleQuickAction("post")}
-            className="flex items-center justify-center gap-1.5 rounded-lg bg-primary px-3 py-2 caption-small text-primary-foreground transition-all hover:opacity-90"
-          >
-            <Plus className="h-3.5 w-3.5" />
-            {t.newPost}
-          </button>
-          <button 
-            onClick={() => handleQuickAction("event")}
-            className="flex items-center justify-center gap-1.5 rounded-lg bg-sidebar-accent px-3 py-2 caption-small text-sidebar-foreground transition-all hover:bg-sidebar-accent/80"
-          >
-            <CalendarPlus className="h-3.5 w-3.5" />
-            {t.newEvent}
-          </button>
-          <button 
-            onClick={() => handleQuickAction("opportunity")}
-            className="flex items-center justify-center gap-1.5 rounded-lg bg-sidebar-accent px-3 py-2 caption-small text-sidebar-foreground transition-all hover:bg-sidebar-accent/80"
-          >
-            <PlusCircle className="h-3.5 w-3.5" />
-            {t.newOpportunity}
-          </button>
-          <button 
-            onClick={() => handleQuickAction("listing")}
-            className="flex items-center justify-center gap-1.5 rounded-lg bg-sidebar-accent px-3 py-2 caption-small text-sidebar-foreground transition-all hover:bg-sidebar-accent/80"
-          >
-            <Tag className="h-3.5 w-3.5" />
-            {t.newListing}
-          </button>
-        </div>
-      </div>
-
-      {/* Navigation */}
-      <nav className="scrollbar-thin flex-1 overflow-y-auto p-4">
-        <ul className="space-y-1">
-          {mainNavItems.map(renderNavItem)}
-          {renderVendorSubmenu()}
-          {bottomNavItems.map(renderNavItem)}
-        </ul>
-      </nav>
-
-      {/* User Profile */}
-      <div className="border-t border-sidebar-border p-4">
-        <div className="flex items-center gap-3">
-          <NavLink
-            to="/admin-profile"
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground label-small hover:opacity-90 transition-opacity"
-          >
-            AK
-          </NavLink>
-          <div className="flex-1 min-w-0">
-            <NavLink
-              to="/admin-profile"
-              className="label-small text-sidebar-foreground truncate block hover:text-primary transition-colors"
-            >
-              Akua Mensah
-            </NavLink>
-            <p className="caption-small text-muted-foreground">Admin</p>
+        {/* Quick Actions */}
+        {!collapsed && (
+          <div className="border-b border-sidebar-border p-4">
+            <p className="mb-3 caption-small uppercase tracking-wider text-muted-foreground">
+              {t.quickActions}
+            </p>
+            <div className="grid grid-cols-2 gap-2">
+              <button 
+                onClick={() => handleQuickAction("post")}
+                className="flex items-center justify-center gap-1.5 rounded-lg bg-primary px-3 py-2 caption-small text-primary-foreground transition-all hover:opacity-90"
+              >
+                <Plus className="h-3.5 w-3.5" />
+                {t.newPost}
+              </button>
+              <button 
+                onClick={() => handleQuickAction("event")}
+                className="flex items-center justify-center gap-1.5 rounded-lg bg-sidebar-accent px-3 py-2 caption-small text-sidebar-foreground transition-all hover:bg-sidebar-accent/80"
+              >
+                <CalendarPlus className="h-3.5 w-3.5" />
+                {t.newEvent}
+              </button>
+              <button 
+                onClick={() => handleQuickAction("opportunity")}
+                className="flex items-center justify-center gap-1.5 rounded-lg bg-sidebar-accent px-3 py-2 caption-small text-sidebar-foreground transition-all hover:bg-sidebar-accent/80"
+              >
+                <PlusCircle className="h-3.5 w-3.5" />
+                {t.newOpportunity}
+              </button>
+              <button 
+                onClick={() => handleQuickAction("listing")}
+                className="flex items-center justify-center gap-1.5 rounded-lg bg-sidebar-accent px-3 py-2 caption-small text-sidebar-foreground transition-all hover:bg-sidebar-accent/80"
+              >
+                <Tag className="h-3.5 w-3.5" />
+                {t.newListing}
+              </button>
+            </div>
           </div>
-          <button className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground">
-            <LogOut className="h-4 w-4" />
-          </button>
+        )}
+
+        {/* Collapsed Quick Action */}
+        {collapsed && (
+          <div className="border-b border-sidebar-border p-2">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button 
+                  onClick={() => handleQuickAction("post")}
+                  className="flex w-full items-center justify-center rounded-lg bg-primary p-2.5 text-primary-foreground transition-all hover:opacity-90"
+                >
+                  <Plus className="h-4 w-4" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="right">
+                {t.quickActions}
+              </TooltipContent>
+            </Tooltip>
+          </div>
+        )}
+
+        {/* Navigation */}
+        <nav className="scrollbar-thin flex-1 overflow-y-auto p-4">
+          <ul className="space-y-1">
+            {mainNavItems.map(renderNavItem)}
+            {renderVendorSubmenu()}
+            {bottomNavItems.map(renderNavItem)}
+          </ul>
+        </nav>
+
+        {/* User Profile */}
+        <div className="border-t border-sidebar-border p-4">
+          <div className={cn(
+            "flex items-center gap-3",
+            collapsed && "flex-col"
+          )}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <NavLink
+                  to="/admin-profile"
+                  className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground label-small hover:opacity-90 transition-opacity flex-shrink-0"
+                >
+                  AK
+                </NavLink>
+              </TooltipTrigger>
+              {collapsed && (
+                <TooltipContent side="right">
+                  Akua Mensah
+                </TooltipContent>
+              )}
+            </Tooltip>
+            {!collapsed && (
+              <>
+                <div className="flex-1 min-w-0">
+                  <NavLink
+                    to="/admin-profile"
+                    className="label-small text-sidebar-foreground truncate block hover:text-primary transition-colors"
+                  >
+                    Akua Mensah
+                  </NavLink>
+                  <p className="caption-small text-muted-foreground">Admin</p>
+                </div>
+                <button className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground">
+                  <LogOut className="h-4 w-4" />
+                </button>
+              </>
+            )}
+          </div>
         </div>
-      </div>
-    </aside>
+
+        {/* Collapse Toggle */}
+        <div className="border-t border-sidebar-border p-2">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                onClick={onToggle}
+                className={cn(
+                  "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 body-small font-medium text-muted-foreground transition-all duration-200 hover:bg-sidebar-accent hover:text-sidebar-foreground",
+                  collapsed && "justify-center px-2"
+                )}
+              >
+                {collapsed ? (
+                  <PanelLeft className="h-4 w-4" />
+                ) : (
+                  <>
+                    <PanelLeftClose className="h-4 w-4" />
+                    <span>Collapse</span>
+                  </>
+                )}
+              </button>
+            </TooltipTrigger>
+            {collapsed && (
+              <TooltipContent side="right">
+                Expand sidebar
+              </TooltipContent>
+            )}
+          </Tooltip>
+        </div>
+      </aside>
+    </TooltipProvider>
   );
 }
