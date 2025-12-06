@@ -164,6 +164,7 @@ export default function Events() {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [detailsDrawerOpen, setDetailsDrawerOpen] = useState(false);
   const [registrationsDrawerOpen, setRegistrationsDrawerOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [eventToDelete, setEventToDelete] = useState<Event | null>(null);
 
   // Handle quick action navigation
