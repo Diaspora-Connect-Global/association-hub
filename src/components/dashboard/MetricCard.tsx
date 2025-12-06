@@ -43,18 +43,18 @@ export function MetricCard({
               )}
               <span
                 className={cn(
-                  "text-sm font-medium",
+                  "caption-medium",
                   trend.isPositive ? "text-success" : "text-destructive"
                 )}
               >
                 {trend.isPositive ? "+" : ""}
                 {trend.value}%
               </span>
-              <span className="text-xs text-muted-foreground">vs last month</span>
+              <span className="caption-small text-muted-foreground">vs last month</span>
             </div>
           )}
         </div>
-        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary transition-all group-hover:bg-primary group-hover:text-primary-foreground">
+        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-muted text-foreground transition-all group-hover:bg-primary group-hover:text-primary-foreground">
           <Icon className="h-6 w-6" />
         </div>
       </div>

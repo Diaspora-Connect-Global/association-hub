@@ -13,13 +13,11 @@ import {
   BarChart2,
   Settings,
   ChevronDown,
-  Search,
   Plus,
   PlusCircle,
   CalendarPlus,
   Tag,
   LogOut,
-  Bell,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -51,7 +49,7 @@ export function Sidebar() {
   const [isAssociationOpen, setIsAssociationOpen] = useState(false);
 
   return (
-    <aside className="fixed left-0 top-0 z-40 flex h-screen w-64 flex-col bg-sidebar">
+    <aside className="fixed left-0 top-0 z-40 flex h-screen w-64 flex-col bg-sidebar border-r border-sidebar-border">
       {/* Association Selector */}
       <div className="border-b border-sidebar-border p-4">
         <button
@@ -61,15 +59,15 @@ export function Sidebar() {
           <div className="flex items-center gap-3">
             <span className="text-2xl">{selectedAssociation.logo}</span>
             <div className="text-left">
-              <p className="text-sm font-semibold text-sidebar-foreground">
+              <p className="label-small text-sidebar-foreground">
                 {selectedAssociation.name}
               </p>
-              <p className="text-xs text-sidebar-muted">Association Admin</p>
+              <p className="caption-small text-muted-foreground">Association Admin</p>
             </div>
           </div>
           <ChevronDown
             className={cn(
-              "h-4 w-4 text-sidebar-muted transition-transform",
+              "h-4 w-4 text-muted-foreground transition-transform",
               isAssociationOpen && "rotate-180"
             )}
           />
@@ -85,9 +83,9 @@ export function Sidebar() {
                   setIsAssociationOpen(false);
                 }}
                 className={cn(
-                  "flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
+                  "flex w-full items-center gap-3 rounded-md px-3 py-2 body-small transition-colors",
                   selectedAssociation.id === assoc.id
-                    ? "bg-primary/20 text-primary"
+                    ? "bg-primary text-primary-foreground"
                     : "text-sidebar-foreground hover:bg-sidebar-accent"
                 )}
               >
@@ -101,23 +99,23 @@ export function Sidebar() {
 
       {/* Quick Actions */}
       <div className="border-b border-sidebar-border p-4">
-        <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-sidebar-muted">
+        <p className="mb-3 caption-small uppercase tracking-wider text-muted-foreground">
           Quick Actions
         </p>
         <div className="grid grid-cols-2 gap-2">
-          <button className="flex items-center justify-center gap-1.5 rounded-lg bg-primary px-3 py-2 text-xs font-medium text-primary-foreground transition-all hover:bg-primary/90">
+          <button className="flex items-center justify-center gap-1.5 rounded-lg bg-primary px-3 py-2 caption-small text-primary-foreground transition-all hover:opacity-90">
             <Plus className="h-3.5 w-3.5" />
             Post
           </button>
-          <button className="flex items-center justify-center gap-1.5 rounded-lg bg-sidebar-accent px-3 py-2 text-xs font-medium text-sidebar-foreground transition-all hover:bg-sidebar-accent/80">
+          <button className="flex items-center justify-center gap-1.5 rounded-lg bg-sidebar-accent px-3 py-2 caption-small text-sidebar-foreground transition-all hover:bg-sidebar-accent/80">
             <CalendarPlus className="h-3.5 w-3.5" />
             Event
           </button>
-          <button className="flex items-center justify-center gap-1.5 rounded-lg bg-sidebar-accent px-3 py-2 text-xs font-medium text-sidebar-foreground transition-all hover:bg-sidebar-accent/80">
+          <button className="flex items-center justify-center gap-1.5 rounded-lg bg-sidebar-accent px-3 py-2 caption-small text-sidebar-foreground transition-all hover:bg-sidebar-accent/80">
             <PlusCircle className="h-3.5 w-3.5" />
             Opportunity
           </button>
-          <button className="flex items-center justify-center gap-1.5 rounded-lg bg-sidebar-accent px-3 py-2 text-xs font-medium text-sidebar-foreground transition-all hover:bg-sidebar-accent/80">
+          <button className="flex items-center justify-center gap-1.5 rounded-lg bg-sidebar-accent px-3 py-2 caption-small text-sidebar-foreground transition-all hover:bg-sidebar-accent/80">
             <Tag className="h-3.5 w-3.5" />
             Listing
           </button>
@@ -136,16 +134,16 @@ export function Sidebar() {
                 <NavLink
                   to={item.path}
                   className={cn(
-                    "relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
+                    "relative flex items-center gap-3 rounded-lg px-3 py-2.5 body-small font-medium transition-all duration-200",
                     isActive
                       ? "bg-sidebar-accent text-sidebar-foreground"
-                      : "text-sidebar-muted hover:bg-sidebar-accent hover:text-sidebar-foreground"
+                      : "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground"
                   )}
                 >
                   {isActive && (
                     <span className="absolute left-0 h-6 w-1 rounded-r-full bg-primary" />
                   )}
-                  <Icon className="h-4.5 w-4.5" />
+                  <Icon className="h-4 w-4" />
                   {item.label}
                 </NavLink>
               </li>
@@ -157,14 +155,14 @@ export function Sidebar() {
       {/* User Profile */}
       <div className="border-t border-sidebar-border p-4">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/20 text-sm font-semibold text-primary">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground label-small">
             AK
           </div>
           <div className="flex-1">
-            <p className="text-sm font-medium text-sidebar-foreground">Akua Mensah</p>
-            <p className="text-xs text-sidebar-muted">Admin</p>
+            <p className="label-small text-sidebar-foreground">Akua Mensah</p>
+            <p className="caption-small text-muted-foreground">Admin</p>
           </div>
-          <button className="rounded-lg p-2 text-sidebar-muted transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground">
+          <button className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground">
             <LogOut className="h-4 w-4" />
           </button>
         </div>

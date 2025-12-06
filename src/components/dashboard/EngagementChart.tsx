@@ -1,6 +1,4 @@
 import {
-  LineChart,
-  Line,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -8,6 +6,7 @@ import {
   ResponsiveContainer,
   Area,
   AreaChart,
+  Line,
 } from "recharts";
 
 const data = [
@@ -26,16 +25,16 @@ export function EngagementChart() {
         <h3 className="section-header">Engagement Trend</h3>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <span className="h-3 w-3 rounded-full bg-primary" />
-            <span className="text-sm text-muted-foreground">Posts</span>
+            <span className="h-3 w-3 rounded-full bg-chart-1" />
+            <span className="body-small text-muted-foreground">Posts</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="h-3 w-3 rounded-full bg-accent" />
-            <span className="text-sm text-muted-foreground">Comments</span>
+            <span className="h-3 w-3 rounded-full bg-chart-4" />
+            <span className="body-small text-muted-foreground">Comments</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="h-3 w-3 rounded-full bg-success" />
-            <span className="text-sm text-muted-foreground">Likes</span>
+            <span className="h-3 w-3 rounded-full bg-chart-2" />
+            <span className="body-small text-muted-foreground">Likes</span>
           </div>
         </div>
       </div>
@@ -45,30 +44,30 @@ export function EngagementChart() {
           <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
             <defs>
               <linearGradient id="colorPosts" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="hsl(234, 89%, 58%)" stopOpacity={0.3} />
-                <stop offset="95%" stopColor="hsl(234, 89%, 58%)" stopOpacity={0} />
+                <stop offset="5%" stopColor="var(--chart-1)" stopOpacity={0.3} />
+                <stop offset="95%" stopColor="var(--chart-1)" stopOpacity={0} />
               </linearGradient>
               <linearGradient id="colorLikes" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="hsl(142, 76%, 36%)" stopOpacity={0.3} />
-                <stop offset="95%" stopColor="hsl(142, 76%, 36%)" stopOpacity={0} />
+                <stop offset="5%" stopColor="var(--chart-2)" stopOpacity={0.3} />
+                <stop offset="95%" stopColor="var(--chart-2)" stopOpacity={0} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="hsl(220, 13%, 91%)" />
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
             <XAxis
               dataKey="name"
-              tick={{ fontSize: 12, fill: "hsl(220, 9%, 46%)" }}
-              axisLine={{ stroke: "hsl(220, 13%, 91%)" }}
+              tick={{ fontSize: 12, fill: "var(--muted-foreground)" }}
+              axisLine={{ stroke: "var(--border)" }}
               tickLine={false}
             />
             <YAxis
-              tick={{ fontSize: 12, fill: "hsl(220, 9%, 46%)" }}
+              tick={{ fontSize: 12, fill: "var(--muted-foreground)" }}
               axisLine={false}
               tickLine={false}
             />
             <Tooltip
               contentStyle={{
-                backgroundColor: "hsl(0, 0%, 100%)",
-                border: "1px solid hsl(220, 13%, 91%)",
+                backgroundColor: "var(--card)",
+                border: "1px solid var(--border)",
                 borderRadius: "8px",
                 boxShadow: "0 4px 6px -1px rgba(0,0,0,0.1)",
               }}
@@ -76,7 +75,7 @@ export function EngagementChart() {
             <Area
               type="monotone"
               dataKey="likes"
-              stroke="hsl(142, 76%, 36%)"
+              stroke="var(--chart-2)"
               strokeWidth={2}
               fillOpacity={1}
               fill="url(#colorLikes)"
@@ -84,7 +83,7 @@ export function EngagementChart() {
             <Area
               type="monotone"
               dataKey="posts"
-              stroke="hsl(234, 89%, 58%)"
+              stroke="var(--chart-1)"
               strokeWidth={2}
               fillOpacity={1}
               fill="url(#colorPosts)"
@@ -92,9 +91,9 @@ export function EngagementChart() {
             <Line
               type="monotone"
               dataKey="comments"
-              stroke="hsl(38, 92%, 50%)"
+              stroke="var(--chart-4)"
               strokeWidth={2}
-              dot={{ r: 4, fill: "hsl(38, 92%, 50%)" }}
+              dot={{ r: 4, fill: "var(--chart-4)" }}
             />
           </AreaChart>
         </ResponsiveContainer>

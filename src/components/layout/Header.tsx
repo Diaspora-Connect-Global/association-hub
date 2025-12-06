@@ -15,7 +15,7 @@ export function Header({ title, subtitle }: HeaderProps) {
         {/* Title */}
         <div>
           <h1 className="page-title">{title}</h1>
-          {subtitle && <p className="text-sm text-muted-foreground">{subtitle}</p>}
+          {subtitle && <p className="body-small text-muted-foreground">{subtitle}</p>}
         </div>
 
         {/* Search & Actions */}
@@ -40,7 +40,7 @@ export function Header({ title, subtitle }: HeaderProps) {
           {/* Notifications */}
           <button className="relative flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
             <Bell className="h-5 w-5" />
-            <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] font-medium text-destructive-foreground">
+            <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-destructive caption-small text-primary-foreground">
               3
             </span>
           </button>
