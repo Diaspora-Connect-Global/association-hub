@@ -18,6 +18,7 @@ import { MembersManagementModal } from "@/components/groups/MembersManagementMod
 import { DeleteGroupModal } from "@/components/groups/DeleteGroupModal";
 import { InviteLinkModal } from "@/components/groups/InviteLinkModal";
 import { toast } from "@/hooks/use-toast";
+import { useT } from "@/hooks/useT";
 
 // Mock data
 const mockGroups: Group[] = [
@@ -96,6 +97,7 @@ const mockGroups: Group[] = [
 ];
 
 export default function Groups() {
+  const t = useT();
   const [groups] = useState<Group[]>(mockGroups);
   const [searchQuery, setSearchQuery] = useState("");
   const [privacyFilter, setPrivacyFilter] = useState<string>("all");
@@ -164,7 +166,7 @@ export default function Groups() {
 
   const handleConfirmDelete = () => {
     toast({
-      title: "Group Deleted",
+      title: t.delete,
       description: "The group has been permanently deleted.",
     });
     setDeleteModalOpen(false);
@@ -173,7 +175,7 @@ export default function Groups() {
 
   const handleCreateSubmit = (data: GroupFormData) => {
     toast({
-      title: editingGroup ? "Group Updated" : "Group Created",
+      title: editingGroup ? t.edit : t.create,
       description: editingGroup 
         ? "Group details updated successfully."
         : "Your new group is ready.",
@@ -182,14 +184,14 @@ export default function Groups() {
   };
 
   return (
-    <AdminLayout title="Groups" subtitle="Manage chat groups for your association">
+    <AdminLayout title={t.groupsTitle} subtitle={t.groupsSubtitle}>
       {/* Top Controls */}
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <div className="flex flex-wrap items-center gap-3">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search groups..."
+              placeholder={`${t.search}...`}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-9 w-64"
@@ -197,11 +199,11 @@ export default function Groups() {
           </div>
           <Select value={privacyFilter} onValueChange={setPrivacyFilter}>
             <SelectTrigger className="w-[130px]">
-              <SelectValue placeholder="Privacy" />
+              <SelectValue placeholder={t.filter} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Groups</SelectItem>
-              <SelectItem value="public">Public</SelectItem>
+              <SelectItem value="all">{t.allVisibility}</SelectItem>
+              <SelectItem value="public">{t.public}</SelectItem>
               <SelectItem value="private">Private</SelectItem>
             </SelectContent>
           </Select>
@@ -218,26 +220,26 @@ export default function Groups() {
         </div>
         <Button onClick={() => setCreateModalOpen(true)}>
           <UserPlus className="h-4 w-4 mr-2" />
-          Create Group
+          {t.createGroup}
         </Button>
       </div>
 
       {/* Stats */}
       <div className="mb-6 grid gap-4 sm:grid-cols-4">
         <div className="rounded-lg border border-border bg-card p-4">
-          <p className="text-sm text-muted-foreground">Total Groups</p>
+          <p className="text-sm text-muted-foreground">{t.activeGroups}</p>
           <p className="text-2xl font-bold text-foreground">{totalGroups}</p>
         </div>
         <div className="rounded-lg border border-border bg-card p-4">
-          <p className="text-sm text-muted-foreground">Public Groups</p>
+          <p className="text-sm text-muted-foreground">{t.public}</p>
           <p className="text-2xl font-bold text-primary">{publicGroups}</p>
         </div>
         <div className="rounded-lg border border-border bg-card p-4">
-          <p className="text-sm text-muted-foreground">Private Groups</p>
+          <p className="text-sm text-muted-foreground">Private</p>
           <p className="text-2xl font-bold text-foreground">{privateGroups}</p>
         </div>
         <div className="rounded-lg border border-border bg-card p-4">
-          <p className="text-sm text-muted-foreground">Total Members</p>
+          <p className="text-sm text-muted-foreground">{t.totalGroupMembers}</p>
           <p className="text-2xl font-bold text-foreground">{totalMembers}</p>
         </div>
       </div>
@@ -265,13 +267,13 @@ export default function Groups() {
       ) : (
         <div className="text-center py-16 border border-dashed border-border rounded-lg">
           <UsersRound className="h-16 w-16 mx-auto text-muted-foreground/50 mb-4" />
-          <h3 className="text-lg font-semibold text-foreground mb-2">No Groups Created</h3>
+          <h3 className="text-lg font-semibold text-foreground mb-2">{t.noResults}</h3>
           <p className="text-muted-foreground mb-4">
             Start by creating your first chat group for your association.
           </p>
           <Button onClick={() => setCreateModalOpen(true)}>
             <UserPlus className="h-4 w-4 mr-2" />
-            Create Group
+            {t.createGroup}
           </Button>
         </div>
       )}

@@ -263,7 +263,7 @@ export default function Events() {
   };
 
   return (
-    <AdminLayout title="Events" subtitle="Create and manage association events">
+    <AdminLayout title={t.eventsTitle} subtitle={t.eventsSubtitle}>
       {/* Top Controls */}
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <div className="flex flex-wrap items-center gap-3">

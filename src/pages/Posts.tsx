@@ -189,7 +189,7 @@ export default function Posts() {
   };
 
   return (
-    <AdminLayout title="Posts" subtitle="Create and manage association posts">
+    <AdminLayout title={t.postsTitle} subtitle={t.postsSubtitle}>
       {/* Top Controls Bar */}
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         {/* Left: Search and Filters */}

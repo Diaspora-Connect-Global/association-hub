@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { StatusBadge } from "@/components/ui/StatusBadge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { 
   Search, 
   Download, 
@@ -36,7 +36,6 @@ import {
   RefreshCw, 
   XCircle, 
   Bell,
-  ShoppingCart,
   BarChart3,
   Package
 } from "lucide-react";
@@ -45,6 +44,7 @@ import { OrderDetailsModal } from "@/components/orders/OrderDetailsModal";
 import { CancelOrderModal } from "@/components/orders/CancelOrderModal";
 import { OrdersAnalyticsWidget } from "@/components/orders/OrdersAnalyticsWidget";
 import { toast } from "@/hooks/use-toast";
+import { useT } from "@/hooks/useT";
 
 // Mock orders data
 const mockOrders: Order[] = [
@@ -163,6 +163,7 @@ const mockOrders: Order[] = [
 ];
 
 export default function Orders() {
+  const t = useT();
   const [orders] = useState<Order[]>(mockOrders);
   const [searchQuery, setSearchQuery] = useState("");
   const [orderStatusFilter, setOrderStatusFilter] = useState<string>("all");
@@ -189,11 +190,11 @@ export default function Orders() {
   });
 
   // Stats
-  const totalOrders = orders.length;
-  const pendingOrders = orders.filter(o => o.fulfillmentStatus === "pending").length;
+  const totalOrdersCount = orders.length;
+  const pendingOrdersCount = orders.filter(o => o.fulfillmentStatus === "pending").length;
   const fulfilledOrders = orders.filter(o => o.fulfillmentStatus === "fulfilled").length;
   const totalRevenue = orders.filter(o => o.paymentStatus === "paid").reduce((sum, o) => sum + o.totalAmount, 0);
-  const avgOrderValue = totalOrders > 0 ? totalRevenue / orders.filter(o => o.paymentStatus === "paid").length : 0;
+  const avgOrderValue = totalOrdersCount > 0 ? totalRevenue / orders.filter(o => o.paymentStatus === "paid").length : 0;
 
   // Selection handlers
   const handleSelectAll = (checked: boolean) => {
@@ -220,7 +221,7 @@ export default function Orders() {
 
   const handleMarkFulfilled = (order: Order) => {
     toast({
-      title: "Order Fulfilled",
+      title: t.completedOrders,
       description: `Order ${order.id} has been marked as fulfilled.`,
     });
     setDetailsModalOpen(false);
@@ -241,18 +242,11 @@ export default function Orders() {
 
   const handleConfirmCancel = () => {
     toast({
-      title: "Order Cancelled",
+      title: t.cancel,
       description: `Order ${selectedOrder?.id} has been cancelled.`,
     });
     setCancelModalOpen(false);
     setDetailsModalOpen(false);
-  };
-
-  const handleNotifyCustomer = (order: Order, message: string) => {
-    toast({
-      title: "Customer Notified",
-      description: `Notification sent to ${order.userName}.`,
-    });
   };
 
   const handleBulkAction = (action: string) => {
@@ -265,20 +259,20 @@ export default function Orders() {
 
   const handleExport = () => {
     toast({
-      title: "Export Started",
+      title: t.export,
       description: "Your orders are being exported to CSV.",
     });
   };
 
   return (
-    <AdminLayout title="Orders" subtitle="Manage orders for your products and services">
+    <AdminLayout title={t.ordersTitle} subtitle={t.ordersSubtitle}>
       {/* Top Controls */}
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <div className="flex flex-wrap items-center gap-3">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search orders..."
+              placeholder={`${t.search}...`}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-9 w-72"
@@ -286,49 +280,49 @@ export default function Orders() {
           </div>
           <Select value={orderStatusFilter} onValueChange={setOrderStatusFilter}>
             <SelectTrigger className="w-[140px]">
-              <SelectValue placeholder="Order Status" />
+              <SelectValue placeholder={t.allStatus} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value="pending">Pending</SelectItem>
-              <SelectItem value="fulfilled">Fulfilled</SelectItem>
-              <SelectItem value="cancelled">Cancelled</SelectItem>
+              <SelectItem value="all">{t.allStatus}</SelectItem>
+              <SelectItem value="pending">{t.pendingOrders}</SelectItem>
+              <SelectItem value="fulfilled">{t.completedOrders}</SelectItem>
+              <SelectItem value="cancelled">{t.cancel}</SelectItem>
             </SelectContent>
           </Select>
           <Select value={paymentStatusFilter} onValueChange={setPaymentStatusFilter}>
             <SelectTrigger className="w-[140px]">
-              <SelectValue placeholder="Payment" />
+              <SelectValue placeholder={t.payment} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Payments</SelectItem>
-              <SelectItem value="paid">Paid</SelectItem>
-              <SelectItem value="pending">Pending</SelectItem>
+              <SelectItem value="all">{t.allStatus}</SelectItem>
+              <SelectItem value="paid">{t.paid}</SelectItem>
+              <SelectItem value="pending">{t.pendingOrders}</SelectItem>
               <SelectItem value="refunded">Refunded</SelectItem>
             </SelectContent>
           </Select>
         </div>
         <Button onClick={handleExport}>
           <Download className="h-4 w-4 mr-2" />
-          Export Orders
+          {t.export} {t.orders}
         </Button>
       </div>
 
       {/* Stats */}
       <div className="mb-6 grid gap-4 sm:grid-cols-5">
         <div className="rounded-lg border border-border bg-card p-4">
-          <p className="text-sm text-muted-foreground">Total Orders</p>
-          <p className="text-2xl font-bold text-foreground">{totalOrders}</p>
+          <p className="text-sm text-muted-foreground">{t.totalOrders}</p>
+          <p className="text-2xl font-bold text-foreground">{totalOrdersCount}</p>
         </div>
         <div className="rounded-lg border border-border bg-card p-4">
-          <p className="text-sm text-muted-foreground">Pending</p>
-          <p className="text-2xl font-bold text-primary">{pendingOrders}</p>
+          <p className="text-sm text-muted-foreground">{t.pendingOrders}</p>
+          <p className="text-2xl font-bold text-primary">{pendingOrdersCount}</p>
         </div>
         <div className="rounded-lg border border-border bg-card p-4">
-          <p className="text-sm text-muted-foreground">Fulfilled</p>
+          <p className="text-sm text-muted-foreground">{t.completedOrders}</p>
           <p className="text-2xl font-bold text-foreground">{fulfilledOrders}</p>
         </div>
         <div className="rounded-lg border border-border bg-card p-4">
-          <p className="text-sm text-muted-foreground">Total Revenue</p>
+          <p className="text-sm text-muted-foreground">{t.totalRevenueAllTime}</p>
           <p className="text-2xl font-bold text-foreground">${totalRevenue.toLocaleString()}</p>
         </div>
         <div className="rounded-lg border border-border bg-card p-4">
@@ -347,7 +341,7 @@ export default function Orders() {
           </Button>
           <Button variant="outline" size="sm" onClick={() => handleBulkAction("Cancel")}>
             <XCircle className="h-4 w-4 mr-1.5" />
-            Cancel
+            {t.cancel}
           </Button>
           <Button variant="outline" size="sm" onClick={() => handleBulkAction("Notify")}>
             <Bell className="h-4 w-4 mr-1.5" />
@@ -364,11 +358,11 @@ export default function Orders() {
         <TabsList className="mb-6">
           <TabsTrigger value="orders" className="gap-2">
             <Package className="h-4 w-4" />
-            Orders
+            {t.orders}
           </TabsTrigger>
           <TabsTrigger value="analytics" className="gap-2">
             <BarChart3 className="h-4 w-4" />
-            Analytics
+            {t.analytics}
           </TabsTrigger>
         </TabsList>
 
@@ -386,10 +380,10 @@ export default function Orders() {
                     </TableHead>
                     <TableHead>Order ID</TableHead>
                     <TableHead>Customer</TableHead>
-                    <TableHead>Product/Service</TableHead>
+                    <TableHead>{t.product}/{t.service}</TableHead>
                     <TableHead>Qty</TableHead>
                     <TableHead>Total</TableHead>
-                    <TableHead>Payment</TableHead>
+                    <TableHead>{t.payment}</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Date</TableHead>
                     <TableHead className="w-[50px]"></TableHead>
@@ -458,7 +452,7 @@ export default function Orders() {
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem onClick={() => handleViewDetails(order)}>
                               <Eye className="mr-2 h-4 w-4" />
-                              View Details
+                              {t.view}
                             </DropdownMenuItem>
                             {order.fulfillmentStatus === "pending" && order.paymentStatus === "paid" && (
                               <DropdownMenuItem onClick={() => handleMarkFulfilled(order)}>
@@ -478,13 +472,9 @@ export default function Orders() {
                                 className="text-destructive"
                               >
                                 <XCircle className="mr-2 h-4 w-4" />
-                                Cancel Order
+                                {t.cancel}
                               </DropdownMenuItem>
                             )}
-                            <DropdownMenuItem onClick={() => handleNotifyCustomer(order, "")}>
-                              <Bell className="mr-2 h-4 w-4" />
-                              Notify Customer
-                            </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </TableCell>
@@ -495,14 +485,11 @@ export default function Orders() {
             </div>
           ) : (
             <div className="text-center py-16 border border-dashed border-border rounded-lg">
-              <ShoppingCart className="h-16 w-16 mx-auto text-muted-foreground/50 mb-4" />
-              <h3 className="text-lg font-semibold text-foreground mb-2">No Orders Found</h3>
-              <p className="text-muted-foreground mb-4">
-                Orders will appear here once your products or services are purchased.
+              <Package className="h-16 w-16 mx-auto text-muted-foreground/50 mb-4" />
+              <h3 className="text-lg font-semibold text-foreground mb-2">{t.noResults}</h3>
+              <p className="text-muted-foreground">
+                Orders will appear here when customers make purchases.
               </p>
-              <Button variant="outline" onClick={() => window.location.href = "/marketplace"}>
-                Go to Marketplace
-              </Button>
             </div>
           )}
         </TabsContent>
@@ -520,7 +507,7 @@ export default function Orders() {
         onMarkFulfilled={handleMarkFulfilled}
         onRefund={handleRefund}
         onCancel={handleCancelOrder}
-        onNotify={handleNotifyCustomer}
+        onNotify={(order, msg) => toast({ title: "Notification sent" })}
       />
 
       <CancelOrderModal

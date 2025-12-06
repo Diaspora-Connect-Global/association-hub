@@ -55,6 +55,7 @@ import { AssignTicketModal } from "@/components/tickets/AssignTicketModal";
 import { StatusModal } from "@/components/tickets/StatusModal";
 import { CloseTicketModal } from "@/components/tickets/CloseTicketModal";
 import { TicketsAnalyticsWidget } from "@/components/tickets/TicketsAnalyticsWidget";
+import { useT } from "@/hooks/useT";
 
 // Mock data
 const mockTickets: Ticket[] = [
@@ -132,6 +133,7 @@ const priorityColors: Record<TicketPriority, "default" | "secondary" | "outline"
 };
 
 export default function Tickets() {
+  const t = useT();
   const [tickets] = useState<Ticket[]>(mockTickets);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -211,7 +213,7 @@ export default function Tickets() {
   const resolvedTickets = tickets.filter((t) => t.status === "resolved").length;
 
   return (
-    <AdminLayout title="Support Tickets" subtitle="Manage and respond to support requests">
+    <AdminLayout title={t.ticketsTitle} subtitle={t.ticketsSubtitle}>
       <div className="space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">

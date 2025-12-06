@@ -254,7 +254,7 @@ export default function Marketplace() {
   };
 
   return (
-    <AdminLayout title="Marketplace" subtitle="Manage your association's products and services">
+    <AdminLayout title={t.marketplaceTitle} subtitle={t.marketplaceSubtitle}>
       {/* Top Controls */}
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <div className="flex flex-wrap items-center gap-3">

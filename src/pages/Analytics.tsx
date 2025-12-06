@@ -56,6 +56,7 @@ import {
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
+import { useT } from "@/hooks/useT";
 
 // Mock data for charts
 const userGrowthData = [
@@ -125,6 +126,7 @@ const metricsConfig = [
 ];
 
 export default function Analytics() {
+  const t = useT();
   const [searchQuery, setSearchQuery] = useState("");
   const [moduleFilter, setModuleFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -146,7 +148,7 @@ export default function Analytics() {
   };
 
   return (
-    <AdminLayout title="Analytics & Reports" subtitle="View insights and performance metrics for your association">
+    <AdminLayout title={t.analyticsTitle} subtitle={t.analyticsSubtitle}>
       <div className="space-y-6">
         {/* Header Actions */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">

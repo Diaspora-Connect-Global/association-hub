@@ -11,6 +11,7 @@ import { RoleManagementModal } from "@/components/members/RoleManagementModal";
 import { RemoveMemberModal } from "@/components/members/RemoveMemberModal";
 import { MemberDetailsModal } from "@/components/members/MemberDetailsModal";
 import { toast } from "@/hooks/use-toast";
+import { useT } from "@/hooks/useT";
 
 // Mock data
 const mockMembers: Member[] = [
@@ -71,6 +72,8 @@ const mockMembers: Member[] = [
 ];
 
 export default function Members() {
+  const t = useT();
+  
   // Filter states
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -161,7 +164,7 @@ export default function Members() {
 
   const handleExportCSV = () => {
     toast({
-      title: "Export started",
+      title: t.export,
       description: "Your member list is being exported to CSV.",
     });
   };
@@ -171,7 +174,7 @@ export default function Members() {
   );
 
   return (
-    <AdminLayout title="Members" subtitle="Manage association membership">
+    <AdminLayout title={t.membersTitle} subtitle={t.membersSubtitle}>
       {/* Top Bar */}
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <MembersFilters
@@ -190,11 +193,11 @@ export default function Members() {
         <div className="flex items-center gap-3">
           <Button variant="outline" className="gap-2" onClick={handleExportCSV}>
             <Download className="h-4 w-4" />
-            Export CSV
+            {t.export} CSV
           </Button>
           <Button className="gap-2" onClick={() => setInviteModalOpen(true)}>
             <UserPlus className="h-4 w-4" />
-            Invite Member
+            {t.inviteMember}
           </Button>
         </div>
       </div>
