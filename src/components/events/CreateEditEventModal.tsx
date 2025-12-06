@@ -23,6 +23,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { format } from "date-fns";
 import { CalendarIcon, ChevronLeft, ChevronRight, Upload, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useT } from "@/hooks/useT";
 
 interface CreateEditEventModalProps {
   open: boolean;
@@ -31,19 +32,13 @@ interface CreateEditEventModalProps {
   onSubmit: (data: EventFormData) => void;
 }
 
-const steps = [
-  { id: 1, title: "Basic Information" },
-  { id: 2, title: "Schedule & Location" },
-  { id: 3, title: "Ticketing & Capacity" },
-  { id: 4, title: "Visibility & Settings" },
-];
-
 export function CreateEditEventModal({
   open,
   onOpenChange,
   event,
   onSubmit,
 }: CreateEditEventModalProps) {
+  const t = useT();
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<EventFormData>({
     title: event?.title || "",
@@ -64,6 +59,13 @@ export function CreateEditEventModal({
     notifyMembers: true,
     allowComments: true,
   });
+
+  const steps = [
+    { id: 1, title: t.basicInformation },
+    { id: 2, title: t.scheduleLocation },
+    { id: 3, title: t.ticketingCapacity },
+    { id: 4, title: t.visibilitySettings },
+  ];
 
   const updateField = <K extends keyof EventFormData>(field: K, value: EventFormData[K]) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -97,7 +99,7 @@ export function CreateEditEventModal({
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
-            {event ? "Edit Event" : "Create Event"}
+            {event ? t.editEventLabel : t.createEvent}
           </DialogTitle>
         </DialogHeader>
 
@@ -139,33 +141,33 @@ export function CreateEditEventModal({
           {currentStep === 1 && (
             <>
               <div className="space-y-2">
-                <Label htmlFor="title">Event Title *</Label>
+                <Label htmlFor="title">{t.eventTitle} *</Label>
                 <Input
                   id="title"
-                  placeholder="Enter event title"
+                  placeholder={t.enterEventTitle}
                   value={formData.title}
                   onChange={(e) => updateField("title", e.target.value)}
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="description">Description *</Label>
+                <Label htmlFor="description">{t.eventDescription} *</Label>
                 <Textarea
                   id="description"
-                  placeholder="Enter a detailed description of the event"
+                  placeholder={t.enterEventDescription}
                   rows={5}
                   value={formData.description}
                   onChange={(e) => updateField("description", e.target.value)}
                 />
               </div>
               <div className="space-y-2">
-                <Label>Banner Image</Label>
+                <Label>{t.bannerImageLabel}</Label>
                 <div className="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-primary/50 transition-colors cursor-pointer">
                   <Upload className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
                   <p className="text-sm text-muted-foreground">
-                    Click to upload or drag and drop
+                    {t.clickToUpload}
                   </p>
                   <p className="text-xs text-muted-foreground mt-1">
-                    PNG, JPG up to 5MB
+                    {t.imageFormat}
                   </p>
                 </div>
               </div>
@@ -175,7 +177,7 @@ export function CreateEditEventModal({
           {currentStep === 2 && (
             <>
               <div className="space-y-2">
-                <Label>Event Date *</Label>
+                <Label>{t.eventDate} *</Label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
@@ -186,7 +188,7 @@ export function CreateEditEventModal({
                       )}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {formData.date ? format(formData.date, "PPP") : "Pick a date"}
+                      {formData.date ? format(formData.date, "PPP") : t.pickDate}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
@@ -202,7 +204,7 @@ export function CreateEditEventModal({
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="startTime">Start Time *</Label>
+                  <Label htmlFor="startTime">{t.startTime} *</Label>
                   <Input
                     id="startTime"
                     type="time"
@@ -211,7 +213,7 @@ export function CreateEditEventModal({
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="endTime">End Time *</Label>
+                  <Label htmlFor="endTime">{t.endTime} *</Label>
                   <Input
                     id="endTime"
                     type="time"
@@ -221,7 +223,7 @@ export function CreateEditEventModal({
                 </div>
               </div>
               <div className="space-y-2">
-                <Label>Event Type *</Label>
+                <Label>{t.eventTypeLabel} *</Label>
                 <Select
                   value={formData.eventType}
                   onValueChange={(value: EventType) => updateField("eventType", value)}
@@ -230,28 +232,28 @@ export function CreateEditEventModal({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="in-person">In-Person</SelectItem>
-                    <SelectItem value="virtual">Virtual</SelectItem>
+                    <SelectItem value="in-person">{t.inPerson}</SelectItem>
+                    <SelectItem value="virtual">{t.virtual}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               {formData.eventType === "in-person" ? (
                 <div className="space-y-2">
-                  <Label htmlFor="location">Location</Label>
+                  <Label htmlFor="location">{t.location}</Label>
                   <Input
                     id="location"
-                    placeholder="Enter physical venue address"
+                    placeholder={t.enterVenueAddress}
                     value={formData.location}
                     onChange={(e) => updateField("location", e.target.value)}
                   />
                 </div>
               ) : (
                 <div className="space-y-2">
-                  <Label htmlFor="virtualLink">Virtual Link</Label>
+                  <Label htmlFor="virtualLink">{t.virtualLinkLabel}</Label>
                   <Input
                     id="virtualLink"
                     type="url"
-                    placeholder="Add Zoom/Google Meet link"
+                    placeholder={t.addVirtualLink}
                     value={formData.virtualLink}
                     onChange={(e) => updateField("virtualLink", e.target.value)}
                   />
@@ -264,9 +266,9 @@ export function CreateEditEventModal({
             <>
               <div className="flex items-center justify-between p-4 rounded-lg border border-border">
                 <div>
-                  <Label>Is this a paid event?</Label>
+                  <Label>{t.isPaidEvent}</Label>
                   <p className="text-sm text-muted-foreground">
-                    Enable to set a ticket price
+                    {t.enableTicketPrice}
                   </p>
                 </div>
                 <Switch
@@ -277,7 +279,7 @@ export function CreateEditEventModal({
               {formData.isPaid && (
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>Currency</Label>
+                    <Label>{t.currency}</Label>
                     <Select
                       value={formData.currency}
                       onValueChange={(value) => updateField("currency", value)}
@@ -294,7 +296,7 @@ export function CreateEditEventModal({
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="ticketPrice">Ticket Price</Label>
+                    <Label htmlFor="ticketPrice">{t.ticketPrice}</Label>
                     <Input
                       id="ticketPrice"
                       type="number"
@@ -309,9 +311,9 @@ export function CreateEditEventModal({
               )}
               <div className="flex items-center justify-between p-4 rounded-lg border border-border">
                 <div>
-                  <Label>Limit Participants?</Label>
+                  <Label>{t.limitParticipants}</Label>
                   <p className="text-sm text-muted-foreground">
-                    Set a maximum number of attendees
+                    {t.setMaxAttendees}
                   </p>
                 </div>
                 <Switch
@@ -321,7 +323,7 @@ export function CreateEditEventModal({
               </div>
               {formData.hasParticipantLimit && (
                 <div className="space-y-2">
-                  <Label htmlFor="maxParticipants">Max Participants</Label>
+                  <Label htmlFor="maxParticipants">{t.maxParticipants}</Label>
                   <Input
                     id="maxParticipants"
                     type="number"
@@ -339,9 +341,9 @@ export function CreateEditEventModal({
             <>
               <div className="flex items-center justify-between p-4 rounded-lg border border-border">
                 <div>
-                  <Label>Publish Event Now?</Label>
+                  <Label>{t.publishEventNow}</Label>
                   <p className="text-sm text-muted-foreground">
-                    Make the event visible to members immediately
+                    {t.makeEventVisible}
                   </p>
                 </div>
                 <Switch
@@ -351,9 +353,9 @@ export function CreateEditEventModal({
               </div>
               <div className="flex items-center justify-between p-4 rounded-lg border border-border">
                 <div>
-                  <Label>Send Notification to Members?</Label>
+                  <Label>{t.sendNotification}</Label>
                   <p className="text-sm text-muted-foreground">
-                    Notify all association members about this event
+                    {t.notifyAllMembers}
                   </p>
                 </div>
                 <Switch
@@ -363,9 +365,9 @@ export function CreateEditEventModal({
               </div>
               <div className="flex items-center justify-between p-4 rounded-lg border border-border">
                 <div>
-                  <Label>Allow Comments</Label>
+                  <Label>{t.allowCommentsLabel}</Label>
                   <p className="text-sm text-muted-foreground">
-                    Let members comment on this event
+                    {t.letMembersComment}
                   </p>
                 </div>
                 <Switch
@@ -385,20 +387,20 @@ export function CreateEditEventModal({
             disabled={currentStep === 1}
           >
             <ChevronLeft className="h-4 w-4 mr-1" />
-            Back
+            {t.back}
           </Button>
           <div className="flex gap-2">
             <Button variant="outline" onClick={handleClose}>
-              Cancel
+              {t.cancel}
             </Button>
             {currentStep < steps.length ? (
               <Button onClick={handleNext}>
-                Next
+                {t.next}
                 <ChevronRight className="h-4 w-4 ml-1" />
               </Button>
             ) : (
               <Button onClick={handleSubmit}>
-                {event ? "Save Changes" : "Create Event"}
+                {event ? t.saveChanges : t.createEvent}
               </Button>
             )}
           </div>

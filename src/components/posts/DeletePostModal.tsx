@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { AlertTriangle } from "lucide-react";
 import { Post } from "@/types/posts";
+import { useT } from "@/hooks/useT";
 
 interface DeletePostModalProps {
   open: boolean;
@@ -24,6 +25,8 @@ export function DeletePostModal({
   post,
   onConfirm,
 }: DeletePostModalProps) {
+  const t = useT();
+
   if (!post) return null;
 
   return (
@@ -34,23 +37,23 @@ export function DeletePostModal({
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-destructive/10">
               <AlertTriangle className="h-5 w-5 text-destructive" />
             </div>
-            <AlertDialogTitle>Delete Post</AlertDialogTitle>
+            <AlertDialogTitle>{t.deletePost}</AlertDialogTitle>
           </div>
           <AlertDialogDescription className="pt-2">
-            Are you sure you want to delete <strong>"{post.title}"</strong>? This action cannot be undone.
+            {t.deletePostConfirm} <strong>"{post.title}"</strong>?
           </AlertDialogDescription>
         </AlertDialogHeader>
         <div className="rounded-lg bg-muted/50 p-3 text-sm text-muted-foreground">
-          <p>• All comments and reactions will be removed</p>
-          <p>• An audit record will be kept for compliance</p>
+          <p>• {t.commentsReactionsRemoved}</p>
+          <p>• {t.auditRecordKept}</p>
         </div>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogCancel>{t.cancel}</AlertDialogCancel>
           <AlertDialogAction
             onClick={onConfirm}
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
           >
-            Delete Post
+            {t.deletePost}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
