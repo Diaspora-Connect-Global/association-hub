@@ -17,6 +17,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { StatusBadge } from "@/components/ui/StatusBadge";
+import { useT } from "@/hooks/useT";
 
 export interface Member {
   id: string;
@@ -64,14 +65,6 @@ const paymentVariants = {
   subscription_failed: "error" as const,
 };
 
-const paymentLabels = {
-  paid: "Paid",
-  unpaid: "Unpaid",
-  expired: "Expired",
-  subscription_active: "Active",
-  subscription_failed: "Failed",
-};
-
 export function MembersTable({
   members,
   selectedMembers,
@@ -83,7 +76,30 @@ export function MembersTable({
   isPaidAssociation = false,
   onInvite,
 }: MembersTableProps) {
+  const t = useT();
   const allSelected = members.length > 0 && selectedMembers.length === members.length;
+
+  const paymentLabels = {
+    paid: t.paidStatus,
+    unpaid: t.unpaidStatus,
+    expired: t.expiredStatus,
+    subscription_active: t.subscriptionActive,
+    subscription_failed: t.subscriptionFailed,
+  };
+
+  const statusLabels = {
+    active: t.active,
+    pending: t.pending,
+    suspended: t.suspended,
+    rejected: t.rejected,
+    left: t.leftAssociation,
+  };
+
+  const roleLabels = {
+    admin: t.admin,
+    "sub-admin": t.subAdmin,
+    member: t.member,
+  };
 
   if (members.length === 0) {
     return (
@@ -91,14 +107,14 @@ export function MembersTable({
         <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full surface-subtle">
           <UserPlus className="h-8 w-8 text-text-secondary" />
         </div>
-        <h3 className="label-medium text-text-primary mb-2">No members yet</h3>
+        <h3 className="label-medium text-text-primary mb-2">{t.noMembersYet}</h3>
         <p className="body-small text-text-secondary mb-4">
-          Invite your first members to start building your association.
+          {t.inviteFirstMembers}
         </p>
         {onInvite && (
           <Button onClick={onInvite} className="gap-2">
             <UserPlus className="h-4 w-4" />
-            Invite Member
+            {t.inviteMember}
           </Button>
         )}
       </div>
@@ -116,13 +132,13 @@ export function MembersTable({
                 onCheckedChange={onSelectAll}
               />
             </TableHead>
-            <TableHead>Member</TableHead>
-            <TableHead>Phone</TableHead>
-            <TableHead>Role</TableHead>
-            <TableHead>Status</TableHead>
-            {isPaidAssociation && <TableHead>Payment</TableHead>}
-            <TableHead>Join Date</TableHead>
-            <TableHead className="w-20">Actions</TableHead>
+            <TableHead>{t.member}</TableHead>
+            <TableHead>{t.phone}</TableHead>
+            <TableHead>{t.role}</TableHead>
+            <TableHead>{t.status}</TableHead>
+            {isPaidAssociation && <TableHead>{t.payment}</TableHead>}
+            <TableHead>{t.joinDate}</TableHead>
+            <TableHead className="w-20">{t.actions}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -150,12 +166,12 @@ export function MembersTable({
               </TableCell>
               <TableCell>
                 <span className={`rounded-full px-2.5 py-1 caption-small capitalize ${roleColors[member.role]}`}>
-                  {member.role}
+                  {roleLabels[member.role]}
                 </span>
               </TableCell>
               <TableCell>
                 <StatusBadge variant={statusVariants[member.status]}>
-                  {member.status === "left" ? "Left" : member.status}
+                  {statusLabels[member.status]}
                 </StatusBadge>
               </TableCell>
               {isPaidAssociation && (
@@ -180,11 +196,11 @@ export function MembersTable({
                   <DropdownMenuContent align="end" className="w-48 surface-default">
                     <DropdownMenuItem onClick={() => onViewProfile(member)}>
                       <Eye className="mr-2 h-4 w-4" />
-                      View Profile
+                      {t.viewProfile}
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => onChangeRole(member)}>
                       <BadgeCheck className="mr-2 h-4 w-4" />
-                      Change Role
+                      {t.changeRole}
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
@@ -192,7 +208,7 @@ export function MembersTable({
                       className="text-text-danger focus:text-text-danger"
                     >
                       <UserMinus className="mr-2 h-4 w-4" />
-                      Remove Member
+                      {t.removeMember}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
