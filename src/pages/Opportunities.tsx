@@ -1,11 +1,17 @@
 import { useState } from "react";
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { OpportunitiesFilters } from "@/components/opportunities/OpportunitiesFilters";
 import { OpportunitiesTable } from "@/components/opportunities/OpportunitiesTable";
 import { OpportunitiesCardView } from "@/components/opportunities/OpportunitiesCardView";
-import { OpportunityAnalyticsWidget } from "@/components/opportunities/OpportunityAnalyticsWidget";
 import { CreateEditOpportunityModal } from "@/components/opportunities/CreateEditOpportunityModal";
 import { OpportunityDrawer } from "@/components/opportunities/OpportunityDrawer";
 import { ApplicantsDrawer } from "@/components/opportunities/ApplicantsDrawer";
@@ -14,9 +20,8 @@ import { DeleteOpportunityModal } from "@/components/opportunities/DeleteOpportu
 import { MessageApplicantModal } from "@/components/opportunities/MessageApplicantModal";
 import { RejectApplicantModal } from "@/components/opportunities/RejectApplicantModal";
 import { OpportunityBulkActionsBar } from "@/components/opportunities/OpportunityBulkActionsBar";
-import { Plus, RefreshCw, LayoutList, LayoutGrid } from "lucide-react";
+import { Plus, RefreshCw, LayoutList, LayoutGrid, Search } from "lucide-react";
 import { Opportunity, Applicant } from "@/types/opportunities";
-import { DateRange } from "react-day-picker";
 import { toast } from "@/hooks/use-toast";
 
 const mockOpportunities: Opportunity[] = [
@@ -36,12 +41,14 @@ export default function Opportunities() {
   const [opportunities] = useState<Opportunity[]>(mockOpportunities);
   const [viewMode, setViewMode] = useState<"list" | "card">("list");
   const [selectedOpportunities, setSelectedOpportunities] = useState<string[]>([]);
+  
+  // Filters
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [typeFilter, setTypeFilter] = useState("all");
   const [visibilityFilter, setVisibilityFilter] = useState("all");
-  const [dateRange, setDateRange] = useState<DateRange | undefined>();
 
+  // Modals
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [editOpportunity, setEditOpportunity] = useState<Opportunity | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -75,43 +82,195 @@ export default function Opportunities() {
   const handleViewApplicants = (opp: Opportunity) => { setApplicantsOpportunity(opp); setApplicantsDrawerOpen(true); };
 
   return (
-    <AdminLayout title="Opportunities" subtitle="Create and manage job postings, volunteer roles, and funding opportunities">
-      <div className="flex gap-6">
-        <OpportunitiesFilters onCreateOpportunity={() => setCreateModalOpen(true)} searchQuery={searchQuery} onSearchChange={setSearchQuery} statusFilter={statusFilter} onStatusChange={setStatusFilter} typeFilter={typeFilter} onTypeChange={setTypeFilter} visibilityFilter={visibilityFilter} onVisibilityChange={setVisibilityFilter} dateRange={dateRange} onDateRangeChange={setDateRange} onNavigate={(view) => setStatusFilter(view === "drafts" ? "draft" : view === "scheduled" ? "scheduled" : view === "closed" ? "closed" : "all")} />
-
-        <div className="flex-1 min-w-0">
-          <div className="mb-4 flex items-center justify-between">
-            <p className="text-sm text-muted-foreground">Showing {filteredOpportunities.length} opportunities for: <strong>Ghana Union Antwerp</strong></p>
-            <div className="flex items-center gap-2">
-              <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as "list" | "card")}>
-                <TabsList className="h-9">
-                  <TabsTrigger value="list" className="px-2"><LayoutList className="h-4 w-4" /></TabsTrigger>
-                  <TabsTrigger value="card" className="px-2"><LayoutGrid className="h-4 w-4" /></TabsTrigger>
-                </TabsList>
-              </Tabs>
-              <Button variant="outline" size="icon" className="h-9 w-9"><RefreshCw className="h-4 w-4" /></Button>
-              <Button className="gap-2" onClick={() => setCreateModalOpen(true)}><Plus className="h-4 w-4" />New Opportunity</Button>
-            </div>
+    <AdminLayout title="Opportunities" subtitle="Manage job postings, volunteer roles, and funding opportunities">
+      {/* Top Controls Bar */}
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        {/* Left: Search and Filters */}
+        <div className="flex flex-1 flex-wrap items-center gap-3">
+          <div className="relative w-full sm:w-64">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder="Search opportunities..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9"
+            />
           </div>
-
-          {viewMode === "list" ? (
-            <OpportunitiesTable opportunities={filteredOpportunities} selectedOpportunities={selectedOpportunities} onSelectOpportunity={handleSelectOpportunity} onSelectAll={handleSelectAll} onOpenDrawer={handleOpenDrawer} onEdit={(opp) => { setEditOpportunity(opp); setCreateModalOpen(true); }} onTogglePublish={(opp) => toast({ title: `Opportunity ${opp.status === "published" ? "unpublished" : "published"}` })} onClose={(opp) => toast({ title: "Applications closed" })} onViewApplicants={handleViewApplicants} onDelete={(opp) => { setDeleteOpportunity(opp); setDeleteModalOpen(true); }} />
-          ) : (
-            <OpportunitiesCardView opportunities={filteredOpportunities} onOpenDrawer={handleOpenDrawer} onEdit={(opp) => { setEditOpportunity(opp); setCreateModalOpen(true); }} onTogglePublish={(opp) => toast({ title: `Opportunity ${opp.status === "published" ? "unpublished" : "published"}` })} onViewApplicants={handleViewApplicants} onDelete={(opp) => { setDeleteOpportunity(opp); setDeleteModalOpen(true); }} />
-          )}
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-32">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="published">Published</SelectItem>
+              <SelectItem value="draft">Draft</SelectItem>
+              <SelectItem value="scheduled">Scheduled</SelectItem>
+              <SelectItem value="closed">Closed</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={typeFilter} onValueChange={setTypeFilter}>
+            <SelectTrigger className="w-32">
+              <SelectValue placeholder="Type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Types</SelectItem>
+              <SelectItem value="job">Job</SelectItem>
+              <SelectItem value="volunteer">Volunteer</SelectItem>
+              <SelectItem value="training">Training</SelectItem>
+              <SelectItem value="funding">Funding</SelectItem>
+              <SelectItem value="scholarship">Scholarship</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={visibilityFilter} onValueChange={setVisibilityFilter}>
+            <SelectTrigger className="w-32">
+              <SelectValue placeholder="Visibility" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All</SelectItem>
+              <SelectItem value="members">Members</SelectItem>
+              <SelectItem value="public">Public</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
-        <OpportunityAnalyticsWidget openOppsCount={opportunities.filter((o) => o.status === "published").length} applicants30d={74} avgTimeToFill={14} recentApplicants={mockApplicants} onOpenApplicantsDrawer={() => setApplicantsDrawerOpen(true)} />
+        {/* Right: View Toggle and Actions */}
+        <div className="flex items-center gap-2">
+          <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as "list" | "card")}>
+            <TabsList className="h-9">
+              <TabsTrigger value="list" className="px-3">
+                <LayoutList className="h-4 w-4" />
+              </TabsTrigger>
+              <TabsTrigger value="card" className="px-3">
+                <LayoutGrid className="h-4 w-4" />
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+          <Button variant="outline" size="icon" className="h-9 w-9">
+            <RefreshCw className="h-4 w-4" />
+          </Button>
+          <Button className="gap-2" onClick={() => setCreateModalOpen(true)}>
+            <Plus className="h-4 w-4" />
+            <span className="hidden sm:inline">New Opportunity</span>
+          </Button>
+        </div>
       </div>
 
-      <CreateEditOpportunityModal open={createModalOpen} onOpenChange={(open) => { setCreateModalOpen(open); if (!open) setEditOpportunity(null); }} opportunity={editOpportunity} onSave={(data, action) => toast({ title: `Opportunity ${action}` })} />
-      <OpportunityDrawer open={drawerOpen} onOpenChange={setDrawerOpen} opportunity={drawerOpportunity} onEdit={() => { setEditOpportunity(drawerOpportunity); setCreateModalOpen(true); setDrawerOpen(false); }} onTogglePublish={() => toast({ title: "Toggled" })} onClose={() => toast({ title: "Closed" })} onViewApplicants={() => { setApplicantsOpportunity(drawerOpportunity); setApplicantsDrawerOpen(true); }} onDuplicate={() => toast({ title: "Duplicated" })} />
-      <ApplicantsDrawer open={applicantsDrawerOpen} onOpenChange={setApplicantsDrawerOpen} opportunity={applicantsOpportunity} applicants={mockApplicants} onViewApplication={(a) => { setSelectedApplicant(a); setApplicationModalOpen(true); }} onShortlist={(a) => toast({ title: `${a.name} shortlisted` })} onMessage={(a) => { setSelectedApplicant(a); setMessageModalOpen(true); }} onReject={(a) => { setSelectedApplicant(a); setRejectModalOpen(true); }} onMarkHired={(a) => toast({ title: `${a.name} marked as hired` })} onExport={() => toast({ title: "Exporting..." })} />
-      <ApplicationModal open={applicationModalOpen} onOpenChange={setApplicationModalOpen} applicant={selectedApplicant} onShortlist={() => toast({ title: "Shortlisted" })} onMessage={() => { setMessageModalOpen(true); }} onReject={() => { setRejectModalOpen(true); }} onMarkHired={() => toast({ title: "Hired" })} />
-      <DeleteOpportunityModal open={deleteModalOpen} onOpenChange={setDeleteModalOpen} opportunity={deleteOpportunity} onConfirm={() => toast({ title: "Deleted" })} />
-      <MessageApplicantModal open={messageModalOpen} onOpenChange={setMessageModalOpen} applicant={selectedApplicant} onSend={(msg) => toast({ title: "Message sent" })} />
-      <RejectApplicantModal open={rejectModalOpen} onOpenChange={setRejectModalOpen} applicant={selectedApplicant} onConfirm={() => toast({ title: "Rejected" })} />
-      <OpportunityBulkActionsBar selectedCount={selectedOpportunities.length} onClearSelection={() => setSelectedOpportunities([])} onBulkPublish={() => toast({ title: `${selectedOpportunities.length} published` })} onBulkClose={() => toast({ title: `${selectedOpportunities.length} closed` })} onBulkArchive={() => toast({ title: `${selectedOpportunities.length} archived` })} onBulkExport={() => toast({ title: "Exporting..." })} />
+      {/* Stats Summary */}
+      <div className="mb-6 grid gap-4 sm:grid-cols-4">
+        <div className="rounded-xl border border-border bg-card p-4">
+          <p className="text-sm text-muted-foreground">Total Opportunities</p>
+          <p className="text-2xl font-semibold text-foreground">{opportunities.length}</p>
+        </div>
+        <div className="rounded-xl border border-border bg-card p-4">
+          <p className="text-sm text-muted-foreground">Open</p>
+          <p className="text-2xl font-semibold text-foreground">{opportunities.filter(o => o.status === "published").length}</p>
+        </div>
+        <div className="rounded-xl border border-border bg-card p-4">
+          <p className="text-sm text-muted-foreground">Total Applicants</p>
+          <p className="text-2xl font-semibold text-foreground">{opportunities.reduce((sum, o) => sum + o.applicantsCount, 0)}</p>
+        </div>
+        <div className="rounded-xl border border-border bg-card p-4">
+          <p className="text-sm text-muted-foreground">Shortlisted</p>
+          <p className="text-2xl font-semibold text-foreground">{opportunities.reduce((sum, o) => sum + o.shortlistCount, 0)}</p>
+        </div>
+      </div>
+
+      {/* Results Info */}
+      <div className="mb-4">
+        <p className="text-sm text-muted-foreground">
+          Showing {filteredOpportunities.length} of {opportunities.length} opportunities
+        </p>
+      </div>
+
+      {/* Opportunities View */}
+      {viewMode === "list" ? (
+        <OpportunitiesTable
+          opportunities={filteredOpportunities}
+          selectedOpportunities={selectedOpportunities}
+          onSelectOpportunity={handleSelectOpportunity}
+          onSelectAll={handleSelectAll}
+          onOpenDrawer={handleOpenDrawer}
+          onEdit={(opp) => { setEditOpportunity(opp); setCreateModalOpen(true); }}
+          onTogglePublish={(opp) => toast({ title: `Opportunity ${opp.status === "published" ? "unpublished" : "published"}` })}
+          onClose={(opp) => toast({ title: "Applications closed" })}
+          onViewApplicants={handleViewApplicants}
+          onDelete={(opp) => { setDeleteOpportunity(opp); setDeleteModalOpen(true); }}
+        />
+      ) : (
+        <OpportunitiesCardView
+          opportunities={filteredOpportunities}
+          onOpenDrawer={handleOpenDrawer}
+          onEdit={(opp) => { setEditOpportunity(opp); setCreateModalOpen(true); }}
+          onTogglePublish={(opp) => toast({ title: `Opportunity ${opp.status === "published" ? "unpublished" : "published"}` })}
+          onViewApplicants={handleViewApplicants}
+          onDelete={(opp) => { setDeleteOpportunity(opp); setDeleteModalOpen(true); }}
+        />
+      )}
+
+      {/* Modals */}
+      <CreateEditOpportunityModal
+        open={createModalOpen}
+        onOpenChange={(open) => { setCreateModalOpen(open); if (!open) setEditOpportunity(null); }}
+        opportunity={editOpportunity}
+        onSave={(data, action) => toast({ title: `Opportunity ${action}` })}
+      />
+      <OpportunityDrawer
+        open={drawerOpen}
+        onOpenChange={setDrawerOpen}
+        opportunity={drawerOpportunity}
+        onEdit={() => { setEditOpportunity(drawerOpportunity); setCreateModalOpen(true); setDrawerOpen(false); }}
+        onTogglePublish={() => toast({ title: "Toggled" })}
+        onClose={() => toast({ title: "Closed" })}
+        onViewApplicants={() => { setApplicantsOpportunity(drawerOpportunity); setApplicantsDrawerOpen(true); }}
+        onDuplicate={() => toast({ title: "Duplicated" })}
+      />
+      <ApplicantsDrawer
+        open={applicantsDrawerOpen}
+        onOpenChange={setApplicantsDrawerOpen}
+        opportunity={applicantsOpportunity}
+        applicants={mockApplicants}
+        onViewApplication={(a) => { setSelectedApplicant(a); setApplicationModalOpen(true); }}
+        onShortlist={(a) => toast({ title: `${a.name} shortlisted` })}
+        onMessage={(a) => { setSelectedApplicant(a); setMessageModalOpen(true); }}
+        onReject={(a) => { setSelectedApplicant(a); setRejectModalOpen(true); }}
+        onMarkHired={(a) => toast({ title: `${a.name} marked as hired` })}
+        onExport={() => toast({ title: "Exporting..." })}
+      />
+      <ApplicationModal
+        open={applicationModalOpen}
+        onOpenChange={setApplicationModalOpen}
+        applicant={selectedApplicant}
+        onShortlist={() => toast({ title: "Shortlisted" })}
+        onMessage={() => { setMessageModalOpen(true); }}
+        onReject={() => { setRejectModalOpen(true); }}
+        onMarkHired={() => toast({ title: "Hired" })}
+      />
+      <DeleteOpportunityModal
+        open={deleteModalOpen}
+        onOpenChange={setDeleteModalOpen}
+        opportunity={deleteOpportunity}
+        onConfirm={() => toast({ title: "Deleted" })}
+      />
+      <MessageApplicantModal
+        open={messageModalOpen}
+        onOpenChange={setMessageModalOpen}
+        applicant={selectedApplicant}
+        onSend={(msg) => toast({ title: "Message sent" })}
+      />
+      <RejectApplicantModal
+        open={rejectModalOpen}
+        onOpenChange={setRejectModalOpen}
+        applicant={selectedApplicant}
+        onConfirm={() => toast({ title: "Rejected" })}
+      />
+      <OpportunityBulkActionsBar
+        selectedCount={selectedOpportunities.length}
+        onClearSelection={() => setSelectedOpportunities([])}
+        onBulkPublish={() => toast({ title: `${selectedOpportunities.length} published` })}
+        onBulkClose={() => toast({ title: `${selectedOpportunities.length} closed` })}
+        onBulkArchive={() => toast({ title: `${selectedOpportunities.length} archived` })}
+        onBulkExport={() => toast({ title: "Exporting..." })}
+      />
     </AdminLayout>
   );
 }

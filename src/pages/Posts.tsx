@@ -1,19 +1,24 @@
 import { useState } from "react";
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PostsFilters } from "@/components/posts/PostsFilters";
 import { PostsTable } from "@/components/posts/PostsTable";
 import { PostsCardView } from "@/components/posts/PostsCardView";
-import { PostAnalyticsWidget } from "@/components/posts/PostAnalyticsWidget";
 import { CreateEditPostModal } from "@/components/posts/CreateEditPostModal";
 import { PostDrawer } from "@/components/posts/PostDrawer";
 import { DeletePostModal } from "@/components/posts/DeletePostModal";
 import { SchedulePostModal } from "@/components/posts/SchedulePostModal";
 import { BulkActionsBar } from "@/components/posts/BulkActionsBar";
-import { Plus, RefreshCw, LayoutList, LayoutGrid } from "lucide-react";
+import { Plus, RefreshCw, LayoutList, LayoutGrid, Search } from "lucide-react";
 import { Post, Comment } from "@/types/posts";
-import { DateRange } from "react-day-picker";
 import { toast } from "@/hooks/use-toast";
 
 // Mock data
@@ -126,14 +131,12 @@ export default function Posts() {
   const [posts] = useState<Post[]>(mockPosts);
   const [viewMode, setViewMode] = useState<"list" | "card">("list");
   const [selectedPosts, setSelectedPosts] = useState<string[]>([]);
-  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   
   // Filters
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [mediaFilter, setMediaFilter] = useState("all");
   const [visibilityFilter, setVisibilityFilter] = useState("all");
-  const [dateRange, setDateRange] = useState<DateRange | undefined>();
 
   // Modals
   const [createModalOpen, setCreateModalOpen] = useState(false);
@@ -166,7 +169,6 @@ export default function Posts() {
 
   const handleOpenDrawer = (post: Post) => {
     setDrawerPost(post);
-    setSelectedPost(post);
     setDrawerOpen(true);
   };
 
@@ -176,77 +178,126 @@ export default function Posts() {
 
   return (
     <AdminLayout title="Posts" subtitle="Create and manage association posts">
-      <div className="flex gap-6">
-        {/* Left Sidebar - Filters */}
-        <PostsFilters
-          onCreatePost={() => setCreateModalOpen(true)}
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          statusFilter={statusFilter}
-          onStatusChange={setStatusFilter}
-          mediaFilter={mediaFilter}
-          onMediaChange={setMediaFilter}
-          visibilityFilter={visibilityFilter}
-          onVisibilityChange={setVisibilityFilter}
-          dateRange={dateRange}
-          onDateRangeChange={setDateRange}
-          onNavigate={(view) => setStatusFilter(view === "drafts" ? "draft" : view === "scheduled" ? "scheduled" : "all")}
-        />
-
-        {/* Main Content */}
-        <div className="flex-1 min-w-0">
-          {/* Top Bar */}
-          <div className="mb-4 flex items-center justify-between">
-            <p className="text-sm text-muted-foreground">
-              Showing {filteredPosts.length} posts for: <strong>Ghana Union Antwerp</strong>
-            </p>
-            <div className="flex items-center gap-2">
-              <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as "list" | "card")}>
-                <TabsList className="h-9">
-                  <TabsTrigger value="list" className="px-2"><LayoutList className="h-4 w-4" /></TabsTrigger>
-                  <TabsTrigger value="card" className="px-2"><LayoutGrid className="h-4 w-4" /></TabsTrigger>
-                </TabsList>
-              </Tabs>
-              <Button variant="outline" size="icon" className="h-9 w-9"><RefreshCw className="h-4 w-4" /></Button>
-              <Button className="gap-2" onClick={() => setCreateModalOpen(true)}>
-                <Plus className="h-4 w-4" />New Post
-              </Button>
-            </div>
+      {/* Top Controls Bar */}
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        {/* Left: Search and Filters */}
+        <div className="flex flex-1 flex-wrap items-center gap-3">
+          <div className="relative w-full sm:w-64">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder="Search posts..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9"
+            />
           </div>
-
-          {/* Posts View */}
-          {viewMode === "list" ? (
-            <PostsTable
-              posts={filteredPosts}
-              selectedPosts={selectedPosts}
-              onSelectPost={handleSelectPost}
-              onSelectAll={handleSelectAll}
-              onOpenDrawer={handleOpenDrawer}
-              onEdit={(post) => { setEditPost(post); setCreateModalOpen(true); }}
-              onTogglePublish={(post) => toast({ title: `Post ${post.status === "published" ? "unpublished" : "published"}` })}
-              onSchedule={(post) => { setSchedulePost(post); setScheduleModalOpen(true); }}
-              onTogglePin={(post) => toast({ title: `Post ${post.pinned ? "unpinned" : "pinned"}` })}
-              onDelete={(post) => { setDeletePost(post); setDeleteModalOpen(true); }}
-            />
-          ) : (
-            <PostsCardView
-              posts={filteredPosts}
-              onOpenDrawer={handleOpenDrawer}
-              onEdit={(post) => { setEditPost(post); setCreateModalOpen(true); }}
-              onTogglePublish={(post) => toast({ title: `Post ${post.status === "published" ? "unpublished" : "published"}` })}
-              onTogglePin={(post) => toast({ title: `Post ${post.pinned ? "unpinned" : "pinned"}` })}
-              onDelete={(post) => { setDeletePost(post); setDeleteModalOpen(true); }}
-            />
-          )}
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-32">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="published">Published</SelectItem>
+              <SelectItem value="draft">Draft</SelectItem>
+              <SelectItem value="scheduled">Scheduled</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={mediaFilter} onValueChange={setMediaFilter}>
+            <SelectTrigger className="w-32">
+              <SelectValue placeholder="Media" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Media</SelectItem>
+              <SelectItem value="text">Text</SelectItem>
+              <SelectItem value="image">Image</SelectItem>
+              <SelectItem value="video">Video</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={visibilityFilter} onValueChange={setVisibilityFilter}>
+            <SelectTrigger className="w-32">
+              <SelectValue placeholder="Visibility" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All</SelectItem>
+              <SelectItem value="members">Members</SelectItem>
+              <SelectItem value="public">Public</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
-        {/* Right Sidebar - Analytics */}
-        <PostAnalyticsWidget
-          selectedPost={selectedPost}
-          recentComments={mockComments}
-          onOpenModerationQueue={() => toast({ title: "Moderation queue opened" })}
-        />
+        {/* Right: View Toggle and Actions */}
+        <div className="flex items-center gap-2">
+          <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as "list" | "card")}>
+            <TabsList className="h-9">
+              <TabsTrigger value="list" className="px-3">
+                <LayoutList className="h-4 w-4" />
+              </TabsTrigger>
+              <TabsTrigger value="card" className="px-3">
+                <LayoutGrid className="h-4 w-4" />
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+          <Button variant="outline" size="icon" className="h-9 w-9">
+            <RefreshCw className="h-4 w-4" />
+          </Button>
+          <Button className="gap-2" onClick={() => setCreateModalOpen(true)}>
+            <Plus className="h-4 w-4" />
+            <span className="hidden sm:inline">New Post</span>
+          </Button>
+        </div>
       </div>
+
+      {/* Stats Summary */}
+      <div className="mb-6 grid gap-4 sm:grid-cols-4">
+        <div className="rounded-xl border border-border bg-card p-4">
+          <p className="text-sm text-muted-foreground">Total Posts</p>
+          <p className="text-2xl font-semibold text-foreground">{posts.length}</p>
+        </div>
+        <div className="rounded-xl border border-border bg-card p-4">
+          <p className="text-sm text-muted-foreground">Published</p>
+          <p className="text-2xl font-semibold text-foreground">{posts.filter(p => p.status === "published").length}</p>
+        </div>
+        <div className="rounded-xl border border-border bg-card p-4">
+          <p className="text-sm text-muted-foreground">Drafts</p>
+          <p className="text-2xl font-semibold text-foreground">{posts.filter(p => p.status === "draft").length}</p>
+        </div>
+        <div className="rounded-xl border border-border bg-card p-4">
+          <p className="text-sm text-muted-foreground">Scheduled</p>
+          <p className="text-2xl font-semibold text-foreground">{posts.filter(p => p.status === "scheduled").length}</p>
+        </div>
+      </div>
+
+      {/* Results Info */}
+      <div className="mb-4">
+        <p className="text-sm text-muted-foreground">
+          Showing {filteredPosts.length} of {posts.length} posts
+        </p>
+      </div>
+
+      {/* Posts View */}
+      {viewMode === "list" ? (
+        <PostsTable
+          posts={filteredPosts}
+          selectedPosts={selectedPosts}
+          onSelectPost={handleSelectPost}
+          onSelectAll={handleSelectAll}
+          onOpenDrawer={handleOpenDrawer}
+          onEdit={(post) => { setEditPost(post); setCreateModalOpen(true); }}
+          onTogglePublish={(post) => toast({ title: `Post ${post.status === "published" ? "unpublished" : "published"}` })}
+          onSchedule={(post) => { setSchedulePost(post); setScheduleModalOpen(true); }}
+          onTogglePin={(post) => toast({ title: `Post ${post.pinned ? "unpinned" : "pinned"}` })}
+          onDelete={(post) => { setDeletePost(post); setDeleteModalOpen(true); }}
+        />
+      ) : (
+        <PostsCardView
+          posts={filteredPosts}
+          onOpenDrawer={handleOpenDrawer}
+          onEdit={(post) => { setEditPost(post); setCreateModalOpen(true); }}
+          onTogglePublish={(post) => toast({ title: `Post ${post.status === "published" ? "unpublished" : "published"}` })}
+          onTogglePin={(post) => toast({ title: `Post ${post.pinned ? "unpinned" : "pinned"}` })}
+          onDelete={(post) => { setDeletePost(post); setDeleteModalOpen(true); }}
+        />
+      )}
 
       {/* Modals */}
       <CreateEditPostModal
