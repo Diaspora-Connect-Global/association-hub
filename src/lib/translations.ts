@@ -672,6 +672,47 @@ type TranslationKeys = {
   // Card labels
   applicantsLabel: string;
   noOpportunitiesYetDesc: string;
+
+  // PostsCardView
+  noPostsYetDesc: string;
+  createFirstPostToEngage: string;
+
+  // RegistrationsDrawer
+  registrations: string;
+  forEvent: string;
+  searchAttendees: string;
+  allPayments: string;
+  allCheckInStatus: string;
+  checkedIn: string;
+  notCheckedIn: string;
+  refundedPayment: string;
+  attendee: string;
+  contact: string;
+  registeredAt: string;
+  markAsCheckedIn: string;
+  resendTicket: string;
+  removeAttendee: string;
+  noRegistrationsYet: string;
+  shareEventToAttract: string;
+
+  // ApplicantsDrawer
+  forOpportunity: string;
+  searchByNameEmailPhone: string;
+  bulkActions: string;
+  shortlistSelected: string;
+  messageSelected: string;
+  rejectSelected: string;
+  noApplicantsYet: string;
+  applicantsWillAppear: string;
+  appliedAt: string;
+  score: string;
+  viewApplication: string;
+  shortlist: string;
+  message: string;
+  reject: string;
+  markHired: string;
+  hired: string;
+  withdrawn: string;
 };
 
 const translations: Record<Language, TranslationKeys> = {
@@ -1351,6 +1392,47 @@ const translations: Record<Language, TranslationKeys> = {
     // Card labels
     applicantsLabel: "applicants",
     noOpportunitiesYetDesc: "Create your first opportunity to start receiving applicants",
+
+    // PostsCardView
+    noPostsYetDesc: "No posts yet",
+    createFirstPostToEngage: "Create your first post to engage members",
+
+    // RegistrationsDrawer
+    registrations: "Registrations",
+    forEvent: "For",
+    searchAttendees: "Search attendees...",
+    allPayments: "All Payments",
+    allCheckInStatus: "All Status",
+    checkedIn: "Checked In",
+    notCheckedIn: "Not Checked In",
+    refundedPayment: "Refunded",
+    attendee: "Attendee",
+    contact: "Contact",
+    registeredAt: "Registered",
+    markAsCheckedIn: "Mark as Checked In",
+    resendTicket: "Resend Ticket",
+    removeAttendee: "Remove Attendee",
+    noRegistrationsYet: "No registrations yet",
+    shareEventToAttract: "Share this event to attract participants.",
+
+    // ApplicantsDrawer
+    forOpportunity: "For",
+    searchByNameEmailPhone: "Search by name, email, phone",
+    bulkActions: "Bulk Actions",
+    shortlistSelected: "Shortlist Selected",
+    messageSelected: "Message Selected",
+    rejectSelected: "Reject Selected",
+    noApplicantsYet: "No applicants yet",
+    applicantsWillAppear: "Applicants will appear here after your opportunity is published",
+    appliedAt: "Applied At",
+    score: "Score",
+    viewApplication: "View Application",
+    shortlist: "Shortlist",
+    message: "Message",
+    reject: "Reject",
+    markHired: "Mark Hired",
+    hired: "Hired",
+    withdrawn: "Withdrawn",
   },
   fr: {
     // Navigation
@@ -2028,6 +2110,47 @@ const translations: Record<Language, TranslationKeys> = {
     // Card labels
     applicantsLabel: "candidats",
     noOpportunitiesYetDesc: "Créez votre première opportunité pour recevoir des candidatures",
+
+    // PostsCardView
+    noPostsYetDesc: "Pas encore de publications",
+    createFirstPostToEngage: "Créez votre première publication pour engager les membres",
+
+    // RegistrationsDrawer
+    registrations: "Inscriptions",
+    forEvent: "Pour",
+    searchAttendees: "Rechercher des participants...",
+    allPayments: "Tous les paiements",
+    allCheckInStatus: "Tous les statuts",
+    checkedIn: "Enregistré",
+    notCheckedIn: "Non enregistré",
+    refundedPayment: "Remboursé",
+    attendee: "Participant",
+    contact: "Contact",
+    registeredAt: "Inscrit",
+    markAsCheckedIn: "Marquer comme enregistré",
+    resendTicket: "Renvoyer le billet",
+    removeAttendee: "Retirer le participant",
+    noRegistrationsYet: "Pas encore d'inscriptions",
+    shareEventToAttract: "Partagez cet événement pour attirer des participants.",
+
+    // ApplicantsDrawer
+    forOpportunity: "Pour",
+    searchByNameEmailPhone: "Rechercher par nom, email, téléphone",
+    bulkActions: "Actions groupées",
+    shortlistSelected: "Présélectionner",
+    messageSelected: "Envoyer un message",
+    rejectSelected: "Rejeter",
+    noApplicantsYet: "Pas encore de candidats",
+    applicantsWillAppear: "Les candidats apparaîtront ici après la publication de votre opportunité",
+    appliedAt: "Postulé le",
+    score: "Score",
+    viewApplication: "Voir la candidature",
+    shortlist: "Présélectionner",
+    message: "Message",
+    reject: "Rejeter",
+    markHired: "Marquer embauché",
+    hired: "Embauché",
+    withdrawn: "Retiré",
   },
   de: {
     // Navigation
@@ -2705,6 +2828,47 @@ const translations: Record<Language, TranslationKeys> = {
     // Card labels
     applicantsLabel: "Bewerber",
     noOpportunitiesYetDesc: "Erstellen Sie Ihre erste Möglichkeit, um Bewerbungen zu erhalten",
+
+    // PostsCardView
+    noPostsYetDesc: "Noch keine Beiträge",
+    createFirstPostToEngage: "Erstellen Sie Ihren ersten Beitrag, um Mitglieder zu engagieren",
+
+    // RegistrationsDrawer
+    registrations: "Anmeldungen",
+    forEvent: "Für",
+    searchAttendees: "Teilnehmer suchen...",
+    allPayments: "Alle Zahlungen",
+    allCheckInStatus: "Alle Status",
+    checkedIn: "Eingecheckt",
+    notCheckedIn: "Nicht eingecheckt",
+    refundedPayment: "Erstattet",
+    attendee: "Teilnehmer",
+    contact: "Kontakt",
+    registeredAt: "Angemeldet",
+    markAsCheckedIn: "Als eingecheckt markieren",
+    resendTicket: "Ticket erneut senden",
+    removeAttendee: "Teilnehmer entfernen",
+    noRegistrationsYet: "Noch keine Anmeldungen",
+    shareEventToAttract: "Teilen Sie diese Veranstaltung, um Teilnehmer anzuziehen.",
+
+    // ApplicantsDrawer
+    forOpportunity: "Für",
+    searchByNameEmailPhone: "Nach Name, E-Mail, Telefon suchen",
+    bulkActions: "Massenaktionen",
+    shortlistSelected: "Ausgewählte vormerken",
+    messageSelected: "Ausgewählte kontaktieren",
+    rejectSelected: "Ausgewählte ablehnen",
+    noApplicantsYet: "Noch keine Bewerber",
+    applicantsWillAppear: "Bewerber erscheinen hier, nachdem Ihre Möglichkeit veröffentlicht wurde",
+    appliedAt: "Beworben am",
+    score: "Punktzahl",
+    viewApplication: "Bewerbung ansehen",
+    shortlist: "Vormerken",
+    message: "Nachricht",
+    reject: "Ablehnen",
+    markHired: "Als eingestellt markieren",
+    hired: "Eingestellt",
+    withdrawn: "Zurückgezogen",
   },
   nl: {
     // Navigation
@@ -3382,6 +3546,47 @@ const translations: Record<Language, TranslationKeys> = {
     // Card labels
     applicantsLabel: "sollicitanten",
     noOpportunitiesYetDesc: "Maak je eerste kans aan om sollicitaties te ontvangen",
+
+    // PostsCardView
+    noPostsYetDesc: "Nog geen berichten",
+    createFirstPostToEngage: "Maak je eerste bericht aan om leden te betrekken",
+
+    // RegistrationsDrawer
+    registrations: "Registraties",
+    forEvent: "Voor",
+    searchAttendees: "Deelnemers zoeken...",
+    allPayments: "Alle betalingen",
+    allCheckInStatus: "Alle statussen",
+    checkedIn: "Ingecheckt",
+    notCheckedIn: "Niet ingecheckt",
+    refundedPayment: "Terugbetaald",
+    attendee: "Deelnemer",
+    contact: "Contact",
+    registeredAt: "Geregistreerd",
+    markAsCheckedIn: "Markeren als ingecheckt",
+    resendTicket: "Ticket opnieuw verzenden",
+    removeAttendee: "Deelnemer verwijderen",
+    noRegistrationsYet: "Nog geen registraties",
+    shareEventToAttract: "Deel dit evenement om deelnemers aan te trekken.",
+
+    // ApplicantsDrawer
+    forOpportunity: "Voor",
+    searchByNameEmailPhone: "Zoeken op naam, e-mail, telefoon",
+    bulkActions: "Bulkacties",
+    shortlistSelected: "Geselecteerden shortlisten",
+    messageSelected: "Geselecteerden berichten",
+    rejectSelected: "Geselecteerden afwijzen",
+    noApplicantsYet: "Nog geen sollicitanten",
+    applicantsWillAppear: "Sollicitanten verschijnen hier nadat je kans is gepubliceerd",
+    appliedAt: "Gesolliciteerd op",
+    score: "Score",
+    viewApplication: "Sollicitatie bekijken",
+    shortlist: "Shortlisten",
+    message: "Bericht",
+    reject: "Afwijzen",
+    markHired: "Markeren als aangenomen",
+    hired: "Aangenomen",
+    withdrawn: "Teruggetrokken",
   },
   es: {
     // Navigation
@@ -4047,6 +4252,47 @@ const translations: Record<Language, TranslationKeys> = {
     // Card labels
     applicantsLabel: "solicitantes",
     noOpportunitiesYetDesc: "Crea tu primera oportunidad para empezar a recibir solicitudes",
+
+    // PostsCardView
+    noPostsYetDesc: "Aún no hay publicaciones",
+    createFirstPostToEngage: "Crea tu primera publicación para involucrar a los miembros",
+
+    // RegistrationsDrawer
+    registrations: "Registros",
+    forEvent: "Para",
+    searchAttendees: "Buscar asistentes...",
+    allPayments: "Todos los pagos",
+    allCheckInStatus: "Todos los estados",
+    checkedIn: "Registrado",
+    notCheckedIn: "No registrado",
+    refundedPayment: "Reembolsado",
+    attendee: "Asistente",
+    contact: "Contacto",
+    registeredAt: "Registrado",
+    markAsCheckedIn: "Marcar como registrado",
+    resendTicket: "Reenviar ticket",
+    removeAttendee: "Eliminar asistente",
+    noRegistrationsYet: "Aún no hay registros",
+    shareEventToAttract: "Comparte este evento para atraer participantes.",
+
+    // ApplicantsDrawer
+    forOpportunity: "Para",
+    searchByNameEmailPhone: "Buscar por nombre, email, teléfono",
+    bulkActions: "Acciones masivas",
+    shortlistSelected: "Preseleccionar",
+    messageSelected: "Enviar mensaje",
+    rejectSelected: "Rechazar",
+    noApplicantsYet: "Aún no hay solicitantes",
+    applicantsWillAppear: "Los solicitantes aparecerán aquí después de publicar tu oportunidad",
+    appliedAt: "Aplicó el",
+    score: "Puntuación",
+    viewApplication: "Ver solicitud",
+    shortlist: "Preseleccionar",
+    message: "Mensaje",
+    reject: "Rechazar",
+    markHired: "Marcar contratado",
+    hired: "Contratado",
+    withdrawn: "Retirado",
   },
 };
 

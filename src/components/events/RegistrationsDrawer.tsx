@@ -40,6 +40,7 @@ import {
   UserX,
   Users
 } from "lucide-react";
+import { useT } from "@/hooks/useT";
 
 interface RegistrationsDrawerProps {
   open: boolean;
@@ -92,6 +93,7 @@ export function RegistrationsDrawer({
   const [searchQuery, setSearchQuery] = useState("");
   const [paymentFilter, setPaymentFilter] = useState<string>("all");
   const [checkInFilter, setCheckInFilter] = useState<string>("all");
+  const t = useT();
 
   if (!event) return null;
 
@@ -111,8 +113,8 @@ export function RegistrationsDrawer({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="w-full sm:max-w-3xl overflow-y-auto">
         <SheetHeader>
-          <SheetTitle>Registrations</SheetTitle>
-          <p className="text-sm text-muted-foreground">For: {event.title}</p>
+          <SheetTitle>{t.registrations}</SheetTitle>
+          <p className="text-sm text-muted-foreground">{t.forEvent}: {event.title}</p>
         </SheetHeader>
 
         <div className="mt-6 space-y-4">
@@ -121,7 +123,7 @@ export function RegistrationsDrawer({
             <div className="relative flex-1 min-w-[200px]">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search attendees..."
+                placeholder={t.searchAttendees}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-9"
@@ -130,24 +132,24 @@ export function RegistrationsDrawer({
             {event.isPaid && (
               <Select value={paymentFilter} onValueChange={setPaymentFilter}>
                 <SelectTrigger className="w-[140px]">
-                  <SelectValue placeholder="Payment" />
+                  <SelectValue placeholder={t.payment} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Payments</SelectItem>
-                  <SelectItem value="paid">Paid</SelectItem>
-                  <SelectItem value="pending">Pending</SelectItem>
-                  <SelectItem value="refunded">Refunded</SelectItem>
+                  <SelectItem value="all">{t.allPayments}</SelectItem>
+                  <SelectItem value="paid">{t.paidStatus}</SelectItem>
+                  <SelectItem value="pending">{t.pending}</SelectItem>
+                  <SelectItem value="refunded">{t.refundedPayment}</SelectItem>
                 </SelectContent>
               </Select>
             )}
             <Select value={checkInFilter} onValueChange={setCheckInFilter}>
               <SelectTrigger className="w-[140px]">
-                <SelectValue placeholder="Check-in" />
+                <SelectValue placeholder={t.status} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="checked-in">Checked In</SelectItem>
-                <SelectItem value="not-checked-in">Not Checked In</SelectItem>
+                <SelectItem value="all">{t.allCheckInStatus}</SelectItem>
+                <SelectItem value="checked-in">{t.checkedIn}</SelectItem>
+                <SelectItem value="not-checked-in">{t.notCheckedIn}</SelectItem>
               </SelectContent>
             </Select>
             <Button variant="outline" size="icon">
@@ -161,11 +163,11 @@ export function RegistrationsDrawer({
               <Table>
                 <TableHeader>
                   <TableRow className="bg-muted/50">
-                    <TableHead>Attendee</TableHead>
-                    <TableHead>Contact</TableHead>
-                    {event.isPaid && <TableHead>Payment</TableHead>}
-                    <TableHead>Check-in</TableHead>
-                    <TableHead>Registered</TableHead>
+                    <TableHead>{t.attendee}</TableHead>
+                    <TableHead>{t.contact}</TableHead>
+                    {event.isPaid && <TableHead>{t.payment}</TableHead>}
+                    <TableHead>{t.status}</TableHead>
+                    <TableHead>{t.registeredAt}</TableHead>
                     <TableHead className="w-[50px]"></TableHead>
                   </TableRow>
                 </TableHeader>
@@ -208,7 +210,7 @@ export function RegistrationsDrawer({
                         <StatusBadge
                           variant={registration.checkInStatus === "checked-in" ? "active" : "inactive"}
                         >
-                          {registration.checkInStatus === "checked-in" ? "Checked In" : "Not Checked In"}
+                          {registration.checkInStatus === "checked-in" ? t.checkedIn : t.notCheckedIn}
                         </StatusBadge>
                       </TableCell>
                       <TableCell className="text-muted-foreground">
@@ -224,15 +226,15 @@ export function RegistrationsDrawer({
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem>
                               <CheckCircle className="mr-2 h-4 w-4" />
-                              Mark as Checked In
+                              {t.markAsCheckedIn}
                             </DropdownMenuItem>
                             <DropdownMenuItem>
                               <Send className="mr-2 h-4 w-4" />
-                              Resend Ticket
+                              {t.resendTicket}
                             </DropdownMenuItem>
                             <DropdownMenuItem className="text-destructive">
                               <UserX className="mr-2 h-4 w-4" />
-                              Remove Attendee
+                              {t.removeAttendee}
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
@@ -245,9 +247,9 @@ export function RegistrationsDrawer({
           ) : (
             <div className="text-center py-12 border border-dashed border-border rounded-lg">
               <Users className="h-12 w-12 mx-auto text-muted-foreground/50 mb-3" />
-              <h3 className="text-lg font-medium text-foreground mb-1">No registrations yet</h3>
+              <h3 className="text-lg font-medium text-foreground mb-1">{t.noRegistrationsYet}</h3>
               <p className="text-sm text-muted-foreground">
-                Share this event to attract participants.
+                {t.shareEventToAttract}
               </p>
             </div>
           )}
