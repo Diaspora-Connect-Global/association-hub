@@ -16,7 +16,6 @@ import {
   Loader2,
   Plus,
   Trash2,
-  GripVertical,
   Clock,
   DollarSign,
   AlertCircle,
@@ -109,8 +108,8 @@ export default function VendorEscrowSettings() {
   const handleSave = async () => {
     if (settings.escrowEnabled && totalPercentage !== 100) {
       toast({
-        title: "Invalid Milestone Configuration",
-        description: "Milestone percentages must total exactly 100%",
+        title: t.error,
+        description: t.milestones + " " + t.milestonePercentage + " = 100%",
         variant: "destructive",
       });
       return;
@@ -120,16 +119,16 @@ export default function VendorEscrowSettings() {
     await new Promise((resolve) => setTimeout(resolve, 1000));
     setIsSaving(false);
     toast({
-      title: "Settings Saved",
-      description: "Your escrow settings have been updated successfully.",
+      title: t.settingsSaved,
+      description: t.escrowSettings,
     });
   };
 
   const handleAddMilestone = () => {
     if (!newMilestone.name || newMilestone.percentage === undefined || newMilestone.percentage <= 0) {
       toast({
-        title: "Invalid Milestone",
-        description: "Please provide a name and valid percentage.",
+        title: t.error,
+        description: t.milestoneName + " & " + t.milestonePercentage,
         variant: "destructive",
       });
       return;
@@ -137,8 +136,8 @@ export default function VendorEscrowSettings() {
 
     if (newMilestone.percentage > remainingPercentage) {
       toast({
-        title: "Invalid Percentage",
-        description: `Maximum available percentage is ${remainingPercentage}%`,
+        title: t.error,
+        description: `${remainingPercentage}% max`,
         variant: "destructive",
       });
       return;
@@ -161,8 +160,8 @@ export default function VendorEscrowSettings() {
     setShowAddMilestone(false);
     
     toast({
-      title: "Milestone Added",
-      description: `"${milestone.name}" has been added to your template.`,
+      title: t.success,
+      description: `"${milestone.name}" ${t.addMilestone}`,
     });
   };
 
@@ -176,8 +175,8 @@ export default function VendorEscrowSettings() {
     setShowDeleteDialog(false);
     setMilestoneToDelete(null);
     toast({
-      title: "Milestone Removed",
-      description: "The milestone has been removed from your template.",
+      title: t.success,
+      description: t.deleteMilestone,
     });
   };
 
@@ -207,7 +206,7 @@ export default function VendorEscrowSettings() {
   };
 
   return (
-    <AdminLayout title="Escrow & Milestones Settings" subtitle="Configure your escrow payment and milestone release preferences">
+    <AdminLayout title={t.escrowMilestones} subtitle={t.secureTransactions}>
       <TooltipProvider>
         <div className="max-w-4xl space-y-6">
           {/* Escrow Overview Card */}
@@ -217,10 +216,10 @@ export default function VendorEscrowSettings() {
                 <div>
                   <CardTitle className="flex items-center gap-2">
                     <Shield className="h-5 w-5 text-primary" />
-                    Escrow Protection
+                    {t.escrowProtection}
                   </CardTitle>
                   <CardDescription className="mt-1">
-                    Secure your transactions with milestone-based payments
+                    {t.secureTransactions}
                   </CardDescription>
                 </div>
                 <Switch
@@ -239,8 +238,8 @@ export default function VendorEscrowSettings() {
                       <CheckCircle2 className="h-4 w-4 text-green-500" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium">Buyer Protected</p>
-                      <p className="text-xs text-muted-foreground">Funds held until delivery</p>
+                      <p className="text-sm font-medium">{t.buyerProtected}</p>
+                      <p className="text-xs text-muted-foreground">{t.fundsHeldUntilDelivery}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3 p-3 rounded-lg bg-background border">
@@ -248,8 +247,8 @@ export default function VendorEscrowSettings() {
                       <Clock className="h-4 w-4 text-blue-500" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium">{settings.disputeWindowDays} Day Dispute Window</p>
-                      <p className="text-xs text-muted-foreground">Time to raise issues</p>
+                      <p className="text-sm font-medium">{settings.disputeWindowDays} {t.disputeWindow}</p>
+                      <p className="text-xs text-muted-foreground">{t.timeToRaiseIssues}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3 p-3 rounded-lg bg-background border">
@@ -257,8 +256,8 @@ export default function VendorEscrowSettings() {
                       <DollarSign className="h-4 w-4 text-amber-500" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium">{settings.escrowFeePercentage}% Fee</p>
-                      <p className="text-xs text-muted-foreground">Per transaction</p>
+                      <p className="text-sm font-medium">{settings.escrowFeePercentage}% {t.escrowFee}</p>
+                      <p className="text-xs text-muted-foreground">{t.perTransaction}</p>
                     </div>
                   </div>
                 </div>
@@ -275,10 +274,10 @@ export default function VendorEscrowSettings() {
                     <div>
                       <CardTitle className="flex items-center gap-2">
                         <Milestone className="h-5 w-5" />
-                        Default Milestone Template
+                        {t.defaultMilestoneTemplate}
                       </CardTitle>
                       <CardDescription>
-                        Set up your standard payment milestones for new orders
+                        {t.setUpStandardMilestones}
                       </CardDescription>
                     </div>
                     <Button
@@ -287,7 +286,7 @@ export default function VendorEscrowSettings() {
                       disabled={remainingPercentage <= 0}
                     >
                       <Plus className="h-4 w-4 mr-1" />
-                      Add Milestone
+                      {t.addMilestone}
                     </Button>
                   </div>
                 </CardHeader>
@@ -295,7 +294,7 @@ export default function VendorEscrowSettings() {
                   {/* Progress Bar */}
                   <div className="space-y-2">
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">Total Allocation</span>
+                      <span className="text-muted-foreground">{t.totalAllocation}</span>
                       <span className={totalPercentage === 100 ? "text-green-500 font-medium" : "text-amber-500 font-medium"}>
                         {totalPercentage}% / 100%
                       </span>
@@ -307,7 +306,7 @@ export default function VendorEscrowSettings() {
                     {totalPercentage !== 100 && (
                       <div className="flex items-center gap-2 text-xs text-amber-600">
                         <AlertCircle className="h-3 w-3" />
-                        Milestones must total exactly 100% before saving
+                        {t.milestones} = 100%
                       </div>
                     )}
                   </div>
@@ -319,8 +318,8 @@ export default function VendorEscrowSettings() {
                     {settings.defaultMilestones.length === 0 ? (
                       <div className="text-center py-8 text-muted-foreground">
                         <Milestone className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                        <p>No milestones configured</p>
-                        <p className="text-sm">Add milestones to define your payment schedule</p>
+                        <p>{t.milestones}</p>
+                        <p className="text-sm">{t.addMilestone}</p>
                       </div>
                     ) : (
                       settings.defaultMilestones.map((milestone, index) => (
@@ -355,7 +354,7 @@ export default function VendorEscrowSettings() {
                           <div className="flex-1 space-y-3">
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                               <div className="md:col-span-2">
-                                <Label className="text-xs text-muted-foreground">Milestone Name</Label>
+                                <Label className="text-xs text-muted-foreground">{t.milestoneName}</Label>
                                 <Input
                                   value={milestone.name}
                                   onChange={(e) => handleUpdateMilestone(milestone.id, "name", e.target.value)}
@@ -363,7 +362,7 @@ export default function VendorEscrowSettings() {
                                 />
                               </div>
                               <div>
-                                <Label className="text-xs text-muted-foreground">Percentage</Label>
+                                <Label className="text-xs text-muted-foreground">{t.milestonePercentage}</Label>
                                 <div className="relative mt-1">
                                   <Input
                                     type="number"
@@ -378,11 +377,11 @@ export default function VendorEscrowSettings() {
                               </div>
                             </div>
                             <div>
-                              <Label className="text-xs text-muted-foreground">Description (optional)</Label>
+                              <Label className="text-xs text-muted-foreground">{t.milestoneDescription}</Label>
                               <Textarea
                                 value={milestone.description || ""}
                                 onChange={(e) => handleUpdateMilestone(milestone.id, "description", e.target.value)}
-                                placeholder="Describe what triggers this milestone..."
+                                placeholder={t.milestoneDescription}
                                 className="mt-1 min-h-[60px]"
                               />
                             </div>
@@ -402,7 +401,7 @@ export default function VendorEscrowSettings() {
                                 <Trash2 className="h-4 w-4" />
                               </Button>
                             </TooltipTrigger>
-                            <TooltipContent>Delete milestone</TooltipContent>
+                            <TooltipContent>{t.deleteMilestone}</TooltipContent>
                           </Tooltip>
                         </div>
                       ))
@@ -415,21 +414,21 @@ export default function VendorEscrowSettings() {
                       <Separator />
                       <div className="p-4 rounded-lg border-2 border-dashed border-primary/30 bg-primary/5 space-y-4">
                         <div className="flex items-center justify-between">
-                          <h4 className="font-medium">New Milestone</h4>
-                          <Badge variant="secondary">{remainingPercentage}% available</Badge>
+                          <h4 className="font-medium">{t.milestone}</h4>
+                          <Badge variant="secondary">{remainingPercentage}%</Badge>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                           <div className="md:col-span-2">
-                            <Label>Name *</Label>
+                            <Label>{t.milestoneName} *</Label>
                             <Input
                               value={newMilestone.name}
                               onChange={(e) => setNewMilestone((prev) => ({ ...prev, name: e.target.value }))}
-                              placeholder="e.g., Quality Check Complete"
+                              placeholder={t.milestoneName}
                               className="mt-1"
                             />
                           </div>
                           <div>
-                            <Label>Percentage *</Label>
+                            <Label>{t.milestonePercentage} *</Label>
                             <div className="relative mt-1">
                               <Input
                                 type="number"
@@ -445,21 +444,21 @@ export default function VendorEscrowSettings() {
                           </div>
                         </div>
                         <div>
-                          <Label>Description</Label>
+                          <Label>{t.milestoneDescription}</Label>
                           <Textarea
                             value={newMilestone.description || ""}
                             onChange={(e) => setNewMilestone((prev) => ({ ...prev, description: e.target.value }))}
-                            placeholder="Describe what triggers this milestone..."
+                            placeholder={t.milestoneDescription}
                             className="mt-1"
                           />
                         </div>
                         <div className="flex justify-end gap-2">
                           <Button variant="outline" onClick={() => setShowAddMilestone(false)}>
-                            Cancel
+                            {t.cancel}
                           </Button>
                           <Button onClick={handleAddMilestone}>
                             <Plus className="h-4 w-4 mr-1" />
-                            Add Milestone
+                            {t.addMilestone}
                           </Button>
                         </div>
                       </div>
@@ -473,22 +472,22 @@ export default function VendorEscrowSettings() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Settings2 className="h-5 w-5" />
-                    Escrow Configuration
+                    {t.escrowConfiguration}
                   </CardTitle>
                   <CardDescription>
-                    Fine-tune your escrow and release settings
+                    {t.fineTuneEscrowSettings}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
-                        <Label>Preferred Currency</Label>
+                        <Label>{t.preferredCurrency}</Label>
                         <Tooltip>
                           <TooltipTrigger>
                             <Info className="h-3.5 w-3.5 text-muted-foreground" />
                           </TooltipTrigger>
-                          <TooltipContent>Currency for your escrow transactions</TooltipContent>
+                          <TooltipContent>{t.currencyForEscrow}</TooltipContent>
                         </Tooltip>
                       </div>
                       <Select
@@ -516,12 +515,12 @@ export default function VendorEscrowSettings() {
 
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
-                        <Label>Minimum Order Amount</Label>
+                        <Label>{t.minimumOrderAmount}</Label>
                         <Tooltip>
                           <TooltipTrigger>
                             <Info className="h-3.5 w-3.5 text-muted-foreground" />
                           </TooltipTrigger>
-                          <TooltipContent>Orders below this amount skip escrow</TooltipContent>
+                          <TooltipContent>{t.ordersBelowSkipEscrow}</TooltipContent>
                         </Tooltip>
                       </div>
                       <div className="relative">
@@ -545,13 +544,13 @@ export default function VendorEscrowSettings() {
 
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
-                        <Label>Auto-Release After (Days)</Label>
+                        <Label>{t.autoReleaseAfterDays}</Label>
                         <Tooltip>
                           <TooltipTrigger>
                             <Info className="h-3.5 w-3.5 text-muted-foreground" />
                           </TooltipTrigger>
                           <TooltipContent>
-                            Days to auto-release funds if buyer doesn't confirm. Set 0 for manual only.
+                            {t.autoReleaseNote}
                           </TooltipContent>
                         </Tooltip>
                       </div>
@@ -569,19 +568,19 @@ export default function VendorEscrowSettings() {
                       />
                       <p className="text-xs text-muted-foreground">
                         {settings.autoReleaseAfterDays === 0
-                          ? "Manual release only - buyer must confirm each milestone"
-                          : `Funds auto-release ${settings.autoReleaseAfterDays} days after milestone completion`}
+                          ? t.manualReleaseOnly
+                          : `${settings.autoReleaseAfterDays} ${t.autoReleaseAfterDays}`}
                       </p>
                     </div>
 
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
-                        <Label>Dispute Window (Days)</Label>
+                        <Label>{t.disputeWindowDays}</Label>
                         <Tooltip>
                           <TooltipTrigger>
                             <Info className="h-3.5 w-3.5 text-muted-foreground" />
                           </TooltipTrigger>
-                          <TooltipContent>Days buyer can dispute after delivery</TooltipContent>
+                          <TooltipContent>{t.daysToDispute}</TooltipContent>
                         </Tooltip>
                       </div>
                       <Input
@@ -603,9 +602,9 @@ export default function VendorEscrowSettings() {
 
                   <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
-                      <Label>Require Buyer Confirmation</Label>
+                      <Label>{t.requireBuyerConfirmation}</Label>
                       <p className="text-xs text-muted-foreground">
-                        Buyer must explicitly confirm each milestone before funds release
+                        {t.buyerMustConfirm}
                       </p>
                     </div>
                     <Switch
@@ -620,11 +619,9 @@ export default function VendorEscrowSettings() {
                     <div className="flex items-start gap-3">
                       <Info className="h-5 w-5 text-primary mt-0.5" />
                       <div className="space-y-1">
-                        <p className="text-sm font-medium">Escrow Fee Information</p>
+                        <p className="text-sm font-medium">{t.escrowFeeInfo}</p>
                         <p className="text-xs text-muted-foreground">
-                          A {settings.escrowFeePercentage}% escrow fee is applied to each transaction to cover
-                          payment processing and dispute resolution services. This fee is deducted from the
-                          released amount.
+                          {settings.escrowFeePercentage}% {t.escrowFeeDescription}
                         </p>
                       </div>
                     </div>
@@ -636,14 +633,14 @@ export default function VendorEscrowSettings() {
 
           {/* Save Button */}
           <div className="flex justify-end gap-3 pt-4">
-            <Button variant="outline">Cancel</Button>
+            <Button variant="outline">{t.cancel}</Button>
             <Button onClick={handleSave} disabled={isSaving || (settings.escrowEnabled && totalPercentage !== 100)}>
               {isSaving ? (
                 <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
               ) : (
                 <Save className="h-4 w-4 mr-1.5" />
               )}
-              Save Settings
+              {t.saveSettings}
             </Button>
           </div>
         </div>
@@ -652,19 +649,18 @@ export default function VendorEscrowSettings() {
         <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Delete Milestone?</AlertDialogTitle>
+              <AlertDialogTitle>{t.deleteMilestone}?</AlertDialogTitle>
               <AlertDialogDescription>
-                This will remove the milestone from your template. You'll need to redistribute the
-                percentage to other milestones.
+                {t.milestoneDescription}
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogCancel>{t.cancel}</AlertDialogCancel>
               <AlertDialogAction
                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                 onClick={() => milestoneToDelete && handleDeleteMilestone(milestoneToDelete)}
               >
-                Delete
+                {t.delete}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>

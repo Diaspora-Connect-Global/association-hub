@@ -31,7 +31,6 @@ import {
   Shield,
   AlertTriangle,
   Trash2,
-  Edit2,
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useT } from "@/hooks/useT";
@@ -94,11 +93,34 @@ export function EscrowMilestonesSection({
 
   const currencySymbol = escrowOrder.currency === "USD" ? "$" : escrowOrder.currency === "EUR" ? "€" : "₵";
 
+  // Status label helper
+  const getStatusLabel = (status: MilestoneStatus): string => {
+    switch (status) {
+      case "pending": return t.pendingMilestone;
+      case "in_progress": return t.inProgressMilestone;
+      case "completed": return t.completedMilestone;
+      case "released": return t.releasedMilestone;
+      case "disputed": return t.disputedMilestone;
+      default: return status;
+    }
+  };
+
+  const getEscrowStatusLabel = (status: EscrowStatus): string => {
+    switch (status) {
+      case "held": return t.held;
+      case "partially_released": return t.partiallyReleased;
+      case "fully_released": return t.fullyReleased;
+      case "disputed": return t.disputed;
+      case "refunded": return t.refunded;
+      default: return status;
+    }
+  };
+
   const handleAddMilestone = () => {
     if (!newMilestoneName.trim() || !newMilestonePercent) {
       toast({
-        title: "Validation Error",
-        description: "Please provide milestone name and percentage.",
+        title: t.error,
+        description: t.milestoneName + " & " + t.milestonePercentage,
         variant: "destructive",
       });
       return;
@@ -107,8 +129,8 @@ export function EscrowMilestonesSection({
     const percentage = parseFloat(newMilestonePercent);
     if (percentage <= 0 || percentage > remainingPercentage) {
       toast({
-        title: "Invalid Percentage",
-        description: `Percentage must be between 1 and ${remainingPercentage}%.`,
+        title: t.error,
+        description: `${t.milestonePercentage}: 1-${remainingPercentage}%`,
         variant: "destructive",
       });
       return;
@@ -128,8 +150,8 @@ export function EscrowMilestonesSection({
     setAddMilestoneOpen(false);
 
     toast({
-      title: "Milestone Added",
-      description: `"${newMilestoneName}" milestone has been added.`,
+      title: t.success,
+      description: `"${newMilestoneName}" ${t.addMilestone}`,
     });
   };
 
@@ -137,16 +159,16 @@ export function EscrowMilestonesSection({
     onMilestoneRelease?.(milestoneId);
     setConfirmReleaseId(null);
     toast({
-      title: "Funds Released",
-      description: "The milestone funds have been released to the vendor.",
+      title: t.success,
+      description: t.releasePayment,
     });
   };
 
   const handleDispute = () => {
     if (!disputeReason.trim()) {
       toast({
-        title: "Validation Error",
-        description: "Please provide a reason for the dispute.",
+        title: t.error,
+        description: t.disputeReason,
         variant: "destructive",
       });
       return;
@@ -156,8 +178,8 @@ export function EscrowMilestonesSection({
     setDisputeDialogOpen(false);
     setDisputeReason("");
     toast({
-      title: "Dispute Raised",
-      description: "Your dispute has been submitted for review.",
+      title: t.success,
+      description: t.raiseDispute,
     });
   };
 
@@ -167,27 +189,27 @@ export function EscrowMilestonesSection({
       <div className="p-4 rounded-lg bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20">
         <div className="flex items-center gap-2 mb-3">
           <Shield className="h-5 w-5 text-primary" />
-          <h4 className="font-semibold text-foreground">Escrow Protected</h4>
+          <h4 className="font-semibold text-foreground">{t.escrowProtection}</h4>
           <StatusBadge variant={escrowStatusVariants[escrowOrder.status]}>
-            {escrowOrder.status.replace("_", " ")}
+            {getEscrowStatusLabel(escrowOrder.status)}
           </StatusBadge>
         </div>
 
         <div className="grid grid-cols-3 gap-4 text-sm">
           <div>
-            <p className="text-muted-foreground">Total Amount</p>
+            <p className="text-muted-foreground">{t.total}</p>
             <p className="text-lg font-bold text-foreground">
               {currencySymbol}{escrowOrder.totalAmount.toFixed(2)}
             </p>
           </div>
           <div>
-            <p className="text-muted-foreground">Held in Escrow</p>
+            <p className="text-muted-foreground">{t.heldAmount}</p>
             <p className="text-lg font-bold text-primary">
               {currencySymbol}{escrowOrder.heldAmount.toFixed(2)}
             </p>
           </div>
           <div>
-            <p className="text-muted-foreground">Released</p>
+            <p className="text-muted-foreground">{t.releasedAmount}</p>
             <p className="text-lg font-bold text-green-600">
               {currencySymbol}{escrowOrder.releasedAmount.toFixed(2)}
             </p>
@@ -196,7 +218,7 @@ export function EscrowMilestonesSection({
 
         <div className="mt-3">
           <div className="flex justify-between text-xs text-muted-foreground mb-1">
-            <span>Release Progress</span>
+            <span>{t.releasePayment}</span>
             <span>{releasedPercentage}%</span>
           </div>
           <Progress value={releasedPercentage} className="h-2" />
@@ -210,7 +232,7 @@ export function EscrowMilestonesSection({
         <div className="flex items-center justify-between mb-3">
           <h4 className="font-semibold text-foreground flex items-center gap-2">
             <Clock className="h-4 w-4" />
-            Milestones ({escrowOrder.milestones.length})
+            {t.milestones} ({escrowOrder.milestones.length})
           </h4>
           {isAdmin && remainingPercentage > 0 && (
             <Button
@@ -219,7 +241,7 @@ export function EscrowMilestonesSection({
               onClick={() => setAddMilestoneOpen(true)}
             >
               <Plus className="h-4 w-4 mr-1" />
-              Add Milestone
+              {t.addMilestone}
             </Button>
           )}
         </div>
@@ -227,7 +249,7 @@ export function EscrowMilestonesSection({
         {escrowOrder.milestones.length === 0 ? (
           <div className="text-center py-8 border border-dashed rounded-lg">
             <DollarSign className="h-10 w-10 mx-auto text-muted-foreground/50 mb-2" />
-            <p className="text-sm text-muted-foreground">No milestones defined yet.</p>
+            <p className="text-sm text-muted-foreground">{t.milestones}</p>
             {isAdmin && (
               <Button
                 variant="link"
@@ -235,7 +257,7 @@ export function EscrowMilestonesSection({
                 className="mt-2"
                 onClick={() => setAddMilestoneOpen(true)}
               >
-                Add the first milestone
+                {t.addMilestone}
               </Button>
             )}
           </div>
@@ -254,7 +276,7 @@ export function EscrowMilestonesSection({
                       </span>
                       <h5 className="font-medium text-foreground">{milestone.name}</h5>
                       <StatusBadge variant={statusVariants[milestone.status]}>
-                        {milestone.status.replace("_", " ")}
+                        {getStatusLabel(milestone.status)}
                       </StatusBadge>
                     </div>
                     {milestone.description && (
@@ -268,13 +290,13 @@ export function EscrowMilestonesSection({
                       {milestone.dueDate && (
                         <span className="text-muted-foreground">
                           <Clock className="h-3 w-3 inline mr-1" />
-                          Due: {milestone.dueDate}
+                          {milestone.dueDate}
                         </span>
                       )}
                       {milestone.releasedAt && (
                         <span className="text-green-600">
                           <CheckCircle2 className="h-3 w-3 inline mr-1" />
-                          Released: {milestone.releasedAt}
+                          {t.releasedMilestone}: {milestone.releasedAt}
                         </span>
                       )}
                     </div>
@@ -288,7 +310,7 @@ export function EscrowMilestonesSection({
                         size="sm"
                         onClick={() => onMilestoneComplete?.(milestone.id)}
                       >
-                        Mark Complete
+                        {t.completedMilestone}
                       </Button>
                     )}
 
@@ -300,7 +322,7 @@ export function EscrowMilestonesSection({
                         onClick={() => setConfirmReleaseId(milestone.id)}
                       >
                         <CheckCircle2 className="h-4 w-4 mr-1" />
-                        Confirm & Release
+                        {t.confirmRelease}
                       </Button>
                     )}
 
@@ -324,7 +346,7 @@ export function EscrowMilestonesSection({
 
         {remainingPercentage > 0 && escrowOrder.milestones.length > 0 && (
           <p className="text-xs text-muted-foreground mt-2">
-            {remainingPercentage}% remaining to be allocated to milestones
+            {remainingPercentage}% {t.milestonePercentage}
           </p>
         )}
       </div>
@@ -336,7 +358,7 @@ export function EscrowMilestonesSection({
           <div className="flex items-center justify-between p-3 rounded-lg bg-destructive/5 border border-destructive/20">
             <div className="flex items-center gap-2 text-sm">
               <AlertTriangle className="h-4 w-4 text-destructive" />
-              <span className="text-muted-foreground">Issue with this order?</span>
+              <span className="text-muted-foreground">{t.disputeOrder}?</span>
             </div>
             <Button
               variant="outline"
@@ -344,7 +366,7 @@ export function EscrowMilestonesSection({
               className="text-destructive border-destructive/30 hover:bg-destructive/10"
               onClick={() => setDisputeDialogOpen(true)}
             >
-              Raise Dispute
+              {t.raiseDispute}
             </Button>
           </div>
         </>
@@ -354,21 +376,21 @@ export function EscrowMilestonesSection({
       <Dialog open={addMilestoneOpen} onOpenChange={setAddMilestoneOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Add Milestone</DialogTitle>
+            <DialogTitle>{t.addMilestone}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <label className="text-sm font-medium">Milestone Name *</label>
+              <label className="text-sm font-medium">{t.milestoneName} *</label>
               <Input
-                placeholder="e.g., Design Approval"
+                placeholder={t.milestoneName}
                 value={newMilestoneName}
                 onChange={(e) => setNewMilestoneName(e.target.value)}
               />
             </div>
             <div>
-              <label className="text-sm font-medium">Description</label>
+              <label className="text-sm font-medium">{t.milestoneDescription}</label>
               <Textarea
-                placeholder="Describe what needs to be completed..."
+                placeholder={t.milestoneDescription}
                 value={newMilestoneDesc}
                 onChange={(e) => setNewMilestoneDesc(e.target.value)}
                 rows={2}
@@ -376,18 +398,18 @@ export function EscrowMilestonesSection({
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-sm font-medium">Percentage (max {remainingPercentage}%) *</label>
+                <label className="text-sm font-medium">{t.milestonePercentage} (max {remainingPercentage}%) *</label>
                 <Input
                   type="number"
                   min={1}
                   max={remainingPercentage}
-                  placeholder="e.g., 25"
+                  placeholder="25"
                   value={newMilestonePercent}
                   onChange={(e) => setNewMilestonePercent(e.target.value)}
                 />
               </div>
               <div>
-                <label className="text-sm font-medium">Due Date</label>
+                <label className="text-sm font-medium">{t.date}</label>
                 <Input
                   type="date"
                   value={newMilestoneDueDate}
@@ -397,7 +419,7 @@ export function EscrowMilestonesSection({
             </div>
             {newMilestonePercent && (
               <p className="text-sm text-muted-foreground">
-                Amount: {currencySymbol}{((parseFloat(newMilestonePercent) / 100) * escrowOrder.totalAmount).toFixed(2)}
+                {t.total}: {currencySymbol}{((parseFloat(newMilestonePercent) / 100) * escrowOrder.totalAmount).toFixed(2)}
               </p>
             )}
           </div>
@@ -405,7 +427,7 @@ export function EscrowMilestonesSection({
             <Button variant="outline" onClick={() => setAddMilestoneOpen(false)}>
               {t.cancel}
             </Button>
-            <Button onClick={handleAddMilestone}>Add Milestone</Button>
+            <Button onClick={handleAddMilestone}>{t.addMilestone}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -414,16 +436,15 @@ export function EscrowMilestonesSection({
       <AlertDialog open={!!confirmReleaseId} onOpenChange={() => setConfirmReleaseId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Confirm Fund Release</AlertDialogTitle>
+            <AlertDialogTitle>{t.confirmRelease}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to release the funds for this milestone? This action cannot be undone.
-              The vendor will receive the payment once you confirm.
+              {t.releasePayment}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t.cancel}</AlertDialogCancel>
             <AlertDialogAction onClick={() => confirmReleaseId && handleConfirmRelease(confirmReleaseId)}>
-              Yes, Release Funds
+              {t.confirmRelease}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -435,16 +456,15 @@ export function EscrowMilestonesSection({
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-destructive">
               <AlertTriangle className="h-5 w-5" />
-              Raise a Dispute
+              {t.raiseDispute}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              Please describe the issue with this order. Our team will review your dispute
-              and the escrowed funds will be held until resolution.
+              {t.disputeReason}
             </p>
             <Textarea
-              placeholder="Describe the problem in detail..."
+              placeholder={t.disputeReason}
               value={disputeReason}
               onChange={(e) => setDisputeReason(e.target.value)}
               rows={4}
@@ -455,7 +475,7 @@ export function EscrowMilestonesSection({
               {t.cancel}
             </Button>
             <Button variant="destructive" onClick={handleDispute}>
-              Submit Dispute
+              {t.raiseDispute}
             </Button>
           </DialogFooter>
         </DialogContent>
