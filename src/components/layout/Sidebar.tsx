@@ -32,7 +32,8 @@ const navItems = [
   { id: "orders", label: "Orders", icon: Package, path: "/orders" },
   { id: "groups", label: "Groups", icon: Users, path: "/groups" },
   { id: "tickets", label: "Support Tickets", icon: LifeBuoy, path: "/tickets" },
-  { id: "audit", label: "Audit Logs", icon: BarChart2, path: "/audit-logs" },
+  { id: "analytics", label: "Analytics", icon: BarChart2, path: "/analytics" },
+  { id: "audit", label: "Audit Logs", icon: FileText, path: "/audit-logs" },
   { id: "settings", label: "Settings", icon: Settings, path: "/settings" },
 ];
 

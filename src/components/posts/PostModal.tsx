@@ -1,9 +1,9 @@
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { Badge } from "@/components/ui/badge";
@@ -19,7 +19,6 @@ import {
   Heart,
   MessageCircle,
   Bookmark,
-  Eye,
   Share2,
   EyeOff,
   Trash2,
@@ -28,12 +27,11 @@ import {
   Globe,
   Users,
   Calendar,
-  User,
   Clock,
 } from "lucide-react";
 import { Post, Comment } from "@/types/posts";
 
-interface PostDrawerProps {
+interface PostModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   post: Post | null;
@@ -55,7 +53,7 @@ const statusMap = {
   pending_review: "pending" as const,
 };
 
-export function PostDrawer({
+export function PostModal({
   open,
   onOpenChange,
   post,
@@ -66,16 +64,16 @@ export function PostDrawer({
   onHide,
   onDelete,
   onOpenAnalytics,
-}: PostDrawerProps) {
+}: PostModalProps) {
   if (!post) return null;
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-full sm:max-w-xl p-0">
-        <SheetHeader className="p-6 pb-4">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden flex flex-col p-0">
+        <DialogHeader className="p-6 pb-4">
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1 min-w-0">
-              <SheetTitle className="text-xl line-clamp-2">{post.title}</SheetTitle>
+              <DialogTitle className="text-xl line-clamp-2">{post.title}</DialogTitle>
               <div className="mt-2 flex flex-wrap items-center gap-2">
                 <StatusBadge variant={statusMap[post.status]}>
                   {post.status.replace("_", " ")}
@@ -140,12 +138,12 @@ export function PostDrawer({
               Analytics
             </Button>
           </div>
-        </SheetHeader>
+        </DialogHeader>
 
         <Separator />
 
-        <ScrollArea className="h-[calc(100vh-280px)]">
-          <Tabs defaultValue="content" className="p-6">
+        <ScrollArea className="flex-1 px-6 pb-6">
+          <Tabs defaultValue="content" className="mt-4">
             <TabsList className="mb-4">
               <TabsTrigger value="content">Content</TabsTrigger>
               <TabsTrigger value="engagement">Engagement</TabsTrigger>
@@ -312,7 +310,7 @@ export function PostDrawer({
             </TabsContent>
           </Tabs>
         </ScrollArea>
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   );
 }
