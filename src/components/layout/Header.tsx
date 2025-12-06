@@ -1,6 +1,5 @@
 import { Bell, Search, HelpCircle } from "lucide-react";
 import { useState } from "react";
-import { useTranslation } from "react-i18next";
 
 interface HeaderProps {
   title: string;
@@ -8,7 +7,6 @@ interface HeaderProps {
 }
 
 export function Header({ title, subtitle }: HeaderProps) {
-  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState("");
 
   return (
@@ -16,8 +14,8 @@ export function Header({ title, subtitle }: HeaderProps) {
       <div className="flex h-16 items-center justify-between px-6">
         {/* Title */}
         <div>
-          <h1 className="heading-xsmall text-foreground">{title}</h1>
-          {subtitle && <p className="body-small text-muted-foreground">{subtitle}</p>}
+          <h1 className="page-title">{title}</h1>
+          {subtitle && <p className="text-sm text-muted-foreground">{subtitle}</p>}
         </div>
 
         {/* Search & Actions */}
@@ -27,10 +25,10 @@ export function Header({ title, subtitle }: HeaderProps) {
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <input
               type="text"
-              placeholder={t("common.search")}
+              placeholder="Search members, posts, listings..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="h-10 w-80 rounded-lg border border-input bg-background pl-10 pr-4 body-small transition-all duration-200 placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+              className="input-search w-80 pl-10"
             />
           </div>
 
@@ -42,7 +40,7 @@ export function Header({ title, subtitle }: HeaderProps) {
           {/* Notifications */}
           <button className="relative flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
             <Bell className="h-5 w-5" />
-            <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-destructive caption-small font-medium text-primary-foreground">
+            <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] font-medium text-destructive-foreground">
               3
             </span>
           </button>
