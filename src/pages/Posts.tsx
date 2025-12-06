@@ -1,44 +1,44 @@
+import { useState } from "react";
 import { AdminLayout } from "@/components/layout/AdminLayout";
-import { DataTable } from "@/components/ui/DataTable";
-import { StatusBadge } from "@/components/ui/StatusBadge";
 import { Button } from "@/components/ui/button";
-import { Plus, MoreHorizontal, Eye, Edit, Pin, Trash2, MessageCircle, Heart, Image, Video } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { cn } from "@/lib/utils";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { PostsFilters } from "@/components/posts/PostsFilters";
+import { PostsTable } from "@/components/posts/PostsTable";
+import { PostsCardView } from "@/components/posts/PostsCardView";
+import { PostAnalyticsWidget } from "@/components/posts/PostAnalyticsWidget";
+import { CreateEditPostModal } from "@/components/posts/CreateEditPostModal";
+import { PostDrawer } from "@/components/posts/PostDrawer";
+import { DeletePostModal } from "@/components/posts/DeletePostModal";
+import { SchedulePostModal } from "@/components/posts/SchedulePostModal";
+import { BulkActionsBar } from "@/components/posts/BulkActionsBar";
+import { Plus, RefreshCw, LayoutList, LayoutGrid } from "lucide-react";
+import { Post, Comment } from "@/types/posts";
+import { DateRange } from "react-day-picker";
+import { toast } from "@/hooks/use-toast";
 
-interface Post {
-  id: string;
-  title: string;
-  excerpt: string;
-  author: string;
-  authorAvatar: string;
-  media: "none" | "image" | "video";
-  comments: number;
-  likes: number;
-  status: "published" | "draft" | "pending";
-  pinned: boolean;
-  createdAt: string;
-}
-
-const posts: Post[] = [
+// Mock data
+const mockPosts: Post[] = [
   {
     id: "1",
     title: "Welcome to our December Newsletter!",
     excerpt: "Check out the latest updates from our community including upcoming events and member highlights...",
+    body: "Full newsletter content here...",
     author: "Akua Mensah",
     authorAvatar: "AM",
     media: "image",
     comments: 24,
-    likes: 156,
+    reactions: 156,
+    saves: 12,
+    impressions: 1240,
     status: "published",
+    visibility: "members",
     pinned: true,
+    allowComments: true,
+    allowReactions: true,
+    publishedAt: "Dec 01, 2024",
     createdAt: "Dec 01, 2024",
+    updatedAt: "Dec 01, 2024",
+    tags: ["newsletter", "december"],
   },
   {
     id: "2",
@@ -46,12 +46,18 @@ const posts: Post[] = [
     excerpt: "Join us for our 2024 AGM where we'll discuss the year's achievements and plan for 2025...",
     author: "Kofi Asante",
     authorAvatar: "KA",
-    media: "none",
+    media: "text",
     comments: 42,
-    likes: 89,
+    reactions: 89,
     status: "published",
+    visibility: "members",
     pinned: false,
+    allowComments: true,
+    allowReactions: true,
+    publishedAt: "Nov 28, 2024",
     createdAt: "Nov 28, 2024",
+    updatedAt: "Nov 28, 2024",
+    tags: ["agm", "meeting"],
   },
   {
     id: "3",
@@ -61,10 +67,15 @@ const posts: Post[] = [
     authorAvatar: "EO",
     media: "video",
     comments: 18,
-    likes: 234,
+    reactions: 234,
     status: "published",
+    visibility: "public",
     pinned: false,
+    allowComments: true,
+    allowReactions: true,
+    publishedAt: "Nov 25, 2024",
     createdAt: "Nov 25, 2024",
+    updatedAt: "Nov 25, 2024",
   },
   {
     id: "4",
@@ -74,10 +85,15 @@ const posts: Post[] = [
     authorAvatar: "AM",
     media: "image",
     comments: 0,
-    likes: 0,
+    reactions: 0,
     status: "draft",
+    visibility: "members",
     pinned: false,
+    allowComments: true,
+    allowReactions: true,
+    publishedAt: null,
     createdAt: "Dec 02, 2024",
+    updatedAt: "Dec 02, 2024",
   },
   {
     id: "5",
@@ -87,182 +103,190 @@ const posts: Post[] = [
     authorAvatar: "YB",
     media: "image",
     comments: 5,
-    likes: 45,
-    status: "pending",
+    reactions: 45,
+    status: "scheduled",
+    visibility: "public",
     pinned: false,
+    allowComments: true,
+    allowReactions: true,
+    publishedAt: null,
+    scheduledAt: "Dec 10, 2024",
     createdAt: "Nov 30, 2024",
+    updatedAt: "Nov 30, 2024",
   },
 ];
 
-const mediaIcons = {
-  none: null,
-  image: Image,
-  video: Video,
-};
-
-const statusMap = {
-  published: "active" as const,
-  draft: "inactive" as const,
-  pending: "pending" as const,
-};
+const mockComments: Comment[] = [
+  { id: "1", postId: "1", author: "John Doe", authorAvatar: "JD", content: "Great newsletter!", createdAt: "2h ago", flagged: false },
+  { id: "2", postId: "1", author: "Jane Smith", authorAvatar: "JS", content: "Looking forward to the events!", createdAt: "3h ago", flagged: false },
+  { id: "3", postId: "2", author: "Mike Johnson", authorAvatar: "MJ", content: "Will there be virtual attendance?", createdAt: "1d ago", flagged: true, flagReason: "spam" },
+];
 
 export default function Posts() {
-  const columns = [
-    {
-      header: "Post",
-      accessor: (row: Post) => (
-        <div className="flex items-start gap-3">
-          {row.pinned && (
-            <Pin className="mt-1 h-4 w-4 flex-shrink-0 text-primary" />
-          )}
-          <div className="min-w-0">
-            <p className="font-medium text-foreground line-clamp-1">{row.title}</p>
-            <p className="text-sm text-muted-foreground line-clamp-1">{row.excerpt}</p>
-          </div>
-        </div>
-      ),
-      className: "max-w-md",
-    },
-    {
-      header: "Author",
-      accessor: (row: Post) => (
-        <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">
-            {row.authorAvatar}
-          </div>
-          <span className="text-sm">{row.author}</span>
-        </div>
-      ),
-    },
-    {
-      header: "Media",
-      accessor: (row: Post) => {
-        const Icon = mediaIcons[row.media];
-        return Icon ? (
-          <div className="flex items-center gap-1.5">
-            <Icon className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm capitalize text-muted-foreground">{row.media}</span>
-          </div>
-        ) : (
-          <span className="text-sm text-muted-foreground">—</span>
-        );
-      },
-    },
-    {
-      header: "Engagement",
-      accessor: (row: Post) => (
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-1">
-            <Heart className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm">{row.likes}</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <MessageCircle className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm">{row.comments}</span>
-          </div>
-        </div>
-      ),
-    },
-    {
-      header: "Status",
-      accessor: (row: Post) => (
-        <StatusBadge variant={statusMap[row.status]}>{row.status}</StatusBadge>
-      ),
-    },
-    {
-      header: "Created",
-      accessor: "createdAt" as keyof Post,
-      sortable: true,
-    },
-    {
-      header: "Actions",
-      accessor: (row: Post) => (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button className="rounded-lg p-2 text-muted-foreground hover:bg-muted hover:text-foreground">
-              <MoreHorizontal className="h-4 w-4" />
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48">
-            <DropdownMenuItem>
-              <Eye className="mr-2 h-4 w-4" />
-              View Post
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Edit className="mr-2 h-4 w-4" />
-              Edit
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Pin className="mr-2 h-4 w-4" />
-              {row.pinned ? "Unpin" : "Pin to Top"}
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <MessageCircle className="mr-2 h-4 w-4" />
-              View Comments
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-destructive">
-              <Trash2 className="mr-2 h-4 w-4" />
-              Delete
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      ),
-      className: "w-20",
-    },
-  ];
+  const [posts] = useState<Post[]>(mockPosts);
+  const [viewMode, setViewMode] = useState<"list" | "card">("list");
+  const [selectedPosts, setSelectedPosts] = useState<string[]>([]);
+  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+  
+  // Filters
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [mediaFilter, setMediaFilter] = useState("all");
+  const [visibilityFilter, setVisibilityFilter] = useState("all");
+  const [dateRange, setDateRange] = useState<DateRange | undefined>();
+
+  // Modals
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [editPost, setEditPost] = useState<Post | null>(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [drawerPost, setDrawerPost] = useState<Post | null>(null);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [deletePost, setDeletePost] = useState<Post | null>(null);
+  const [scheduleModalOpen, setScheduleModalOpen] = useState(false);
+  const [schedulePost, setSchedulePost] = useState<Post | null>(null);
+
+  // Filter posts
+  const filteredPosts = posts.filter((post) => {
+    if (searchQuery && !post.title.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+    if (statusFilter !== "all" && post.status !== statusFilter) return false;
+    if (mediaFilter !== "all" && post.media !== mediaFilter) return false;
+    if (visibilityFilter !== "all" && post.visibility !== visibilityFilter) return false;
+    return true;
+  });
+
+  const handleSelectPost = (postId: string) => {
+    setSelectedPosts((prev) =>
+      prev.includes(postId) ? prev.filter((id) => id !== postId) : [...prev, postId]
+    );
+  };
+
+  const handleSelectAll = () => {
+    setSelectedPosts(selectedPosts.length === filteredPosts.length ? [] : filteredPosts.map((p) => p.id));
+  };
+
+  const handleOpenDrawer = (post: Post) => {
+    setDrawerPost(post);
+    setSelectedPost(post);
+    setDrawerOpen(true);
+  };
+
+  const handleSavePost = (postData: Partial<Post>, action: string) => {
+    toast({ title: `Post ${action === "draft" ? "saved as draft" : action === "schedule" ? "scheduled" : "published"}` });
+  };
 
   return (
     <AdminLayout title="Posts" subtitle="Create and manage association posts">
-      {/* Top Bar */}
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <input
-            type="text"
-            placeholder="Search posts..."
-            className="input-search w-64"
-          />
-          <select className="rounded-lg border border-input bg-background px-3 py-2 text-sm">
-            <option value="">All Status</option>
-            <option value="published">Published</option>
-            <option value="draft">Draft</option>
-            <option value="pending">Pending</option>
-          </select>
-          <select className="rounded-lg border border-input bg-background px-3 py-2 text-sm">
-            <option value="">All Media</option>
-            <option value="text">Text Only</option>
-            <option value="image">With Images</option>
-            <option value="video">With Video</option>
-          </select>
+      <div className="flex gap-6">
+        {/* Left Sidebar - Filters */}
+        <PostsFilters
+          onCreatePost={() => setCreateModalOpen(true)}
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          statusFilter={statusFilter}
+          onStatusChange={setStatusFilter}
+          mediaFilter={mediaFilter}
+          onMediaChange={setMediaFilter}
+          visibilityFilter={visibilityFilter}
+          onVisibilityChange={setVisibilityFilter}
+          dateRange={dateRange}
+          onDateRangeChange={setDateRange}
+          onNavigate={(view) => setStatusFilter(view === "drafts" ? "draft" : view === "scheduled" ? "scheduled" : "all")}
+        />
+
+        {/* Main Content */}
+        <div className="flex-1 min-w-0">
+          {/* Top Bar */}
+          <div className="mb-4 flex items-center justify-between">
+            <p className="text-sm text-muted-foreground">
+              Showing {filteredPosts.length} posts for: <strong>Ghana Union Antwerp</strong>
+            </p>
+            <div className="flex items-center gap-2">
+              <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as "list" | "card")}>
+                <TabsList className="h-9">
+                  <TabsTrigger value="list" className="px-2"><LayoutList className="h-4 w-4" /></TabsTrigger>
+                  <TabsTrigger value="card" className="px-2"><LayoutGrid className="h-4 w-4" /></TabsTrigger>
+                </TabsList>
+              </Tabs>
+              <Button variant="outline" size="icon" className="h-9 w-9"><RefreshCw className="h-4 w-4" /></Button>
+              <Button className="gap-2" onClick={() => setCreateModalOpen(true)}>
+                <Plus className="h-4 w-4" />New Post
+              </Button>
+            </div>
+          </div>
+
+          {/* Posts View */}
+          {viewMode === "list" ? (
+            <PostsTable
+              posts={filteredPosts}
+              selectedPosts={selectedPosts}
+              onSelectPost={handleSelectPost}
+              onSelectAll={handleSelectAll}
+              onOpenDrawer={handleOpenDrawer}
+              onEdit={(post) => { setEditPost(post); setCreateModalOpen(true); }}
+              onTogglePublish={(post) => toast({ title: `Post ${post.status === "published" ? "unpublished" : "published"}` })}
+              onSchedule={(post) => { setSchedulePost(post); setScheduleModalOpen(true); }}
+              onTogglePin={(post) => toast({ title: `Post ${post.pinned ? "unpinned" : "pinned"}` })}
+              onDelete={(post) => { setDeletePost(post); setDeleteModalOpen(true); }}
+            />
+          ) : (
+            <PostsCardView
+              posts={filteredPosts}
+              onOpenDrawer={handleOpenDrawer}
+              onEdit={(post) => { setEditPost(post); setCreateModalOpen(true); }}
+              onTogglePublish={(post) => toast({ title: `Post ${post.status === "published" ? "unpublished" : "published"}` })}
+              onTogglePin={(post) => toast({ title: `Post ${post.pinned ? "unpinned" : "pinned"}` })}
+              onDelete={(post) => { setDeletePost(post); setDeleteModalOpen(true); }}
+            />
+          )}
         </div>
-        <Button className="gap-2">
-          <Plus className="h-4 w-4" />
-          Create Post
-        </Button>
+
+        {/* Right Sidebar - Analytics */}
+        <PostAnalyticsWidget
+          selectedPost={selectedPost}
+          recentComments={mockComments}
+          onOpenModerationQueue={() => toast({ title: "Moderation queue opened" })}
+        />
       </div>
 
-      {/* Stats */}
-      <div className="mb-6 grid gap-4 sm:grid-cols-4">
-        <div className="rounded-lg border border-border bg-card p-4">
-          <p className="text-sm text-muted-foreground">Total Posts</p>
-          <p className="text-2xl font-bold text-foreground">342</p>
-        </div>
-        <div className="rounded-lg border border-border bg-card p-4">
-          <p className="text-sm text-muted-foreground">Published</p>
-          <p className="text-2xl font-bold text-success">298</p>
-        </div>
-        <div className="rounded-lg border border-border bg-card p-4">
-          <p className="text-sm text-muted-foreground">Total Engagement</p>
-          <p className="text-2xl font-bold text-primary">12.4K</p>
-        </div>
-        <div className="rounded-lg border border-border bg-card p-4">
-          <p className="text-sm text-muted-foreground">Pending Review</p>
-          <p className="text-2xl font-bold text-warning">8</p>
-        </div>
-      </div>
-
-      {/* Table */}
-      <DataTable columns={columns} data={posts} />
+      {/* Modals */}
+      <CreateEditPostModal
+        open={createModalOpen}
+        onOpenChange={(open) => { setCreateModalOpen(open); if (!open) setEditPost(null); }}
+        post={editPost}
+        onSave={handleSavePost}
+      />
+      <PostDrawer
+        open={drawerOpen}
+        onOpenChange={setDrawerOpen}
+        post={drawerPost}
+        comments={mockComments.filter((c) => c.postId === drawerPost?.id)}
+        onEdit={() => { setEditPost(drawerPost); setCreateModalOpen(true); setDrawerOpen(false); }}
+        onTogglePublish={() => toast({ title: "Publish toggled" })}
+        onTogglePin={() => toast({ title: "Pin toggled" })}
+        onHide={() => toast({ title: "Post hidden" })}
+        onDelete={() => { setDeletePost(drawerPost); setDeleteModalOpen(true); }}
+        onOpenAnalytics={() => toast({ title: "Analytics opened" })}
+      />
+      <DeletePostModal
+        open={deleteModalOpen}
+        onOpenChange={setDeleteModalOpen}
+        post={deletePost}
+        onConfirm={() => { toast({ title: "Post deleted" }); setDeleteModalOpen(false); }}
+      />
+      <SchedulePostModal
+        open={scheduleModalOpen}
+        onOpenChange={setScheduleModalOpen}
+        post={schedulePost}
+        onConfirm={(date) => toast({ title: `Post scheduled for ${date.toLocaleDateString()}` })}
+      />
+      <BulkActionsBar
+        selectedCount={selectedPosts.length}
+        onClearSelection={() => setSelectedPosts([])}
+        onBulkPublish={() => toast({ title: `${selectedPosts.length} posts published` })}
+        onBulkUnpublish={() => toast({ title: `${selectedPosts.length} posts unpublished` })}
+        onBulkDelete={() => toast({ title: `${selectedPosts.length} posts deleted` })}
+        onBulkExport={() => toast({ title: `Exporting ${selectedPosts.length} posts` })}
+      />
     </AdminLayout>
   );
 }
