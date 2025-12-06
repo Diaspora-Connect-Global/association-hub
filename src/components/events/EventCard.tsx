@@ -21,6 +21,7 @@ import {
   Calendar
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useT } from "@/hooks/useT";
 
 interface EventCardProps {
   event: Event;
@@ -48,9 +49,19 @@ export function EventCard({
   onTogglePublish,
   onDelete,
 }: EventCardProps) {
+  const t = useT();
   const capacityPercentage = event.hasParticipantLimit && event.maxParticipants 
     ? (event.registeredCount / event.maxParticipants) * 100 
     : 0;
+
+  const statusLabels: Record<string, string> = {
+    published: t.published,
+    unpublished: t.unpublish,
+    draft: t.draft,
+    ongoing: t.active,
+    completed: t.inactive,
+    cancelled: t.error,
+  };
 
   return (
     <div className="group overflow-hidden rounded-xl border border-border bg-card transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
@@ -67,7 +78,7 @@ export function EventCard({
         )}
         <div className="absolute right-3 top-3">
           <StatusBadge variant={statusVariants[event.status]}>
-            {event.status}
+            {statusLabels[event.status] || event.status}
           </StatusBadge>
         </div>
       </div>
@@ -95,14 +106,14 @@ export function EventCard({
               <MapPin className="h-4 w-4 shrink-0" />
             )}
             <span className="truncate">
-              {event.eventType === "virtual" ? event.virtualLink || "Virtual Event" : event.location}
+              {event.eventType === "virtual" ? event.virtualLink || t.virtualEvent : event.location}
             </span>
           </div>
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Users className="h-4 w-4 shrink-0" />
             <span>
               {event.registeredCount}
-              {event.hasParticipantLimit && event.maxParticipants && ` / ${event.maxParticipants}`} registered
+              {event.hasParticipantLimit && event.maxParticipants && ` / ${event.maxParticipants}`} {t.registered}
             </span>
           </div>
         </div>
@@ -134,7 +145,7 @@ export function EventCard({
                 {event.currency || "$"}{event.ticketPrice}
               </span>
             ) : (
-              <span className="text-sm font-medium text-primary">Free</span>
+              <span className="text-sm font-medium text-primary">{t.free}</span>
             )}
           </div>
           <DropdownMenu>
@@ -146,19 +157,19 @@ export function EventCard({
             <DropdownMenuContent align="end" className="w-48">
               <DropdownMenuItem onClick={() => onViewDetails(event)}>
                 <Eye className="mr-2 h-4 w-4" />
-                View Details
+                {t.viewDetails}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => onEdit(event)}>
                 <Edit className="mr-2 h-4 w-4" />
-                Edit Event
+                {t.editEvent}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => onManageRegistrations(event)}>
                 <Users className="mr-2 h-4 w-4" />
-                Manage Registrations
+                {t.manageRegistrations}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => onTogglePublish(event)}>
                 <ToggleLeft className="mr-2 h-4 w-4" />
-                {event.status === "published" ? "Unpublish" : "Publish"}
+                {event.status === "published" ? t.unpublish : t.publish}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem 
@@ -166,7 +177,7 @@ export function EventCard({
                 className="text-destructive focus:text-destructive"
               >
                 <Trash2 className="mr-2 h-4 w-4" />
-                Delete Event
+                {t.deleteEvent}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

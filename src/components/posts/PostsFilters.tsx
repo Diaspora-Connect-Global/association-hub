@@ -18,6 +18,7 @@ import { Plus, FileText, Clock, Pin, Search, CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { DateRange } from "react-day-picker";
+import { useT } from "@/hooks/useT";
 
 interface PostsFiltersProps {
   onCreatePost: () => void;
@@ -48,15 +49,17 @@ export function PostsFilters({
   onDateRangeChange,
   onNavigate,
 }: PostsFiltersProps) {
+  const t = useT();
+
   return (
     <div className="w-80 flex-shrink-0 space-y-6">
       {/* Post Actions Section */}
       <div className="rounded-xl border border-border bg-card p-4">
-        <h3 className="mb-4 text-sm font-semibold text-foreground">Post Actions</h3>
+        <h3 className="mb-4 text-sm font-semibold text-foreground">{t.postActions}</h3>
         <div className="space-y-2">
           <Button onClick={onCreatePost} className="w-full justify-start gap-2">
             <Plus className="h-4 w-4" />
-            Create Post
+            {t.createPost}
           </Button>
           <Button
             variant="ghost"
@@ -64,7 +67,7 @@ export function PostsFilters({
             onClick={() => onNavigate("drafts")}
           >
             <FileText className="h-4 w-4" />
-            Drafts
+            {t.drafts}
           </Button>
           <Button
             variant="ghost"
@@ -72,7 +75,7 @@ export function PostsFilters({
             onClick={() => onNavigate("scheduled")}
           >
             <Clock className="h-4 w-4" />
-            Scheduled
+            {t.scheduled}
           </Button>
           <Button
             variant="ghost"
@@ -80,22 +83,22 @@ export function PostsFilters({
             onClick={() => onNavigate("pinned")}
           >
             <Pin className="h-4 w-4" />
-            Pinned
+            {t.pinned}
           </Button>
         </div>
       </div>
 
       {/* Filters Section */}
       <div className="rounded-xl border border-border bg-card p-4">
-        <h3 className="mb-4 text-sm font-semibold text-foreground">Filters</h3>
+        <h3 className="mb-4 text-sm font-semibold text-foreground">{t.filters}</h3>
         <div className="space-y-4">
           {/* Search */}
           <div className="space-y-2">
-            <Label className="text-xs text-muted-foreground">Search</Label>
+            <Label className="text-xs text-muted-foreground">{t.search}</Label>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
-                placeholder="Search title, body, tags"
+                placeholder={t.search}
                 value={searchQuery}
                 onChange={(e) => onSearchChange(e.target.value)}
                 className="pl-9"
@@ -105,57 +108,57 @@ export function PostsFilters({
 
           {/* Status */}
           <div className="space-y-2">
-            <Label className="text-xs text-muted-foreground">Status</Label>
+            <Label className="text-xs text-muted-foreground">{t.status}</Label>
             <Select value={statusFilter} onValueChange={onStatusChange}>
               <SelectTrigger>
-                <SelectValue placeholder="All" />
+                <SelectValue placeholder={t.all} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                <SelectItem value="published">Published</SelectItem>
-                <SelectItem value="draft">Draft</SelectItem>
-                <SelectItem value="scheduled">Scheduled</SelectItem>
-                <SelectItem value="archived">Archived</SelectItem>
-                <SelectItem value="removed">Removed</SelectItem>
+                <SelectItem value="all">{t.all}</SelectItem>
+                <SelectItem value="published">{t.published}</SelectItem>
+                <SelectItem value="draft">{t.draft}</SelectItem>
+                <SelectItem value="scheduled">{t.scheduled}</SelectItem>
+                <SelectItem value="archived">{t.archived}</SelectItem>
+                <SelectItem value="removed">{t.removed}</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           {/* Media Type */}
           <div className="space-y-2">
-            <Label className="text-xs text-muted-foreground">Media Type</Label>
+            <Label className="text-xs text-muted-foreground">{t.mediaType}</Label>
             <Select value={mediaFilter} onValueChange={onMediaChange}>
               <SelectTrigger>
-                <SelectValue placeholder="All" />
+                <SelectValue placeholder={t.all} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                <SelectItem value="text">Text</SelectItem>
-                <SelectItem value="image">Image</SelectItem>
-                <SelectItem value="video">Video</SelectItem>
-                <SelectItem value="link">Link</SelectItem>
+                <SelectItem value="all">{t.all}</SelectItem>
+                <SelectItem value="text">{t.text}</SelectItem>
+                <SelectItem value="image">{t.image}</SelectItem>
+                <SelectItem value="video">{t.video}</SelectItem>
+                <SelectItem value="link">{t.link}</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           {/* Visibility */}
           <div className="space-y-2">
-            <Label className="text-xs text-muted-foreground">Visibility</Label>
+            <Label className="text-xs text-muted-foreground">{t.visibility}</Label>
             <Select value={visibilityFilter} onValueChange={onVisibilityChange}>
               <SelectTrigger>
-                <SelectValue placeholder="All" />
+                <SelectValue placeholder={t.all} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                <SelectItem value="members">Members</SelectItem>
-                <SelectItem value="public">Public</SelectItem>
+                <SelectItem value="all">{t.all}</SelectItem>
+                <SelectItem value="members">{t.membersOnly}</SelectItem>
+                <SelectItem value="public">{t.public}</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           {/* Date Range */}
           <div className="space-y-2">
-            <Label className="text-xs text-muted-foreground">Date Range</Label>
+            <Label className="text-xs text-muted-foreground">{t.dateRange}</Label>
             <Popover>
               <PopoverTrigger asChild>
                 <Button
@@ -175,7 +178,7 @@ export function PostsFilters({
                       format(dateRange.from, "LLL dd, yyyy")
                     )
                   ) : (
-                    "Pick a date range"
+                    t.pickDateRange
                   )}
                 </Button>
               </PopoverTrigger>
@@ -203,7 +206,7 @@ export function PostsFilters({
               onDateRangeChange(undefined);
             }}
           >
-            Clear All Filters
+            {t.clearAllFilters}
           </Button>
         </div>
       </div>

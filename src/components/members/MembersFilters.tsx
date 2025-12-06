@@ -7,6 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useT } from "@/hooks/useT";
 
 interface MembersFiltersProps {
   searchQuery: string;
@@ -35,13 +36,15 @@ export function MembersFilters({
   onSortChange,
   isPaidAssociation = false,
 }: MembersFiltersProps) {
+  const t = useT();
+
   return (
     <div className="flex flex-wrap items-center gap-3">
       <div className="relative w-72">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-secondary" />
         <Input
           type="text"
-          placeholder="Search by name, phone, or email"
+          placeholder={t.searchByNamePhoneEmail}
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
           className="pl-10"
@@ -50,55 +53,55 @@ export function MembersFilters({
 
       <Select value={statusFilter} onValueChange={onStatusChange}>
         <SelectTrigger className="w-44">
-          <SelectValue placeholder="Membership Status" />
+          <SelectValue placeholder={t.membershipStatus} />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All Status</SelectItem>
-          <SelectItem value="active">Active</SelectItem>
-          <SelectItem value="pending">Pending Approval</SelectItem>
-          <SelectItem value="suspended">Suspended</SelectItem>
-          <SelectItem value="rejected">Rejected</SelectItem>
-          <SelectItem value="left">Left Association</SelectItem>
+          <SelectItem value="all">{t.allStatus}</SelectItem>
+          <SelectItem value="active">{t.active}</SelectItem>
+          <SelectItem value="pending">{t.pendingApproval}</SelectItem>
+          <SelectItem value="suspended">{t.suspended}</SelectItem>
+          <SelectItem value="rejected">{t.rejected}</SelectItem>
+          <SelectItem value="left">{t.leftAssociation}</SelectItem>
         </SelectContent>
       </Select>
 
       {isPaidAssociation && (
         <Select value={paymentFilter} onValueChange={onPaymentChange}>
           <SelectTrigger className="w-44">
-            <SelectValue placeholder="Payment Status" />
+            <SelectValue placeholder={t.paymentStatus} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Payment</SelectItem>
-            <SelectItem value="paid">Paid</SelectItem>
-            <SelectItem value="unpaid">Unpaid</SelectItem>
-            <SelectItem value="expired">Payment Expired</SelectItem>
-            <SelectItem value="subscription_active">Subscription Active</SelectItem>
-            <SelectItem value="subscription_failed">Subscription Failed</SelectItem>
+            <SelectItem value="all">{t.allPayment}</SelectItem>
+            <SelectItem value="paid">{t.paidStatus}</SelectItem>
+            <SelectItem value="unpaid">{t.unpaidStatus}</SelectItem>
+            <SelectItem value="expired">{t.expiredStatus}</SelectItem>
+            <SelectItem value="subscription_active">{t.subscriptionActive}</SelectItem>
+            <SelectItem value="subscription_failed">{t.subscriptionFailed}</SelectItem>
           </SelectContent>
         </Select>
       )}
 
       <Select value={roleFilter} onValueChange={onRoleChange}>
         <SelectTrigger className="w-36">
-          <SelectValue placeholder="Role" />
+          <SelectValue placeholder={t.role} />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All Roles</SelectItem>
-          <SelectItem value="admin">Admin</SelectItem>
-          <SelectItem value="sub-admin">Sub-admin</SelectItem>
-          <SelectItem value="member">Member</SelectItem>
+          <SelectItem value="all">{t.allRoles}</SelectItem>
+          <SelectItem value="admin">{t.admin}</SelectItem>
+          <SelectItem value="sub-admin">{t.subAdmin}</SelectItem>
+          <SelectItem value="member">{t.member}</SelectItem>
         </SelectContent>
       </Select>
 
       <Select value={sortBy} onValueChange={onSortChange}>
         <SelectTrigger className="w-44">
-          <SelectValue placeholder="Sort By" />
+          <SelectValue placeholder={t.sortBy} />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="name_asc">Name A-Z</SelectItem>
-          <SelectItem value="name_desc">Name Z-A</SelectItem>
-          <SelectItem value="date_newest">Join Date (Newest)</SelectItem>
-          <SelectItem value="date_oldest">Join Date (Oldest)</SelectItem>
+          <SelectItem value="name_asc">{t.nameAZ}</SelectItem>
+          <SelectItem value="name_desc">{t.nameZA}</SelectItem>
+          <SelectItem value="date_newest">{t.joinDateNewest}</SelectItem>
+          <SelectItem value="date_oldest">{t.joinDateOldest}</SelectItem>
         </SelectContent>
       </Select>
     </div>
