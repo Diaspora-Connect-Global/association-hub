@@ -8,6 +8,7 @@ import Members from "./pages/Members";
 import Posts from "./pages/Posts";
 import Events from "./pages/Events";
 import Marketplace from "./pages/Marketplace";
+import Orders from "./pages/Orders";
 import Profile from "./pages/Profile";
 import Opportunities from "./pages/Opportunities";
 import NotFound from "./pages/NotFound";
@@ -27,6 +28,7 @@ const App = () => (
           <Route path="/posts" element={<Posts />} />
           <Route path="/events" element={<Events />} />
           <Route path="/marketplace" element={<Marketplace />} />
+          <Route path="/orders" element={<Orders />} />
           <Route path="/opportunities" element={<Opportunities />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
