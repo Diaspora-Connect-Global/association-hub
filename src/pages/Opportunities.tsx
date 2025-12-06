@@ -86,7 +86,7 @@ export default function Opportunities() {
   const handleViewApplicants = (opp: Opportunity) => { setApplicantsOpportunity(opp); setApplicantsDrawerOpen(true); };
 
   return (
-    <AdminLayout title="Opportunities" subtitle="Manage job postings, volunteer roles, and funding opportunities">
+    <AdminLayout title={t.opportunitiesTitle} subtitle={t.opportunitiesSubtitle}>
       {/* Top Controls Bar */}
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         {/* Left: Search and Filters */}

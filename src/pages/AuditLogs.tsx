@@ -40,6 +40,7 @@ import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
 import { AuditLogDetailsModal } from "@/components/auditLogs/AuditLogDetailsModal";
 import { AuditLogsAnalyticsWidget } from "@/components/auditLogs/AuditLogsAnalyticsWidget";
+import { useT } from "@/hooks/useT";
 
 // Mock data
 const mockLogs: AuditLog[] = [
@@ -187,6 +188,7 @@ const userTypeLabels: Record<UserType, string> = {
 };
 
 export default function AuditLogs() {
+  const t = useT();
   const [logs] = useState<AuditLog[]>(mockLogs);
   const [searchQuery, setSearchQuery] = useState("");
   const [userTypeFilter, setUserTypeFilter] = useState<string>("all");
@@ -248,7 +250,7 @@ export default function AuditLogs() {
   const criticalActions = logs.filter((l) => l.actionType === "delete" || l.actionType === "reject").length;
 
   return (
-    <AdminLayout title="Audit Logs" subtitle="View and manage activity logs for your association">
+    <AdminLayout title={t.auditLogsTitle} subtitle={t.auditLogsSubtitle}>
       <div className="space-y-6">
         {/* Header Actions */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
