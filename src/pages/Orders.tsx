@@ -326,7 +326,7 @@ export default function Orders() {
           <p className="text-2xl font-bold text-foreground">${totalRevenue.toLocaleString()}</p>
         </div>
         <div className="rounded-lg border border-border bg-card p-4">
-          <p className="text-sm text-muted-foreground">Avg. Order Value</p>
+          <p className="text-sm text-muted-foreground">{t.avgOrderValue}</p>
           <p className="text-2xl font-bold text-foreground">${avgOrderValue.toFixed(2)}</p>
         </div>
       </div>
@@ -334,10 +334,10 @@ export default function Orders() {
       {/* Bulk Actions */}
       {selectedOrders.length > 0 && (
         <div className="mb-4 flex items-center gap-3 p-3 rounded-lg bg-muted/50 border border-border">
-          <span className="text-sm font-medium">{selectedOrders.length} selected</span>
+          <span className="text-sm font-medium">{selectedOrders.length} {t.selected}</span>
           <Button variant="outline" size="sm" onClick={() => handleBulkAction("Mark Fulfilled")}>
             <CheckCircle className="h-4 w-4 mr-1.5" />
-            Mark Fulfilled
+            {t.markFulfilled}
           </Button>
           <Button variant="outline" size="sm" onClick={() => handleBulkAction("Cancel")}>
             <XCircle className="h-4 w-4 mr-1.5" />
@@ -345,10 +345,10 @@ export default function Orders() {
           </Button>
           <Button variant="outline" size="sm" onClick={() => handleBulkAction("Notify")}>
             <Bell className="h-4 w-4 mr-1.5" />
-            Notify
+            {t.notify}
           </Button>
           <Button variant="ghost" size="sm" onClick={() => setSelectedOrders([])}>
-            Clear
+            {t.clear}
           </Button>
         </div>
       )}
@@ -378,14 +378,14 @@ export default function Orders() {
                         onCheckedChange={handleSelectAll}
                       />
                     </TableHead>
-                    <TableHead>Order ID</TableHead>
-                    <TableHead>Customer</TableHead>
-                    <TableHead>{t.product}/{t.service}</TableHead>
-                    <TableHead>Qty</TableHead>
-                    <TableHead>Total</TableHead>
+                    <TableHead>{t.orderId}</TableHead>
+                    <TableHead>{t.customer}</TableHead>
+                    <TableHead>{t.productService}</TableHead>
+                    <TableHead>{t.qty}</TableHead>
+                    <TableHead>{t.total}</TableHead>
                     <TableHead>{t.payment}</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Date</TableHead>
+                    <TableHead>{t.status}</TableHead>
+                    <TableHead>{t.orderDate}</TableHead>
                     <TableHead className="w-[50px]"></TableHead>
                   </TableRow>
                 </TableHeader>
@@ -457,13 +457,13 @@ export default function Orders() {
                             {order.fulfillmentStatus === "pending" && order.paymentStatus === "paid" && (
                               <DropdownMenuItem onClick={() => handleMarkFulfilled(order)}>
                                 <CheckCircle className="mr-2 h-4 w-4" />
-                                Mark Fulfilled
+                                {t.markFulfilled}
                               </DropdownMenuItem>
                             )}
                             {order.paymentStatus === "paid" && order.fulfillmentStatus !== "cancelled" && (
                               <DropdownMenuItem onClick={() => handleRefund(order)}>
                                 <RefreshCw className="mr-2 h-4 w-4" />
-                                Refund
+                                {t.refund}
                               </DropdownMenuItem>
                             )}
                             {order.fulfillmentStatus === "pending" && (
@@ -488,7 +488,7 @@ export default function Orders() {
               <Package className="h-16 w-16 mx-auto text-muted-foreground/50 mb-4" />
               <h3 className="text-lg font-semibold text-foreground mb-2">{t.noResults}</h3>
               <p className="text-muted-foreground">
-                Orders will appear here when customers make purchases.
+                {t.noOrdersYet}
               </p>
             </div>
           )}

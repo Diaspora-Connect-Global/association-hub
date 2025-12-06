@@ -18,6 +18,7 @@ import {
   Globe,
   Link2
 } from "lucide-react";
+import { useT } from "@/hooks/useT";
 
 interface GroupCardProps {
   group: Group;
@@ -36,6 +37,8 @@ export function GroupCard({
   onManageMembers,
   onInviteLink,
 }: GroupCardProps) {
+  const t = useT();
+  
   return (
     <div className="group overflow-hidden rounded-xl border border-border bg-card transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
       {/* Header */}
@@ -55,7 +58,7 @@ export function GroupCard({
             ) : (
               <Globe className="h-3 w-3" />
             )}
-            {group.privacy}
+            {group.privacy === "private" ? t.privateGroup : t.publicGroup}
           </Badge>
         </div>
       </div>
@@ -74,13 +77,13 @@ export function GroupCard({
         {/* Members count */}
         <div className="mb-4 flex items-center gap-2 text-sm text-muted-foreground">
           <Users className="h-4 w-4" />
-          <span>{group.memberCount} members</span>
+          <span>{group.memberCount} {t.members.toLowerCase()}</span>
         </div>
 
         {/* Actions */}
         <div className="flex items-center justify-between border-t border-border pt-3">
           <span className="text-xs text-muted-foreground">
-            Created {group.createdAt}
+            {t.createdOn} {group.createdAt}
           </span>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -91,20 +94,20 @@ export function GroupCard({
             <DropdownMenuContent align="end" className="w-48">
               <DropdownMenuItem onClick={() => onViewDetails(group)}>
                 <Eye className="mr-2 h-4 w-4" />
-                View Details
+                {t.viewDetails}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => onEdit(group)}>
                 <Edit className="mr-2 h-4 w-4" />
-                Edit Group
+                {t.editGroup}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => onManageMembers(group)}>
                 <Users className="mr-2 h-4 w-4" />
-                Manage Members
+                {t.manageMembers}
               </DropdownMenuItem>
               {onInviteLink && (
                 <DropdownMenuItem onClick={() => onInviteLink(group)}>
                   <Link2 className="mr-2 h-4 w-4" />
-                  Invite Link
+                  {t.inviteLink}
                 </DropdownMenuItem>
               )}
               <DropdownMenuSeparator />
@@ -113,7 +116,7 @@ export function GroupCard({
                 className="text-destructive focus:text-destructive"
               >
                 <Trash2 className="mr-2 h-4 w-4" />
-                Delete Group
+                {t.deleteGroup}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

@@ -218,23 +218,23 @@ export default function Tickets() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-foreground">Support Tickets</h1>
+            <h1 className="text-2xl font-bold text-foreground">{t.supportTickets}</h1>
             <p className="text-sm text-muted-foreground">
-              Manage and respond to support requests from users.
+              {t.ticketsSubtitle}
             </p>
           </div>
           <div className="flex items-center gap-2">
             <Button variant="outline" onClick={() => setShowAnalytics(!showAnalytics)}>
               <TrendingUp className="h-4 w-4 mr-1.5" />
-              {showAnalytics ? "Hide Analytics" : "Analytics"}
+              {showAnalytics ? t.hideAnalytics : t.showAnalytics}
             </Button>
             <Button variant="outline" onClick={handleExport}>
               <Download className="h-4 w-4 mr-1.5" />
-              Export
+              {t.export}
             </Button>
             <Button onClick={() => setCreateModalOpen(true)}>
               <PlusCircle className="h-4 w-4 mr-1.5" />
-              Create Ticket
+              {t.createTicket}
             </Button>
           </div>
         </div>
@@ -245,7 +245,7 @@ export default function Tickets() {
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-1.5">
                 <TicketIcon className="h-4 w-4" />
-                Total Tickets
+                {t.totalTickets}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -256,7 +256,7 @@ export default function Tickets() {
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-1.5">
                 <AlertCircle className="h-4 w-4 text-destructive" />
-                Open
+                {t.open}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -267,7 +267,7 @@ export default function Tickets() {
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-1.5">
                 <Clock className="h-4 w-4 text-primary" />
-                In Progress
+                {t.inProgress}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -278,7 +278,7 @@ export default function Tickets() {
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-1.5">
                 <CheckCircle className="h-4 w-4 text-green-500" />
-                Resolved
+                {t.resolved}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -295,7 +295,7 @@ export default function Tickets() {
           <div className="relative flex-1 min-w-[200px] max-w-sm">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search by ID, user, or subject"
+              placeholder={t.searchByIdUserSubject}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-9"
@@ -304,40 +304,40 @@ export default function Tickets() {
 
           <Select value={statusFilter} onValueChange={setStatusFilter}>
             <SelectTrigger className="w-[140px]">
-              <SelectValue placeholder="Status" />
+              <SelectValue placeholder={t.status} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value="open">Open</SelectItem>
-              <SelectItem value="in_progress">In Progress</SelectItem>
-              <SelectItem value="resolved">Resolved</SelectItem>
-              <SelectItem value="closed">Closed</SelectItem>
+              <SelectItem value="all">{t.allStatus}</SelectItem>
+              <SelectItem value="open">{t.open}</SelectItem>
+              <SelectItem value="in_progress">{t.inProgress}</SelectItem>
+              <SelectItem value="resolved">{t.resolved}</SelectItem>
+              <SelectItem value="closed">{t.closed}</SelectItem>
             </SelectContent>
           </Select>
 
           <Select value={priorityFilter} onValueChange={setPriorityFilter}>
             <SelectTrigger className="w-[140px]">
-              <SelectValue placeholder="Priority" />
+              <SelectValue placeholder={t.priority} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Priority</SelectItem>
-              <SelectItem value="low">Low</SelectItem>
-              <SelectItem value="medium">Medium</SelectItem>
-              <SelectItem value="high">High</SelectItem>
-              <SelectItem value="urgent">Urgent</SelectItem>
+              <SelectItem value="all">{t.allPriority}</SelectItem>
+              <SelectItem value="low">{t.low}</SelectItem>
+              <SelectItem value="medium">{t.medium}</SelectItem>
+              <SelectItem value="high">{t.high}</SelectItem>
+              <SelectItem value="urgent">{t.urgent}</SelectItem>
             </SelectContent>
           </Select>
 
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
             <SelectTrigger className="w-[140px]">
-              <SelectValue placeholder="Category" />
+              <SelectValue placeholder={t.category} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Categories</SelectItem>
-              <SelectItem value="technical">Technical</SelectItem>
-              <SelectItem value="billing">Billing</SelectItem>
-              <SelectItem value="product_inquiry">Product Inquiry</SelectItem>
-              <SelectItem value="general">General</SelectItem>
+              <SelectItem value="all">{t.allCategories}</SelectItem>
+              <SelectItem value="technical">{t.technical}</SelectItem>
+              <SelectItem value="billing">{t.billing}</SelectItem>
+              <SelectItem value="product_inquiry">{t.productInquiry}</SelectItem>
+              <SelectItem value="general">{t.general}</SelectItem>
             </SelectContent>
           </Select>
 
@@ -354,7 +354,7 @@ export default function Tickets() {
                     format(dateRange.from, "LLL dd, y")
                   )
                 ) : (
-                  <span>Date Range</span>
+                  <span>{t.dateRange}</span>
                 )}
               </Button>
             </PopoverTrigger>
@@ -373,7 +373,7 @@ export default function Tickets() {
         {filteredTickets.length > 0 ? (
           <div className="rounded-lg border border-border overflow-hidden">
             <Table>
-              <TableHeader>
+                <TableHeader>
                 <TableRow className="bg-muted/50">
                   <TableHead className="w-[50px]">
                     <Checkbox
@@ -381,14 +381,14 @@ export default function Tickets() {
                       onCheckedChange={handleSelectAll}
                     />
                   </TableHead>
-                  <TableHead>Ticket ID</TableHead>
-                  <TableHead>User</TableHead>
-                  <TableHead>Category</TableHead>
-                  <TableHead>Subject</TableHead>
-                  <TableHead>Priority</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Assigned To</TableHead>
-                  <TableHead>Created</TableHead>
+                  <TableHead>{t.ticketId}</TableHead>
+                  <TableHead>{t.user}</TableHead>
+                  <TableHead>{t.category}</TableHead>
+                  <TableHead>{t.subject}</TableHead>
+                  <TableHead>{t.priority}</TableHead>
+                  <TableHead>{t.status}</TableHead>
+                  <TableHead>{t.assignedTo}</TableHead>
+                  <TableHead>{t.created}</TableHead>
                   <TableHead className="w-[50px]"></TableHead>
                 </TableRow>
               </TableHeader>
@@ -433,7 +433,7 @@ export default function Tickets() {
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <span className="text-sm">{ticket.assignedToName || "Unassigned"}</span>
+                      <span className="text-sm">{ticket.assignedToName || t.unassigned}</span>
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground">{ticket.createdAt}</TableCell>
                     <TableCell>
@@ -446,24 +446,24 @@ export default function Tickets() {
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem onClick={() => openDetails(ticket)}>
                             <Eye className="mr-2 h-4 w-4" />
-                            View Details
+                            {t.viewDetails}
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => openAssign(ticket)}>
                             <UserCog className="mr-2 h-4 w-4" />
-                            Assign
+                            {t.assignTo}
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => openStatusChange(ticket)}>
                             <Edit className="mr-2 h-4 w-4" />
-                            Change Status
+                            {t.changeStatus}
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => openDetails(ticket)}>
                             <MessageCircle className="mr-2 h-4 w-4" />
-                            Add Comment
+                            {t.addReply}
                           </DropdownMenuItem>
                           {ticket.status !== "closed" && (
                             <DropdownMenuItem onClick={() => openCloseTicket(ticket)}>
                               <CheckCircle className="mr-2 h-4 w-4" />
-                              Close Ticket
+                              {t.closeTicket}
                             </DropdownMenuItem>
                           )}
                         </DropdownMenuContent>
@@ -477,13 +477,13 @@ export default function Tickets() {
         ) : (
           <div className="flex flex-col items-center justify-center py-16 border border-dashed border-border rounded-lg">
             <TicketIcon className="h-12 w-12 text-muted-foreground/50 mb-4" />
-            <h3 className="text-lg font-semibold text-foreground">No Tickets Found</h3>
+            <h3 className="text-lg font-semibold text-foreground">{t.noResults}</h3>
             <p className="text-sm text-muted-foreground mb-4">
-              Tickets will appear here when users submit issues or inquiries.
+              {t.noTicketsYet}
             </p>
             <Button onClick={() => setCreateModalOpen(true)}>
               <PlusCircle className="h-4 w-4 mr-1.5" />
-              Create Ticket
+              {t.createTicket}
             </Button>
           </div>
         )}
