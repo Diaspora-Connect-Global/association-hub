@@ -9,13 +9,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CalendarPlus, Search, Calendar } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { CalendarPlus, Search, Calendar, BarChart3 } from "lucide-react";
 import { Event, EventFormData } from "@/types/events";
 import { EventCard } from "@/components/events/EventCard";
 import { CreateEditEventModal } from "@/components/events/CreateEditEventModal";
 import { EventDetailsDrawer } from "@/components/events/EventDetailsDrawer";
 import { RegistrationsDrawer } from "@/components/events/RegistrationsDrawer";
 import { DeleteEventModal } from "@/components/events/DeleteEventModal";
+import { EventAnalyticsWidget } from "@/components/events/EventAnalyticsWidget";
 import { toast } from "@/hooks/use-toast";
 
 // Mock data
@@ -324,39 +326,59 @@ export default function Events() {
         </div>
       </div>
 
-      {/* Events Grid */}
-      {filteredEvents.length > 0 ? (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {filteredEvents.map((event, index) => (
-            <div
-              key={event.id}
-              className="animate-slide-up"
-              style={{ animationDelay: `${index * 50}ms` }}
-            >
-              <EventCard
-                event={event}
-                onViewDetails={handleViewDetails}
-                onEdit={handleEdit}
-                onManageRegistrations={handleManageRegistrations}
-                onTogglePublish={handleTogglePublish}
-                onDelete={handleDelete}
-              />
+      {/* Tabs for Events & Analytics */}
+      <Tabs defaultValue="events" className="w-full">
+        <TabsList className="mb-6">
+          <TabsTrigger value="events" className="gap-2">
+            <Calendar className="h-4 w-4" />
+            Events
+          </TabsTrigger>
+          <TabsTrigger value="analytics" className="gap-2">
+            <BarChart3 className="h-4 w-4" />
+            Analytics
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="events">
+          {/* Events Grid */}
+          {filteredEvents.length > 0 ? (
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {filteredEvents.map((event, index) => (
+                <div
+                  key={event.id}
+                  className="animate-slide-up"
+                  style={{ animationDelay: `${index * 50}ms` }}
+                >
+                  <EventCard
+                    event={event}
+                    onViewDetails={handleViewDetails}
+                    onEdit={handleEdit}
+                    onManageRegistrations={handleManageRegistrations}
+                    onTogglePublish={handleTogglePublish}
+                    onDelete={handleDelete}
+                  />
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      ) : (
-        <div className="text-center py-16 border border-dashed border-border rounded-lg">
-          <Calendar className="h-16 w-16 mx-auto text-muted-foreground/50 mb-4" />
-          <h3 className="text-lg font-semibold text-foreground mb-2">No Events Created</h3>
-          <p className="text-muted-foreground mb-4">
-            Start by creating your first event for your association.
-          </p>
-          <Button onClick={() => setCreateModalOpen(true)}>
-            <CalendarPlus className="h-4 w-4 mr-2" />
-            Create Event
-          </Button>
-        </div>
-      )}
+          ) : (
+            <div className="text-center py-16 border border-dashed border-border rounded-lg">
+              <Calendar className="h-16 w-16 mx-auto text-muted-foreground/50 mb-4" />
+              <h3 className="text-lg font-semibold text-foreground mb-2">No Events Created</h3>
+              <p className="text-muted-foreground mb-4">
+                Start by creating your first event for your association.
+              </p>
+              <Button onClick={() => setCreateModalOpen(true)}>
+                <CalendarPlus className="h-4 w-4 mr-2" />
+                Create Event
+              </Button>
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="analytics">
+          <EventAnalyticsWidget />
+        </TabsContent>
+      </Tabs>
 
       {/* Modals & Drawers */}
       <CreateEditEventModal
