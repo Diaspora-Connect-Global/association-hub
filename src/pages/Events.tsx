@@ -1,123 +1,305 @@
+import { useState } from "react";
 import { AdminLayout } from "@/components/layout/AdminLayout";
-import { StatusBadge } from "@/components/ui/StatusBadge";
 import { Button } from "@/components/ui/button";
-import { CalendarPlus, MapPin, Video, Users, Clock, MoreHorizontal, Edit, X, Download } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { cn } from "@/lib/utils";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { CalendarPlus, Search, Calendar } from "lucide-react";
+import { Event, EventFormData } from "@/types/events";
+import { EventCard } from "@/components/events/EventCard";
+import { CreateEditEventModal } from "@/components/events/CreateEditEventModal";
+import { EventDetailsDrawer } from "@/components/events/EventDetailsDrawer";
+import { RegistrationsDrawer } from "@/components/events/RegistrationsDrawer";
+import { DeleteEventModal } from "@/components/events/DeleteEventModal";
+import { toast } from "@/hooks/use-toast";
 
-interface Event {
-  id: string;
-  title: string;
-  description: string;
-  date: string;
-  time: string;
-  type: "online" | "physical";
-  venue: string;
-  capacity: number;
-  registered: number;
-  price: number | null;
-  status: "upcoming" | "ongoing" | "completed" | "cancelled";
-  banner: string;
-}
-
-const events: Event[] = [
+// Mock data
+const mockEvents: Event[] = [
   {
     id: "1",
     title: "Annual General Meeting 2024",
-    description: "Join us for our yearly gathering to discuss association matters and elect new leaders.",
+    description: "Join us for our yearly gathering to discuss association matters and elect new leaders. This is an important event for all members.",
+    bannerEmoji: "🎤",
     date: "Dec 15, 2024",
-    time: "2:00 PM GMT",
-    type: "online",
-    venue: "Zoom Meeting",
-    capacity: 500,
-    registered: 342,
-    price: null,
-    status: "upcoming",
-    banner: "🎤",
+    startTime: "2:00 PM",
+    endTime: "5:00 PM",
+    eventType: "virtual",
+    virtualLink: "https://zoom.us/meeting",
+    isPaid: false,
+    hasParticipantLimit: true,
+    maxParticipants: 500,
+    registeredCount: 342,
+    status: "published",
+    publishNow: true,
+    notifyMembers: true,
+    allowComments: true,
+    views: 1250,
+    ticketsSold: 0,
+    revenue: 0,
+    createdAt: "2024-11-01",
+    updatedAt: "2024-11-15",
   },
   {
     id: "2",
     title: "Tech Career Workshop",
-    description: "Learn about career opportunities in the tech industry from industry experts.",
+    description: "Learn about career opportunities in the tech industry from industry experts. Network with professionals and get career advice.",
+    bannerEmoji: "💼",
     date: "Dec 20, 2024",
-    time: "10:00 AM GMT",
-    type: "physical",
-    venue: "Accra Innovation Hub",
-    capacity: 100,
-    registered: 87,
-    price: 25,
-    status: "upcoming",
-    banner: "💼",
+    startTime: "10:00 AM",
+    endTime: "1:00 PM",
+    eventType: "in-person",
+    location: "Accra Innovation Hub, Ghana",
+    isPaid: true,
+    ticketPrice: 25,
+    currency: "$",
+    hasParticipantLimit: true,
+    maxParticipants: 100,
+    registeredCount: 87,
+    status: "published",
+    publishNow: true,
+    notifyMembers: true,
+    allowComments: true,
+    views: 890,
+    ticketsSold: 87,
+    revenue: 2175,
+    createdAt: "2024-11-10",
+    updatedAt: "2024-11-20",
   },
   {
     id: "3",
     title: "Networking Dinner",
-    description: "An evening of networking and celebration with fellow diaspora members.",
+    description: "An evening of networking and celebration with fellow diaspora members. Enjoy great food and make new connections.",
+    bannerEmoji: "🍽️",
     date: "Dec 28, 2024",
-    time: "6:00 PM GMT",
-    type: "physical",
-    venue: "Marriott Hotel, Accra",
-    capacity: 150,
-    registered: 150,
-    price: 75,
-    status: "upcoming",
-    banner: "🍽️",
+    startTime: "6:00 PM",
+    endTime: "10:00 PM",
+    eventType: "in-person",
+    location: "Marriott Hotel, Accra",
+    isPaid: true,
+    ticketPrice: 75,
+    currency: "$",
+    hasParticipantLimit: true,
+    maxParticipants: 150,
+    registeredCount: 150,
+    status: "published",
+    publishNow: true,
+    notifyMembers: true,
+    allowComments: true,
+    views: 2100,
+    ticketsSold: 150,
+    revenue: 11250,
+    createdAt: "2024-11-05",
+    updatedAt: "2024-11-25",
   },
   {
     id: "4",
     title: "Webinar: Investment in Ghana",
-    description: "Explore investment opportunities in Ghana's growing economy.",
+    description: "Explore investment opportunities in Ghana's growing economy. Learn from experts about real estate, agriculture, and tech investments.",
+    bannerEmoji: "📈",
     date: "Nov 30, 2024",
-    time: "3:00 PM GMT",
-    type: "online",
-    venue: "Google Meet",
-    capacity: 300,
-    registered: 256,
-    price: null,
+    startTime: "3:00 PM",
+    endTime: "5:00 PM",
+    eventType: "virtual",
+    virtualLink: "https://meet.google.com/abc-defg",
+    isPaid: false,
+    hasParticipantLimit: true,
+    maxParticipants: 300,
+    registeredCount: 256,
     status: "completed",
-    banner: "📈",
+    publishNow: true,
+    notifyMembers: true,
+    allowComments: true,
+    views: 3200,
+    ticketsSold: 0,
+    revenue: 0,
+    createdAt: "2024-10-15",
+    updatedAt: "2024-11-30",
+  },
+  {
+    id: "5",
+    title: "Community Health Fair",
+    description: "Free health screenings and wellness education for all community members.",
+    bannerEmoji: "🏥",
+    date: "Jan 15, 2025",
+    startTime: "9:00 AM",
+    endTime: "4:00 PM",
+    eventType: "in-person",
+    location: "Community Center, Tema",
+    isPaid: false,
+    hasParticipantLimit: false,
+    registeredCount: 45,
+    status: "draft",
+    publishNow: false,
+    notifyMembers: true,
+    allowComments: true,
+    views: 0,
+    ticketsSold: 0,
+    revenue: 0,
+    createdAt: "2024-12-01",
+    updatedAt: "2024-12-01",
   },
 ];
 
-const statusColors = {
-  upcoming: "active" as const,
-  ongoing: "warning" as const,
-  completed: "inactive" as const,
-  cancelled: "error" as const,
-};
-
 export default function Events() {
+  const [events] = useState<Event[]>(mockEvents);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [typeFilter, setTypeFilter] = useState<string>("all");
+  const [sortBy, setSortBy] = useState<string>("newest");
+
+  // Modal states
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [editingEvent, setEditingEvent] = useState<Event | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const [detailsDrawerOpen, setDetailsDrawerOpen] = useState(false);
+  const [registrationsDrawerOpen, setRegistrationsDrawerOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [eventToDelete, setEventToDelete] = useState<Event | null>(null);
+
+  // Filter and sort events
+  const filteredEvents = events
+    .filter((event) => {
+      const matchesSearch = 
+        event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        event.description.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesStatus = statusFilter === "all" || event.status === statusFilter;
+      const matchesType = 
+        typeFilter === "all" || 
+        (typeFilter === "free" && !event.isPaid) ||
+        (typeFilter === "paid" && event.isPaid);
+      return matchesSearch && matchesStatus && matchesType;
+    })
+    .sort((a, b) => {
+      switch (sortBy) {
+        case "oldest":
+          return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+        case "date-soonest":
+          return new Date(a.date).getTime() - new Date(b.date).getTime();
+        case "date-latest":
+          return new Date(b.date).getTime() - new Date(a.date).getTime();
+        default:
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      }
+    });
+
+  // Stats
+  const upcomingCount = events.filter(e => e.status === "published" || e.status === "draft").length;
+  const totalRegistrations = events.reduce((sum, e) => sum + e.registeredCount, 0);
+  const totalRevenue = events.reduce((sum, e) => sum + e.revenue, 0);
+  const avgAttendance = events.length > 0 
+    ? Math.round((events.filter(e => e.hasParticipantLimit && e.maxParticipants)
+        .reduce((sum, e) => sum + (e.registeredCount / (e.maxParticipants || 1)) * 100, 0) / 
+        events.filter(e => e.hasParticipantLimit).length) || 0)
+    : 0;
+
+  // Handlers
+  const handleViewDetails = (event: Event) => {
+    setSelectedEvent(event);
+    setDetailsDrawerOpen(true);
+  };
+
+  const handleEdit = (event: Event) => {
+    setEditingEvent(event);
+    setCreateModalOpen(true);
+  };
+
+  const handleManageRegistrations = (event: Event) => {
+    setSelectedEvent(event);
+    setRegistrationsDrawerOpen(true);
+  };
+
+  const handleTogglePublish = (event: Event) => {
+    toast({
+      title: event.status === "published" ? "Event Unpublished" : "Event Published",
+      description: event.status === "published" 
+        ? "Event is now hidden from members." 
+        : "Your event is now live!",
+    });
+  };
+
+  const handleDelete = (event: Event) => {
+    setEventToDelete(event);
+    setDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    toast({
+      title: "Event Deleted",
+      description: "The event has been permanently deleted.",
+    });
+    setDeleteModalOpen(false);
+    setEventToDelete(null);
+  };
+
+  const handleCreateSubmit = (data: EventFormData) => {
+    toast({
+      title: editingEvent ? "Event Updated" : "Event Created",
+      description: editingEvent 
+        ? "Your changes have been saved."
+        : data.publishNow 
+          ? "Your event is now live!" 
+          : "Event saved as draft.",
+    });
+    setEditingEvent(null);
+  };
+
   return (
     <AdminLayout title="Events" subtitle="Create and manage association events">
-      {/* Top Bar */}
+      {/* Top Controls */}
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <input
-            type="text"
-            placeholder="Search events..."
-            className="input-search w-64"
-          />
-          <select className="rounded-lg border border-input bg-background px-3 py-2 text-sm">
-            <option value="">All Status</option>
-            <option value="upcoming">Upcoming</option>
-            <option value="ongoing">Ongoing</option>
-            <option value="completed">Completed</option>
-            <option value="cancelled">Cancelled</option>
-          </select>
-          <select className="rounded-lg border border-input bg-background px-3 py-2 text-sm">
-            <option value="">All Types</option>
-            <option value="online">Online</option>
-            <option value="physical">Physical</option>
-          </select>
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search events..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9 w-64"
+            />
+          </div>
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-[140px]">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="published">Published</SelectItem>
+              <SelectItem value="unpublished">Unpublished</SelectItem>
+              <SelectItem value="draft">Draft</SelectItem>
+              <SelectItem value="ongoing">Ongoing</SelectItem>
+              <SelectItem value="completed">Completed</SelectItem>
+              <SelectItem value="cancelled">Cancelled</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={typeFilter} onValueChange={setTypeFilter}>
+            <SelectTrigger className="w-[120px]">
+              <SelectValue placeholder="Type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Types</SelectItem>
+              <SelectItem value="free">Free</SelectItem>
+              <SelectItem value="paid">Paid</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={sortBy} onValueChange={setSortBy}>
+            <SelectTrigger className="w-[160px]">
+              <SelectValue placeholder="Sort" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="newest">Newest First</SelectItem>
+              <SelectItem value="oldest">Oldest First</SelectItem>
+              <SelectItem value="date-soonest">Date (Soonest)</SelectItem>
+              <SelectItem value="date-latest">Date (Latest)</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
-        <Button className="gap-2">
-          <CalendarPlus className="h-4 w-4" />
+        <Button onClick={() => setCreateModalOpen(true)}>
+          <CalendarPlus className="h-4 w-4 mr-2" />
           Create Event
         </Button>
       </div>
@@ -126,133 +308,89 @@ export default function Events() {
       <div className="mb-6 grid gap-4 sm:grid-cols-4">
         <div className="rounded-lg border border-border bg-card p-4">
           <p className="text-sm text-muted-foreground">Upcoming Events</p>
-          <p className="text-2xl font-bold text-foreground">8</p>
+          <p className="text-2xl font-bold text-foreground">{upcomingCount}</p>
         </div>
         <div className="rounded-lg border border-border bg-card p-4">
           <p className="text-sm text-muted-foreground">Total Registrations</p>
-          <p className="text-2xl font-bold text-primary">1,542</p>
+          <p className="text-2xl font-bold text-primary">{totalRegistrations.toLocaleString()}</p>
         </div>
         <div className="rounded-lg border border-border bg-card p-4">
           <p className="text-sm text-muted-foreground">Ticket Revenue</p>
-          <p className="text-2xl font-bold text-success">$12,450</p>
+          <p className="text-2xl font-bold text-foreground">${totalRevenue.toLocaleString()}</p>
         </div>
         <div className="rounded-lg border border-border bg-card p-4">
           <p className="text-sm text-muted-foreground">Avg. Attendance</p>
-          <p className="text-2xl font-bold text-accent">82%</p>
+          <p className="text-2xl font-bold text-foreground">{avgAttendance}%</p>
         </div>
       </div>
 
       {/* Events Grid */}
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {events.map((event, index) => (
-          <div
-            key={event.id}
-            className="group overflow-hidden rounded-xl border border-border bg-card transition-all duration-300 hover:shadow-lg hover:-translate-y-1 animate-slide-up"
-            style={{ animationDelay: `${index * 100}ms` }}
-          >
-            {/* Banner */}
-            <div className="relative flex h-32 items-center justify-center bg-gradient-to-br from-primary/10 to-accent/10">
-              <span className="text-5xl">{event.banner}</span>
-              <div className="absolute right-3 top-3">
-                <StatusBadge variant={statusColors[event.status]}>
-                  {event.status}
-                </StatusBadge>
-              </div>
+      {filteredEvents.length > 0 ? (
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {filteredEvents.map((event, index) => (
+            <div
+              key={event.id}
+              className="animate-slide-up"
+              style={{ animationDelay: `${index * 50}ms` }}
+            >
+              <EventCard
+                event={event}
+                onViewDetails={handleViewDetails}
+                onEdit={handleEdit}
+                onManageRegistrations={handleManageRegistrations}
+                onTogglePublish={handleTogglePublish}
+                onDelete={handleDelete}
+              />
             </div>
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-16 border border-dashed border-border rounded-lg">
+          <Calendar className="h-16 w-16 mx-auto text-muted-foreground/50 mb-4" />
+          <h3 className="text-lg font-semibold text-foreground mb-2">No Events Created</h3>
+          <p className="text-muted-foreground mb-4">
+            Start by creating your first event for your association.
+          </p>
+          <Button onClick={() => setCreateModalOpen(true)}>
+            <CalendarPlus className="h-4 w-4 mr-2" />
+            Create Event
+          </Button>
+        </div>
+      )}
 
-            {/* Content */}
-            <div className="p-5">
-              <h3 className="mb-2 text-lg font-semibold text-foreground line-clamp-1">
-                {event.title}
-              </h3>
-              <p className="mb-4 text-sm text-muted-foreground line-clamp-2">
-                {event.description}
-              </p>
+      {/* Modals & Drawers */}
+      <CreateEditEventModal
+        open={createModalOpen}
+        onOpenChange={(open) => {
+          setCreateModalOpen(open);
+          if (!open) setEditingEvent(null);
+        }}
+        event={editingEvent}
+        onSubmit={handleCreateSubmit}
+      />
 
-              {/* Details */}
-              <div className="mb-4 space-y-2">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Clock className="h-4 w-4" />
-                  <span>{event.date} at {event.time}</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  {event.type === "online" ? (
-                    <Video className="h-4 w-4" />
-                  ) : (
-                    <MapPin className="h-4 w-4" />
-                  )}
-                  <span className="truncate">{event.venue}</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Users className="h-4 w-4" />
-                  <span>
-                    {event.registered} / {event.capacity} registered
-                  </span>
-                </div>
-              </div>
+      <EventDetailsDrawer
+        open={detailsDrawerOpen}
+        onOpenChange={setDetailsDrawerOpen}
+        event={selectedEvent}
+        onEdit={handleEdit}
+        onTogglePublish={handleTogglePublish}
+        onManageRegistrations={handleManageRegistrations}
+        onDelete={handleDelete}
+      />
 
-              {/* Capacity Bar */}
-              <div className="mb-4">
-                <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
-                  <div
-                    className={cn(
-                      "h-full rounded-full transition-all",
-                      event.registered >= event.capacity
-                        ? "bg-destructive"
-                        : event.registered >= event.capacity * 0.8
-                        ? "bg-warning"
-                        : "bg-success"
-                    )}
-                    style={{
-                      width: `${Math.min(
-                        (event.registered / event.capacity) * 100,
-                        100
-                      )}%`,
-                    }}
-                  />
-                </div>
-              </div>
+      <RegistrationsDrawer
+        open={registrationsDrawerOpen}
+        onOpenChange={setRegistrationsDrawerOpen}
+        event={selectedEvent}
+      />
 
-              {/* Footer */}
-              <div className="flex items-center justify-between">
-                <div>
-                  {event.price ? (
-                    <span className="text-lg font-bold text-foreground">
-                      ${event.price}
-                    </span>
-                  ) : (
-                    <span className="text-sm font-medium text-success">
-                      Free
-                    </span>
-                  )}
-                </div>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <button className="rounded-lg p-2 text-muted-foreground hover:bg-muted hover:text-foreground">
-                      <MoreHorizontal className="h-4 w-4" />
-                    </button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-48">
-                    <DropdownMenuItem>
-                      <Edit className="mr-2 h-4 w-4" />
-                      Edit Event
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <Download className="mr-2 h-4 w-4" />
-                      Export Attendees
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem className="text-destructive">
-                      <X className="mr-2 h-4 w-4" />
-                      Cancel Event
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+      <DeleteEventModal
+        open={deleteModalOpen}
+        onOpenChange={setDeleteModalOpen}
+        event={eventToDelete}
+        onConfirm={handleConfirmDelete}
+      />
     </AdminLayout>
   );
 }
