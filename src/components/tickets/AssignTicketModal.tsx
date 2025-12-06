@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/select";
 import { Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { useT } from "@/hooks/useT";
 
 interface AssignTicketModalProps {
   open: boolean;
@@ -36,6 +37,7 @@ export function AssignTicketModal({
   onOpenChange,
   ticket,
 }: AssignTicketModalProps) {
+  const t = useT();
   const [assignTo, setAssignTo] = useState("");
   const [note, setNote] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -46,8 +48,8 @@ export function AssignTicketModal({
     e.preventDefault();
     if (!assignTo) {
       toast({
-        title: "Error",
-        description: "Please select an admin to assign.",
+        title: t.error,
+        description: t.fillRequiredFields,
         variant: "destructive",
       });
       return;
@@ -60,8 +62,8 @@ export function AssignTicketModal({
       setAssignTo("");
       setNote("");
       toast({
-        title: "Ticket Assigned",
-        description: `Ticket has been assigned to ${admins.find(a => a.id === assignTo)?.name}.`,
+        title: t.ticketAssigned,
+        description: `${t.ticketAssignedTo} ${admins.find(a => a.id === assignTo)?.name}.`,
       });
     }, 1000);
   };
@@ -70,15 +72,15 @@ export function AssignTicketModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Assign Ticket #{ticket.id}</DialogTitle>
+          <DialogTitle>{t.assignTicket} #{ticket.id}</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label>Assign To *</Label>
+            <Label>{t.assignedTo} *</Label>
             <Select value={assignTo} onValueChange={setAssignTo}>
               <SelectTrigger>
-                <SelectValue placeholder="Select admin" />
+                <SelectValue placeholder={t.selectAdmin} />
               </SelectTrigger>
               <SelectContent>
                 {admins.map((admin) => (
@@ -91,9 +93,9 @@ export function AssignTicketModal({
           </div>
 
           <div className="space-y-2">
-            <Label>Note (Optional)</Label>
+            <Label>{t.noteOptional}</Label>
             <Textarea
-              placeholder="Optional note to assigned admin"
+              placeholder={t.noteToAdmin}
               value={note}
               onChange={(e) => setNote(e.target.value)}
               rows={3}
@@ -102,11 +104,11 @@ export function AssignTicketModal({
 
           <div className="flex justify-end gap-2">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              Cancel
+              {t.cancel}
             </Button>
             <Button type="submit" disabled={isSubmitting}>
               {isSubmitting && <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />}
-              Assign
+              {t.assign}
             </Button>
           </div>
         </form>

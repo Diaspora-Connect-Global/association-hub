@@ -608,6 +608,70 @@ type TranslationKeys = {
   noReviewsYet: string;
   reviewsDisabled: string;
   clickOrdersToView: string;
+
+  // Order/Marketplace modals
+  deleteListingTitle: string;
+  deleteListingConfirm: string;
+  ordersWillRemain: string;
+  orderDetails: string;
+  customerInformation: string;
+  orderInformation: string;
+  unitPrice: string;
+  totalAmount: string;
+  orderStatus: string;
+  notes: string;
+  sendToCustomer: string;
+  saveNotes: string;
+  addNotesPlaceholder: string;
+  cancelOrderTitle: string;
+  cancelOrderConfirm: string;
+  refundsSeparate: string;
+  customerNotified: string;
+
+  // Ticket modals
+  createSupportTicket: string;
+  userName: string;
+  enterUserName: string;
+  enterUserEmail: string;
+  briefSummary: string;
+  detailedExplanation: string;
+  attachments: string;
+  addFiles: string;
+  ticketCreated: string;
+  ticketCreatedDesc: string;
+  validationError: string;
+  fillRequiredFields: string;
+  ticketDetails: string;
+  lastUpdated: string;
+  issueDescription: string;
+  assign: string;
+  notifyUser: string;
+  noCommentsYet: string;
+  writeComment: string;
+  internalNote: string;
+  internalNoteNotVisible: string;
+  commentAdded: string;
+  internalNoteAdded: string;
+  commentSentToUser: string;
+  userNotifiedDesc: string;
+  assignTicket: string;
+  selectAdmin: string;
+  noteOptional: string;
+  noteToAdmin: string;
+  ticketAssigned: string;
+  ticketAssignedTo: string;
+  updateStatusTitle: string;
+  selectStatus: string;
+  statusUpdated: string;
+  statusUpdatedTo: string;
+  closeTicketTitle: string;
+  closeTicketConfirm: string;
+  ticketClosed: string;
+  ticketClosedDesc: string;
+
+  // Card labels
+  applicantsLabel: string;
+  noOpportunitiesYetDesc: string;
 };
 
 const translations: Record<Language, TranslationKeys> = {
@@ -1223,6 +1287,70 @@ const translations: Record<Language, TranslationKeys> = {
     noReviewsYet: "No reviews yet",
     reviewsDisabled: "Reviews are disabled for this listing",
     clickOrdersToView: "Click \"Orders\" button above to view all orders",
+
+    // Order/Marketplace modals
+    deleteListingTitle: "Delete Listing",
+    deleteListingConfirm: "Are you sure you want to delete",
+    ordersWillRemain: "All orders for this listing will remain, but listing will not be visible to users.",
+    orderDetails: "Order Details",
+    customerInformation: "Customer Information",
+    orderInformation: "Order Information",
+    unitPrice: "Unit Price",
+    totalAmount: "Total Amount",
+    orderStatus: "Order Status",
+    notes: "Notes / Comments",
+    sendToCustomer: "Send to customer",
+    saveNotes: "Save Notes",
+    addNotesPlaceholder: "Add notes for internal reference or notify customer...",
+    cancelOrderTitle: "Cancel Order",
+    cancelOrderConfirm: "Are you sure you want to cancel order",
+    refundsSeparate: "Refunds may need to be processed separately.",
+    customerNotified: "Customer will be notified of cancellation.",
+
+    // Ticket modals
+    createSupportTicket: "Create Support Ticket",
+    userName: "User Name",
+    enterUserName: "Enter user's name",
+    enterUserEmail: "Enter user's email",
+    briefSummary: "Brief summary of the issue",
+    detailedExplanation: "Detailed explanation of the issue",
+    attachments: "Attachments",
+    addFiles: "Add Files",
+    ticketCreated: "Ticket Created",
+    ticketCreatedDesc: "Support ticket has been created successfully.",
+    validationError: "Validation Error",
+    fillRequiredFields: "Please fill in all required fields.",
+    ticketDetails: "Ticket Details",
+    lastUpdated: "Last Updated",
+    issueDescription: "Issue Description",
+    assign: "Assign",
+    notifyUser: "Notify User",
+    noCommentsYet: "No comments yet",
+    writeComment: "Write a comment...",
+    internalNote: "Internal",
+    internalNoteNotVisible: "Internal note (not visible to user)",
+    commentAdded: "Comment Added",
+    internalNoteAdded: "Internal note added.",
+    commentSentToUser: "Comment sent to user.",
+    userNotifiedDesc: "A notification has been sent to the user.",
+    assignTicket: "Assign Ticket",
+    selectAdmin: "Select admin",
+    noteOptional: "Note (Optional)",
+    noteToAdmin: "Optional note to assigned admin",
+    ticketAssigned: "Ticket Assigned",
+    ticketAssignedTo: "Ticket has been assigned to",
+    updateStatusTitle: "Update Status",
+    selectStatus: "Select status",
+    statusUpdated: "Status Updated",
+    statusUpdatedTo: "Ticket status has been updated to",
+    closeTicketTitle: "Close Ticket",
+    closeTicketConfirm: "Are you sure you want to close this ticket? User will be notified.",
+    ticketClosed: "Ticket Closed",
+    ticketClosedDesc: "The ticket has been closed and user has been notified.",
+
+    // Card labels
+    applicantsLabel: "applicants",
+    noOpportunitiesYetDesc: "Create your first opportunity to start receiving applicants",
   },
   fr: {
     // Navigation
@@ -1836,6 +1964,70 @@ const translations: Record<Language, TranslationKeys> = {
     noReviewsYet: "Pas encore d'avis",
     reviewsDisabled: "Les avis sont désactivés pour cette annonce",
     clickOrdersToView: "Cliquez sur \"Commandes\" ci-dessus pour voir toutes les commandes",
+
+    // Order/Marketplace modals
+    deleteListingTitle: "Supprimer l'annonce",
+    deleteListingConfirm: "Êtes-vous sûr de vouloir supprimer",
+    ordersWillRemain: "Toutes les commandes resteront, mais l'annonce ne sera plus visible.",
+    orderDetails: "Détails de la commande",
+    customerInformation: "Informations client",
+    orderInformation: "Informations de commande",
+    unitPrice: "Prix unitaire",
+    totalAmount: "Montant total",
+    orderStatus: "Statut de commande",
+    notes: "Notes / Commentaires",
+    sendToCustomer: "Envoyer au client",
+    saveNotes: "Enregistrer les notes",
+    addNotesPlaceholder: "Ajouter des notes internes ou notifier le client...",
+    cancelOrderTitle: "Annuler la commande",
+    cancelOrderConfirm: "Êtes-vous sûr de vouloir annuler la commande",
+    refundsSeparate: "Les remboursements peuvent être traités séparément.",
+    customerNotified: "Le client sera notifié de l'annulation.",
+
+    // Ticket modals
+    createSupportTicket: "Créer un ticket de support",
+    userName: "Nom d'utilisateur",
+    enterUserName: "Entrez le nom de l'utilisateur",
+    enterUserEmail: "Entrez l'email de l'utilisateur",
+    briefSummary: "Résumé bref du problème",
+    detailedExplanation: "Explication détaillée du problème",
+    attachments: "Pièces jointes",
+    addFiles: "Ajouter des fichiers",
+    ticketCreated: "Ticket créé",
+    ticketCreatedDesc: "Le ticket de support a été créé avec succès.",
+    validationError: "Erreur de validation",
+    fillRequiredFields: "Veuillez remplir tous les champs obligatoires.",
+    ticketDetails: "Détails du ticket",
+    lastUpdated: "Dernière mise à jour",
+    issueDescription: "Description du problème",
+    assign: "Assigner",
+    notifyUser: "Notifier l'utilisateur",
+    noCommentsYet: "Pas encore de commentaires",
+    writeComment: "Écrire un commentaire...",
+    internalNote: "Interne",
+    internalNoteNotVisible: "Note interne (non visible pour l'utilisateur)",
+    commentAdded: "Commentaire ajouté",
+    internalNoteAdded: "Note interne ajoutée.",
+    commentSentToUser: "Commentaire envoyé à l'utilisateur.",
+    userNotifiedDesc: "Une notification a été envoyée à l'utilisateur.",
+    assignTicket: "Assigner le ticket",
+    selectAdmin: "Sélectionner un admin",
+    noteOptional: "Note (Optionnel)",
+    noteToAdmin: "Note optionnelle pour l'admin assigné",
+    ticketAssigned: "Ticket assigné",
+    ticketAssignedTo: "Le ticket a été assigné à",
+    updateStatusTitle: "Mettre à jour le statut",
+    selectStatus: "Sélectionner le statut",
+    statusUpdated: "Statut mis à jour",
+    statusUpdatedTo: "Le statut du ticket a été mis à jour à",
+    closeTicketTitle: "Fermer le ticket",
+    closeTicketConfirm: "Êtes-vous sûr de vouloir fermer ce ticket ? L'utilisateur sera notifié.",
+    ticketClosed: "Ticket fermé",
+    ticketClosedDesc: "Le ticket a été fermé et l'utilisateur a été notifié.",
+
+    // Card labels
+    applicantsLabel: "candidats",
+    noOpportunitiesYetDesc: "Créez votre première opportunité pour recevoir des candidatures",
   },
   de: {
     // Navigation
@@ -2449,6 +2641,70 @@ const translations: Record<Language, TranslationKeys> = {
     noReviewsYet: "Noch keine Bewertungen",
     reviewsDisabled: "Bewertungen sind für dieses Angebot deaktiviert",
     clickOrdersToView: "Klicken Sie oben auf \"Bestellungen\" um alle Bestellungen anzuzeigen",
+
+    // Order/Marketplace modals
+    deleteListingTitle: "Angebot löschen",
+    deleteListingConfirm: "Sind Sie sicher, dass Sie löschen möchten",
+    ordersWillRemain: "Alle Bestellungen bleiben erhalten, aber das Angebot wird nicht mehr sichtbar sein.",
+    orderDetails: "Bestelldetails",
+    customerInformation: "Kundeninformationen",
+    orderInformation: "Bestellinformationen",
+    unitPrice: "Stückpreis",
+    totalAmount: "Gesamtbetrag",
+    orderStatus: "Bestellstatus",
+    notes: "Notizen / Kommentare",
+    sendToCustomer: "An Kunden senden",
+    saveNotes: "Notizen speichern",
+    addNotesPlaceholder: "Notizen für interne Referenz hinzufügen oder Kunden benachrichtigen...",
+    cancelOrderTitle: "Bestellung stornieren",
+    cancelOrderConfirm: "Sind Sie sicher, dass Sie die Bestellung stornieren möchten",
+    refundsSeparate: "Rückerstattungen müssen möglicherweise separat bearbeitet werden.",
+    customerNotified: "Der Kunde wird über die Stornierung benachrichtigt.",
+
+    // Ticket modals
+    createSupportTicket: "Support-Ticket erstellen",
+    userName: "Benutzername",
+    enterUserName: "Benutzernamen eingeben",
+    enterUserEmail: "E-Mail des Benutzers eingeben",
+    briefSummary: "Kurze Zusammenfassung des Problems",
+    detailedExplanation: "Detaillierte Erklärung des Problems",
+    attachments: "Anhänge",
+    addFiles: "Dateien hinzufügen",
+    ticketCreated: "Ticket erstellt",
+    ticketCreatedDesc: "Support-Ticket wurde erfolgreich erstellt.",
+    validationError: "Validierungsfehler",
+    fillRequiredFields: "Bitte füllen Sie alle Pflichtfelder aus.",
+    ticketDetails: "Ticket-Details",
+    lastUpdated: "Zuletzt aktualisiert",
+    issueDescription: "Problembeschreibung",
+    assign: "Zuweisen",
+    notifyUser: "Benutzer benachrichtigen",
+    noCommentsYet: "Noch keine Kommentare",
+    writeComment: "Kommentar schreiben...",
+    internalNote: "Intern",
+    internalNoteNotVisible: "Interne Notiz (nicht für Benutzer sichtbar)",
+    commentAdded: "Kommentar hinzugefügt",
+    internalNoteAdded: "Interne Notiz hinzugefügt.",
+    commentSentToUser: "Kommentar an Benutzer gesendet.",
+    userNotifiedDesc: "Eine Benachrichtigung wurde an den Benutzer gesendet.",
+    assignTicket: "Ticket zuweisen",
+    selectAdmin: "Admin auswählen",
+    noteOptional: "Notiz (Optional)",
+    noteToAdmin: "Optionale Notiz an zugewiesenen Admin",
+    ticketAssigned: "Ticket zugewiesen",
+    ticketAssignedTo: "Ticket wurde zugewiesen an",
+    updateStatusTitle: "Status aktualisieren",
+    selectStatus: "Status auswählen",
+    statusUpdated: "Status aktualisiert",
+    statusUpdatedTo: "Ticket-Status wurde aktualisiert auf",
+    closeTicketTitle: "Ticket schließen",
+    closeTicketConfirm: "Sind Sie sicher, dass Sie dieses Ticket schließen möchten? Der Benutzer wird benachrichtigt.",
+    ticketClosed: "Ticket geschlossen",
+    ticketClosedDesc: "Das Ticket wurde geschlossen und der Benutzer wurde benachrichtigt.",
+
+    // Card labels
+    applicantsLabel: "Bewerber",
+    noOpportunitiesYetDesc: "Erstellen Sie Ihre erste Möglichkeit, um Bewerbungen zu erhalten",
   },
   nl: {
     // Navigation
@@ -3062,6 +3318,70 @@ const translations: Record<Language, TranslationKeys> = {
     noReviewsYet: "Nog geen reviews",
     reviewsDisabled: "Reviews zijn uitgeschakeld voor deze aanbieding",
     clickOrdersToView: "Klik op \"Bestellingen\" hierboven om alle bestellingen te bekijken",
+
+    // Order/Marketplace modals
+    deleteListingTitle: "Aanbieding verwijderen",
+    deleteListingConfirm: "Weet je zeker dat je wilt verwijderen",
+    ordersWillRemain: "Alle bestellingen blijven behouden, maar de aanbieding wordt niet meer zichtbaar.",
+    orderDetails: "Bestelgegevens",
+    customerInformation: "Klantinformatie",
+    orderInformation: "Bestelinformatie",
+    unitPrice: "Eenheidsprijs",
+    totalAmount: "Totaalbedrag",
+    orderStatus: "Bestelstatus",
+    notes: "Notities / Opmerkingen",
+    sendToCustomer: "Naar klant sturen",
+    saveNotes: "Notities opslaan",
+    addNotesPlaceholder: "Notities toevoegen voor interne referentie of klant informeren...",
+    cancelOrderTitle: "Bestelling annuleren",
+    cancelOrderConfirm: "Weet je zeker dat je de bestelling wilt annuleren",
+    refundsSeparate: "Terugbetalingen moeten mogelijk apart worden verwerkt.",
+    customerNotified: "De klant wordt op de hoogte gebracht van de annulering.",
+
+    // Ticket modals
+    createSupportTicket: "Supportticket aanmaken",
+    userName: "Gebruikersnaam",
+    enterUserName: "Voer de naam van de gebruiker in",
+    enterUserEmail: "Voer het e-mailadres van de gebruiker in",
+    briefSummary: "Korte samenvatting van het probleem",
+    detailedExplanation: "Gedetailleerde uitleg van het probleem",
+    attachments: "Bijlagen",
+    addFiles: "Bestanden toevoegen",
+    ticketCreated: "Ticket aangemaakt",
+    ticketCreatedDesc: "Supportticket is succesvol aangemaakt.",
+    validationError: "Validatiefout",
+    fillRequiredFields: "Vul alle verplichte velden in.",
+    ticketDetails: "Ticketdetails",
+    lastUpdated: "Laatst bijgewerkt",
+    issueDescription: "Probleemomschrijving",
+    assign: "Toewijzen",
+    notifyUser: "Gebruiker melden",
+    noCommentsYet: "Nog geen reacties",
+    writeComment: "Schrijf een reactie...",
+    internalNote: "Intern",
+    internalNoteNotVisible: "Interne notitie (niet zichtbaar voor gebruiker)",
+    commentAdded: "Reactie toegevoegd",
+    internalNoteAdded: "Interne notitie toegevoegd.",
+    commentSentToUser: "Reactie naar gebruiker gestuurd.",
+    userNotifiedDesc: "Er is een melding naar de gebruiker gestuurd.",
+    assignTicket: "Ticket toewijzen",
+    selectAdmin: "Admin selecteren",
+    noteOptional: "Notitie (Optioneel)",
+    noteToAdmin: "Optionele notitie aan toegewezen admin",
+    ticketAssigned: "Ticket toegewezen",
+    ticketAssignedTo: "Ticket is toegewezen aan",
+    updateStatusTitle: "Status bijwerken",
+    selectStatus: "Status selecteren",
+    statusUpdated: "Status bijgewerkt",
+    statusUpdatedTo: "Ticketstatus is bijgewerkt naar",
+    closeTicketTitle: "Ticket sluiten",
+    closeTicketConfirm: "Weet je zeker dat je dit ticket wilt sluiten? De gebruiker wordt geïnformeerd.",
+    ticketClosed: "Ticket gesloten",
+    ticketClosedDesc: "Het ticket is gesloten en de gebruiker is geïnformeerd.",
+
+    // Card labels
+    applicantsLabel: "sollicitanten",
+    noOpportunitiesYetDesc: "Maak je eerste kans aan om sollicitaties te ontvangen",
   },
   es: {
     // Navigation
@@ -3663,6 +3983,70 @@ const translations: Record<Language, TranslationKeys> = {
     noReviewsYet: "Aún no hay reseñas",
     reviewsDisabled: "Las reseñas están deshabilitadas para este anuncio",
     clickOrdersToView: "Haga clic en \"Pedidos\" arriba para ver todos los pedidos",
+
+    // Order/Marketplace modals
+    deleteListingTitle: "Eliminar anuncio",
+    deleteListingConfirm: "¿Estás seguro de que deseas eliminar",
+    ordersWillRemain: "Todos los pedidos permanecerán, pero el anuncio no será visible.",
+    orderDetails: "Detalles del pedido",
+    customerInformation: "Información del cliente",
+    orderInformation: "Información del pedido",
+    unitPrice: "Precio unitario",
+    totalAmount: "Monto total",
+    orderStatus: "Estado del pedido",
+    notes: "Notas / Comentarios",
+    sendToCustomer: "Enviar al cliente",
+    saveNotes: "Guardar notas",
+    addNotesPlaceholder: "Agregar notas internas o notificar al cliente...",
+    cancelOrderTitle: "Cancelar pedido",
+    cancelOrderConfirm: "¿Estás seguro de que deseas cancelar el pedido",
+    refundsSeparate: "Los reembolsos pueden procesarse por separado.",
+    customerNotified: "El cliente será notificado de la cancelación.",
+
+    // Ticket modals
+    createSupportTicket: "Crear ticket de soporte",
+    userName: "Nombre de usuario",
+    enterUserName: "Ingrese el nombre del usuario",
+    enterUserEmail: "Ingrese el email del usuario",
+    briefSummary: "Resumen breve del problema",
+    detailedExplanation: "Explicación detallada del problema",
+    attachments: "Archivos adjuntos",
+    addFiles: "Agregar archivos",
+    ticketCreated: "Ticket creado",
+    ticketCreatedDesc: "El ticket de soporte se ha creado correctamente.",
+    validationError: "Error de validación",
+    fillRequiredFields: "Por favor complete todos los campos obligatorios.",
+    ticketDetails: "Detalles del ticket",
+    lastUpdated: "Última actualización",
+    issueDescription: "Descripción del problema",
+    assign: "Asignar",
+    notifyUser: "Notificar usuario",
+    noCommentsYet: "Aún no hay comentarios",
+    writeComment: "Escribir un comentario...",
+    internalNote: "Interno",
+    internalNoteNotVisible: "Nota interna (no visible para el usuario)",
+    commentAdded: "Comentario agregado",
+    internalNoteAdded: "Nota interna agregada.",
+    commentSentToUser: "Comentario enviado al usuario.",
+    userNotifiedDesc: "Se ha enviado una notificación al usuario.",
+    assignTicket: "Asignar ticket",
+    selectAdmin: "Seleccionar admin",
+    noteOptional: "Nota (Opcional)",
+    noteToAdmin: "Nota opcional para el admin asignado",
+    ticketAssigned: "Ticket asignado",
+    ticketAssignedTo: "El ticket ha sido asignado a",
+    updateStatusTitle: "Actualizar estado",
+    selectStatus: "Seleccionar estado",
+    statusUpdated: "Estado actualizado",
+    statusUpdatedTo: "El estado del ticket se ha actualizado a",
+    closeTicketTitle: "Cerrar ticket",
+    closeTicketConfirm: "¿Estás seguro de que deseas cerrar este ticket? El usuario será notificado.",
+    ticketClosed: "Ticket cerrado",
+    ticketClosedDesc: "El ticket ha sido cerrado y el usuario ha sido notificado.",
+
+    // Card labels
+    applicantsLabel: "solicitantes",
+    noOpportunitiesYetDesc: "Crea tu primera oportunidad para empezar a recibir solicitudes",
   },
 };
 

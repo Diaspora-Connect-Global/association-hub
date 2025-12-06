@@ -20,12 +20,10 @@ import {
   Package,
   User,
   Mail,
-  Phone,
-  MapPin,
-  Calendar,
-  CreditCard
+  Phone
 } from "lucide-react";
 import { useState } from "react";
+import { useT } from "@/hooks/useT";
 
 interface OrderDetailsModalProps {
   open: boolean;
@@ -46,6 +44,7 @@ export function OrderDetailsModal({
   onCancel,
   onNotify,
 }: OrderDetailsModalProps) {
+  const t = useT();
   const [notes, setNotes] = useState("");
   const [sendToCustomer, setSendToCustomer] = useState(false);
 
@@ -69,7 +68,7 @@ export function OrderDetailsModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Order Details</DialogTitle>
+          <DialogTitle>{t.orderDetails}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6">
@@ -77,7 +76,7 @@ export function OrderDetailsModal({
           <div>
             <h4 className="text-sm font-medium text-foreground mb-3 flex items-center gap-2">
               <User className="h-4 w-4" />
-              Customer Information
+              {t.customerInformation}
             </h4>
             <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
               <Avatar className="h-10 w-10">
@@ -106,36 +105,36 @@ export function OrderDetailsModal({
           <div>
             <h4 className="text-sm font-medium text-foreground mb-3 flex items-center gap-2">
               <Package className="h-4 w-4" />
-              Order Information
+              {t.orderInformation}
             </h4>
             <div className="space-y-3">
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Order ID</span>
+                <span className="text-muted-foreground">{t.orderId}</span>
                 <span className="font-mono font-medium">{order.id}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Order Date</span>
+                <span className="text-muted-foreground">{t.orderDate}</span>
                 <span>{order.orderDate}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Product/Service</span>
+                <span className="text-muted-foreground">{t.productService}</span>
                 <span className="font-medium">{order.listingTitle}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Quantity</span>
+                <span className="text-muted-foreground">{t.qty}</span>
                 <span>{order.quantity}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Unit Price</span>
+                <span className="text-muted-foreground">{t.unitPrice}</span>
                 <span>{currencySymbol}{(order.totalAmount / order.quantity).toFixed(2)}</span>
               </div>
               <Separator />
               <div className="flex justify-between text-sm font-medium">
-                <span>Total Amount</span>
+                <span>{t.totalAmount}</span>
                 <span className="text-lg">{currencySymbol}{order.totalAmount.toFixed(2)}</span>
               </div>
               <div className="flex justify-between items-center text-sm">
-                <span className="text-muted-foreground">Payment Status</span>
+                <span className="text-muted-foreground">{t.paymentStatus}</span>
                 <StatusBadge
                   variant={
                     order.paymentStatus === "paid"
@@ -149,7 +148,7 @@ export function OrderDetailsModal({
                 </StatusBadge>
               </div>
               <div className="flex justify-between items-center text-sm">
-                <span className="text-muted-foreground">Order Status</span>
+                <span className="text-muted-foreground">{t.orderStatus}</span>
                 <StatusBadge
                   variant={
                     order.fulfillmentStatus === "fulfilled"
@@ -169,7 +168,7 @@ export function OrderDetailsModal({
 
           {/* Actions */}
           <div>
-            <h4 className="text-sm font-medium text-foreground mb-3">Actions</h4>
+            <h4 className="text-sm font-medium text-foreground mb-3">{t.actions}</h4>
             <div className="flex flex-wrap gap-2">
               <Button
                 variant="outline"
@@ -178,7 +177,7 @@ export function OrderDetailsModal({
                 onClick={() => onMarkFulfilled(order)}
               >
                 <CheckCircle className="h-4 w-4 mr-1.5" />
-                Mark Fulfilled
+                {t.markFulfilled}
               </Button>
               <Button
                 variant="outline"
@@ -187,7 +186,7 @@ export function OrderDetailsModal({
                 onClick={() => onRefund(order)}
               >
                 <RefreshCw className="h-4 w-4 mr-1.5" />
-                Refund
+                {t.refund}
               </Button>
               <Button
                 variant="outline"
@@ -197,7 +196,7 @@ export function OrderDetailsModal({
                 className="text-destructive hover:text-destructive"
               >
                 <XCircle className="h-4 w-4 mr-1.5" />
-                Cancel
+                {t.cancel}
               </Button>
               <Button
                 variant="outline"
@@ -205,7 +204,7 @@ export function OrderDetailsModal({
                 onClick={() => onNotify(order, "Order update notification")}
               >
                 <Bell className="h-4 w-4 mr-1.5" />
-                Notify
+                {t.notify}
               </Button>
             </div>
           </div>
@@ -214,9 +213,9 @@ export function OrderDetailsModal({
 
           {/* Notes */}
           <div>
-            <h4 className="text-sm font-medium text-foreground mb-3">Notes / Comments</h4>
+            <h4 className="text-sm font-medium text-foreground mb-3">{t.notes}</h4>
             <Textarea
-              placeholder="Add notes for internal reference or notify customer..."
+              placeholder={t.addNotesPlaceholder}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={3}
@@ -229,11 +228,11 @@ export function OrderDetailsModal({
                   onCheckedChange={setSendToCustomer}
                 />
                 <Label htmlFor="send-to-customer" className="text-sm">
-                  Send to customer
+                  {t.sendToCustomer}
                 </Label>
               </div>
               <Button size="sm" onClick={handleSaveNotes} disabled={!notes.trim()}>
-                Save Notes
+                {t.saveNotes}
               </Button>
             </div>
           </div>

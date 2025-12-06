@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Edit, Trash2, ToggleLeft, ToggleRight, Users, Globe, Lock, Briefcase, Calendar } from "lucide-react";
 import { Opportunity, OpportunityType } from "@/types/opportunities";
+import { useT } from "@/hooks/useT";
 
 interface OpportunitiesCardViewProps {
   opportunities: Opportunity[];
@@ -23,15 +24,6 @@ const statusMap = {
   removed: "inactive" as const,
 };
 
-const typeLabels: Record<OpportunityType, string> = {
-  job: "Job",
-  volunteer: "Volunteer",
-  training: "Training",
-  funding: "Funding",
-  scholarship: "Scholarship",
-  other: "Other",
-};
-
 export function OpportunitiesCardView({
   opportunities,
   onOpenDrawer,
@@ -40,13 +32,24 @@ export function OpportunitiesCardView({
   onViewApplicants,
   onDelete,
 }: OpportunitiesCardViewProps) {
+  const t = useT();
+
+  const typeLabels: Record<OpportunityType, string> = {
+    job: t.job,
+    volunteer: t.volunteer,
+    training: t.training,
+    funding: t.funding,
+    scholarship: t.scholarship,
+    other: t.other,
+  };
+
   if (opportunities.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border bg-card py-16">
         <Briefcase className="mb-4 h-12 w-12 text-muted-foreground" />
-        <h3 className="mb-2 text-lg font-semibold text-foreground">No opportunities yet</h3>
+        <h3 className="mb-2 text-lg font-semibold text-foreground">{t.noOpportunitiesYet}</h3>
         <p className="mb-4 text-sm text-muted-foreground">
-          Create your first opportunity to start receiving applicants
+          {t.noOpportunitiesYetDesc}
         </p>
       </div>
     );
@@ -66,7 +69,7 @@ export function OpportunitiesCardView({
                 {typeLabels[opp.type]}
               </Badge>
               <StatusBadge variant={statusMap[opp.status]} className="text-xs">
-                {opp.status}
+                {opp.status === "published" ? t.published : opp.status === "draft" ? t.draft : opp.status}
               </StatusBadge>
             </div>
             <h3 className="mt-2 font-semibold text-foreground line-clamp-2">{opp.title}</h3>
@@ -77,7 +80,7 @@ export function OpportunitiesCardView({
             <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
               <div className="flex items-center gap-1">
                 <Users className="h-3.5 w-3.5" />
-                <span>{opp.applicantsCount} applicants</span>
+                <span>{opp.applicantsCount} {t.applicantsLabel}</span>
               </div>
               <div className="flex items-center gap-1">
                 {opp.visibility === "public" ? (
@@ -85,7 +88,7 @@ export function OpportunitiesCardView({
                 ) : (
                   <Lock className="h-3.5 w-3.5" />
                 )}
-                <span className="capitalize">{opp.visibility}</span>
+                <span className="capitalize">{opp.visibility === "public" ? t.public : t.privateGroup}</span>
               </div>
               {opp.deadline && (
                 <div className="flex items-center gap-1">
