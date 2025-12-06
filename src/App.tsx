@@ -12,6 +12,7 @@ import Marketplace from "./pages/Marketplace";
 import Orders from "./pages/Orders";
 import Groups from "./pages/Groups";
 import Profile from "./pages/Profile";
+import AdminProfile from "./pages/AdminProfile";
 import Opportunities from "./pages/Opportunities";
 import Tickets from "./pages/Tickets";
 import AuditLogs from "./pages/AuditLogs";
@@ -33,6 +34,7 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/" element={<Index />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/admin-profile" element={<AdminProfile />} />
             <Route path="/members" element={<Members />} />
             <Route path="/posts" element={<Posts />} />
             <Route path="/events" element={<Events />} />
