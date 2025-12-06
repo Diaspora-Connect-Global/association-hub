@@ -2,6 +2,7 @@ import { ReactNode, useState, useEffect } from "react";
 import { Sidebar } from "./Sidebar";
 import { Header } from "./Header";
 import { cn } from "@/lib/utils";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -19,16 +20,25 @@ export function AdminLayout({ children, title, subtitle }: AdminLayoutProps) {
     localStorage.setItem("sidebar-collapsed", JSON.stringify(collapsed));
   }, [collapsed]);
 
+  const toggleSidebar = () => setCollapsed(!collapsed);
+
   return (
-    <div className="min-h-screen bg-background">
-      <Sidebar collapsed={collapsed} onToggle={() => setCollapsed(!collapsed)} />
-      <div className={cn(
-        "transition-all duration-300",
-        collapsed ? "ml-16" : "ml-64"
-      )}>
-        <Header title={title} subtitle={subtitle} />
-        <main className="p-6">{children}</main>
+    <TooltipProvider delayDuration={0}>
+      <div className="min-h-screen bg-background">
+        <Sidebar collapsed={collapsed} onToggle={toggleSidebar} />
+        <div className={cn(
+          "transition-all duration-300",
+          collapsed ? "ml-16" : "ml-64"
+        )}>
+          <Header 
+            title={title} 
+            subtitle={subtitle} 
+            sidebarCollapsed={collapsed}
+            onToggleSidebar={toggleSidebar}
+          />
+          <main className="p-6">{children}</main>
+        </div>
       </div>
-    </div>
+    </TooltipProvider>
   );
 }
