@@ -44,6 +44,13 @@ export interface Order {
   paymentStatus: PaymentStatus;
   fulfillmentStatus: FulfillmentStatus;
   orderDate: string;
+  // Escrow fields
+  isEscrow?: boolean;
+  escrowStatus?: "held" | "partially_released" | "fully_released" | "disputed" | "refunded";
+  escrowHeldAmount?: number;
+  escrowReleasedAmount?: number;
+  vendorId?: string;
+  vendorName?: string;
 }
 
 export interface Review {
