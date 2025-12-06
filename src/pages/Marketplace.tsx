@@ -302,26 +302,26 @@ export default function Marketplace() {
         </div>
         <Button onClick={() => setCreateModalOpen(true)}>
           <PlusCircle className="h-4 w-4 mr-2" />
-          Add Product/Service
+          {t.addProductService}
         </Button>
       </div>
 
       {/* Stats */}
       <div className="mb-6 grid gap-4 sm:grid-cols-4">
         <div className="rounded-lg border border-border bg-card p-4">
-          <p className="text-sm text-muted-foreground">Active Listings</p>
+          <p className="text-sm text-muted-foreground">{t.activeListings}</p>
           <p className="text-2xl font-bold text-foreground">{activeListings}</p>
         </div>
         <div className="rounded-lg border border-border bg-card p-4">
-          <p className="text-sm text-muted-foreground">Total Orders</p>
+          <p className="text-sm text-muted-foreground">{t.totalOrders}</p>
           <p className="text-2xl font-bold text-primary">{totalOrders}</p>
         </div>
         <div className="rounded-lg border border-border bg-card p-4">
-          <p className="text-sm text-muted-foreground">Revenue (All Time)</p>
+          <p className="text-sm text-muted-foreground">{t.revenueAllTime}</p>
           <p className="text-2xl font-bold text-foreground">${totalRevenue.toLocaleString()}</p>
         </div>
         <div className="rounded-lg border border-border bg-card p-4">
-          <p className="text-sm text-muted-foreground">Low Stock Items</p>
+          <p className="text-sm text-muted-foreground">{t.lowStockItems}</p>
           <p className="text-2xl font-bold text-foreground">{lowStockItems}</p>
         </div>
       </div>
@@ -331,11 +331,11 @@ export default function Marketplace() {
         <TabsList className="mb-6">
           <TabsTrigger value="listings" className="gap-2">
             <ShoppingBag className="h-4 w-4" />
-            Listings
+            {t.listings}
           </TabsTrigger>
           <TabsTrigger value="analytics" className="gap-2">
             <BarChart3 className="h-4 w-4" />
-            Analytics
+            {t.analytics}
           </TabsTrigger>
         </TabsList>
 

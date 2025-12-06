@@ -154,7 +154,7 @@ export default function Opportunities() {
           </Button>
           <Button className="gap-2" onClick={() => setCreateModalOpen(true)}>
             <Plus className="h-4 w-4" />
-            <span className="hidden sm:inline">New Opportunity</span>
+            <span className="hidden sm:inline">{t.newOpportunity}</span>
           </Button>
         </div>
       </div>
@@ -162,19 +162,19 @@ export default function Opportunities() {
       {/* Stats Summary */}
       <div className="mb-6 grid gap-4 sm:grid-cols-4">
         <div className="rounded-xl border border-border bg-card p-4">
-          <p className="text-sm text-muted-foreground">Total Opportunities</p>
+          <p className="text-sm text-muted-foreground">{t.totalOpportunities}</p>
           <p className="text-2xl font-semibold text-foreground">{opportunities.length}</p>
         </div>
         <div className="rounded-xl border border-border bg-card p-4">
-          <p className="text-sm text-muted-foreground">Open</p>
+          <p className="text-sm text-muted-foreground">{t.open}</p>
           <p className="text-2xl font-semibold text-foreground">{opportunities.filter(o => o.status === "published").length}</p>
         </div>
         <div className="rounded-xl border border-border bg-card p-4">
-          <p className="text-sm text-muted-foreground">Total Applicants</p>
+          <p className="text-sm text-muted-foreground">{t.totalApplicants}</p>
           <p className="text-2xl font-semibold text-foreground">{opportunities.reduce((sum, o) => sum + o.applicantsCount, 0)}</p>
         </div>
         <div className="rounded-xl border border-border bg-card p-4">
-          <p className="text-sm text-muted-foreground">Shortlisted</p>
+          <p className="text-sm text-muted-foreground">{t.shortlisted}</p>
           <p className="text-2xl font-semibold text-foreground">{opportunities.reduce((sum, o) => sum + o.shortlistCount, 0)}</p>
         </div>
       </div>
@@ -182,7 +182,7 @@ export default function Opportunities() {
       {/* Results Info */}
       <div className="mb-4">
         <p className="text-sm text-muted-foreground">
-          Showing {filteredOpportunities.length} of {opportunities.length} opportunities
+          {t.showingXOfYOpportunities.replace("{filtered}", filteredOpportunities.length.toString()).replace("{total}", opportunities.length.toString())}
         </p>
       </div>
 
