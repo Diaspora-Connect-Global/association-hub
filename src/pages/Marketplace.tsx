@@ -14,7 +14,7 @@ import { PlusCircle, Search, ShoppingBag, BarChart3 } from "lucide-react";
 import { Listing, ListingFormData } from "@/types/marketplace";
 import { ListingCard } from "@/components/marketplace/ListingCard";
 import { CreateEditListingModal } from "@/components/marketplace/CreateEditListingModal";
-import { ListingDetailsDrawer } from "@/components/marketplace/ListingDetailsDrawer";
+import { ListingDetailsModal } from "@/components/marketplace/ListingDetailsModal";
 import { OrdersDrawer } from "@/components/marketplace/OrdersDrawer";
 import { DeleteListingModal } from "@/components/marketplace/DeleteListingModal";
 import { MarketplaceAnalyticsWidget } from "@/components/marketplace/MarketplaceAnalyticsWidget";
@@ -387,7 +387,7 @@ export default function Marketplace() {
         onSubmit={handleCreateSubmit}
       />
 
-      <ListingDetailsDrawer
+      <ListingDetailsModal
         open={detailsDrawerOpen}
         onOpenChange={setDetailsDrawerOpen}
         listing={selectedListing}

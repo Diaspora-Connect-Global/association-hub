@@ -13,7 +13,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PostsTable } from "@/components/posts/PostsTable";
 import { PostsCardView } from "@/components/posts/PostsCardView";
 import { CreateEditPostModal } from "@/components/posts/CreateEditPostModal";
-import { PostDrawer } from "@/components/posts/PostDrawer";
+import { PostModal } from "@/components/posts/PostModal";
 import { DeletePostModal } from "@/components/posts/DeletePostModal";
 import { SchedulePostModal } from "@/components/posts/SchedulePostModal";
 import { BulkActionsBar } from "@/components/posts/BulkActionsBar";
@@ -306,7 +306,7 @@ export default function Posts() {
         post={editPost}
         onSave={handleSavePost}
       />
-      <PostDrawer
+      <PostModal
         open={drawerOpen}
         onOpenChange={setDrawerOpen}
         post={drawerPost}
