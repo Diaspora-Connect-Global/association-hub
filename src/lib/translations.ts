@@ -68,6 +68,33 @@ type TranslationKeys = {
   refresh: string;
   viewAll: string;
   saveChanges: string;
+  actions: string;
+  status: string;
+  type: string;
+  date: string;
+  time: string;
+  name: string;
+  role: string;
+  phone: string;
+  all: string;
+  active: string;
+  inactive: string;
+  pending: string;
+  suspended: string;
+  rejected: string;
+  remove: string;
+  add: string;
+  update: string;
+  success: string;
+  error: string;
+  warning: string;
+  info: string;
+  clearFilters: string;
+  sortBy: string;
+  ascending: string;
+  descending: string;
+  newest: string;
+  oldest: string;
 
   // Dashboard
   welcomeBack: string;
@@ -84,6 +111,9 @@ type TranslationKeys = {
   last30Days: string;
   last90Days: string;
   lastYear: string;
+  engagementTrend: string;
+  comments: string;
+  likes: string;
 
   // Activity Feed
   newMemberJoined: string;
@@ -124,6 +154,25 @@ type TranslationKeys = {
   paymentAmount: string;
   linkedCommunities: string;
   adminAssignments: string;
+  manageAdmins: string;
+  assignNewAdmin: string;
+  linkCommunities: string;
+  communityName: string;
+  unlink: string;
+  primaryAdmin: string;
+  admin: string;
+  subscriptionPeriod: string;
+  paymentCurrency: string;
+  oneTime: string;
+  subscription: string;
+  monthly: string;
+  quarterly: string;
+  yearly: string;
+  openAnyone: string;
+  approvalRequired: string;
+  adminsOnly: string;
+  publicType: string;
+  privateType: string;
 
   // Members page
   membersTitle: string;
@@ -133,6 +182,31 @@ type TranslationKeys = {
   pendingApprovals: string;
   activeThisMonth: string;
   memberSince: string;
+  member: string;
+  subAdmin: string;
+  viewProfile: string;
+  changeRole: string;
+  removeMember: string;
+  noMembersYet: string;
+  inviteFirstMembers: string;
+  searchByNamePhoneEmail: string;
+  membershipStatus: string;
+  paymentStatus: string;
+  allStatus: string;
+  allPayment: string;
+  allRoles: string;
+  paidStatus: string;
+  unpaidStatus: string;
+  expiredStatus: string;
+  subscriptionActive: string;
+  subscriptionFailed: string;
+  pendingApproval: string;
+  leftAssociation: string;
+  nameAZ: string;
+  nameZA: string;
+  joinDateNewest: string;
+  joinDateOldest: string;
+  joinDate: string;
 
   // Posts page
   postsTitle: string;
@@ -141,7 +215,6 @@ type TranslationKeys = {
   publishedPosts: string;
   draftPosts: string;
   scheduledPosts: string;
-  allStatus: string;
   published: string;
   draft: string;
   scheduled: string;
@@ -152,6 +225,17 @@ type TranslationKeys = {
   allVisibility: string;
   membersOnly: string;
   public: string;
+  postActions: string;
+  drafts: string;
+  pinned: string;
+  filters: string;
+  mediaType: string;
+  visibility: string;
+  pickDateRange: string;
+  clearAllFilters: string;
+  archived: string;
+  removed: string;
+  link: string;
 
   // Events page
   eventsTitle: string;
@@ -164,6 +248,14 @@ type TranslationKeys = {
   allTypes: string;
   free: string;
   paid: string;
+  viewDetails: string;
+  editEvent: string;
+  manageRegistrations: string;
+  unpublish: string;
+  publish: string;
+  deleteEvent: string;
+  registered: string;
+  virtualEvent: string;
 
   // Opportunities page
   opportunitiesTitle: string;
@@ -259,6 +351,7 @@ type TranslationKeys = {
 
   // Association Admin label
   associationAdmin: string;
+  switchAssociation: string;
 };
 
 const translations: Record<Language, TranslationKeys> = {
@@ -521,6 +614,101 @@ const translations: Record<Language, TranslationKeys> = {
 
     // Association Admin
     associationAdmin: "Association Admin",
+    switchAssociation: "Switch Association",
+
+    // Additional common
+    actions: "Actions",
+    status: "Status",
+    type: "Type",
+    date: "Date",
+    time: "Time",
+    name: "Name",
+    role: "Role",
+    phone: "Phone",
+    all: "All",
+    active: "Active",
+    inactive: "Inactive",
+    pending: "Pending",
+    suspended: "Suspended",
+    rejected: "Rejected",
+    remove: "Remove",
+    add: "Add",
+    update: "Update",
+    success: "Success",
+    error: "Error",
+    warning: "Warning",
+    info: "Info",
+    clearFilters: "Clear Filters",
+    sortBy: "Sort By",
+    ascending: "Ascending",
+    descending: "Descending",
+    newest: "Newest",
+    oldest: "Oldest",
+    engagementTrend: "Engagement Trend",
+    comments: "Comments",
+    likes: "Likes",
+    manageAdmins: "Manage Association Admins",
+    assignNewAdmin: "Assign New Admin",
+    linkCommunities: "Link Communities",
+    communityName: "Community Name",
+    unlink: "Unlink",
+    primaryAdmin: "Primary Admin",
+    admin: "Admin",
+    subscriptionPeriod: "Subscription Period",
+    paymentCurrency: "Payment Currency",
+    oneTime: "One-time",
+    subscription: "Subscription",
+    monthly: "Monthly",
+    quarterly: "Quarterly",
+    yearly: "Yearly",
+    openAnyone: "Open (Anyone Can Join)",
+    approvalRequired: "Approval Required",
+    adminsOnly: "Admins Only",
+    publicType: "Public",
+    privateType: "Private",
+    member: "Member",
+    subAdmin: "Sub-admin",
+    viewProfile: "View Profile",
+    changeRole: "Change Role",
+    removeMember: "Remove Member",
+    noMembersYet: "No members yet",
+    inviteFirstMembers: "Invite your first members to start building your association.",
+    searchByNamePhoneEmail: "Search by name, phone, or email",
+    membershipStatus: "Membership Status",
+    paymentStatus: "Payment Status",
+    allPayment: "All Payment",
+    allRoles: "All Roles",
+    paidStatus: "Paid",
+    unpaidStatus: "Unpaid",
+    expiredStatus: "Expired",
+    subscriptionActive: "Subscription Active",
+    subscriptionFailed: "Subscription Failed",
+    pendingApproval: "Pending Approval",
+    leftAssociation: "Left Association",
+    nameAZ: "Name A-Z",
+    nameZA: "Name Z-A",
+    joinDateNewest: "Join Date (Newest)",
+    joinDateOldest: "Join Date (Oldest)",
+    joinDate: "Join Date",
+    postActions: "Post Actions",
+    drafts: "Drafts",
+    pinned: "Pinned",
+    filters: "Filters",
+    mediaType: "Media Type",
+    visibility: "Visibility",
+    pickDateRange: "Pick a date range",
+    clearAllFilters: "Clear All Filters",
+    archived: "Archived",
+    removed: "Removed",
+    link: "Link",
+    viewDetails: "View Details",
+    editEvent: "Edit Event",
+    manageRegistrations: "Manage Registrations",
+    unpublish: "Unpublish",
+    publish: "Publish",
+    deleteEvent: "Delete Event",
+    registered: "registered",
+    virtualEvent: "Virtual Event",
   },
   fr: {
     // Navigation
@@ -781,6 +969,101 @@ const translations: Record<Language, TranslationKeys> = {
 
     // Association Admin
     associationAdmin: "Admin de l'Association",
+    switchAssociation: "Changer d'Association",
+
+    // Additional common
+    actions: "Actions",
+    status: "Statut",
+    type: "Type",
+    date: "Date",
+    time: "Heure",
+    name: "Nom",
+    role: "Rôle",
+    phone: "Téléphone",
+    all: "Tous",
+    active: "Actif",
+    inactive: "Inactif",
+    pending: "En attente",
+    suspended: "Suspendu",
+    rejected: "Rejeté",
+    remove: "Supprimer",
+    add: "Ajouter",
+    update: "Mettre à jour",
+    success: "Succès",
+    error: "Erreur",
+    warning: "Avertissement",
+    info: "Info",
+    clearFilters: "Effacer les filtres",
+    sortBy: "Trier par",
+    ascending: "Croissant",
+    descending: "Décroissant",
+    newest: "Plus récent",
+    oldest: "Plus ancien",
+    engagementTrend: "Tendance d'engagement",
+    comments: "Commentaires",
+    likes: "J'aime",
+    manageAdmins: "Gérer les administrateurs",
+    assignNewAdmin: "Assigner un nouvel admin",
+    linkCommunities: "Lier des communautés",
+    communityName: "Nom de la communauté",
+    unlink: "Délier",
+    primaryAdmin: "Admin principal",
+    admin: "Admin",
+    subscriptionPeriod: "Période d'abonnement",
+    paymentCurrency: "Devise de paiement",
+    oneTime: "Paiement unique",
+    subscription: "Abonnement",
+    monthly: "Mensuel",
+    quarterly: "Trimestriel",
+    yearly: "Annuel",
+    openAnyone: "Ouvert (Tout le monde peut rejoindre)",
+    approvalRequired: "Approbation requise",
+    adminsOnly: "Admins uniquement",
+    publicType: "Public",
+    privateType: "Privé",
+    member: "Membre",
+    subAdmin: "Sous-admin",
+    viewProfile: "Voir le profil",
+    changeRole: "Changer le rôle",
+    removeMember: "Retirer le membre",
+    noMembersYet: "Pas encore de membres",
+    inviteFirstMembers: "Invitez vos premiers membres pour commencer à construire votre association.",
+    searchByNamePhoneEmail: "Rechercher par nom, téléphone ou email",
+    membershipStatus: "Statut d'adhésion",
+    paymentStatus: "Statut de paiement",
+    allPayment: "Tous les paiements",
+    allRoles: "Tous les rôles",
+    paidStatus: "Payé",
+    unpaidStatus: "Non payé",
+    expiredStatus: "Expiré",
+    subscriptionActive: "Abonnement actif",
+    subscriptionFailed: "Abonnement échoué",
+    pendingApproval: "En attente d'approbation",
+    leftAssociation: "A quitté l'association",
+    nameAZ: "Nom A-Z",
+    nameZA: "Nom Z-A",
+    joinDateNewest: "Date d'adhésion (Plus récent)",
+    joinDateOldest: "Date d'adhésion (Plus ancien)",
+    joinDate: "Date d'adhésion",
+    postActions: "Actions de publication",
+    drafts: "Brouillons",
+    pinned: "Épinglées",
+    filters: "Filtres",
+    mediaType: "Type de média",
+    visibility: "Visibilité",
+    pickDateRange: "Choisir une période",
+    clearAllFilters: "Effacer tous les filtres",
+    archived: "Archivé",
+    removed: "Supprimé",
+    link: "Lien",
+    viewDetails: "Voir les détails",
+    editEvent: "Modifier l'événement",
+    manageRegistrations: "Gérer les inscriptions",
+    unpublish: "Dépublier",
+    publish: "Publier",
+    deleteEvent: "Supprimer l'événement",
+    registered: "inscrit(s)",
+    virtualEvent: "Événement virtuel",
   },
   de: {
     // Navigation
@@ -1041,6 +1324,101 @@ const translations: Record<Language, TranslationKeys> = {
 
     // Association Admin
     associationAdmin: "Vereinsadmin",
+    switchAssociation: "Verein wechseln",
+
+    // Additional common
+    actions: "Aktionen",
+    status: "Status",
+    type: "Typ",
+    date: "Datum",
+    time: "Zeit",
+    name: "Name",
+    role: "Rolle",
+    phone: "Telefon",
+    all: "Alle",
+    active: "Aktiv",
+    inactive: "Inaktiv",
+    pending: "Ausstehend",
+    suspended: "Gesperrt",
+    rejected: "Abgelehnt",
+    remove: "Entfernen",
+    add: "Hinzufügen",
+    update: "Aktualisieren",
+    success: "Erfolg",
+    error: "Fehler",
+    warning: "Warnung",
+    info: "Info",
+    clearFilters: "Filter löschen",
+    sortBy: "Sortieren nach",
+    ascending: "Aufsteigend",
+    descending: "Absteigend",
+    newest: "Neueste",
+    oldest: "Älteste",
+    engagementTrend: "Engagement-Trend",
+    comments: "Kommentare",
+    likes: "Gefällt mir",
+    manageAdmins: "Vereinsadmins verwalten",
+    assignNewAdmin: "Neuen Admin zuweisen",
+    linkCommunities: "Gemeinschaften verknüpfen",
+    communityName: "Gemeinschaftsname",
+    unlink: "Verknüpfung aufheben",
+    primaryAdmin: "Hauptadmin",
+    admin: "Admin",
+    subscriptionPeriod: "Abonnementzeitraum",
+    paymentCurrency: "Zahlungswährung",
+    oneTime: "Einmalig",
+    subscription: "Abonnement",
+    monthly: "Monatlich",
+    quarterly: "Vierteljährlich",
+    yearly: "Jährlich",
+    openAnyone: "Offen (Jeder kann beitreten)",
+    approvalRequired: "Genehmigung erforderlich",
+    adminsOnly: "Nur Admins",
+    publicType: "Öffentlich",
+    privateType: "Privat",
+    member: "Mitglied",
+    subAdmin: "Sub-Admin",
+    viewProfile: "Profil anzeigen",
+    changeRole: "Rolle ändern",
+    removeMember: "Mitglied entfernen",
+    noMembersYet: "Noch keine Mitglieder",
+    inviteFirstMembers: "Laden Sie Ihre ersten Mitglieder ein, um Ihren Verein aufzubauen.",
+    searchByNamePhoneEmail: "Nach Name, Telefon oder E-Mail suchen",
+    membershipStatus: "Mitgliedschaftsstatus",
+    paymentStatus: "Zahlungsstatus",
+    allPayment: "Alle Zahlungen",
+    allRoles: "Alle Rollen",
+    paidStatus: "Bezahlt",
+    unpaidStatus: "Unbezahlt",
+    expiredStatus: "Abgelaufen",
+    subscriptionActive: "Abonnement aktiv",
+    subscriptionFailed: "Abonnement fehlgeschlagen",
+    pendingApproval: "Genehmigung ausstehend",
+    leftAssociation: "Verein verlassen",
+    nameAZ: "Name A-Z",
+    nameZA: "Name Z-A",
+    joinDateNewest: "Beitrittsdatum (Neueste)",
+    joinDateOldest: "Beitrittsdatum (Älteste)",
+    joinDate: "Beitrittsdatum",
+    postActions: "Beitragsaktionen",
+    drafts: "Entwürfe",
+    pinned: "Angeheftet",
+    filters: "Filter",
+    mediaType: "Medientyp",
+    visibility: "Sichtbarkeit",
+    pickDateRange: "Zeitraum wählen",
+    clearAllFilters: "Alle Filter löschen",
+    archived: "Archiviert",
+    removed: "Entfernt",
+    link: "Link",
+    viewDetails: "Details anzeigen",
+    editEvent: "Veranstaltung bearbeiten",
+    manageRegistrations: "Anmeldungen verwalten",
+    unpublish: "Veröffentlichung aufheben",
+    publish: "Veröffentlichen",
+    deleteEvent: "Veranstaltung löschen",
+    registered: "registriert",
+    virtualEvent: "Virtuelle Veranstaltung",
   },
   nl: {
     // Navigation
@@ -1301,6 +1679,101 @@ const translations: Record<Language, TranslationKeys> = {
 
     // Association Admin
     associationAdmin: "Verenigingsadmin",
+    switchAssociation: "Vereniging wisselen",
+
+    // Additional common
+    actions: "Acties",
+    status: "Status",
+    type: "Type",
+    date: "Datum",
+    time: "Tijd",
+    name: "Naam",
+    role: "Rol",
+    phone: "Telefoon",
+    all: "Alle",
+    active: "Actief",
+    inactive: "Inactief",
+    pending: "In behandeling",
+    suspended: "Opgeschort",
+    rejected: "Afgewezen",
+    remove: "Verwijderen",
+    add: "Toevoegen",
+    update: "Bijwerken",
+    success: "Succes",
+    error: "Fout",
+    warning: "Waarschuwing",
+    info: "Info",
+    clearFilters: "Filters wissen",
+    sortBy: "Sorteren op",
+    ascending: "Oplopend",
+    descending: "Aflopend",
+    newest: "Nieuwste",
+    oldest: "Oudste",
+    engagementTrend: "Engagementtrend",
+    comments: "Reacties",
+    likes: "Vind-ik-leuks",
+    manageAdmins: "Verenigingsadmins beheren",
+    assignNewAdmin: "Nieuwe admin toewijzen",
+    linkCommunities: "Gemeenschappen koppelen",
+    communityName: "Gemeenschapsnaam",
+    unlink: "Ontkoppelen",
+    primaryAdmin: "Hoofdadmin",
+    admin: "Admin",
+    subscriptionPeriod: "Abonnementsperiode",
+    paymentCurrency: "Betalingsvaluta",
+    oneTime: "Eenmalig",
+    subscription: "Abonnement",
+    monthly: "Maandelijks",
+    quarterly: "Driemaandelijks",
+    yearly: "Jaarlijks",
+    openAnyone: "Open (Iedereen kan deelnemen)",
+    approvalRequired: "Goedkeuring vereist",
+    adminsOnly: "Alleen admins",
+    publicType: "Openbaar",
+    privateType: "Privé",
+    member: "Lid",
+    subAdmin: "Sub-admin",
+    viewProfile: "Profiel bekijken",
+    changeRole: "Rol wijzigen",
+    removeMember: "Lid verwijderen",
+    noMembersYet: "Nog geen leden",
+    inviteFirstMembers: "Nodig uw eerste leden uit om uw vereniging op te bouwen.",
+    searchByNamePhoneEmail: "Zoeken op naam, telefoon of e-mail",
+    membershipStatus: "Lidmaatschapsstatus",
+    paymentStatus: "Betalingsstatus",
+    allPayment: "Alle betalingen",
+    allRoles: "Alle rollen",
+    paidStatus: "Betaald",
+    unpaidStatus: "Onbetaald",
+    expiredStatus: "Verlopen",
+    subscriptionActive: "Abonnement actief",
+    subscriptionFailed: "Abonnement mislukt",
+    pendingApproval: "In afwachting van goedkeuring",
+    leftAssociation: "Vereniging verlaten",
+    nameAZ: "Naam A-Z",
+    nameZA: "Naam Z-A",
+    joinDateNewest: "Toetredingsdatum (Nieuwste)",
+    joinDateOldest: "Toetredingsdatum (Oudste)",
+    joinDate: "Toetredingsdatum",
+    postActions: "Berichtacties",
+    drafts: "Concepten",
+    pinned: "Vastgezet",
+    filters: "Filters",
+    mediaType: "Mediatype",
+    visibility: "Zichtbaarheid",
+    pickDateRange: "Kies een datumbereik",
+    clearAllFilters: "Alle filters wissen",
+    archived: "Gearchiveerd",
+    removed: "Verwijderd",
+    link: "Link",
+    viewDetails: "Details bekijken",
+    editEvent: "Evenement bewerken",
+    manageRegistrations: "Registraties beheren",
+    unpublish: "Publicatie ongedaan maken",
+    publish: "Publiceren",
+    deleteEvent: "Evenement verwijderen",
+    registered: "geregistreerd",
+    virtualEvent: "Virtueel evenement",
   },
   es: {
     // Navigation
@@ -1561,6 +2034,101 @@ const translations: Record<Language, TranslationKeys> = {
 
     // Association Admin
     associationAdmin: "Admin de Asociación",
+    switchAssociation: "Cambiar Asociación",
+
+    // Additional common
+    actions: "Acciones",
+    status: "Estado",
+    type: "Tipo",
+    date: "Fecha",
+    time: "Hora",
+    name: "Nombre",
+    role: "Rol",
+    phone: "Teléfono",
+    all: "Todos",
+    active: "Activo",
+    inactive: "Inactivo",
+    pending: "Pendiente",
+    suspended: "Suspendido",
+    rejected: "Rechazado",
+    remove: "Eliminar",
+    add: "Agregar",
+    update: "Actualizar",
+    success: "Éxito",
+    error: "Error",
+    warning: "Advertencia",
+    info: "Info",
+    clearFilters: "Limpiar filtros",
+    sortBy: "Ordenar por",
+    ascending: "Ascendente",
+    descending: "Descendente",
+    newest: "Más reciente",
+    oldest: "Más antiguo",
+    engagementTrend: "Tendencia de engagement",
+    comments: "Comentarios",
+    likes: "Me gusta",
+    manageAdmins: "Gestionar administradores",
+    assignNewAdmin: "Asignar nuevo admin",
+    linkCommunities: "Vincular comunidades",
+    communityName: "Nombre de la comunidad",
+    unlink: "Desvincular",
+    primaryAdmin: "Admin principal",
+    admin: "Admin",
+    subscriptionPeriod: "Período de suscripción",
+    paymentCurrency: "Moneda de pago",
+    oneTime: "Pago único",
+    subscription: "Suscripción",
+    monthly: "Mensual",
+    quarterly: "Trimestral",
+    yearly: "Anual",
+    openAnyone: "Abierto (Cualquiera puede unirse)",
+    approvalRequired: "Aprobación requerida",
+    adminsOnly: "Solo admins",
+    publicType: "Público",
+    privateType: "Privado",
+    member: "Miembro",
+    subAdmin: "Sub-admin",
+    viewProfile: "Ver perfil",
+    changeRole: "Cambiar rol",
+    removeMember: "Eliminar miembro",
+    noMembersYet: "Aún no hay miembros",
+    inviteFirstMembers: "Invita a tus primeros miembros para comenzar a construir tu asociación.",
+    searchByNamePhoneEmail: "Buscar por nombre, teléfono o email",
+    membershipStatus: "Estado de membresía",
+    paymentStatus: "Estado de pago",
+    allPayment: "Todos los pagos",
+    allRoles: "Todos los roles",
+    paidStatus: "Pagado",
+    unpaidStatus: "No pagado",
+    expiredStatus: "Expirado",
+    subscriptionActive: "Suscripción activa",
+    subscriptionFailed: "Suscripción fallida",
+    pendingApproval: "Pendiente de aprobación",
+    leftAssociation: "Dejó la asociación",
+    nameAZ: "Nombre A-Z",
+    nameZA: "Nombre Z-A",
+    joinDateNewest: "Fecha de unión (Más reciente)",
+    joinDateOldest: "Fecha de unión (Más antiguo)",
+    joinDate: "Fecha de unión",
+    postActions: "Acciones de publicación",
+    drafts: "Borradores",
+    pinned: "Fijadas",
+    filters: "Filtros",
+    mediaType: "Tipo de medio",
+    visibility: "Visibilidad",
+    pickDateRange: "Elegir rango de fechas",
+    clearAllFilters: "Limpiar todos los filtros",
+    archived: "Archivado",
+    removed: "Eliminado",
+    link: "Enlace",
+    viewDetails: "Ver detalles",
+    editEvent: "Editar evento",
+    manageRegistrations: "Gestionar inscripciones",
+    unpublish: "Despublicar",
+    publish: "Publicar",
+    deleteEvent: "Eliminar evento",
+    registered: "registrado(s)",
+    virtualEvent: "Evento virtual",
   },
 };
 

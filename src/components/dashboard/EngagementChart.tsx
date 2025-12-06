@@ -18,23 +18,27 @@ const data = [
   { name: "Week 6", posts: 25, comments: 88, likes: 260 },
 ];
 
+import { useT } from "@/hooks/useT";
+
 export function EngagementChart() {
+  const t = useT();
+
   return (
     <div className="rounded-xl border border-border bg-card p-6">
       <div className="mb-6 flex items-center justify-between">
-        <h3 className="section-header">Engagement Trend</h3>
+        <h3 className="section-header">{t.engagementTrend}</h3>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <span className="h-3 w-3 rounded-full bg-chart-1" />
-            <span className="body-small text-muted-foreground">Posts</span>
+            <span className="body-small text-muted-foreground">{t.posts}</span>
           </div>
           <div className="flex items-center gap-2">
             <span className="h-3 w-3 rounded-full bg-chart-4" />
-            <span className="body-small text-muted-foreground">Comments</span>
+            <span className="body-small text-muted-foreground">{t.comments}</span>
           </div>
           <div className="flex items-center gap-2">
             <span className="h-3 w-3 rounded-full bg-chart-2" />
-            <span className="body-small text-muted-foreground">Likes</span>
+            <span className="body-small text-muted-foreground">{t.likes}</span>
           </div>
         </div>
       </div>
