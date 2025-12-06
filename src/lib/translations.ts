@@ -505,6 +505,65 @@ type TranslationKeys = {
   // Association Admin label
   associationAdmin: string;
   switchAssociation: string;
+
+  // Orders page translations
+  orderId: string;
+  customer: string;
+  productService: string;
+  qty: string;
+  total: string;
+  orderDate: string;
+  markFulfilled: string;
+  refund: string;
+  cancelOrder: string;
+  refundedStatus: string;
+  fulfilledStatus: string;
+  cancelledStatus: string;
+  avgOrderValue: string;
+  selected: string;
+  notify: string;
+  clear: string;
+  noOrdersYet: string;
+
+  // Tickets page translations
+  ticketId: string;
+  user: string;
+  category: string;
+  subject: string;
+  priority: string;
+  assignedTo: string;
+  created: string;
+  totalTickets: string;
+  inProgress: string;
+  resolved: string;
+  hideAnalytics: string;
+  showAnalytics: string;
+  searchByIdUserSubject: string;
+  allPriority: string;
+  allCategories: string;
+  low: string;
+  high: string;
+  urgent: string;
+  technical: string;
+  billing: string;
+  productInquiry: string;
+  general: string;
+  unassigned: string;
+  assignTo: string;
+  changeStatus: string;
+  addReply: string;
+  closeTicket: string;
+  noTicketsYet: string;
+
+  // Groups page translations
+  privacy: string;
+  privateGroup: string;
+  publicGroup: string;
+  createdOn: string;
+  editGroup: string;
+  deleteGroup: string;
+  manageMembers: string;
+  inviteLink: string;
 };
 
 const translations: Record<Language, TranslationKeys> = {
@@ -1017,6 +1076,65 @@ const translations: Record<Language, TranslationKeys> = {
     memberRemoved: "Member removed",
     memberRemovedDesc: "has been removed from the association.",
     removing: "Removing...",
+
+    // Orders page translations
+    orderId: "Order ID",
+    customer: "Customer",
+    productService: "Product/Service",
+    qty: "Qty",
+    total: "Total",
+    orderDate: "Date",
+    markFulfilled: "Mark Fulfilled",
+    refund: "Refund",
+    cancelOrder: "Cancel Order",
+    refundedStatus: "Refunded",
+    fulfilledStatus: "Fulfilled",
+    cancelledStatus: "Cancelled",
+    avgOrderValue: "Avg. Order Value",
+    selected: "selected",
+    notify: "Notify",
+    clear: "Clear",
+    noOrdersYet: "Orders will appear here when customers make purchases.",
+
+    // Tickets page translations
+    ticketId: "Ticket ID",
+    user: "User",
+    category: "Category",
+    subject: "Subject",
+    priority: "Priority",
+    assignedTo: "Assigned To",
+    created: "Created",
+    totalTickets: "Total Tickets",
+    inProgress: "In Progress",
+    resolved: "Resolved",
+    hideAnalytics: "Hide Analytics",
+    showAnalytics: "Analytics",
+    searchByIdUserSubject: "Search by ID, user, or subject",
+    allPriority: "All Priority",
+    allCategories: "All Categories",
+    low: "Low",
+    high: "High",
+    urgent: "Urgent",
+    technical: "Technical",
+    billing: "Billing",
+    productInquiry: "Product Inquiry",
+    general: "General",
+    unassigned: "Unassigned",
+    assignTo: "Assign",
+    changeStatus: "Change Status",
+    addReply: "Add Comment",
+    closeTicket: "Close Ticket",
+    noTicketsYet: "Tickets will appear here when users submit issues or inquiries.",
+
+    // Groups page translations
+    privacy: "Privacy",
+    privateGroup: "Private",
+    publicGroup: "Public",
+    createdOn: "Created",
+    editGroup: "Edit Group",
+    deleteGroup: "Delete Group",
+    manageMembers: "Manage Members",
+    inviteLink: "Invite Link",
   },
   fr: {
     // Navigation
@@ -1527,6 +1645,65 @@ const translations: Record<Language, TranslationKeys> = {
     memberRemoved: "Membre supprimé",
     memberRemovedDesc: "a été supprimé de l'association.",
     removing: "Suppression...",
+
+    // Orders page translations
+    orderId: "ID de commande",
+    customer: "Client",
+    productService: "Produit/Service",
+    qty: "Qté",
+    total: "Total",
+    orderDate: "Date",
+    markFulfilled: "Marquer comme expédié",
+    refund: "Rembourser",
+    cancelOrder: "Annuler la commande",
+    refundedStatus: "Remboursé",
+    fulfilledStatus: "Expédié",
+    cancelledStatus: "Annulé",
+    avgOrderValue: "Valeur moyenne commande",
+    selected: "sélectionné(s)",
+    notify: "Notifier",
+    clear: "Effacer",
+    noOrdersYet: "Les commandes apparaîtront ici lorsque des clients feront des achats.",
+
+    // Tickets page translations
+    ticketId: "ID du ticket",
+    user: "Utilisateur",
+    category: "Catégorie",
+    subject: "Sujet",
+    priority: "Priorité",
+    assignedTo: "Assigné à",
+    created: "Créé",
+    totalTickets: "Total des tickets",
+    inProgress: "En cours",
+    resolved: "Résolu",
+    hideAnalytics: "Masquer l'analyse",
+    showAnalytics: "Analyse",
+    searchByIdUserSubject: "Rechercher par ID, utilisateur ou sujet",
+    allPriority: "Toutes les priorités",
+    allCategories: "Toutes les catégories",
+    low: "Faible",
+    high: "Haute",
+    urgent: "Urgent",
+    technical: "Technique",
+    billing: "Facturation",
+    productInquiry: "Demande produit",
+    general: "Général",
+    unassigned: "Non assigné",
+    assignTo: "Assigner",
+    changeStatus: "Changer le statut",
+    addReply: "Ajouter un commentaire",
+    closeTicket: "Fermer le ticket",
+    noTicketsYet: "Les tickets apparaîtront ici lorsque les utilisateurs soumettront des problèmes.",
+
+    // Groups page translations
+    privacy: "Confidentialité",
+    privateGroup: "Privé",
+    publicGroup: "Public",
+    createdOn: "Créé le",
+    editGroup: "Modifier le groupe",
+    deleteGroup: "Supprimer le groupe",
+    manageMembers: "Gérer les membres",
+    inviteLink: "Lien d'invitation",
   },
   de: {
     // Navigation
@@ -2037,6 +2214,65 @@ const translations: Record<Language, TranslationKeys> = {
     memberRemoved: "Mitglied entfernt",
     memberRemovedDesc: "wurde aus dem Verein entfernt.",
     removing: "Wird entfernt...",
+
+    // Orders page translations
+    orderId: "Bestellnummer",
+    customer: "Kunde",
+    productService: "Produkt/Dienstleistung",
+    qty: "Menge",
+    total: "Gesamt",
+    orderDate: "Datum",
+    markFulfilled: "Als erfüllt markieren",
+    refund: "Rückerstattung",
+    cancelOrder: "Bestellung stornieren",
+    refundedStatus: "Erstattet",
+    fulfilledStatus: "Erfüllt",
+    cancelledStatus: "Storniert",
+    avgOrderValue: "Durchschn. Bestellwert",
+    selected: "ausgewählt",
+    notify: "Benachrichtigen",
+    clear: "Löschen",
+    noOrdersYet: "Bestellungen erscheinen hier, wenn Kunden Käufe tätigen.",
+
+    // Tickets page translations
+    ticketId: "Ticket-ID",
+    user: "Benutzer",
+    category: "Kategorie",
+    subject: "Betreff",
+    priority: "Priorität",
+    assignedTo: "Zugewiesen an",
+    created: "Erstellt",
+    totalTickets: "Tickets gesamt",
+    inProgress: "In Bearbeitung",
+    resolved: "Gelöst",
+    hideAnalytics: "Analyse ausblenden",
+    showAnalytics: "Analyse",
+    searchByIdUserSubject: "Suche nach ID, Benutzer oder Betreff",
+    allPriority: "Alle Prioritäten",
+    allCategories: "Alle Kategorien",
+    low: "Niedrig",
+    high: "Hoch",
+    urgent: "Dringend",
+    technical: "Technisch",
+    billing: "Abrechnung",
+    productInquiry: "Produktanfrage",
+    general: "Allgemein",
+    unassigned: "Nicht zugewiesen",
+    assignTo: "Zuweisen",
+    changeStatus: "Status ändern",
+    addReply: "Kommentar hinzufügen",
+    closeTicket: "Ticket schließen",
+    noTicketsYet: "Tickets erscheinen hier, wenn Benutzer Probleme einreichen.",
+
+    // Groups page translations
+    privacy: "Datenschutz",
+    privateGroup: "Privat",
+    publicGroup: "Öffentlich",
+    createdOn: "Erstellt am",
+    editGroup: "Gruppe bearbeiten",
+    deleteGroup: "Gruppe löschen",
+    manageMembers: "Mitglieder verwalten",
+    inviteLink: "Einladungslink",
   },
   nl: {
     // Navigation
@@ -2547,6 +2783,65 @@ const translations: Record<Language, TranslationKeys> = {
     memberRemoved: "Lid verwijderd",
     memberRemovedDesc: "is verwijderd uit de vereniging.",
     removing: "Wordt verwijderd...",
+
+    // Orders page translations
+    orderId: "Bestelnummer",
+    customer: "Klant",
+    productService: "Product/Dienst",
+    qty: "Aantal",
+    total: "Totaal",
+    orderDate: "Datum",
+    markFulfilled: "Markeer als verzonden",
+    refund: "Terugbetalen",
+    cancelOrder: "Bestelling annuleren",
+    refundedStatus: "Terugbetaald",
+    fulfilledStatus: "Verzonden",
+    cancelledStatus: "Geannuleerd",
+    avgOrderValue: "Gem. bestelwaarde",
+    selected: "geselecteerd",
+    notify: "Melden",
+    clear: "Wissen",
+    noOrdersYet: "Bestellingen verschijnen hier wanneer klanten aankopen doen.",
+
+    // Tickets page translations
+    ticketId: "Ticket-ID",
+    user: "Gebruiker",
+    category: "Categorie",
+    subject: "Onderwerp",
+    priority: "Prioriteit",
+    assignedTo: "Toegewezen aan",
+    created: "Aangemaakt",
+    totalTickets: "Totaal tickets",
+    inProgress: "In behandeling",
+    resolved: "Opgelost",
+    hideAnalytics: "Analyse verbergen",
+    showAnalytics: "Analyse",
+    searchByIdUserSubject: "Zoek op ID, gebruiker of onderwerp",
+    allPriority: "Alle prioriteiten",
+    allCategories: "Alle categorieën",
+    low: "Laag",
+    high: "Hoog",
+    urgent: "Urgent",
+    technical: "Technisch",
+    billing: "Facturering",
+    productInquiry: "Productvraag",
+    general: "Algemeen",
+    unassigned: "Niet toegewezen",
+    assignTo: "Toewijzen",
+    changeStatus: "Status wijzigen",
+    addReply: "Reactie toevoegen",
+    closeTicket: "Ticket sluiten",
+    noTicketsYet: "Tickets verschijnen hier wanneer gebruikers problemen indienen.",
+
+    // Groups page translations
+    privacy: "Privacy",
+    privateGroup: "Privé",
+    publicGroup: "Openbaar",
+    createdOn: "Aangemaakt op",
+    editGroup: "Groep bewerken",
+    deleteGroup: "Groep verwijderen",
+    manageMembers: "Leden beheren",
+    inviteLink: "Uitnodigingslink",
   },
   es: {
     // Navigation
@@ -3045,6 +3340,65 @@ const translations: Record<Language, TranslationKeys> = {
     memberRemoved: "Miembro eliminado",
     memberRemovedDesc: "ha sido eliminado de la asociación.",
     removing: "Eliminando...",
+
+    // Orders page translations
+    orderId: "ID de pedido",
+    customer: "Cliente",
+    productService: "Producto/Servicio",
+    qty: "Cant.",
+    total: "Total",
+    orderDate: "Fecha",
+    markFulfilled: "Marcar como enviado",
+    refund: "Reembolsar",
+    cancelOrder: "Cancelar pedido",
+    refundedStatus: "Reembolsado",
+    fulfilledStatus: "Enviado",
+    cancelledStatus: "Cancelado",
+    avgOrderValue: "Valor promedio pedido",
+    selected: "seleccionado(s)",
+    notify: "Notificar",
+    clear: "Limpiar",
+    noOrdersYet: "Los pedidos aparecerán aquí cuando los clientes realicen compras.",
+
+    // Tickets page translations
+    ticketId: "ID de ticket",
+    user: "Usuario",
+    category: "Categoría",
+    subject: "Asunto",
+    priority: "Prioridad",
+    assignedTo: "Asignado a",
+    created: "Creado",
+    totalTickets: "Total de tickets",
+    inProgress: "En progreso",
+    resolved: "Resuelto",
+    hideAnalytics: "Ocultar análisis",
+    showAnalytics: "Análisis",
+    searchByIdUserSubject: "Buscar por ID, usuario o asunto",
+    allPriority: "Todas las prioridades",
+    allCategories: "Todas las categorías",
+    low: "Baja",
+    high: "Alta",
+    urgent: "Urgente",
+    technical: "Técnico",
+    billing: "Facturación",
+    productInquiry: "Consulta de producto",
+    general: "General",
+    unassigned: "Sin asignar",
+    assignTo: "Asignar",
+    changeStatus: "Cambiar estado",
+    addReply: "Agregar comentario",
+    closeTicket: "Cerrar ticket",
+    noTicketsYet: "Los tickets aparecerán aquí cuando los usuarios envíen problemas o consultas.",
+
+    // Groups page translations
+    privacy: "Privacidad",
+    privateGroup: "Privado",
+    publicGroup: "Público",
+    createdOn: "Creado el",
+    editGroup: "Editar grupo",
+    deleteGroup: "Eliminar grupo",
+    manageMembers: "Gestionar miembros",
+    inviteLink: "Enlace de invitación",
   },
 };
 
