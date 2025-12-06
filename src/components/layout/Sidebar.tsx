@@ -377,34 +377,6 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
           </div>
         </div>
 
-        {/* Collapse Toggle */}
-        <div className="border-t border-sidebar-border p-2">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <button
-                onClick={onToggle}
-                className={cn(
-                  "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 body-small font-medium text-muted-foreground transition-all duration-200 hover:bg-sidebar-accent hover:text-sidebar-foreground",
-                  collapsed && "justify-center px-2"
-                )}
-              >
-                {collapsed ? (
-                  <PanelLeft className="h-4 w-4" />
-                ) : (
-                  <>
-                    <PanelLeftClose className="h-4 w-4" />
-                    <span>Collapse</span>
-                  </>
-                )}
-              </button>
-            </TooltipTrigger>
-            {collapsed && (
-              <TooltipContent side="right">
-                Expand sidebar
-              </TooltipContent>
-            )}
-          </Tooltip>
-        </div>
       </aside>
     </TooltipProvider>
   );

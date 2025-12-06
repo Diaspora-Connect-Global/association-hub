@@ -1,11 +1,18 @@
-import { Bell, Search, HelpCircle, ChevronDown } from "lucide-react";
+import { Bell, Search, HelpCircle, ChevronDown, PanelLeft, PanelLeftClose } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { useT } from "@/hooks/useT";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface HeaderProps {
   title: string;
   subtitle?: string;
+  sidebarCollapsed?: boolean;
+  onToggleSidebar?: () => void;
 }
 
 const associations = [
@@ -14,7 +21,7 @@ const associations = [
   { id: "3", name: "Diaspora Business Hub", logo: "💼" },
 ];
 
-export function Header({ title, subtitle }: HeaderProps) {
+export function Header({ title, subtitle, sidebarCollapsed, onToggleSidebar }: HeaderProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedAssociation, setSelectedAssociation] = useState(associations[0]);
   const [isAssociationOpen, setIsAssociationOpen] = useState(false);
@@ -23,8 +30,29 @@ export function Header({ title, subtitle }: HeaderProps) {
   return (
     <header className="sticky top-0 z-30 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="flex h-16 items-center justify-between px-6">
-        {/* Left side: Association Selector + Title */}
-        <div className="flex items-center gap-6">
+        {/* Left side: Sidebar Toggle + Association Selector + Title */}
+        <div className="flex items-center gap-4">
+          {/* Sidebar Toggle */}
+          {onToggleSidebar && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={onToggleSidebar}
+                  className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                >
+                  {sidebarCollapsed ? (
+                    <PanelLeft className="h-5 w-5" />
+                  ) : (
+                    <PanelLeftClose className="h-5 w-5" />
+                  )}
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                {sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+              </TooltipContent>
+            </Tooltip>
+          )}
+
           {/* Association Selector */}
           <div className="relative">
             <button
