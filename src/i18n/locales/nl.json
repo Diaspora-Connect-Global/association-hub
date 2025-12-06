@@ -1,0 +1,166 @@
+{
+  "common": {
+    "search": "Zoeken",
+    "save": "Opslaan",
+    "cancel": "Annuleren",
+    "delete": "Verwijderen",
+    "edit": "Bewerken",
+    "view": "Bekijken",
+    "create": "Aanmaken",
+    "export": "Exporteren",
+    "refresh": "Vernieuwen",
+    "actions": "Acties",
+    "status": "Status",
+    "all": "Alle"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "profile": "Verenigingsprofiel",
+    "members": "Leden",
+    "posts": "Berichten",
+    "opportunities": "Kansen",
+    "events": "Evenementen",
+    "marketplace": "Marktplaats",
+    "orders": "Bestellingen",
+    "groups": "Groepen",
+    "tickets": "Supporttickets",
+    "analytics": "Analyses",
+    "settings": "Instellingen",
+    "audit": "Auditlog"
+  },
+  "quickActions": {
+    "title": "Snelle acties",
+    "newPost": "Bericht",
+    "newEvent": "Evenement",
+    "newOpportunity": "Kans",
+    "newListing": "Advertentie"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcomeBack": "Welkom terug",
+    "totalMembers": "Totaal leden",
+    "activeMembers": "Actieve leden (30d)",
+    "posts30d": "Berichten (30d)",
+    "activeOpportunities": "Actieve kansen",
+    "upcomingEvents": "Aankomende evenementen",
+    "activeListings": "Actieve advertenties",
+    "orders30d": "Bestellingen (30d)",
+    "revenue30d": "Omzet (30d)",
+    "recentActivity": "Recente activiteit",
+    "viewAll": "Alles bekijken",
+    "engagementTrend": "Betrokkenheidstrend",
+    "vsLastMonth": "vs vorige maand",
+    "dateRange": {
+      "7d": "Laatste 7 dagen",
+      "30d": "Laatste 30 dagen",
+      "90d": "Laatste 90 dagen",
+      "365d": "Afgelopen jaar"
+    }
+  },
+  "members": {
+    "title": "Leden",
+    "subtitle": "Beheer het lidmaatschap van de vereniging",
+    "searchPlaceholder": "Leden zoeken...",
+    "inviteMember": "Lid uitnodigen",
+    "exportMembers": "Exporteren",
+    "total": "Totaal leden",
+    "active": "Actief",
+    "pending": "In afwachting van goedkeuring",
+    "suspended": "Geschorst",
+    "member": "Lid",
+    "email": "E-mail",
+    "role": "Rol",
+    "joinedAt": "Lid sinds",
+    "lastActive": "Laatst actief",
+    "viewProfile": "Profiel bekijken",
+    "approve": "Goedkeuren",
+    "promoteToModerator": "Bevorderen tot moderator",
+    "suspend": "Schorsen",
+    "remove": "Verwijderen"
+  },
+  "posts": {
+    "title": "Berichten",
+    "subtitle": "Maak en beheer verenigingsberichten",
+    "createPost": "Bericht maken",
+    "searchPlaceholder": "Berichten zoeken...",
+    "total": "Totaal berichten",
+    "published": "Gepubliceerd",
+    "engagement": "Totale betrokkenheid",
+    "pendingReview": "In afwachting van beoordeling",
+    "post": "Bericht",
+    "author": "Auteur",
+    "media": "Media",
+    "created": "Aangemaakt",
+    "viewPost": "Bericht bekijken",
+    "pinToTop": "Bovenaan vastpinnen",
+    "unpin": "Losmaken",
+    "viewComments": "Reacties bekijken"
+  },
+  "events": {
+    "title": "Evenementen",
+    "subtitle": "Maak en beheer verenigingsevenementen",
+    "createEvent": "Evenement maken",
+    "searchPlaceholder": "Evenementen zoeken...",
+    "upcoming": "Aankomende evenementen",
+    "totalRegistrations": "Totaal registraties",
+    "ticketRevenue": "Ticketomzet",
+    "avgAttendance": "Gem. opkomst",
+    "editEvent": "Evenement bewerken",
+    "exportAttendees": "Deelnemers exporteren",
+    "cancelEvent": "Evenement annuleren",
+    "free": "Gratis",
+    "registered": "geregistreerd",
+    "status": {
+      "upcoming": "Aankomend",
+      "ongoing": "Lopend",
+      "completed": "Voltooid",
+      "cancelled": "Geannuleerd"
+    },
+    "type": {
+      "online": "Online",
+      "physical": "Fysiek"
+    }
+  },
+  "marketplace": {
+    "title": "Marktplaats",
+    "subtitle": "Beheer de producten en diensten van uw vereniging",
+    "createListing": "Advertentie maken",
+    "searchPlaceholder": "Advertenties zoeken...",
+    "activeListings": "Actieve advertenties",
+    "totalOrders": "Totaal bestellingen",
+    "revenueAllTime": "Omzet (Totaal)",
+    "lowStockItems": "Lage voorraad",
+    "viewListing": "Advertentie bekijken",
+    "viewOrders": "Bestellingen bekijken",
+    "outOfStock": "Niet op voorraad",
+    "inStock": "op voorraad",
+    "orders": "bestellingen",
+    "type": {
+      "product": "Product",
+      "service": "Dienst"
+    },
+    "status": {
+      "published": "Gepubliceerd",
+      "draft": "Concept",
+      "suspended": "Geschorst"
+    }
+  },
+  "settings": {
+    "title": "Instellingen",
+    "subtitle": "Beheer uw voorkeuren",
+    "languageAppearance": "Taal en weergave",
+    "language": "Taal",
+    "selectLanguage": "Selecteer taal",
+    "appearance": "Weergave",
+    "lightMode": "Licht",
+    "darkMode": "Donker",
+    "systemMode": "Systeem"
+  },
+  "activity": {
+    "newMemberJoined": "Nieuw lid toegetreden",
+    "newPostPublished": "Nieuw bericht gepubliceerd",
+    "newOrderReceived": "Nieuwe bestelling ontvangen",
+    "eventRegistration": "Evenementregistratie",
+    "membershipPending": "Lidmaatschap in behandeling"
+  }
+}

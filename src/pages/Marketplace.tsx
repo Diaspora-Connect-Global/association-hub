@@ -1,6 +1,7 @@
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "react-i18next";
 import { Tag, Package, MoreHorizontal, Edit, Trash2, Eye, ShoppingBag } from "lucide-react";
 import {
   DropdownMenu,
@@ -99,51 +100,47 @@ const statusMap = {
 };
 
 export default function Marketplace() {
+  const { t } = useTranslation();
+
   return (
-    <AdminLayout title="Marketplace" subtitle="Manage your association's products and services">
+    <AdminLayout title={t("marketplace.title")} subtitle={t("marketplace.subtitle")}>
       {/* Top Bar */}
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <input
             type="text"
-            placeholder="Search listings..."
-            className="input-search w-64"
+            placeholder={t("marketplace.searchPlaceholder")}
+            className="h-10 w-64 rounded-lg border border-input bg-background px-4 body-small transition-all duration-200 placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
           />
-          <select className="rounded-lg border border-input bg-background px-3 py-2 text-sm">
-            <option value="">All Types</option>
-            <option value="product">Products</option>
-            <option value="service">Services</option>
-          </select>
-          <select className="rounded-lg border border-input bg-background px-3 py-2 text-sm">
-            <option value="">All Status</option>
-            <option value="published">Published</option>
-            <option value="draft">Draft</option>
-            <option value="suspended">Suspended</option>
+          <select className="rounded-lg border border-input bg-background px-3 py-2 body-small">
+            <option value="">{t("common.all")} Types</option>
+            <option value="product">{t("marketplace.type.product")}</option>
+            <option value="service">{t("marketplace.type.service")}</option>
           </select>
         </div>
         <Button className="gap-2">
           <Tag className="h-4 w-4" />
-          Create Listing
+          {t("marketplace.createListing")}
         </Button>
       </div>
 
       {/* Stats */}
       <div className="mb-6 grid gap-4 sm:grid-cols-4">
         <div className="rounded-lg border border-border bg-card p-4">
-          <p className="text-sm text-muted-foreground">Active Listings</p>
-          <p className="text-2xl font-bold text-foreground">34</p>
+          <p className="body-small text-muted-foreground">{t("marketplace.activeListings")}</p>
+          <p className="heading-xsmall text-foreground">34</p>
         </div>
         <div className="rounded-lg border border-border bg-card p-4">
-          <p className="text-sm text-muted-foreground">Total Orders</p>
-          <p className="text-2xl font-bold text-primary">196</p>
+          <p className="body-small text-muted-foreground">{t("marketplace.totalOrders")}</p>
+          <p className="heading-xsmall text-primary">196</p>
         </div>
         <div className="rounded-lg border border-border bg-card p-4">
-          <p className="text-sm text-muted-foreground">Revenue (All Time)</p>
-          <p className="text-2xl font-bold text-success">$18,450</p>
+          <p className="body-small text-muted-foreground">{t("marketplace.revenueAllTime")}</p>
+          <p className="heading-xsmall text-success">$18,450</p>
         </div>
         <div className="rounded-lg border border-border bg-card p-4">
-          <p className="text-sm text-muted-foreground">Low Stock Items</p>
-          <p className="text-2xl font-bold text-warning">3</p>
+          <p className="body-small text-muted-foreground">{t("marketplace.lowStockItems")}</p>
+          <p className="heading-xsmall text-chart-1">3</p>
         </div>
       </div>
 
@@ -152,63 +149,63 @@ export default function Marketplace() {
         {listings.map((listing, index) => (
           <div
             key={listing.id}
-            className="group overflow-hidden rounded-xl border border-border bg-card transition-all duration-300 hover:shadow-lg hover:-translate-y-1 animate-slide-up"
+            className="group overflow-hidden rounded-xl border border-border bg-card transition-all duration-300 hover:shadow-lg hover:-translate-y-1 animate-in fade-in slide-in-from-bottom-4"
             style={{ animationDelay: `${index * 75}ms` }}
           >
             {/* Image */}
             <div className="relative flex h-40 items-center justify-center bg-gradient-to-br from-muted to-muted/50">
               <span className="text-6xl">{listing.image}</span>
               <div className="absolute left-3 top-3">
-                <span className="rounded-full bg-background/90 px-2.5 py-1 text-xs font-medium capitalize text-foreground">
-                  {listing.type}
+                <span className="rounded-full bg-background/90 px-2.5 py-1 caption-small font-medium capitalize text-foreground">
+                  {t(`marketplace.type.${listing.type}`)}
                 </span>
               </div>
               <div className="absolute right-3 top-3">
                 <StatusBadge variant={statusMap[listing.status]}>
-                  {listing.status}
+                  {t(`marketplace.status.${listing.status}`)}
                 </StatusBadge>
               </div>
             </div>
 
             {/* Content */}
             <div className="p-4">
-              <h3 className="mb-1 font-semibold text-foreground line-clamp-1">
+              <h3 className="mb-1 label-small text-foreground line-clamp-1">
                 {listing.title}
               </h3>
-              <p className="mb-3 text-sm text-muted-foreground">
+              <p className="mb-3 body-small text-muted-foreground">
                 {listing.category}
               </p>
 
               {/* Price & Stock */}
               <div className="mb-4 flex items-center justify-between">
-                <span className="text-lg font-bold text-foreground">
+                <span className="label-medium text-foreground">
                   ${listing.price}
                 </span>
                 {listing.type === "product" && (
                   <span
-                    className={`text-sm ${
+                    className={`body-small ${
                       listing.stock === 0
                         ? "text-destructive"
                         : listing.stock && listing.stock < 20
-                        ? "text-warning"
+                        ? "text-chart-1"
                         : "text-muted-foreground"
                     }`}
                   >
-                    {listing.stock === 0 ? "Out of stock" : `${listing.stock} in stock`}
+                    {listing.stock === 0 ? t("marketplace.outOfStock") : `${listing.stock} ${t("marketplace.inStock")}`}
                   </span>
                 )}
               </div>
 
               {/* Orders */}
-              <div className="mb-4 flex items-center gap-2 text-sm text-muted-foreground">
+              <div className="mb-4 flex items-center gap-2 body-small text-muted-foreground">
                 <ShoppingBag className="h-4 w-4" />
-                <span>{listing.orders} orders</span>
+                <span>{listing.orders} {t("marketplace.orders")}</span>
               </div>
 
               {/* Actions */}
               <div className="flex items-center justify-between border-t border-border pt-4">
-                <span className="text-xs text-muted-foreground">
-                  Created {listing.createdAt}
+                <span className="caption-small text-muted-foreground">
+                  {listing.createdAt}
                 </span>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -219,20 +216,20 @@ export default function Marketplace() {
                   <DropdownMenuContent align="end" className="w-48">
                     <DropdownMenuItem>
                       <Eye className="mr-2 h-4 w-4" />
-                      View Listing
+                      {t("marketplace.viewListing")}
                     </DropdownMenuItem>
                     <DropdownMenuItem>
                       <Edit className="mr-2 h-4 w-4" />
-                      Edit
+                      {t("common.edit")}
                     </DropdownMenuItem>
                     <DropdownMenuItem>
                       <Package className="mr-2 h-4 w-4" />
-                      View Orders
+                      {t("marketplace.viewOrders")}
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem className="text-destructive">
                       <Trash2 className="mr-2 h-4 w-4" />
-                      Delete
+                      {t("common.delete")}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>

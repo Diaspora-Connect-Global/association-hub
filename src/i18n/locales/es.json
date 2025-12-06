@@ -1,0 +1,166 @@
+{
+  "common": {
+    "search": "Buscar",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "view": "Ver",
+    "create": "Crear",
+    "export": "Exportar",
+    "refresh": "Actualizar",
+    "actions": "Acciones",
+    "status": "Estado",
+    "all": "Todos"
+  },
+  "nav": {
+    "dashboard": "Panel",
+    "profile": "Perfil de la asociación",
+    "members": "Miembros",
+    "posts": "Publicaciones",
+    "opportunities": "Oportunidades",
+    "events": "Eventos",
+    "marketplace": "Mercado",
+    "orders": "Pedidos",
+    "groups": "Grupos",
+    "tickets": "Tickets de soporte",
+    "analytics": "Análisis",
+    "settings": "Configuración",
+    "audit": "Registro de auditoría"
+  },
+  "quickActions": {
+    "title": "Acciones rápidas",
+    "newPost": "Publicación",
+    "newEvent": "Evento",
+    "newOpportunity": "Oportunidad",
+    "newListing": "Anuncio"
+  },
+  "dashboard": {
+    "title": "Panel",
+    "welcomeBack": "Bienvenido de nuevo",
+    "totalMembers": "Miembros totales",
+    "activeMembers": "Miembros activos (30d)",
+    "posts30d": "Publicaciones (30d)",
+    "activeOpportunities": "Oportunidades activas",
+    "upcomingEvents": "Próximos eventos",
+    "activeListings": "Anuncios activos",
+    "orders30d": "Pedidos (30d)",
+    "revenue30d": "Ingresos (30d)",
+    "recentActivity": "Actividad reciente",
+    "viewAll": "Ver todo",
+    "engagementTrend": "Tendencia de participación",
+    "vsLastMonth": "vs mes anterior",
+    "dateRange": {
+      "7d": "Últimos 7 días",
+      "30d": "Últimos 30 días",
+      "90d": "Últimos 90 días",
+      "365d": "Último año"
+    }
+  },
+  "members": {
+    "title": "Miembros",
+    "subtitle": "Gestionar la membresía de la asociación",
+    "searchPlaceholder": "Buscar miembros...",
+    "inviteMember": "Invitar miembro",
+    "exportMembers": "Exportar",
+    "total": "Miembros totales",
+    "active": "Activos",
+    "pending": "Pendientes de aprobación",
+    "suspended": "Suspendidos",
+    "member": "Miembro",
+    "email": "Correo electrónico",
+    "role": "Rol",
+    "joinedAt": "Unido el",
+    "lastActive": "Última actividad",
+    "viewProfile": "Ver perfil",
+    "approve": "Aprobar",
+    "promoteToModerator": "Promover a moderador",
+    "suspend": "Suspender",
+    "remove": "Eliminar"
+  },
+  "posts": {
+    "title": "Publicaciones",
+    "subtitle": "Crear y gestionar publicaciones de la asociación",
+    "createPost": "Crear publicación",
+    "searchPlaceholder": "Buscar publicaciones...",
+    "total": "Total de publicaciones",
+    "published": "Publicadas",
+    "engagement": "Participación total",
+    "pendingReview": "Pendientes de revisión",
+    "post": "Publicación",
+    "author": "Autor",
+    "media": "Medios",
+    "created": "Creado",
+    "viewPost": "Ver publicación",
+    "pinToTop": "Fijar arriba",
+    "unpin": "Desfijar",
+    "viewComments": "Ver comentarios"
+  },
+  "events": {
+    "title": "Eventos",
+    "subtitle": "Crear y gestionar eventos de la asociación",
+    "createEvent": "Crear evento",
+    "searchPlaceholder": "Buscar eventos...",
+    "upcoming": "Próximos eventos",
+    "totalRegistrations": "Registros totales",
+    "ticketRevenue": "Ingresos por entradas",
+    "avgAttendance": "Asistencia prom.",
+    "editEvent": "Editar evento",
+    "exportAttendees": "Exportar asistentes",
+    "cancelEvent": "Cancelar evento",
+    "free": "Gratis",
+    "registered": "registrados",
+    "status": {
+      "upcoming": "Próximo",
+      "ongoing": "En curso",
+      "completed": "Completado",
+      "cancelled": "Cancelado"
+    },
+    "type": {
+      "online": "En línea",
+      "physical": "Presencial"
+    }
+  },
+  "marketplace": {
+    "title": "Mercado",
+    "subtitle": "Gestionar los productos y servicios de tu asociación",
+    "createListing": "Crear anuncio",
+    "searchPlaceholder": "Buscar anuncios...",
+    "activeListings": "Anuncios activos",
+    "totalOrders": "Pedidos totales",
+    "revenueAllTime": "Ingresos (Total)",
+    "lowStockItems": "Stock bajo",
+    "viewListing": "Ver anuncio",
+    "viewOrders": "Ver pedidos",
+    "outOfStock": "Sin stock",
+    "inStock": "en stock",
+    "orders": "pedidos",
+    "type": {
+      "product": "Producto",
+      "service": "Servicio"
+    },
+    "status": {
+      "published": "Publicado",
+      "draft": "Borrador",
+      "suspended": "Suspendido"
+    }
+  },
+  "settings": {
+    "title": "Configuración",
+    "subtitle": "Gestiona tus preferencias",
+    "languageAppearance": "Idioma y apariencia",
+    "language": "Idioma",
+    "selectLanguage": "Seleccionar idioma",
+    "appearance": "Apariencia",
+    "lightMode": "Claro",
+    "darkMode": "Oscuro",
+    "systemMode": "Sistema"
+  },
+  "activity": {
+    "newMemberJoined": "Nuevo miembro unido",
+    "newPostPublished": "Nueva publicación",
+    "newOrderReceived": "Nuevo pedido recibido",
+    "eventRegistration": "Registro de evento",
+    "membershipPending": "Membresía pendiente"
+  }
+}
