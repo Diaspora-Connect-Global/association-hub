@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import {
   Home,
@@ -12,29 +11,21 @@ import {
   LifeBuoy,
   BarChart2,
   Settings,
-  ChevronDown,
   Plus,
   PlusCircle,
   CalendarPlus,
   Tag,
   LogOut,
+  User,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useT } from "@/hooks/useT";
 import diaspoPlugLogo from "@/assets/diaspo-plug-logo.svg";
 
-const associations = [
-  { id: "1", name: "Ghana Tech Community", logo: "🇬🇭" },
-  { id: "2", name: "African Developers Network", logo: "🌍" },
-  { id: "3", name: "Diaspora Business Hub", logo: "💼" },
-];
-
 export function Sidebar() {
   const location = useLocation();
   const navigate = useNavigate();
   const t = useT();
-  const [selectedAssociation, setSelectedAssociation] = useState(associations[0]);
-  const [isAssociationOpen, setIsAssociationOpen] = useState(false);
 
   const navItems = [
     { id: "dashboard", label: t.dashboard, icon: Home, path: "/" },
@@ -85,56 +76,6 @@ export function Sidebar() {
             <p className="caption-small text-muted-foreground">Admin Portal</p>
           </div>
         </div>
-      </div>
-
-      {/* Association Selector */}
-      <div className="border-b border-sidebar-border p-4">
-        <p className="mb-2 caption-small uppercase tracking-wider text-muted-foreground">
-          {t.associationProfile}
-        </p>
-        <button
-          onClick={() => setIsAssociationOpen(!isAssociationOpen)}
-          className="flex w-full items-center justify-between rounded-lg bg-sidebar-accent p-3 transition-colors hover:bg-sidebar-accent/80"
-        >
-          <div className="flex items-center gap-3">
-            <span className="text-xl">{selectedAssociation.logo}</span>
-            <div className="text-left">
-              <p className="label-small text-sidebar-foreground line-clamp-1">
-                {selectedAssociation.name}
-              </p>
-              <p className="caption-small text-muted-foreground">{t.associationAdmin}</p>
-            </div>
-          </div>
-          <ChevronDown
-            className={cn(
-              "h-4 w-4 text-muted-foreground transition-transform flex-shrink-0",
-              isAssociationOpen && "rotate-180"
-            )}
-          />
-        </button>
-
-        {isAssociationOpen && (
-          <div className="mt-2 animate-fade-in rounded-lg border border-sidebar-border bg-sidebar-accent p-2">
-            {associations.map((assoc) => (
-              <button
-                key={assoc.id}
-                onClick={() => {
-                  setSelectedAssociation(assoc);
-                  setIsAssociationOpen(false);
-                }}
-                className={cn(
-                  "flex w-full items-center gap-3 rounded-md px-3 py-2 body-small transition-colors",
-                  selectedAssociation.id === assoc.id
-                    ? "bg-primary text-primary-foreground"
-                    : "text-sidebar-foreground hover:bg-sidebar-accent"
-                )}
-              >
-                <span className="text-lg">{assoc.logo}</span>
-                <span className="line-clamp-1">{assoc.name}</span>
-              </button>
-            ))}
-          </div>
-        )}
       </div>
 
       {/* Quick Actions */}
@@ -207,11 +148,19 @@ export function Sidebar() {
       {/* User Profile */}
       <div className="border-t border-sidebar-border p-4">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground label-small">
+          <NavLink
+            to="/admin-profile"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground label-small hover:opacity-90 transition-opacity"
+          >
             AK
-          </div>
+          </NavLink>
           <div className="flex-1 min-w-0">
-            <p className="label-small text-sidebar-foreground truncate">Akua Mensah</p>
+            <NavLink
+              to="/admin-profile"
+              className="label-small text-sidebar-foreground truncate block hover:text-primary transition-colors"
+            >
+              Akua Mensah
+            </NavLink>
             <p className="caption-small text-muted-foreground">Admin</p>
           </div>
           <button className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground">
