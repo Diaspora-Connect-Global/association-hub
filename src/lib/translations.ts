@@ -767,6 +767,29 @@ type TranslationKeys = {
   showingXOfYOpportunities: string;
   revenueAllTime: string;
   listings: string;
+  
+  // Search placeholders
+  searchPosts: string;
+  searchOpportunities: string;
+  searchEvents: string;
+  searchListings: string;
+  
+  // Filter labels and options
+  statusPlaceholder: string;
+  mediaPlaceholder: string;
+  visibilityPlaceholder: string;
+  typePlaceholder: string;
+  sortPlaceholder: string;
+  unpublished: string;
+  ongoing: string;
+  completed: string;
+  cancelled: string;
+  newestFirst: string;
+  oldestFirst: string;
+  dateSoonest: string;
+  dateLatest: string;
+  priceLowToHigh: string;
+  priceHighToLow: string;
 };
 
 const translations: Record<Language, TranslationKeys> = {
@@ -1541,6 +1564,29 @@ const translations: Record<Language, TranslationKeys> = {
     showingXOfYOpportunities: "Showing {filtered} of {total} opportunities",
     revenueAllTime: "Revenue (All Time)",
     listings: "Listings",
+    
+    // Search placeholders
+    searchPosts: "Search posts...",
+    searchOpportunities: "Search opportunities...",
+    searchEvents: "Search events...",
+    searchListings: "Search listings...",
+    
+    // Filter labels and options
+    statusPlaceholder: "Status",
+    mediaPlaceholder: "Media",
+    visibilityPlaceholder: "Visibility",
+    typePlaceholder: "Type",
+    sortPlaceholder: "Sort",
+    unpublished: "Unpublished",
+    ongoing: "Ongoing",
+    completed: "Completed",
+    cancelled: "Cancelled",
+    newestFirst: "Newest First",
+    oldestFirst: "Oldest First",
+    dateSoonest: "Date (Soonest)",
+    dateLatest: "Date (Latest)",
+    priceLowToHigh: "Price: Low to High",
+    priceHighToLow: "Price: High to Low",
   },
   fr: {
     // Navigation
@@ -2313,6 +2359,29 @@ const translations: Record<Language, TranslationKeys> = {
     showingXOfYOpportunities: "Affichage de {filtered} sur {total} opportunités",
     revenueAllTime: "Revenu (Tout temps)",
     listings: "Annonces",
+    
+    // Search placeholders
+    searchPosts: "Rechercher des publications...",
+    searchOpportunities: "Rechercher des opportunités...",
+    searchEvents: "Rechercher des événements...",
+    searchListings: "Rechercher des annonces...",
+    
+    // Filter labels and options
+    statusPlaceholder: "Statut",
+    mediaPlaceholder: "Média",
+    visibilityPlaceholder: "Visibilité",
+    typePlaceholder: "Type",
+    sortPlaceholder: "Trier",
+    unpublished: "Non publié",
+    ongoing: "En cours",
+    completed: "Terminé",
+    cancelled: "Annulé",
+    newestFirst: "Plus récent",
+    oldestFirst: "Plus ancien",
+    dateSoonest: "Date (Bientôt)",
+    dateLatest: "Date (Plus tard)",
+    priceLowToHigh: "Prix: Croissant",
+    priceHighToLow: "Prix: Décroissant",
   },
   de: {
     // Navigation
@@ -3085,6 +3154,29 @@ const translations: Record<Language, TranslationKeys> = {
     showingXOfYOpportunities: "Zeige {filtered} von {total} Möglichkeiten",
     revenueAllTime: "Umsatz (Gesamt)",
     listings: "Angebote",
+    
+    // Search placeholders
+    searchPosts: "Beiträge suchen...",
+    searchOpportunities: "Möglichkeiten suchen...",
+    searchEvents: "Veranstaltungen suchen...",
+    searchListings: "Angebote suchen...",
+    
+    // Filter labels and options
+    statusPlaceholder: "Status",
+    mediaPlaceholder: "Medien",
+    visibilityPlaceholder: "Sichtbarkeit",
+    typePlaceholder: "Typ",
+    sortPlaceholder: "Sortieren",
+    unpublished: "Unveröffentlicht",
+    ongoing: "Laufend",
+    completed: "Abgeschlossen",
+    cancelled: "Abgesagt",
+    newestFirst: "Neueste zuerst",
+    oldestFirst: "Älteste zuerst",
+    dateSoonest: "Datum (Bald)",
+    dateLatest: "Datum (Später)",
+    priceLowToHigh: "Preis: Aufsteigend",
+    priceHighToLow: "Preis: Absteigend",
   },
   nl: {
     // Navigation
@@ -3857,6 +3949,29 @@ const translations: Record<Language, TranslationKeys> = {
     showingXOfYOpportunities: "Toont {filtered} van {total} kansen",
     revenueAllTime: "Omzet (Totaal)",
     listings: "Aanbiedingen",
+    
+    // Search placeholders
+    searchPosts: "Berichten zoeken...",
+    searchOpportunities: "Kansen zoeken...",
+    searchEvents: "Evenementen zoeken...",
+    searchListings: "Aanbiedingen zoeken...",
+    
+    // Filter labels and options
+    statusPlaceholder: "Status",
+    mediaPlaceholder: "Media",
+    visibilityPlaceholder: "Zichtbaarheid",
+    typePlaceholder: "Type",
+    sortPlaceholder: "Sorteren",
+    unpublished: "Niet gepubliceerd",
+    ongoing: "Lopend",
+    completed: "Voltooid",
+    cancelled: "Geannuleerd",
+    newestFirst: "Nieuwste eerst",
+    oldestFirst: "Oudste eerst",
+    dateSoonest: "Datum (Binnenkort)",
+    dateLatest: "Datum (Later)",
+    priceLowToHigh: "Prijs: Laag naar Hoog",
+    priceHighToLow: "Prijs: Hoog naar Laag",
   },
   es: {
     // Navigation
@@ -4617,6 +4732,29 @@ const translations: Record<Language, TranslationKeys> = {
     showingXOfYOpportunities: "Mostrando {filtered} de {total} oportunidades",
     revenueAllTime: "Ingresos (Histórico)",
     listings: "Anuncios",
+    
+    // Search placeholders
+    searchPosts: "Buscar publicaciones...",
+    searchOpportunities: "Buscar oportunidades...",
+    searchEvents: "Buscar eventos...",
+    searchListings: "Buscar anuncios...",
+    
+    // Filter labels and options
+    statusPlaceholder: "Estado",
+    mediaPlaceholder: "Medios",
+    visibilityPlaceholder: "Visibilidad",
+    typePlaceholder: "Tipo",
+    sortPlaceholder: "Ordenar",
+    unpublished: "No publicado",
+    ongoing: "En curso",
+    completed: "Completado",
+    cancelled: "Cancelado",
+    newestFirst: "Más reciente",
+    oldestFirst: "Más antiguo",
+    dateSoonest: "Fecha (Próxima)",
+    dateLatest: "Fecha (Más tarde)",
+    priceLowToHigh: "Precio: Menor a Mayor",
+    priceHighToLow: "Precio: Mayor a Menor",
   },
 };
 

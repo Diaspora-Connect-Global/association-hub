@@ -270,7 +270,7 @@ export default function Events() {
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search events..."
+              placeholder={t.searchEvents}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-9 w-64"
@@ -278,37 +278,37 @@ export default function Events() {
           </div>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
             <SelectTrigger className="w-[140px]">
-              <SelectValue placeholder="Status" />
+              <SelectValue placeholder={t.statusPlaceholder} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value="published">Published</SelectItem>
-              <SelectItem value="unpublished">Unpublished</SelectItem>
-              <SelectItem value="draft">Draft</SelectItem>
-              <SelectItem value="ongoing">Ongoing</SelectItem>
-              <SelectItem value="completed">Completed</SelectItem>
-              <SelectItem value="cancelled">Cancelled</SelectItem>
+              <SelectItem value="all">{t.allStatus}</SelectItem>
+              <SelectItem value="published">{t.published}</SelectItem>
+              <SelectItem value="unpublished">{t.unpublished}</SelectItem>
+              <SelectItem value="draft">{t.draft}</SelectItem>
+              <SelectItem value="ongoing">{t.ongoing}</SelectItem>
+              <SelectItem value="completed">{t.completed}</SelectItem>
+              <SelectItem value="cancelled">{t.cancelled}</SelectItem>
             </SelectContent>
           </Select>
           <Select value={typeFilter} onValueChange={setTypeFilter}>
             <SelectTrigger className="w-[120px]">
-              <SelectValue placeholder="Type" />
+              <SelectValue placeholder={t.typePlaceholder} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Types</SelectItem>
-              <SelectItem value="free">Free</SelectItem>
-              <SelectItem value="paid">Paid</SelectItem>
+              <SelectItem value="all">{t.allTypes}</SelectItem>
+              <SelectItem value="free">{t.free}</SelectItem>
+              <SelectItem value="paid">{t.paid}</SelectItem>
             </SelectContent>
           </Select>
           <Select value={sortBy} onValueChange={setSortBy}>
             <SelectTrigger className="w-[160px]">
-              <SelectValue placeholder="Sort" />
+              <SelectValue placeholder={t.sortPlaceholder} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="newest">Newest First</SelectItem>
-              <SelectItem value="oldest">Oldest First</SelectItem>
-              <SelectItem value="date-soonest">Date (Soonest)</SelectItem>
-              <SelectItem value="date-latest">Date (Latest)</SelectItem>
+              <SelectItem value="newest">{t.newestFirst}</SelectItem>
+              <SelectItem value="oldest">{t.oldestFirst}</SelectItem>
+              <SelectItem value="date-soonest">{t.dateSoonest}</SelectItem>
+              <SelectItem value="date-latest">{t.dateLatest}</SelectItem>
             </SelectContent>
           </Select>
         </div>

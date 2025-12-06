@@ -197,7 +197,7 @@ export default function Posts() {
           <div className="relative w-full sm:w-64">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              placeholder="Search posts..."
+              placeholder={t.searchPosts}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-9"
@@ -205,34 +205,34 @@ export default function Posts() {
           </div>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
             <SelectTrigger className="w-32">
-              <SelectValue placeholder="Status" />
+              <SelectValue placeholder={t.statusPlaceholder} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value="published">Published</SelectItem>
-              <SelectItem value="draft">Draft</SelectItem>
-              <SelectItem value="scheduled">Scheduled</SelectItem>
+              <SelectItem value="all">{t.allStatus}</SelectItem>
+              <SelectItem value="published">{t.published}</SelectItem>
+              <SelectItem value="draft">{t.draft}</SelectItem>
+              <SelectItem value="scheduled">{t.scheduled}</SelectItem>
             </SelectContent>
           </Select>
           <Select value={mediaFilter} onValueChange={setMediaFilter}>
             <SelectTrigger className="w-32">
-              <SelectValue placeholder="Media" />
+              <SelectValue placeholder={t.mediaPlaceholder} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Media</SelectItem>
-              <SelectItem value="text">Text</SelectItem>
-              <SelectItem value="image">Image</SelectItem>
-              <SelectItem value="video">Video</SelectItem>
+              <SelectItem value="all">{t.allMedia}</SelectItem>
+              <SelectItem value="text">{t.text}</SelectItem>
+              <SelectItem value="image">{t.image}</SelectItem>
+              <SelectItem value="video">{t.video}</SelectItem>
             </SelectContent>
           </Select>
           <Select value={visibilityFilter} onValueChange={setVisibilityFilter}>
             <SelectTrigger className="w-32">
-              <SelectValue placeholder="Visibility" />
+              <SelectValue placeholder={t.visibilityPlaceholder} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All</SelectItem>
-              <SelectItem value="members">Members</SelectItem>
-              <SelectItem value="public">Public</SelectItem>
+              <SelectItem value="all">{t.all}</SelectItem>
+              <SelectItem value="members">{t.membersOnly}</SelectItem>
+              <SelectItem value="public">{t.public}</SelectItem>
             </SelectContent>
           </Select>
         </div>
