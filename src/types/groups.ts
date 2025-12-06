@@ -14,6 +14,8 @@ export interface Group {
   createdAt: string;
   updatedAt: string;
   createdBy: string;
+  inviteLink?: string;
+  inviteLinkEnabled?: boolean;
 }
 
 export interface GroupMember {
@@ -33,4 +35,16 @@ export interface GroupFormData {
   avatar?: File | null;
   privacy: GroupPrivacy;
   defaultNotifications: NotificationSetting;
+}
+
+export interface GroupInviteLink {
+  id: string;
+  groupId: string;
+  token: string;
+  expiresAt?: string;
+  maxUses?: number;
+  currentUses: number;
+  createdAt: string;
+  createdBy: string;
+  isActive: boolean;
 }

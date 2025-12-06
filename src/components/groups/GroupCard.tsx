@@ -15,7 +15,8 @@ import {
   Trash2, 
   Users,
   Lock,
-  Globe
+  Globe,
+  Link2
 } from "lucide-react";
 
 interface GroupCardProps {
@@ -24,6 +25,7 @@ interface GroupCardProps {
   onEdit: (group: Group) => void;
   onDelete: (group: Group) => void;
   onManageMembers: (group: Group) => void;
+  onInviteLink?: (group: Group) => void;
 }
 
 export function GroupCard({
@@ -32,6 +34,7 @@ export function GroupCard({
   onEdit,
   onDelete,
   onManageMembers,
+  onInviteLink,
 }: GroupCardProps) {
   return (
     <div className="group overflow-hidden rounded-xl border border-border bg-card transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
@@ -98,6 +101,12 @@ export function GroupCard({
                 <Users className="mr-2 h-4 w-4" />
                 Manage Members
               </DropdownMenuItem>
+              {onInviteLink && (
+                <DropdownMenuItem onClick={() => onInviteLink(group)}>
+                  <Link2 className="mr-2 h-4 w-4" />
+                  Invite Link
+                </DropdownMenuItem>
+              )}
               <DropdownMenuSeparator />
               <DropdownMenuItem 
                 onClick={() => onDelete(group)}

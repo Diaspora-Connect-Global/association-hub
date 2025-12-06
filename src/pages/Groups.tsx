@@ -16,6 +16,7 @@ import { CreateEditGroupModal } from "@/components/groups/CreateEditGroupModal";
 import { GroupDetailsModal } from "@/components/groups/GroupDetailsModal";
 import { MembersManagementModal } from "@/components/groups/MembersManagementModal";
 import { DeleteGroupModal } from "@/components/groups/DeleteGroupModal";
+import { InviteLinkModal } from "@/components/groups/InviteLinkModal";
 import { toast } from "@/hooks/use-toast";
 
 // Mock data
@@ -108,6 +109,8 @@ export default function Groups() {
   const [membersModalOpen, setMembersModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [groupToDelete, setGroupToDelete] = useState<Group | null>(null);
+  const [inviteLinkModalOpen, setInviteLinkModalOpen] = useState(false);
+  const [inviteLinkGroup, setInviteLinkGroup] = useState<Group | null>(null);
 
   // Filter and sort groups
   const filteredGroups = groups
@@ -152,6 +155,11 @@ export default function Groups() {
   const handleDelete = (group: Group) => {
     setGroupToDelete(group);
     setDeleteModalOpen(true);
+  };
+
+  const handleInviteLink = (group: Group) => {
+    setInviteLinkGroup(group);
+    setInviteLinkModalOpen(true);
   };
 
   const handleConfirmDelete = () => {
@@ -249,6 +257,7 @@ export default function Groups() {
                 onEdit={handleEdit}
                 onDelete={handleDelete}
                 onManageMembers={handleManageMembers}
+                onInviteLink={handleInviteLink}
               />
             </div>
           ))}
@@ -298,6 +307,12 @@ export default function Groups() {
         onOpenChange={setDeleteModalOpen}
         group={groupToDelete}
         onConfirm={handleConfirmDelete}
+      />
+
+      <InviteLinkModal
+        open={inviteLinkModalOpen}
+        onOpenChange={setInviteLinkModalOpen}
+        group={inviteLinkGroup}
       />
     </AdminLayout>
   );
