@@ -1,6 +1,7 @@
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "react-i18next";
 import { CalendarPlus, MapPin, Video, Users, Clock, MoreHorizontal, Edit, X, Download } from "lucide-react";
 import {
   DropdownMenu,
@@ -93,52 +94,49 @@ const statusColors = {
 };
 
 export default function Events() {
+  const { t } = useTranslation();
+
   return (
-    <AdminLayout title="Events" subtitle="Create and manage association events">
+    <AdminLayout title={t("events.title")} subtitle={t("events.subtitle")}>
       {/* Top Bar */}
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <input
             type="text"
-            placeholder="Search events..."
-            className="input-search w-64"
+            placeholder={t("events.searchPlaceholder")}
+            className="h-10 w-64 rounded-lg border border-input bg-background px-4 body-small transition-all duration-200 placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
           />
-          <select className="rounded-lg border border-input bg-background px-3 py-2 text-sm">
-            <option value="">All Status</option>
-            <option value="upcoming">Upcoming</option>
-            <option value="ongoing">Ongoing</option>
-            <option value="completed">Completed</option>
-            <option value="cancelled">Cancelled</option>
-          </select>
-          <select className="rounded-lg border border-input bg-background px-3 py-2 text-sm">
-            <option value="">All Types</option>
-            <option value="online">Online</option>
-            <option value="physical">Physical</option>
+          <select className="rounded-lg border border-input bg-background px-3 py-2 body-small">
+            <option value="">{t("common.all")} {t("common.status")}</option>
+            <option value="upcoming">{t("events.status.upcoming")}</option>
+            <option value="ongoing">{t("events.status.ongoing")}</option>
+            <option value="completed">{t("events.status.completed")}</option>
+            <option value="cancelled">{t("events.status.cancelled")}</option>
           </select>
         </div>
         <Button className="gap-2">
           <CalendarPlus className="h-4 w-4" />
-          Create Event
+          {t("events.createEvent")}
         </Button>
       </div>
 
       {/* Stats */}
       <div className="mb-6 grid gap-4 sm:grid-cols-4">
         <div className="rounded-lg border border-border bg-card p-4">
-          <p className="text-sm text-muted-foreground">Upcoming Events</p>
-          <p className="text-2xl font-bold text-foreground">8</p>
+          <p className="body-small text-muted-foreground">{t("events.upcoming")}</p>
+          <p className="heading-xsmall text-foreground">8</p>
         </div>
         <div className="rounded-lg border border-border bg-card p-4">
-          <p className="text-sm text-muted-foreground">Total Registrations</p>
-          <p className="text-2xl font-bold text-primary">1,542</p>
+          <p className="body-small text-muted-foreground">{t("events.totalRegistrations")}</p>
+          <p className="heading-xsmall text-primary">1,542</p>
         </div>
         <div className="rounded-lg border border-border bg-card p-4">
-          <p className="text-sm text-muted-foreground">Ticket Revenue</p>
-          <p className="text-2xl font-bold text-success">$12,450</p>
+          <p className="body-small text-muted-foreground">{t("events.ticketRevenue")}</p>
+          <p className="heading-xsmall text-success">$12,450</p>
         </div>
         <div className="rounded-lg border border-border bg-card p-4">
-          <p className="text-sm text-muted-foreground">Avg. Attendance</p>
-          <p className="text-2xl font-bold text-accent">82%</p>
+          <p className="body-small text-muted-foreground">{t("events.avgAttendance")}</p>
+          <p className="heading-xsmall text-chart-1">82%</p>
         </div>
       </div>
 
@@ -147,35 +145,35 @@ export default function Events() {
         {events.map((event, index) => (
           <div
             key={event.id}
-            className="group overflow-hidden rounded-xl border border-border bg-card transition-all duration-300 hover:shadow-lg hover:-translate-y-1 animate-slide-up"
+            className="group overflow-hidden rounded-xl border border-border bg-card transition-all duration-300 hover:shadow-lg hover:-translate-y-1 animate-in fade-in slide-in-from-bottom-4"
             style={{ animationDelay: `${index * 100}ms` }}
           >
             {/* Banner */}
-            <div className="relative flex h-32 items-center justify-center bg-gradient-to-br from-primary/10 to-accent/10">
+            <div className="relative flex h-32 items-center justify-center bg-gradient-to-br from-primary/10 to-chart-1/10">
               <span className="text-5xl">{event.banner}</span>
               <div className="absolute right-3 top-3">
                 <StatusBadge variant={statusColors[event.status]}>
-                  {event.status}
+                  {t(`events.status.${event.status}`)}
                 </StatusBadge>
               </div>
             </div>
 
             {/* Content */}
             <div className="p-5">
-              <h3 className="mb-2 text-lg font-semibold text-foreground line-clamp-1">
+              <h3 className="mb-2 label-medium text-foreground line-clamp-1">
                 {event.title}
               </h3>
-              <p className="mb-4 text-sm text-muted-foreground line-clamp-2">
+              <p className="mb-4 body-small text-muted-foreground line-clamp-2">
                 {event.description}
               </p>
 
               {/* Details */}
               <div className="mb-4 space-y-2">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <div className="flex items-center gap-2 body-small text-muted-foreground">
                   <Clock className="h-4 w-4" />
                   <span>{event.date} at {event.time}</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <div className="flex items-center gap-2 body-small text-muted-foreground">
                   {event.type === "online" ? (
                     <Video className="h-4 w-4" />
                   ) : (
@@ -183,10 +181,10 @@ export default function Events() {
                   )}
                   <span className="truncate">{event.venue}</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <div className="flex items-center gap-2 body-small text-muted-foreground">
                   <Users className="h-4 w-4" />
                   <span>
-                    {event.registered} / {event.capacity} registered
+                    {event.registered} / {event.capacity} {t("events.registered")}
                   </span>
                 </div>
               </div>
@@ -200,7 +198,7 @@ export default function Events() {
                       event.registered >= event.capacity
                         ? "bg-destructive"
                         : event.registered >= event.capacity * 0.8
-                        ? "bg-warning"
+                        ? "bg-chart-1"
                         : "bg-success"
                     )}
                     style={{
@@ -217,12 +215,12 @@ export default function Events() {
               <div className="flex items-center justify-between">
                 <div>
                   {event.price ? (
-                    <span className="text-lg font-bold text-foreground">
+                    <span className="label-medium text-foreground">
                       ${event.price}
                     </span>
                   ) : (
-                    <span className="text-sm font-medium text-success">
-                      Free
+                    <span className="body-small font-medium text-success">
+                      {t("events.free")}
                     </span>
                   )}
                 </div>
@@ -235,16 +233,16 @@ export default function Events() {
                   <DropdownMenuContent align="end" className="w-48">
                     <DropdownMenuItem>
                       <Edit className="mr-2 h-4 w-4" />
-                      Edit Event
+                      {t("events.editEvent")}
                     </DropdownMenuItem>
                     <DropdownMenuItem>
                       <Download className="mr-2 h-4 w-4" />
-                      Export Attendees
+                      {t("events.exportAttendees")}
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem className="text-destructive">
                       <X className="mr-2 h-4 w-4" />
-                      Cancel Event
+                      {t("events.cancelEvent")}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>

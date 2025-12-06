@@ -1,4 +1,5 @@
 import { LucideIcon, TrendingUp, TrendingDown } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 
 interface MetricCardProps {
@@ -21,19 +22,21 @@ export function MetricCard({
   onClick,
   className,
 }: MetricCardProps) {
+  const { t } = useTranslation();
+
   return (
     <button
       onClick={onClick}
       className={cn(
-        "metric-card group w-full text-left",
+        "group relative w-full overflow-hidden rounded-xl border border-border bg-card p-6 text-left transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5",
         onClick && "cursor-pointer",
         className
       )}
     >
       <div className="flex items-start justify-between">
         <div>
-          <p className="stat-label">{label}</p>
-          <p className="stat-value mt-2">{value}</p>
+          <p className="body-small text-muted-foreground">{label}</p>
+          <p className="heading-small mt-2 text-foreground">{value}</p>
           {trend && (
             <div className="mt-2 flex items-center gap-1">
               {trend.isPositive ? (
@@ -43,14 +46,16 @@ export function MetricCard({
               )}
               <span
                 className={cn(
-                  "text-sm font-medium",
+                  "body-small font-medium",
                   trend.isPositive ? "text-success" : "text-destructive"
                 )}
               >
                 {trend.isPositive ? "+" : ""}
                 {trend.value}%
               </span>
-              <span className="text-xs text-muted-foreground">vs last month</span>
+              <span className="caption-small text-muted-foreground">
+                {t("dashboard.vsLastMonth")}
+              </span>
             </div>
           )}
         </div>

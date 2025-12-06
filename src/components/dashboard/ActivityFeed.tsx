@@ -1,10 +1,11 @@
 import { User, MessageSquare, Package, Calendar, UserPlus } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 
 interface ActivityItem {
   id: string;
   type: "member" | "post" | "order" | "event" | "join";
-  title: string;
+  titleKey: string;
   description: string;
   time: string;
 }
@@ -13,35 +14,35 @@ const activities: ActivityItem[] = [
   {
     id: "1",
     type: "join",
-    title: "New member joined",
+    titleKey: "activity.newMemberJoined",
     description: "Kofi Asante joined the association",
     time: "2 minutes ago",
   },
   {
     id: "2",
     type: "post",
-    title: "New post published",
+    titleKey: "activity.newPostPublished",
     description: "Weekly Newsletter - December Edition",
     time: "15 minutes ago",
   },
   {
     id: "3",
     type: "order",
-    title: "New order received",
+    titleKey: "activity.newOrderReceived",
     description: "Ghana Tech T-Shirt (x2) - $45.00",
     time: "1 hour ago",
   },
   {
     id: "4",
     type: "event",
-    title: "Event registration",
+    titleKey: "activity.eventRegistration",
     description: "5 new registrations for Annual Meetup",
     time: "2 hours ago",
   },
   {
     id: "5",
     type: "member",
-    title: "Membership pending",
+    titleKey: "activity.membershipPending",
     description: "Ama Serwaa requested to join",
     time: "3 hours ago",
   },
@@ -58,18 +59,20 @@ const iconMap = {
 const colorMap = {
   member: "bg-chart-4/10 text-chart-4",
   post: "bg-primary/10 text-primary",
-  order: "bg-success/10 text-success",
-  event: "bg-accent/10 text-accent",
-  join: "bg-chart-5/10 text-chart-5",
+  order: "bg-chart-2/10 text-chart-2",
+  event: "bg-chart-1/10 text-chart-1",
+  join: "bg-chart-3/10 text-chart-3",
 };
 
 export function ActivityFeed() {
+  const { t } = useTranslation();
+
   return (
     <div className="rounded-xl border border-border bg-card p-6">
       <div className="mb-6 flex items-center justify-between">
-        <h3 className="section-header">Recent Activity</h3>
-        <button className="text-sm font-medium text-primary hover:text-primary/80">
-          View all
+        <h3 className="label-medium text-foreground">{t("dashboard.recentActivity")}</h3>
+        <button className="body-small font-medium text-primary hover:text-primary/80">
+          {t("dashboard.viewAll")}
         </button>
       </div>
 
@@ -81,7 +84,7 @@ export function ActivityFeed() {
           return (
             <div
               key={activity.id}
-              className="flex items-start gap-4 animate-slide-up"
+              className="flex items-start gap-4 animate-in fade-in slide-in-from-left-2"
               style={{ animationDelay: `${index * 50}ms` }}
             >
               <div
@@ -93,14 +96,14 @@ export function ActivityFeed() {
                 <Icon className="h-5 w-5" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-foreground">
-                  {activity.title}
+                <p className="body-small font-medium text-foreground">
+                  {t(activity.titleKey)}
                 </p>
-                <p className="truncate text-sm text-muted-foreground">
+                <p className="truncate caption-small text-muted-foreground">
                   {activity.description}
                 </p>
               </div>
-              <span className="flex-shrink-0 text-xs text-muted-foreground">
+              <span className="flex-shrink-0 caption-small text-muted-foreground">
                 {activity.time}
               </span>
             </div>
