@@ -164,3 +164,26 @@
   .scrollbar-hide::-webkit-scrollbar { display: none; }
   .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 }
+
+/* High Contrast Mode */
+.high-contrast {
+  --foreground: oklch(0 0 0);
+  --background: oklch(1 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0 0 0);
+  --primary: oklch(0 0 0);
+  --primary-foreground: oklch(1 0 0);
+  --muted-foreground: oklch(0.3 0 0);
+  --border: oklch(0 0 0);
+}
+
+.dark.high-contrast {
+  --foreground: oklch(1 0 0);
+  --background: oklch(0 0 0);
+  --card: oklch(0 0 0);
+  --card-foreground: oklch(1 0 0);
+  --primary: oklch(1 0 0);
+  --primary-foreground: oklch(0 0 0);
+  --muted-foreground: oklch(0.7 0 0);
+  --border: oklch(1 0 0);
+}
