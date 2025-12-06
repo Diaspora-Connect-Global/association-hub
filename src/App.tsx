@@ -16,6 +16,8 @@ import Opportunities from "./pages/Opportunities";
 import Tickets from "./pages/Tickets";
 import AuditLogs from "./pages/AuditLogs";
 import Settings from "./pages/Settings";
+import Analytics from "./pages/Analytics";
+import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +30,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
+            <Route path="/login" element={<Login />} />
             <Route path="/" element={<Index />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/members" element={<Members />} />
@@ -40,6 +43,7 @@ const App = () => (
             <Route path="/tickets" element={<Tickets />} />
             <Route path="/audit-logs" element={<AuditLogs />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/analytics" element={<Analytics />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

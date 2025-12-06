@@ -1,9 +1,9 @@
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { Badge } from "@/components/ui/badge";
@@ -26,7 +26,7 @@ import {
 import { Opportunity, OpportunityType } from "@/types/opportunities";
 import { toast } from "@/hooks/use-toast";
 
-interface OpportunityDrawerProps {
+interface OpportunityModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   opportunity: Opportunity | null;
@@ -55,7 +55,7 @@ const typeLabels: Record<OpportunityType, string> = {
   other: "Other",
 };
 
-export function OpportunityDrawer({
+export function OpportunityModal({
   open,
   onOpenChange,
   opportunity,
@@ -64,7 +64,7 @@ export function OpportunityDrawer({
   onClose,
   onViewApplicants,
   onDuplicate,
-}: OpportunityDrawerProps) {
+}: OpportunityModalProps) {
   if (!opportunity) return null;
 
   const handleCopyLink = () => {
@@ -73,12 +73,12 @@ export function OpportunityDrawer({
   };
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-full sm:max-w-xl p-0">
-        <SheetHeader className="p-6 pb-4">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden flex flex-col p-0">
+        <DialogHeader className="p-6 pb-4">
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1 min-w-0">
-              <SheetTitle className="text-xl line-clamp-2">{opportunity.title}</SheetTitle>
+              <DialogTitle className="text-xl line-clamp-2">{opportunity.title}</DialogTitle>
               <div className="mt-2 flex flex-wrap items-center gap-2">
                 <Badge variant="secondary" className="capitalize">
                   {typeLabels[opportunity.type]}
@@ -146,12 +146,12 @@ export function OpportunityDrawer({
               Applicants
             </Button>
           </div>
-        </SheetHeader>
+        </DialogHeader>
 
         <Separator />
 
-        <ScrollArea className="h-[calc(100vh-300px)]">
-          <div className="p-6 space-y-6">
+        <ScrollArea className="flex-1 px-6 pb-6">
+          <div className="mt-4 space-y-6">
             {/* Description */}
             <div>
               <h4 className="font-medium mb-2">Description</h4>
@@ -264,7 +264,7 @@ export function OpportunityDrawer({
             </div>
           </div>
         </ScrollArea>
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   );
 }
