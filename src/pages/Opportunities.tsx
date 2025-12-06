@@ -94,7 +94,7 @@ export default function Opportunities() {
           <div className="relative w-full sm:w-64">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              placeholder="Search opportunities..."
+              placeholder={t.searchOpportunities}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-9"
@@ -102,37 +102,37 @@ export default function Opportunities() {
           </div>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
             <SelectTrigger className="w-32">
-              <SelectValue placeholder="Status" />
+              <SelectValue placeholder={t.statusPlaceholder} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value="published">Published</SelectItem>
-              <SelectItem value="draft">Draft</SelectItem>
-              <SelectItem value="scheduled">Scheduled</SelectItem>
-              <SelectItem value="closed">Closed</SelectItem>
+              <SelectItem value="all">{t.allStatus}</SelectItem>
+              <SelectItem value="published">{t.published}</SelectItem>
+              <SelectItem value="draft">{t.draft}</SelectItem>
+              <SelectItem value="scheduled">{t.scheduled}</SelectItem>
+              <SelectItem value="closed">{t.closed}</SelectItem>
             </SelectContent>
           </Select>
           <Select value={typeFilter} onValueChange={setTypeFilter}>
             <SelectTrigger className="w-32">
-              <SelectValue placeholder="Type" />
+              <SelectValue placeholder={t.typePlaceholder} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Types</SelectItem>
-              <SelectItem value="job">Job</SelectItem>
-              <SelectItem value="volunteer">Volunteer</SelectItem>
-              <SelectItem value="training">Training</SelectItem>
-              <SelectItem value="funding">Funding</SelectItem>
-              <SelectItem value="scholarship">Scholarship</SelectItem>
+              <SelectItem value="all">{t.allTypes}</SelectItem>
+              <SelectItem value="job">{t.job}</SelectItem>
+              <SelectItem value="volunteer">{t.volunteer}</SelectItem>
+              <SelectItem value="training">{t.training}</SelectItem>
+              <SelectItem value="funding">{t.funding}</SelectItem>
+              <SelectItem value="scholarship">{t.scholarship}</SelectItem>
             </SelectContent>
           </Select>
           <Select value={visibilityFilter} onValueChange={setVisibilityFilter}>
             <SelectTrigger className="w-32">
-              <SelectValue placeholder="Visibility" />
+              <SelectValue placeholder={t.visibilityPlaceholder} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All</SelectItem>
-              <SelectItem value="members">Members</SelectItem>
-              <SelectItem value="public">Public</SelectItem>
+              <SelectItem value="all">{t.all}</SelectItem>
+              <SelectItem value="members">{t.membersOnly}</SelectItem>
+              <SelectItem value="public">{t.public}</SelectItem>
             </SelectContent>
           </Select>
         </div>

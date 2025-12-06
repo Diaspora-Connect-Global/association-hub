@@ -261,7 +261,7 @@ export default function Marketplace() {
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search listings..."
+              placeholder={t.searchListings}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-9 w-64"
@@ -269,34 +269,34 @@ export default function Marketplace() {
           </div>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
             <SelectTrigger className="w-[130px]">
-              <SelectValue placeholder="Status" />
+              <SelectValue placeholder={t.statusPlaceholder} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value="published">Published</SelectItem>
-              <SelectItem value="draft">Draft</SelectItem>
-              <SelectItem value="unpublished">Unpublished</SelectItem>
+              <SelectItem value="all">{t.allStatus}</SelectItem>
+              <SelectItem value="published">{t.published}</SelectItem>
+              <SelectItem value="draft">{t.draft}</SelectItem>
+              <SelectItem value="unpublished">{t.unpublished}</SelectItem>
             </SelectContent>
           </Select>
           <Select value={typeFilter} onValueChange={setTypeFilter}>
             <SelectTrigger className="w-[120px]">
-              <SelectValue placeholder="Type" />
+              <SelectValue placeholder={t.typePlaceholder} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Types</SelectItem>
-              <SelectItem value="product">Product</SelectItem>
-              <SelectItem value="service">Service</SelectItem>
+              <SelectItem value="all">{t.allTypes}</SelectItem>
+              <SelectItem value="product">{t.product}</SelectItem>
+              <SelectItem value="service">{t.service}</SelectItem>
             </SelectContent>
           </Select>
           <Select value={sortBy} onValueChange={setSortBy}>
             <SelectTrigger className="w-[150px]">
-              <SelectValue placeholder="Sort" />
+              <SelectValue placeholder={t.sortPlaceholder} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="newest">Newest First</SelectItem>
-              <SelectItem value="oldest">Oldest First</SelectItem>
-              <SelectItem value="price-low">Price: Low to High</SelectItem>
-              <SelectItem value="price-high">Price: High to Low</SelectItem>
+              <SelectItem value="newest">{t.newestFirst}</SelectItem>
+              <SelectItem value="oldest">{t.oldestFirst}</SelectItem>
+              <SelectItem value="price-low">{t.priceLowToHigh}</SelectItem>
+              <SelectItem value="price-high">{t.priceHighToLow}</SelectItem>
             </SelectContent>
           </Select>
         </div>
