@@ -37,7 +37,8 @@ import {
   XCircle, 
   Bell,
   BarChart3,
-  Package
+  Package,
+  Shield
 } from "lucide-react";
 import { Order } from "@/types/marketplace";
 import { OrderDetailsModal } from "@/components/orders/OrderDetailsModal";
@@ -61,6 +62,7 @@ const mockOrders: Order[] = [
     paymentStatus: "paid",
     fulfillmentStatus: "fulfilled",
     orderDate: "Dec 1, 2024",
+    isEscrow: false,
   },
   {
     id: "ORD-002",
@@ -75,6 +77,7 @@ const mockOrders: Order[] = [
     paymentStatus: "paid",
     fulfillmentStatus: "pending",
     orderDate: "Dec 2, 2024",
+    isEscrow: false,
   },
   {
     id: "ORD-003",
@@ -89,6 +92,12 @@ const mockOrders: Order[] = [
     paymentStatus: "paid",
     fulfillmentStatus: "pending",
     orderDate: "Dec 3, 2024",
+    isEscrow: true,
+    escrowStatus: "held",
+    escrowHeldAmount: 100,
+    escrowReleasedAmount: 0,
+    vendorId: "v1",
+    vendorName: "Business Mentors Inc",
   },
   {
     id: "ORD-004",
@@ -103,6 +112,7 @@ const mockOrders: Order[] = [
     paymentStatus: "pending",
     fulfillmentStatus: "pending",
     orderDate: "Dec 3, 2024",
+    isEscrow: false,
   },
   {
     id: "ORD-005",
@@ -117,6 +127,7 @@ const mockOrders: Order[] = [
     paymentStatus: "refunded",
     fulfillmentStatus: "cancelled",
     orderDate: "Nov 28, 2024",
+    isEscrow: false,
   },
   {
     id: "ORD-006",
@@ -131,6 +142,12 @@ const mockOrders: Order[] = [
     paymentStatus: "paid",
     fulfillmentStatus: "fulfilled",
     orderDate: "Nov 25, 2024",
+    isEscrow: true,
+    escrowStatus: "fully_released",
+    escrowHeldAmount: 0,
+    escrowReleasedAmount: 250,
+    vendorId: "v2",
+    vendorName: "Career Accelerator LLC",
   },
   {
     id: "ORD-007",
@@ -143,8 +160,14 @@ const mockOrders: Order[] = [
     totalAmount: 200,
     currency: "USD",
     paymentStatus: "paid",
-    fulfillmentStatus: "fulfilled",
+    fulfillmentStatus: "pending",
     orderDate: "Nov 20, 2024",
+    isEscrow: true,
+    escrowStatus: "partially_released",
+    escrowHeldAmount: 100,
+    escrowReleasedAmount: 100,
+    vendorId: "v1",
+    vendorName: "Business Mentors Inc",
   },
   {
     id: "ORD-008",
@@ -159,6 +182,12 @@ const mockOrders: Order[] = [
     paymentStatus: "paid",
     fulfillmentStatus: "pending",
     orderDate: "Dec 4, 2024",
+    isEscrow: true,
+    escrowStatus: "held",
+    escrowHeldAmount: 75,
+    escrowReleasedAmount: 0,
+    vendorId: "v3",
+    vendorName: "Artisan Crafts Ghana",
   },
 ];
 
@@ -308,7 +337,7 @@ export default function Orders() {
       </div>
 
       {/* Stats */}
-      <div className="mb-6 grid gap-4 sm:grid-cols-5">
+      <div className="mb-6 grid gap-4 sm:grid-cols-6">
         <div className="rounded-lg border border-border bg-card p-4">
           <p className="text-sm text-muted-foreground">{t.totalOrders}</p>
           <p className="text-2xl font-bold text-foreground">{totalOrdersCount}</p>
@@ -320,6 +349,15 @@ export default function Orders() {
         <div className="rounded-lg border border-border bg-card p-4">
           <p className="text-sm text-muted-foreground">{t.completedOrders}</p>
           <p className="text-2xl font-bold text-foreground">{fulfilledOrders}</p>
+        </div>
+        <div className="rounded-lg border border-border bg-gradient-to-r from-primary/10 to-primary/5 p-4">
+          <p className="text-sm text-muted-foreground flex items-center gap-1">
+            <Shield className="h-3 w-3" />
+            In Escrow
+          </p>
+          <p className="text-2xl font-bold text-primary">
+            ${orders.filter(o => o.isEscrow && o.escrowHeldAmount).reduce((sum, o) => sum + (o.escrowHeldAmount || 0), 0).toLocaleString()}
+          </p>
         </div>
         <div className="rounded-lg border border-border bg-card p-4">
           <p className="text-sm text-muted-foreground">{t.totalRevenueAllTime}</p>
@@ -398,7 +436,16 @@ export default function Orders() {
                           onCheckedChange={(checked) => handleSelectOrder(order.id, !!checked)}
                         />
                       </TableCell>
-                      <TableCell className="font-mono text-sm">{order.id}</TableCell>
+                      <TableCell className="font-mono text-sm">
+                        <div className="flex items-center gap-2">
+                          {order.id}
+                          {order.isEscrow && (
+                            <span className="inline-flex items-center gap-0.5 text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded-full">
+                              <Shield className="h-3 w-3" />
+                            </span>
+                          )}
+                        </div>
+                      </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
                           <Avatar className="h-7 w-7">
