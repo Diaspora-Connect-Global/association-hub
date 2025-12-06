@@ -1,4 +1,4 @@
-export type Language = "en" | "fr" | "de" | "nl" | "es";
+export type Language = "en" | "fr" | "de" | "nl" | "es" | "it";
 export type Theme = "light" | "dark" | "system";
 export type FontSize = "small" | "medium" | "large" | "extra-large";
 export type SessionTimeout = "15min" | "30min" | "1hour" | "4hours" | "never";
@@ -53,6 +53,7 @@ export const languageLabels: Record<Language, string> = {
   de: "Deutsch",
   nl: "Nederlands",
   es: "Español",
+  it: "Italiano",
 };
 
 export const themeLabels: Record<Theme, string> = {
