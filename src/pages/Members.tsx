@@ -1,194 +1,198 @@
+import { useState } from "react";
+import { UserPlus, Download } from "lucide-react";
 import { AdminLayout } from "@/components/layout/AdminLayout";
-import { DataTable } from "@/components/ui/DataTable";
-import { StatusBadge } from "@/components/ui/StatusBadge";
 import { Button } from "@/components/ui/button";
-import { UserPlus, Download, MoreHorizontal, Eye, UserCheck, UserX, Shield } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { MembersFilters } from "@/components/members/MembersFilters";
+import { MemberStats } from "@/components/members/MemberStats";
+import { MembersTable, type Member } from "@/components/members/MembersTable";
+import { BulkActionsBar } from "@/components/members/BulkActionsBar";
+import { InviteMemberModal } from "@/components/members/InviteMemberModal";
+import { RoleManagementModal } from "@/components/members/RoleManagementModal";
+import { RemoveMemberModal } from "@/components/members/RemoveMemberModal";
+import { MemberDetailsModal } from "@/components/members/MemberDetailsModal";
+import { toast } from "@/hooks/use-toast";
 
-interface Member {
-  id: string;
-  name: string;
-  email: string;
-  avatar: string;
-  role: "member" | "moderator" | "admin";
-  status: "active" | "pending" | "suspended";
-  joinedAt: string;
-  lastActive: string;
-}
-
-const members: Member[] = [
+// Mock data
+const mockMembers: Member[] = [
   {
     id: "1",
     name: "Kofi Asante",
     email: "kofi.asante@email.com",
+    phone: "+233 55 123 4567",
     avatar: "KA",
     role: "member",
     status: "active",
+    paymentStatus: "subscription_active",
     joinedAt: "Nov 15, 2024",
-    lastActive: "2 hours ago",
   },
   {
     id: "2",
     name: "Ama Serwaa",
     email: "ama.serwaa@email.com",
+    phone: "+233 24 987 6543",
     avatar: "AS",
-    role: "moderator",
+    role: "sub-admin",
     status: "active",
+    paymentStatus: "paid",
     joinedAt: "Oct 22, 2024",
-    lastActive: "5 minutes ago",
   },
   {
     id: "3",
     name: "Kwame Mensah",
     email: "kwame.m@email.com",
+    phone: "+233 20 555 1234",
     avatar: "KM",
     role: "member",
     status: "pending",
     joinedAt: "Dec 01, 2024",
-    lastActive: "Never",
   },
   {
     id: "4",
     name: "Efua Osei",
     email: "efua.osei@email.com",
+    phone: "+233 54 321 9876",
     avatar: "EO",
     role: "admin",
     status: "active",
+    paymentStatus: "subscription_active",
     joinedAt: "Sep 10, 2024",
-    lastActive: "1 day ago",
   },
   {
     id: "5",
     name: "Yaw Boateng",
     email: "yaw.b@email.com",
+    phone: "+233 27 444 5555",
     avatar: "YB",
     role: "member",
     status: "suspended",
+    paymentStatus: "subscription_failed",
     joinedAt: "Aug 05, 2024",
-    lastActive: "2 weeks ago",
   },
 ];
 
-const roleColors = {
-  member: "bg-muted text-muted-foreground",
-  moderator: "bg-primary/10 text-primary",
-  admin: "bg-accent/10 text-accent",
-};
-
 export default function Members() {
-  const columns = [
-    {
-      header: "Member",
-      accessor: (row: Member) => (
-        <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">
-            {row.avatar}
-          </div>
-          <div>
-            <p className="font-medium text-foreground">{row.name}</p>
-            <p className="text-xs text-muted-foreground">{row.email}</p>
-          </div>
-        </div>
-      ),
-    },
-    {
-      header: "Role",
-      accessor: (row: Member) => (
-        <span className={`rounded-full px-2.5 py-1 text-xs font-medium capitalize ${roleColors[row.role]}`}>
-          {row.role}
-        </span>
-      ),
-    },
-    {
-      header: "Status",
-      accessor: (row: Member) => (
-        <StatusBadge
-          variant={row.status === "active" ? "active" : row.status === "pending" ? "pending" : "error"}
-        >
-          {row.status}
-        </StatusBadge>
-      ),
-    },
-    {
-      header: "Joined At",
-      accessor: "joinedAt" as keyof Member,
-      sortable: true,
-    },
-    {
-      header: "Last Active",
-      accessor: "lastActive" as keyof Member,
-    },
-    {
-      header: "Actions",
-      accessor: (row: Member) => (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button className="rounded-lg p-2 text-muted-foreground hover:bg-muted hover:text-foreground">
-              <MoreHorizontal className="h-4 w-4" />
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48">
-            <DropdownMenuItem>
-              <Eye className="mr-2 h-4 w-4" />
-              View Profile
-            </DropdownMenuItem>
-            {row.status === "pending" && (
-              <DropdownMenuItem className="text-success">
-                <UserCheck className="mr-2 h-4 w-4" />
-                Approve
-              </DropdownMenuItem>
-            )}
-            <DropdownMenuItem>
-              <Shield className="mr-2 h-4 w-4" />
-              Promote to Moderator
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-destructive">
-              <UserX className="mr-2 h-4 w-4" />
-              {row.status === "suspended" ? "Remove" : "Suspend"}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      ),
-      className: "w-20",
-    },
-  ];
+  // Filter states
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [paymentFilter, setPaymentFilter] = useState("all");
+  const [roleFilter, setRoleFilter] = useState("all");
+  const [sortBy, setSortBy] = useState("date_newest");
+
+  // Selection state
+  const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
+
+  // Modal states
+  const [inviteModalOpen, setInviteModalOpen] = useState(false);
+  const [roleModalOpen, setRoleModalOpen] = useState(false);
+  const [removeModalOpen, setRemoveModalOpen] = useState(false);
+  const [detailsModalOpen, setDetailsModalOpen] = useState(false);
+  const [selectedMember, setSelectedMember] = useState<Member | null>(null);
+
+  // Configuration - would come from association settings
+  const isPaidAssociation = true;
+
+  // Filter members
+  const filteredMembers = mockMembers.filter((member) => {
+    const matchesSearch =
+      member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      member.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      member.phone.includes(searchQuery);
+
+    const matchesStatus = statusFilter === "all" || member.status === statusFilter;
+    const matchesPayment = paymentFilter === "all" || member.paymentStatus === paymentFilter;
+    const matchesRole = roleFilter === "all" || member.role === roleFilter;
+
+    return matchesSearch && matchesStatus && matchesPayment && matchesRole;
+  });
+
+  // Sort members
+  const sortedMembers = [...filteredMembers].sort((a, b) => {
+    switch (sortBy) {
+      case "name_asc":
+        return a.name.localeCompare(b.name);
+      case "name_desc":
+        return b.name.localeCompare(a.name);
+      case "date_newest":
+        return new Date(b.joinedAt).getTime() - new Date(a.joinedAt).getTime();
+      case "date_oldest":
+        return new Date(a.joinedAt).getTime() - new Date(b.joinedAt).getTime();
+      default:
+        return 0;
+    }
+  });
+
+  // Stats
+  const stats = {
+    total: mockMembers.length,
+    active: mockMembers.filter((m) => m.status === "active").length,
+    pending: mockMembers.filter((m) => m.status === "pending").length,
+    suspended: mockMembers.filter((m) => m.status === "suspended").length,
+  };
+
+  // Handlers
+  const handleSelectMember = (id: string) => {
+    setSelectedMembers((prev) =>
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
+    );
+  };
+
+  const handleSelectAll = () => {
+    if (selectedMembers.length === sortedMembers.length) {
+      setSelectedMembers([]);
+    } else {
+      setSelectedMembers(sortedMembers.map((m) => m.id));
+    }
+  };
+
+  const handleViewProfile = (member: Member) => {
+    setSelectedMember(member);
+    setDetailsModalOpen(true);
+  };
+
+  const handleChangeRole = (member: Member) => {
+    setSelectedMember(member);
+    setRoleModalOpen(true);
+  };
+
+  const handleRemoveMember = (member: Member) => {
+    setSelectedMember(member);
+    setRemoveModalOpen(true);
+  };
+
+  const handleExportCSV = () => {
+    toast({
+      title: "Export started",
+      description: "Your member list is being exported to CSV.",
+    });
+  };
+
+  const hasPendingMembers = selectedMembers.some((id) =>
+    mockMembers.find((m) => m.id === id && m.status === "pending")
+  );
 
   return (
     <AdminLayout title="Members" subtitle="Manage association membership">
       {/* Top Bar */}
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+        <MembersFilters
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          statusFilter={statusFilter}
+          onStatusChange={setStatusFilter}
+          paymentFilter={paymentFilter}
+          onPaymentChange={setPaymentFilter}
+          roleFilter={roleFilter}
+          onRoleChange={setRoleFilter}
+          sortBy={sortBy}
+          onSortChange={setSortBy}
+          isPaidAssociation={isPaidAssociation}
+        />
         <div className="flex items-center gap-3">
-          <input
-            type="text"
-            placeholder="Search members..."
-            className="input-search w-64"
-          />
-          <select className="rounded-lg border border-input bg-background px-3 py-2 text-sm">
-            <option value="">All Status</option>
-            <option value="active">Active</option>
-            <option value="pending">Pending</option>
-            <option value="suspended">Suspended</option>
-          </select>
-          <select className="rounded-lg border border-input bg-background px-3 py-2 text-sm">
-            <option value="">All Roles</option>
-            <option value="member">Member</option>
-            <option value="moderator">Moderator</option>
-            <option value="admin">Admin</option>
-          </select>
-        </div>
-        <div className="flex items-center gap-3">
-          <Button variant="outline" className="gap-2">
+          <Button variant="outline" className="gap-2" onClick={handleExportCSV}>
             <Download className="h-4 w-4" />
-            Export
+            Export CSV
           </Button>
-          <Button className="gap-2">
+          <Button className="gap-2" onClick={() => setInviteModalOpen(true)}>
             <UserPlus className="h-4 w-4" />
             Invite Member
           </Button>
@@ -196,27 +200,68 @@ export default function Members() {
       </div>
 
       {/* Stats */}
-      <div className="mb-6 grid gap-4 sm:grid-cols-4">
-        <div className="rounded-lg border border-border bg-card p-4">
-          <p className="text-sm text-muted-foreground">Total Members</p>
-          <p className="text-2xl font-bold text-foreground">1,284</p>
-        </div>
-        <div className="rounded-lg border border-border bg-card p-4">
-          <p className="text-sm text-muted-foreground">Active</p>
-          <p className="text-2xl font-bold text-success">1,156</p>
-        </div>
-        <div className="rounded-lg border border-border bg-card p-4">
-          <p className="text-sm text-muted-foreground">Pending Approval</p>
-          <p className="text-2xl font-bold text-warning">28</p>
-        </div>
-        <div className="rounded-lg border border-border bg-card p-4">
-          <p className="text-sm text-muted-foreground">Suspended</p>
-          <p className="text-2xl font-bold text-destructive">12</p>
-        </div>
+      <div className="mb-6">
+        <MemberStats
+          totalMembers={stats.total}
+          activeMembers={stats.active}
+          pendingMembers={stats.pending}
+          suspendedMembers={stats.suspended}
+        />
+      </div>
+
+      {/* Bulk Actions Bar */}
+      <div className="mb-4">
+        <BulkActionsBar
+          selectedCount={selectedMembers.length}
+          onClearSelection={() => setSelectedMembers([])}
+          onSendAnnouncement={() => toast({ title: "Send announcement", description: "Feature coming soon" })}
+          onApproveSelected={() => toast({ title: "Approve members", description: "Feature coming soon" })}
+          onChangeRole={() => toast({ title: "Change roles", description: "Feature coming soon" })}
+          onRemoveSelected={() => toast({ title: "Remove members", description: "Feature coming soon" })}
+          hasPendingMembers={hasPendingMembers}
+        />
       </div>
 
       {/* Table */}
-      <DataTable columns={columns} data={members} />
+      <MembersTable
+        members={sortedMembers}
+        selectedMembers={selectedMembers}
+        onSelectMember={handleSelectMember}
+        onSelectAll={handleSelectAll}
+        onViewProfile={handleViewProfile}
+        onChangeRole={handleChangeRole}
+        onRemoveMember={handleRemoveMember}
+        isPaidAssociation={isPaidAssociation}
+        onInvite={() => setInviteModalOpen(true)}
+      />
+
+      {/* Modals */}
+      <InviteMemberModal
+        open={inviteModalOpen}
+        onOpenChange={setInviteModalOpen}
+      />
+
+      <RoleManagementModal
+        open={roleModalOpen}
+        onOpenChange={setRoleModalOpen}
+        member={selectedMember}
+      />
+
+      <RemoveMemberModal
+        open={removeModalOpen}
+        onOpenChange={setRemoveModalOpen}
+        member={selectedMember}
+        isPaidAssociation={isPaidAssociation}
+      />
+
+      <MemberDetailsModal
+        open={detailsModalOpen}
+        onOpenChange={setDetailsModalOpen}
+        member={selectedMember}
+        onChangeRole={handleChangeRole}
+        onRemoveMember={handleRemoveMember}
+        isPaidAssociation={isPaidAssociation}
+      />
     </AdminLayout>
   );
 }
