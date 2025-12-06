@@ -15,6 +15,16 @@ type TranslationKeys = {
   settings: string;
   profile: string;
   logout: string;
+  analytics: string;
+  associationProfile: string;
+  supportTickets: string;
+
+  // Quick Actions
+  quickActions: string;
+  newPost: string;
+  newEvent: string;
+  newOpportunity: string;
+  newListing: string;
 
   // Settings page
   settingsTitle: string;
@@ -42,7 +52,7 @@ type TranslationKeys = {
   cancel: string;
   settingsSaved: string;
 
-  // Common
+  // Common actions
   save: string;
   search: string;
   filter: string;
@@ -55,10 +65,205 @@ type TranslationKeys = {
   confirm: string;
   loading: string;
   noResults: string;
+  refresh: string;
+  viewAll: string;
+  saveChanges: string;
+
+  // Dashboard
+  welcomeBack: string;
+  totalMembers: string;
+  activeMembers: string;
+  activePosts: string;
+  activeOpportunities: string;
+  upcomingEvents: string;
+  activeListings: string;
+  totalOrders: string;
+  revenue: string;
+  recentActivity: string;
+  last7Days: string;
+  last30Days: string;
+  last90Days: string;
+  lastYear: string;
+
+  // Activity Feed
+  newMemberJoined: string;
+  newPostPublished: string;
+  newOrderReceived: string;
+  eventRegistration: string;
+  membershipPending: string;
+
+  // Profile page
+  associationProfileSettings: string;
+  associationProfileSubtitle: string;
+  basicInfo: string;
+  contactInfo: string;
+  membership: string;
+  payment: string;
+  communities: string;
+  admins: string;
+  associationIdentity: string;
+  associationName: string;
+  associationType: string;
+  privacyType: string;
+  description: string;
+  logo: string;
+  bannerImage: string;
+  uploadLogo: string;
+  uploadBanner: string;
+  primaryContactDetails: string;
+  contactEmail: string;
+  contactPhone: string;
+  website: string;
+  address: string;
+  countriesServed: string;
+  memberPolicies: string;
+  joinPolicy: string;
+  whoCanPost: string;
+  paidAssociation: string;
+  paymentType: string;
+  paymentAmount: string;
+  linkedCommunities: string;
+  adminAssignments: string;
+
+  // Members page
+  membersTitle: string;
+  membersSubtitle: string;
+  inviteMember: string;
+  totalMembersCount: string;
+  pendingApprovals: string;
+  activeThisMonth: string;
+  memberSince: string;
+
+  // Posts page
+  postsTitle: string;
+  postsSubtitle: string;
+  createPost: string;
+  publishedPosts: string;
+  draftPosts: string;
+  scheduledPosts: string;
+  allStatus: string;
+  published: string;
+  draft: string;
+  scheduled: string;
+  allMedia: string;
+  text: string;
+  image: string;
+  video: string;
+  allVisibility: string;
+  membersOnly: string;
+  public: string;
+
+  // Events page
+  eventsTitle: string;
+  eventsSubtitle: string;
+  createEvent: string;
+  upcomingEventsCount: string;
+  totalRegistrations: string;
+  ticketRevenue: string;
+  avgAttendance: string;
+  allTypes: string;
+  free: string;
+  paid: string;
+
+  // Opportunities page
+  opportunitiesTitle: string;
+  opportunitiesSubtitle: string;
+  createOpportunity: string;
+  openOpportunities: string;
+  totalApplicants: string;
+  shortlisted: string;
+  job: string;
+  volunteer: string;
+  training: string;
+  funding: string;
+  scholarship: string;
+
+  // Marketplace page
+  marketplaceTitle: string;
+  marketplaceSubtitle: string;
+  addProductService: string;
+  lowStockItems: string;
+  product: string;
+  service: string;
+
+  // Orders page
+  ordersTitle: string;
+  ordersSubtitle: string;
+  pendingOrders: string;
+  completedOrders: string;
+  totalRevenueAllTime: string;
+
+  // Groups page
+  groupsTitle: string;
+  groupsSubtitle: string;
+  createGroup: string;
+  activeGroups: string;
+  totalGroupMembers: string;
+
+  // Tickets page
+  ticketsTitle: string;
+  ticketsSubtitle: string;
+  createTicket: string;
+  openTickets: string;
+  resolvedTickets: string;
+  avgResponseTime: string;
+
+  // Audit Logs page
+  auditLogsTitle: string;
+  auditLogsSubtitle: string;
+  exportLogs: string;
+  totalActions: string;
+  todayActions: string;
+  thisWeekActions: string;
+
+  // Analytics page
+  analyticsTitle: string;
+  analyticsSubtitle: string;
+  exportReport: string;
+  dateRange: string;
+  today: string;
+  thisWeek: string;
+  thisMonth: string;
+  thisQuarter: string;
+  thisYear: string;
+  customRange: string;
+
+  // Login page
+  adminLogin: string;
+  loginSubtitle: string;
+  email: string;
+  password: string;
+  rememberMe: string;
+  forgotPassword: string;
+  login: string;
+  loggingIn: string;
+  sendResetLink: string;
+
+  // Themes
+  lightMode: string;
+  darkMode: string;
+  systemDefault: string;
+
+  // Font sizes
+  small: string;
+  medium: string;
+  large: string;
+  extraLarge: string;
+
+  // Time periods
+  minutes15: string;
+  minutes30: string;
+  hour1: string;
+  hours4: string;
+  never: string;
+
+  // Association Admin label
+  associationAdmin: string;
 };
 
 const translations: Record<Language, TranslationKeys> = {
   en: {
+    // Navigation
     dashboard: "Dashboard",
     members: "Members",
     posts: "Posts",
@@ -72,6 +277,18 @@ const translations: Record<Language, TranslationKeys> = {
     settings: "Settings",
     profile: "Profile",
     logout: "Logout",
+    analytics: "Analytics",
+    associationProfile: "Association Profile",
+    supportTickets: "Support Tickets",
+
+    // Quick Actions
+    quickActions: "Quick Actions",
+    newPost: "Post",
+    newEvent: "Event",
+    newOpportunity: "Opportunity",
+    newListing: "Listing",
+
+    // Settings
     settingsTitle: "Settings",
     settingsSubtitle: "Manage your preferences and account settings",
     languageAppearance: "Language & Appearance",
@@ -96,6 +313,8 @@ const translations: Record<Language, TranslationKeys> = {
     saveSettings: "Save Settings",
     cancel: "Cancel",
     settingsSaved: "Settings saved successfully",
+
+    // Common
     save: "Save",
     search: "Search",
     filter: "Filter",
@@ -108,8 +327,203 @@ const translations: Record<Language, TranslationKeys> = {
     confirm: "Confirm",
     loading: "Loading...",
     noResults: "No results found",
+    refresh: "Refresh",
+    viewAll: "View all",
+    saveChanges: "Save Changes",
+
+    // Dashboard
+    welcomeBack: "Welcome back",
+    totalMembers: "Total Members",
+    activeMembers: "Active Members (30d)",
+    activePosts: "Posts (30d)",
+    activeOpportunities: "Active Opportunities",
+    upcomingEvents: "Upcoming Events",
+    activeListings: "Active Listings",
+    totalOrders: "Orders (30d)",
+    revenue: "Revenue (30d)",
+    recentActivity: "Recent Activity",
+    last7Days: "Last 7 days",
+    last30Days: "Last 30 days",
+    last90Days: "Last 90 days",
+    lastYear: "Last year",
+
+    // Activity Feed
+    newMemberJoined: "New member joined",
+    newPostPublished: "New post published",
+    newOrderReceived: "New order received",
+    eventRegistration: "Event registration",
+    membershipPending: "Membership pending",
+
+    // Profile
+    associationProfileSettings: "Association Profile & Settings",
+    associationProfileSubtitle: "Manage your association's identity, privacy, monetization, branding, admin assignments and linked communities.",
+    basicInfo: "Basic Info",
+    contactInfo: "Contact",
+    membership: "Membership",
+    payment: "Payment",
+    communities: "Communities",
+    admins: "Admins",
+    associationIdentity: "Association Identity",
+    associationName: "Association Name",
+    associationType: "Type of Association",
+    privacyType: "Privacy Type",
+    description: "Description",
+    logo: "Logo",
+    bannerImage: "Banner Image",
+    uploadLogo: "Upload Logo",
+    uploadBanner: "Upload Banner",
+    primaryContactDetails: "Primary Contact Details",
+    contactEmail: "Contact Email",
+    contactPhone: "Contact Phone",
+    website: "Website",
+    address: "Address / Location",
+    countriesServed: "Countries Served",
+    memberPolicies: "Member Policies",
+    joinPolicy: "Join Policy",
+    whoCanPost: "Who Can Post",
+    paidAssociation: "Paid Association",
+    paymentType: "Payment Type",
+    paymentAmount: "Payment Amount",
+    linkedCommunities: "Linked Communities",
+    adminAssignments: "Admin Assignments",
+
+    // Members
+    membersTitle: "Members",
+    membersSubtitle: "Manage your association members",
+    inviteMember: "Invite Member",
+    totalMembersCount: "Total Members",
+    pendingApprovals: "Pending Approvals",
+    activeThisMonth: "Active This Month",
+    memberSince: "Member Since",
+
+    // Posts
+    postsTitle: "Posts",
+    postsSubtitle: "Create and manage association posts",
+    createPost: "New Post",
+    publishedPosts: "Published",
+    draftPosts: "Drafts",
+    scheduledPosts: "Scheduled",
+    allStatus: "All Status",
+    published: "Published",
+    draft: "Draft",
+    scheduled: "Scheduled",
+    allMedia: "All Media",
+    text: "Text",
+    image: "Image",
+    video: "Video",
+    allVisibility: "All",
+    membersOnly: "Members",
+    public: "Public",
+
+    // Events
+    eventsTitle: "Events",
+    eventsSubtitle: "Create and manage association events",
+    createEvent: "Create Event",
+    upcomingEventsCount: "Upcoming Events",
+    totalRegistrations: "Total Registrations",
+    ticketRevenue: "Ticket Revenue",
+    avgAttendance: "Avg. Attendance",
+    allTypes: "All Types",
+    free: "Free",
+    paid: "Paid",
+
+    // Opportunities
+    opportunitiesTitle: "Opportunities",
+    opportunitiesSubtitle: "Manage job postings, volunteer roles, and funding opportunities",
+    createOpportunity: "New Opportunity",
+    openOpportunities: "Open",
+    totalApplicants: "Total Applicants",
+    shortlisted: "Shortlisted",
+    job: "Job",
+    volunteer: "Volunteer",
+    training: "Training",
+    funding: "Funding",
+    scholarship: "Scholarship",
+
+    // Marketplace
+    marketplaceTitle: "Marketplace",
+    marketplaceSubtitle: "Manage your association's products and services",
+    addProductService: "Add Product/Service",
+    lowStockItems: "Low Stock Items",
+    product: "Product",
+    service: "Service",
+
+    // Orders
+    ordersTitle: "Orders",
+    ordersSubtitle: "Manage marketplace orders",
+    pendingOrders: "Pending Orders",
+    completedOrders: "Completed Orders",
+    totalRevenueAllTime: "Revenue (All Time)",
+
+    // Groups
+    groupsTitle: "Groups",
+    groupsSubtitle: "Manage association chat groups",
+    createGroup: "Create Group",
+    activeGroups: "Active Groups",
+    totalGroupMembers: "Total Members",
+
+    // Tickets
+    ticketsTitle: "Support Tickets",
+    ticketsSubtitle: "Manage support requests from members",
+    createTicket: "Create Ticket",
+    openTickets: "Open Tickets",
+    resolvedTickets: "Resolved",
+    avgResponseTime: "Avg. Response Time",
+
+    // Audit Logs
+    auditLogsTitle: "Audit Logs",
+    auditLogsSubtitle: "View all user and admin actions within your association",
+    exportLogs: "Export Logs",
+    totalActions: "Total Actions",
+    todayActions: "Today",
+    thisWeekActions: "This Week",
+
+    // Analytics
+    analyticsTitle: "Analytics & Reports",
+    analyticsSubtitle: "View comprehensive analytics for your association",
+    exportReport: "Export Report",
+    dateRange: "Date Range",
+    today: "Today",
+    thisWeek: "This Week",
+    thisMonth: "This Month",
+    thisQuarter: "This Quarter",
+    thisYear: "This Year",
+    customRange: "Custom Range",
+
+    // Login
+    adminLogin: "Admin Login",
+    loginSubtitle: "Sign in to access your admin dashboard",
+    email: "Email",
+    password: "Password",
+    rememberMe: "Remember Me",
+    forgotPassword: "Forgot Password?",
+    login: "Login",
+    loggingIn: "Logging in...",
+    sendResetLink: "Send Reset Link",
+
+    // Themes
+    lightMode: "Light Mode",
+    darkMode: "Dark Mode",
+    systemDefault: "System Default",
+
+    // Font sizes
+    small: "Small",
+    medium: "Medium",
+    large: "Large",
+    extraLarge: "Extra Large",
+
+    // Time periods
+    minutes15: "15 minutes",
+    minutes30: "30 minutes",
+    hour1: "1 hour",
+    hours4: "4 hours",
+    never: "Never",
+
+    // Association Admin
+    associationAdmin: "Association Admin",
   },
   fr: {
+    // Navigation
     dashboard: "Tableau de bord",
     members: "Membres",
     posts: "Publications",
@@ -123,6 +537,18 @@ const translations: Record<Language, TranslationKeys> = {
     settings: "Paramètres",
     profile: "Profil",
     logout: "Déconnexion",
+    analytics: "Analytique",
+    associationProfile: "Profil de l'Association",
+    supportTickets: "Tickets de support",
+
+    // Quick Actions
+    quickActions: "Actions rapides",
+    newPost: "Publication",
+    newEvent: "Événement",
+    newOpportunity: "Opportunité",
+    newListing: "Annonce",
+
+    // Settings
     settingsTitle: "Paramètres",
     settingsSubtitle: "Gérez vos préférences et paramètres de compte",
     languageAppearance: "Langue et Apparence",
@@ -147,6 +573,8 @@ const translations: Record<Language, TranslationKeys> = {
     saveSettings: "Enregistrer",
     cancel: "Annuler",
     settingsSaved: "Paramètres enregistrés avec succès",
+
+    // Common
     save: "Enregistrer",
     search: "Rechercher",
     filter: "Filtrer",
@@ -159,8 +587,203 @@ const translations: Record<Language, TranslationKeys> = {
     confirm: "Confirmer",
     loading: "Chargement...",
     noResults: "Aucun résultat trouvé",
+    refresh: "Actualiser",
+    viewAll: "Voir tout",
+    saveChanges: "Enregistrer les modifications",
+
+    // Dashboard
+    welcomeBack: "Bon retour",
+    totalMembers: "Total des membres",
+    activeMembers: "Membres actifs (30j)",
+    activePosts: "Publications (30j)",
+    activeOpportunities: "Opportunités actives",
+    upcomingEvents: "Événements à venir",
+    activeListings: "Annonces actives",
+    totalOrders: "Commandes (30j)",
+    revenue: "Revenus (30j)",
+    recentActivity: "Activité récente",
+    last7Days: "7 derniers jours",
+    last30Days: "30 derniers jours",
+    last90Days: "90 derniers jours",
+    lastYear: "Année dernière",
+
+    // Activity Feed
+    newMemberJoined: "Nouveau membre inscrit",
+    newPostPublished: "Nouvelle publication",
+    newOrderReceived: "Nouvelle commande reçue",
+    eventRegistration: "Inscription à un événement",
+    membershipPending: "Adhésion en attente",
+
+    // Profile
+    associationProfileSettings: "Profil et Paramètres de l'Association",
+    associationProfileSubtitle: "Gérez l'identité, la confidentialité, la monétisation, l'image de marque de votre association.",
+    basicInfo: "Infos de base",
+    contactInfo: "Contact",
+    membership: "Adhésion",
+    payment: "Paiement",
+    communities: "Communautés",
+    admins: "Admins",
+    associationIdentity: "Identité de l'Association",
+    associationName: "Nom de l'Association",
+    associationType: "Type d'Association",
+    privacyType: "Type de Confidentialité",
+    description: "Description",
+    logo: "Logo",
+    bannerImage: "Image de bannière",
+    uploadLogo: "Télécharger le logo",
+    uploadBanner: "Télécharger la bannière",
+    primaryContactDetails: "Coordonnées principales",
+    contactEmail: "Email de contact",
+    contactPhone: "Téléphone de contact",
+    website: "Site web",
+    address: "Adresse / Emplacement",
+    countriesServed: "Pays desservis",
+    memberPolicies: "Politiques des membres",
+    joinPolicy: "Politique d'adhésion",
+    whoCanPost: "Qui peut publier",
+    paidAssociation: "Association payante",
+    paymentType: "Type de paiement",
+    paymentAmount: "Montant du paiement",
+    linkedCommunities: "Communautés liées",
+    adminAssignments: "Affectations des administrateurs",
+
+    // Members
+    membersTitle: "Membres",
+    membersSubtitle: "Gérer les membres de votre association",
+    inviteMember: "Inviter un membre",
+    totalMembersCount: "Total des membres",
+    pendingApprovals: "Approbations en attente",
+    activeThisMonth: "Actifs ce mois",
+    memberSince: "Membre depuis",
+
+    // Posts
+    postsTitle: "Publications",
+    postsSubtitle: "Créer et gérer les publications de l'association",
+    createPost: "Nouvelle publication",
+    publishedPosts: "Publiées",
+    draftPosts: "Brouillons",
+    scheduledPosts: "Programmées",
+    allStatus: "Tous les statuts",
+    published: "Publié",
+    draft: "Brouillon",
+    scheduled: "Programmé",
+    allMedia: "Tous les médias",
+    text: "Texte",
+    image: "Image",
+    video: "Vidéo",
+    allVisibility: "Tous",
+    membersOnly: "Membres",
+    public: "Public",
+
+    // Events
+    eventsTitle: "Événements",
+    eventsSubtitle: "Créer et gérer les événements de l'association",
+    createEvent: "Créer un événement",
+    upcomingEventsCount: "Événements à venir",
+    totalRegistrations: "Total des inscriptions",
+    ticketRevenue: "Revenus des billets",
+    avgAttendance: "Participation moy.",
+    allTypes: "Tous les types",
+    free: "Gratuit",
+    paid: "Payant",
+
+    // Opportunities
+    opportunitiesTitle: "Opportunités",
+    opportunitiesSubtitle: "Gérer les offres d'emploi, les rôles bénévoles et les opportunités de financement",
+    createOpportunity: "Nouvelle opportunité",
+    openOpportunities: "Ouvertes",
+    totalApplicants: "Total des candidats",
+    shortlisted: "Présélectionnés",
+    job: "Emploi",
+    volunteer: "Bénévolat",
+    training: "Formation",
+    funding: "Financement",
+    scholarship: "Bourse",
+
+    // Marketplace
+    marketplaceTitle: "Marché",
+    marketplaceSubtitle: "Gérer les produits et services de votre association",
+    addProductService: "Ajouter un produit/service",
+    lowStockItems: "Stock faible",
+    product: "Produit",
+    service: "Service",
+
+    // Orders
+    ordersTitle: "Commandes",
+    ordersSubtitle: "Gérer les commandes du marché",
+    pendingOrders: "Commandes en attente",
+    completedOrders: "Commandes terminées",
+    totalRevenueAllTime: "Revenus (Tout temps)",
+
+    // Groups
+    groupsTitle: "Groupes",
+    groupsSubtitle: "Gérer les groupes de discussion de l'association",
+    createGroup: "Créer un groupe",
+    activeGroups: "Groupes actifs",
+    totalGroupMembers: "Total des membres",
+
+    // Tickets
+    ticketsTitle: "Tickets de support",
+    ticketsSubtitle: "Gérer les demandes de support des membres",
+    createTicket: "Créer un ticket",
+    openTickets: "Tickets ouverts",
+    resolvedTickets: "Résolus",
+    avgResponseTime: "Temps de réponse moy.",
+
+    // Audit Logs
+    auditLogsTitle: "Journaux d'audit",
+    auditLogsSubtitle: "Voir toutes les actions des utilisateurs et administrateurs",
+    exportLogs: "Exporter les journaux",
+    totalActions: "Total des actions",
+    todayActions: "Aujourd'hui",
+    thisWeekActions: "Cette semaine",
+
+    // Analytics
+    analyticsTitle: "Analytique et Rapports",
+    analyticsSubtitle: "Voir les analyses complètes de votre association",
+    exportReport: "Exporter le rapport",
+    dateRange: "Période",
+    today: "Aujourd'hui",
+    thisWeek: "Cette semaine",
+    thisMonth: "Ce mois",
+    thisQuarter: "Ce trimestre",
+    thisYear: "Cette année",
+    customRange: "Période personnalisée",
+
+    // Login
+    adminLogin: "Connexion Admin",
+    loginSubtitle: "Connectez-vous pour accéder à votre tableau de bord",
+    email: "Email",
+    password: "Mot de passe",
+    rememberMe: "Se souvenir de moi",
+    forgotPassword: "Mot de passe oublié?",
+    login: "Connexion",
+    loggingIn: "Connexion en cours...",
+    sendResetLink: "Envoyer le lien",
+
+    // Themes
+    lightMode: "Mode clair",
+    darkMode: "Mode sombre",
+    systemDefault: "Système par défaut",
+
+    // Font sizes
+    small: "Petit",
+    medium: "Moyen",
+    large: "Grand",
+    extraLarge: "Très grand",
+
+    // Time periods
+    minutes15: "15 minutes",
+    minutes30: "30 minutes",
+    hour1: "1 heure",
+    hours4: "4 heures",
+    never: "Jamais",
+
+    // Association Admin
+    associationAdmin: "Admin de l'Association",
   },
   de: {
+    // Navigation
     dashboard: "Dashboard",
     members: "Mitglieder",
     posts: "Beiträge",
@@ -174,6 +797,18 @@ const translations: Record<Language, TranslationKeys> = {
     settings: "Einstellungen",
     profile: "Profil",
     logout: "Abmelden",
+    analytics: "Analytik",
+    associationProfile: "Vereinsprofil",
+    supportTickets: "Support-Tickets",
+
+    // Quick Actions
+    quickActions: "Schnellaktionen",
+    newPost: "Beitrag",
+    newEvent: "Ereignis",
+    newOpportunity: "Möglichkeit",
+    newListing: "Anzeige",
+
+    // Settings
     settingsTitle: "Einstellungen",
     settingsSubtitle: "Verwalten Sie Ihre Präferenzen und Kontoeinstellungen",
     languageAppearance: "Sprache & Erscheinungsbild",
@@ -198,6 +833,8 @@ const translations: Record<Language, TranslationKeys> = {
     saveSettings: "Einstellungen speichern",
     cancel: "Abbrechen",
     settingsSaved: "Einstellungen erfolgreich gespeichert",
+
+    // Common
     save: "Speichern",
     search: "Suchen",
     filter: "Filter",
@@ -210,8 +847,203 @@ const translations: Record<Language, TranslationKeys> = {
     confirm: "Bestätigen",
     loading: "Laden...",
     noResults: "Keine Ergebnisse gefunden",
+    refresh: "Aktualisieren",
+    viewAll: "Alle anzeigen",
+    saveChanges: "Änderungen speichern",
+
+    // Dashboard
+    welcomeBack: "Willkommen zurück",
+    totalMembers: "Gesamtmitglieder",
+    activeMembers: "Aktive Mitglieder (30T)",
+    activePosts: "Beiträge (30T)",
+    activeOpportunities: "Aktive Möglichkeiten",
+    upcomingEvents: "Kommende Veranstaltungen",
+    activeListings: "Aktive Anzeigen",
+    totalOrders: "Bestellungen (30T)",
+    revenue: "Umsatz (30T)",
+    recentActivity: "Letzte Aktivität",
+    last7Days: "Letzte 7 Tage",
+    last30Days: "Letzte 30 Tage",
+    last90Days: "Letzte 90 Tage",
+    lastYear: "Letztes Jahr",
+
+    // Activity Feed
+    newMemberJoined: "Neues Mitglied beigetreten",
+    newPostPublished: "Neuer Beitrag veröffentlicht",
+    newOrderReceived: "Neue Bestellung erhalten",
+    eventRegistration: "Veranstaltungsregistrierung",
+    membershipPending: "Mitgliedschaft ausstehend",
+
+    // Profile
+    associationProfileSettings: "Vereinsprofil & Einstellungen",
+    associationProfileSubtitle: "Verwalten Sie die Identität, Datenschutz, Monetarisierung und Branding Ihres Vereins.",
+    basicInfo: "Grundinfo",
+    contactInfo: "Kontakt",
+    membership: "Mitgliedschaft",
+    payment: "Zahlung",
+    communities: "Gemeinschaften",
+    admins: "Admins",
+    associationIdentity: "Vereinsidentität",
+    associationName: "Vereinsname",
+    associationType: "Vereinsart",
+    privacyType: "Datenschutztyp",
+    description: "Beschreibung",
+    logo: "Logo",
+    bannerImage: "Bannerbild",
+    uploadLogo: "Logo hochladen",
+    uploadBanner: "Banner hochladen",
+    primaryContactDetails: "Hauptkontaktdaten",
+    contactEmail: "Kontakt-E-Mail",
+    contactPhone: "Kontakttelefon",
+    website: "Website",
+    address: "Adresse / Standort",
+    countriesServed: "Bediente Länder",
+    memberPolicies: "Mitgliederrichtlinien",
+    joinPolicy: "Beitrittsrichtlinie",
+    whoCanPost: "Wer kann posten",
+    paidAssociation: "Bezahlter Verein",
+    paymentType: "Zahlungsart",
+    paymentAmount: "Zahlungsbetrag",
+    linkedCommunities: "Verknüpfte Gemeinschaften",
+    adminAssignments: "Admin-Zuweisungen",
+
+    // Members
+    membersTitle: "Mitglieder",
+    membersSubtitle: "Verwalten Sie Ihre Vereinsmitglieder",
+    inviteMember: "Mitglied einladen",
+    totalMembersCount: "Gesamtmitglieder",
+    pendingApprovals: "Ausstehende Genehmigungen",
+    activeThisMonth: "Aktiv diesen Monat",
+    memberSince: "Mitglied seit",
+
+    // Posts
+    postsTitle: "Beiträge",
+    postsSubtitle: "Vereinsbeiträge erstellen und verwalten",
+    createPost: "Neuer Beitrag",
+    publishedPosts: "Veröffentlicht",
+    draftPosts: "Entwürfe",
+    scheduledPosts: "Geplant",
+    allStatus: "Alle Status",
+    published: "Veröffentlicht",
+    draft: "Entwurf",
+    scheduled: "Geplant",
+    allMedia: "Alle Medien",
+    text: "Text",
+    image: "Bild",
+    video: "Video",
+    allVisibility: "Alle",
+    membersOnly: "Mitglieder",
+    public: "Öffentlich",
+
+    // Events
+    eventsTitle: "Veranstaltungen",
+    eventsSubtitle: "Vereinsveranstaltungen erstellen und verwalten",
+    createEvent: "Veranstaltung erstellen",
+    upcomingEventsCount: "Kommende Veranstaltungen",
+    totalRegistrations: "Gesamtanmeldungen",
+    ticketRevenue: "Ticketeinnahmen",
+    avgAttendance: "Durchschn. Teilnahme",
+    allTypes: "Alle Typen",
+    free: "Kostenlos",
+    paid: "Bezahlt",
+
+    // Opportunities
+    opportunitiesTitle: "Möglichkeiten",
+    opportunitiesSubtitle: "Stellenangebote, Ehrenämter und Fördermöglichkeiten verwalten",
+    createOpportunity: "Neue Möglichkeit",
+    openOpportunities: "Offen",
+    totalApplicants: "Gesamtbewerber",
+    shortlisted: "Vorausgewählt",
+    job: "Stelle",
+    volunteer: "Ehrenamt",
+    training: "Ausbildung",
+    funding: "Finanzierung",
+    scholarship: "Stipendium",
+
+    // Marketplace
+    marketplaceTitle: "Marktplatz",
+    marketplaceSubtitle: "Produkte und Dienstleistungen Ihres Vereins verwalten",
+    addProductService: "Produkt/Dienst hinzufügen",
+    lowStockItems: "Geringer Bestand",
+    product: "Produkt",
+    service: "Dienstleistung",
+
+    // Orders
+    ordersTitle: "Bestellungen",
+    ordersSubtitle: "Marktplatzbestellungen verwalten",
+    pendingOrders: "Ausstehende Bestellungen",
+    completedOrders: "Abgeschlossene Bestellungen",
+    totalRevenueAllTime: "Umsatz (Gesamt)",
+
+    // Groups
+    groupsTitle: "Gruppen",
+    groupsSubtitle: "Vereins-Chatgruppen verwalten",
+    createGroup: "Gruppe erstellen",
+    activeGroups: "Aktive Gruppen",
+    totalGroupMembers: "Gesamtmitglieder",
+
+    // Tickets
+    ticketsTitle: "Support-Tickets",
+    ticketsSubtitle: "Supportanfragen von Mitgliedern verwalten",
+    createTicket: "Ticket erstellen",
+    openTickets: "Offene Tickets",
+    resolvedTickets: "Gelöst",
+    avgResponseTime: "Durchschn. Antwortzeit",
+
+    // Audit Logs
+    auditLogsTitle: "Audit-Protokolle",
+    auditLogsSubtitle: "Alle Benutzer- und Adminaktionen einsehen",
+    exportLogs: "Protokolle exportieren",
+    totalActions: "Gesamtaktionen",
+    todayActions: "Heute",
+    thisWeekActions: "Diese Woche",
+
+    // Analytics
+    analyticsTitle: "Analytik & Berichte",
+    analyticsSubtitle: "Umfassende Analysen für Ihren Verein anzeigen",
+    exportReport: "Bericht exportieren",
+    dateRange: "Zeitraum",
+    today: "Heute",
+    thisWeek: "Diese Woche",
+    thisMonth: "Diesen Monat",
+    thisQuarter: "Dieses Quartal",
+    thisYear: "Dieses Jahr",
+    customRange: "Benutzerdefiniert",
+
+    // Login
+    adminLogin: "Admin-Anmeldung",
+    loginSubtitle: "Melden Sie sich an, um auf Ihr Dashboard zuzugreifen",
+    email: "E-Mail",
+    password: "Passwort",
+    rememberMe: "Angemeldet bleiben",
+    forgotPassword: "Passwort vergessen?",
+    login: "Anmelden",
+    loggingIn: "Anmeldung...",
+    sendResetLink: "Link senden",
+
+    // Themes
+    lightMode: "Hellmodus",
+    darkMode: "Dunkelmodus",
+    systemDefault: "Systemstandard",
+
+    // Font sizes
+    small: "Klein",
+    medium: "Mittel",
+    large: "Groß",
+    extraLarge: "Sehr groß",
+
+    // Time periods
+    minutes15: "15 Minuten",
+    minutes30: "30 Minuten",
+    hour1: "1 Stunde",
+    hours4: "4 Stunden",
+    never: "Nie",
+
+    // Association Admin
+    associationAdmin: "Vereinsadmin",
   },
   nl: {
+    // Navigation
     dashboard: "Dashboard",
     members: "Leden",
     posts: "Berichten",
@@ -225,6 +1057,18 @@ const translations: Record<Language, TranslationKeys> = {
     settings: "Instellingen",
     profile: "Profiel",
     logout: "Uitloggen",
+    analytics: "Analyse",
+    associationProfile: "Verenigingsprofiel",
+    supportTickets: "Supporttickets",
+
+    // Quick Actions
+    quickActions: "Snelle acties",
+    newPost: "Bericht",
+    newEvent: "Evenement",
+    newOpportunity: "Kans",
+    newListing: "Aanbieding",
+
+    // Settings
     settingsTitle: "Instellingen",
     settingsSubtitle: "Beheer uw voorkeuren en accountinstellingen",
     languageAppearance: "Taal & Uiterlijk",
@@ -249,6 +1093,8 @@ const translations: Record<Language, TranslationKeys> = {
     saveSettings: "Instellingen opslaan",
     cancel: "Annuleren",
     settingsSaved: "Instellingen succesvol opgeslagen",
+
+    // Common
     save: "Opslaan",
     search: "Zoeken",
     filter: "Filter",
@@ -261,8 +1107,203 @@ const translations: Record<Language, TranslationKeys> = {
     confirm: "Bevestigen",
     loading: "Laden...",
     noResults: "Geen resultaten gevonden",
+    refresh: "Vernieuwen",
+    viewAll: "Alles bekijken",
+    saveChanges: "Wijzigingen opslaan",
+
+    // Dashboard
+    welcomeBack: "Welkom terug",
+    totalMembers: "Totaal leden",
+    activeMembers: "Actieve leden (30d)",
+    activePosts: "Berichten (30d)",
+    activeOpportunities: "Actieve kansen",
+    upcomingEvents: "Komende evenementen",
+    activeListings: "Actieve aanbiedingen",
+    totalOrders: "Bestellingen (30d)",
+    revenue: "Omzet (30d)",
+    recentActivity: "Recente activiteit",
+    last7Days: "Laatste 7 dagen",
+    last30Days: "Laatste 30 dagen",
+    last90Days: "Laatste 90 dagen",
+    lastYear: "Afgelopen jaar",
+
+    // Activity Feed
+    newMemberJoined: "Nieuw lid toegetreden",
+    newPostPublished: "Nieuw bericht gepubliceerd",
+    newOrderReceived: "Nieuwe bestelling ontvangen",
+    eventRegistration: "Evenementregistratie",
+    membershipPending: "Lidmaatschap in behandeling",
+
+    // Profile
+    associationProfileSettings: "Verenigingsprofiel & Instellingen",
+    associationProfileSubtitle: "Beheer de identiteit, privacy, monetisatie en branding van uw vereniging.",
+    basicInfo: "Basisinfo",
+    contactInfo: "Contact",
+    membership: "Lidmaatschap",
+    payment: "Betaling",
+    communities: "Gemeenschappen",
+    admins: "Admins",
+    associationIdentity: "Verenigingsidentiteit",
+    associationName: "Verenigingsnaam",
+    associationType: "Type vereniging",
+    privacyType: "Privacytype",
+    description: "Beschrijving",
+    logo: "Logo",
+    bannerImage: "Bannerafbeelding",
+    uploadLogo: "Logo uploaden",
+    uploadBanner: "Banner uploaden",
+    primaryContactDetails: "Primaire contactgegevens",
+    contactEmail: "Contact e-mail",
+    contactPhone: "Contacttelefoon",
+    website: "Website",
+    address: "Adres / Locatie",
+    countriesServed: "Bediende landen",
+    memberPolicies: "Ledenbeleid",
+    joinPolicy: "Toetredingsbeleid",
+    whoCanPost: "Wie kan posten",
+    paidAssociation: "Betaalde vereniging",
+    paymentType: "Betalingstype",
+    paymentAmount: "Betalingsbedrag",
+    linkedCommunities: "Gekoppelde gemeenschappen",
+    adminAssignments: "Admin-toewijzingen",
+
+    // Members
+    membersTitle: "Leden",
+    membersSubtitle: "Beheer uw verenigingsleden",
+    inviteMember: "Lid uitnodigen",
+    totalMembersCount: "Totaal leden",
+    pendingApprovals: "In afwachting van goedkeuring",
+    activeThisMonth: "Actief deze maand",
+    memberSince: "Lid sinds",
+
+    // Posts
+    postsTitle: "Berichten",
+    postsSubtitle: "Verenigingsberichten maken en beheren",
+    createPost: "Nieuw bericht",
+    publishedPosts: "Gepubliceerd",
+    draftPosts: "Concepten",
+    scheduledPosts: "Gepland",
+    allStatus: "Alle statussen",
+    published: "Gepubliceerd",
+    draft: "Concept",
+    scheduled: "Gepland",
+    allMedia: "Alle media",
+    text: "Tekst",
+    image: "Afbeelding",
+    video: "Video",
+    allVisibility: "Alle",
+    membersOnly: "Leden",
+    public: "Openbaar",
+
+    // Events
+    eventsTitle: "Evenementen",
+    eventsSubtitle: "Verenigingsevenementen maken en beheren",
+    createEvent: "Evenement maken",
+    upcomingEventsCount: "Komende evenementen",
+    totalRegistrations: "Totaal registraties",
+    ticketRevenue: "Ticketomzet",
+    avgAttendance: "Gem. opkomst",
+    allTypes: "Alle types",
+    free: "Gratis",
+    paid: "Betaald",
+
+    // Opportunities
+    opportunitiesTitle: "Kansen",
+    opportunitiesSubtitle: "Vacatures, vrijwilligerswerk en financieringsmogelijkheden beheren",
+    createOpportunity: "Nieuwe kans",
+    openOpportunities: "Open",
+    totalApplicants: "Totaal sollicitanten",
+    shortlisted: "Geselecteerd",
+    job: "Baan",
+    volunteer: "Vrijwilliger",
+    training: "Training",
+    funding: "Financiering",
+    scholarship: "Beurs",
+
+    // Marketplace
+    marketplaceTitle: "Marktplaats",
+    marketplaceSubtitle: "Producten en diensten van uw vereniging beheren",
+    addProductService: "Product/dienst toevoegen",
+    lowStockItems: "Lage voorraad",
+    product: "Product",
+    service: "Dienst",
+
+    // Orders
+    ordersTitle: "Bestellingen",
+    ordersSubtitle: "Marktplaatsbestellingen beheren",
+    pendingOrders: "Lopende bestellingen",
+    completedOrders: "Voltooide bestellingen",
+    totalRevenueAllTime: "Omzet (totaal)",
+
+    // Groups
+    groupsTitle: "Groepen",
+    groupsSubtitle: "Verenigingschatgroepen beheren",
+    createGroup: "Groep maken",
+    activeGroups: "Actieve groepen",
+    totalGroupMembers: "Totaal leden",
+
+    // Tickets
+    ticketsTitle: "Supporttickets",
+    ticketsSubtitle: "Supportverzoeken van leden beheren",
+    createTicket: "Ticket maken",
+    openTickets: "Open tickets",
+    resolvedTickets: "Opgelost",
+    avgResponseTime: "Gem. reactietijd",
+
+    // Audit Logs
+    auditLogsTitle: "Auditlogboeken",
+    auditLogsSubtitle: "Alle gebruikers- en adminacties bekijken",
+    exportLogs: "Logboeken exporteren",
+    totalActions: "Totaal acties",
+    todayActions: "Vandaag",
+    thisWeekActions: "Deze week",
+
+    // Analytics
+    analyticsTitle: "Analyse & Rapporten",
+    analyticsSubtitle: "Uitgebreide analyses voor uw vereniging bekijken",
+    exportReport: "Rapport exporteren",
+    dateRange: "Datumbereik",
+    today: "Vandaag",
+    thisWeek: "Deze week",
+    thisMonth: "Deze maand",
+    thisQuarter: "Dit kwartaal",
+    thisYear: "Dit jaar",
+    customRange: "Aangepast bereik",
+
+    // Login
+    adminLogin: "Admin inloggen",
+    loginSubtitle: "Log in om toegang te krijgen tot uw dashboard",
+    email: "E-mail",
+    password: "Wachtwoord",
+    rememberMe: "Onthoud mij",
+    forgotPassword: "Wachtwoord vergeten?",
+    login: "Inloggen",
+    loggingIn: "Inloggen...",
+    sendResetLink: "Link verzenden",
+
+    // Themes
+    lightMode: "Lichte modus",
+    darkMode: "Donkere modus",
+    systemDefault: "Systeemstandaard",
+
+    // Font sizes
+    small: "Klein",
+    medium: "Gemiddeld",
+    large: "Groot",
+    extraLarge: "Extra groot",
+
+    // Time periods
+    minutes15: "15 minuten",
+    minutes30: "30 minuten",
+    hour1: "1 uur",
+    hours4: "4 uur",
+    never: "Nooit",
+
+    // Association Admin
+    associationAdmin: "Verenigingsadmin",
   },
   es: {
+    // Navigation
     dashboard: "Panel",
     members: "Miembros",
     posts: "Publicaciones",
@@ -276,6 +1317,18 @@ const translations: Record<Language, TranslationKeys> = {
     settings: "Configuración",
     profile: "Perfil",
     logout: "Cerrar sesión",
+    analytics: "Análisis",
+    associationProfile: "Perfil de la Asociación",
+    supportTickets: "Tickets de soporte",
+
+    // Quick Actions
+    quickActions: "Acciones rápidas",
+    newPost: "Publicación",
+    newEvent: "Evento",
+    newOpportunity: "Oportunidad",
+    newListing: "Anuncio",
+
+    // Settings
     settingsTitle: "Configuración",
     settingsSubtitle: "Gestiona tus preferencias y configuración de cuenta",
     languageAppearance: "Idioma y Apariencia",
@@ -300,6 +1353,8 @@ const translations: Record<Language, TranslationKeys> = {
     saveSettings: "Guardar configuración",
     cancel: "Cancelar",
     settingsSaved: "Configuración guardada exitosamente",
+
+    // Common
     save: "Guardar",
     search: "Buscar",
     filter: "Filtrar",
@@ -312,8 +1367,204 @@ const translations: Record<Language, TranslationKeys> = {
     confirm: "Confirmar",
     loading: "Cargando...",
     noResults: "No se encontraron resultados",
+    refresh: "Actualizar",
+    viewAll: "Ver todo",
+    saveChanges: "Guardar cambios",
+
+    // Dashboard
+    welcomeBack: "Bienvenido de nuevo",
+    totalMembers: "Total de miembros",
+    activeMembers: "Miembros activos (30d)",
+    activePosts: "Publicaciones (30d)",
+    activeOpportunities: "Oportunidades activas",
+    upcomingEvents: "Próximos eventos",
+    activeListings: "Anuncios activos",
+    totalOrders: "Pedidos (30d)",
+    revenue: "Ingresos (30d)",
+    recentActivity: "Actividad reciente",
+    last7Days: "Últimos 7 días",
+    last30Days: "Últimos 30 días",
+    last90Days: "Últimos 90 días",
+    lastYear: "Último año",
+
+    // Activity Feed
+    newMemberJoined: "Nuevo miembro unido",
+    newPostPublished: "Nueva publicación",
+    newOrderReceived: "Nuevo pedido recibido",
+    eventRegistration: "Registro de evento",
+    membershipPending: "Membresía pendiente",
+
+    // Profile
+    associationProfileSettings: "Perfil y Configuración de la Asociación",
+    associationProfileSubtitle: "Gestiona la identidad, privacidad, monetización y marca de tu asociación.",
+    basicInfo: "Info básica",
+    contactInfo: "Contacto",
+    membership: "Membresía",
+    payment: "Pago",
+    communities: "Comunidades",
+    admins: "Admins",
+    associationIdentity: "Identidad de la Asociación",
+    associationName: "Nombre de la Asociación",
+    associationType: "Tipo de Asociación",
+    privacyType: "Tipo de Privacidad",
+    description: "Descripción",
+    logo: "Logo",
+    bannerImage: "Imagen de banner",
+    uploadLogo: "Subir logo",
+    uploadBanner: "Subir banner",
+    primaryContactDetails: "Datos de contacto principales",
+    contactEmail: "Email de contacto",
+    contactPhone: "Teléfono de contacto",
+    website: "Sitio web",
+    address: "Dirección / Ubicación",
+    countriesServed: "Países atendidos",
+    memberPolicies: "Políticas de miembros",
+    joinPolicy: "Política de unión",
+    whoCanPost: "Quién puede publicar",
+    paidAssociation: "Asociación de pago",
+    paymentType: "Tipo de pago",
+    paymentAmount: "Monto del pago",
+    linkedCommunities: "Comunidades vinculadas",
+    adminAssignments: "Asignaciones de admin",
+
+    // Members
+    membersTitle: "Miembros",
+    membersSubtitle: "Gestiona los miembros de tu asociación",
+    inviteMember: "Invitar miembro",
+    totalMembersCount: "Total de miembros",
+    pendingApprovals: "Aprobaciones pendientes",
+    activeThisMonth: "Activos este mes",
+    memberSince: "Miembro desde",
+
+    // Posts
+    postsTitle: "Publicaciones",
+    postsSubtitle: "Crear y gestionar publicaciones de la asociación",
+    createPost: "Nueva publicación",
+    publishedPosts: "Publicadas",
+    draftPosts: "Borradores",
+    scheduledPosts: "Programadas",
+    allStatus: "Todos los estados",
+    published: "Publicado",
+    draft: "Borrador",
+    scheduled: "Programado",
+    allMedia: "Todos los medios",
+    text: "Texto",
+    image: "Imagen",
+    video: "Video",
+    allVisibility: "Todos",
+    membersOnly: "Miembros",
+    public: "Público",
+
+    // Events
+    eventsTitle: "Eventos",
+    eventsSubtitle: "Crear y gestionar eventos de la asociación",
+    createEvent: "Crear evento",
+    upcomingEventsCount: "Próximos eventos",
+    totalRegistrations: "Total de inscripciones",
+    ticketRevenue: "Ingresos por entradas",
+    avgAttendance: "Asistencia prom.",
+    allTypes: "Todos los tipos",
+    free: "Gratis",
+    paid: "De pago",
+
+    // Opportunities
+    opportunitiesTitle: "Oportunidades",
+    opportunitiesSubtitle: "Gestionar ofertas de empleo, voluntariado y oportunidades de financiación",
+    createOpportunity: "Nueva oportunidad",
+    openOpportunities: "Abiertas",
+    totalApplicants: "Total de candidatos",
+    shortlisted: "Preseleccionados",
+    job: "Empleo",
+    volunteer: "Voluntariado",
+    training: "Formación",
+    funding: "Financiación",
+    scholarship: "Beca",
+
+    // Marketplace
+    marketplaceTitle: "Mercado",
+    marketplaceSubtitle: "Gestionar productos y servicios de tu asociación",
+    addProductService: "Añadir producto/servicio",
+    lowStockItems: "Bajo stock",
+    product: "Producto",
+    service: "Servicio",
+
+    // Orders
+    ordersTitle: "Pedidos",
+    ordersSubtitle: "Gestionar pedidos del mercado",
+    pendingOrders: "Pedidos pendientes",
+    completedOrders: "Pedidos completados",
+    totalRevenueAllTime: "Ingresos (total)",
+
+    // Groups
+    groupsTitle: "Grupos",
+    groupsSubtitle: "Gestionar grupos de chat de la asociación",
+    createGroup: "Crear grupo",
+    activeGroups: "Grupos activos",
+    totalGroupMembers: "Total de miembros",
+
+    // Tickets
+    ticketsTitle: "Tickets de soporte",
+    ticketsSubtitle: "Gestionar solicitudes de soporte de miembros",
+    createTicket: "Crear ticket",
+    openTickets: "Tickets abiertos",
+    resolvedTickets: "Resueltos",
+    avgResponseTime: "Tiempo de resp. prom.",
+
+    // Audit Logs
+    auditLogsTitle: "Registros de auditoría",
+    auditLogsSubtitle: "Ver todas las acciones de usuarios y administradores",
+    exportLogs: "Exportar registros",
+    totalActions: "Total de acciones",
+    todayActions: "Hoy",
+    thisWeekActions: "Esta semana",
+
+    // Analytics
+    analyticsTitle: "Análisis y Reportes",
+    analyticsSubtitle: "Ver análisis completos de tu asociación",
+    exportReport: "Exportar reporte",
+    dateRange: "Rango de fechas",
+    today: "Hoy",
+    thisWeek: "Esta semana",
+    thisMonth: "Este mes",
+    thisQuarter: "Este trimestre",
+    thisYear: "Este año",
+    customRange: "Rango personalizado",
+
+    // Login
+    adminLogin: "Inicio de sesión Admin",
+    loginSubtitle: "Inicia sesión para acceder a tu panel",
+    email: "Email",
+    password: "Contraseña",
+    rememberMe: "Recordarme",
+    forgotPassword: "¿Olvidaste tu contraseña?",
+    login: "Iniciar sesión",
+    loggingIn: "Iniciando sesión...",
+    sendResetLink: "Enviar enlace",
+
+    // Themes
+    lightMode: "Modo claro",
+    darkMode: "Modo oscuro",
+    systemDefault: "Por defecto del sistema",
+
+    // Font sizes
+    small: "Pequeño",
+    medium: "Mediano",
+    large: "Grande",
+    extraLarge: "Extra grande",
+
+    // Time periods
+    minutes15: "15 minutos",
+    minutes30: "30 minutos",
+    hour1: "1 hora",
+    hours4: "4 horas",
+    never: "Nunca",
+
+    // Association Admin
+    associationAdmin: "Admin de Asociación",
   },
 };
+
+export type { TranslationKeys };
 
 export function getTranslation(language: Language): TranslationKeys {
   return translations[language] || translations.en;
