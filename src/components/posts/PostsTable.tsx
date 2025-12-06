@@ -35,6 +35,7 @@ import {
   ToggleRight,
 } from "lucide-react";
 import { Post } from "@/types/posts";
+import { useT } from "@/hooks/useT";
 
 interface PostsTableProps {
   posts: Post[];
@@ -78,16 +79,39 @@ export function PostsTable({
   onTogglePin,
   onDelete,
 }: PostsTableProps) {
+  const t = useT();
   const allSelected = posts.length > 0 && selectedPosts.length === posts.length;
   const someSelected = selectedPosts.length > 0 && selectedPosts.length < posts.length;
+
+  const statusLabels: Record<string, string> = {
+    published: t.published,
+    draft: t.draft,
+    scheduled: t.scheduled,
+    archived: t.archived,
+    removed: t.removed,
+    pending_review: t.pending,
+  };
+
+  const mediaLabels: Record<string, string> = {
+    none: t.text,
+    text: t.text,
+    image: t.image,
+    video: t.video,
+    link: t.link,
+  };
+
+  const visibilityLabels: Record<string, string> = {
+    public: t.public,
+    members: t.membersOnly,
+  };
 
   if (posts.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border bg-card py-16">
         <FileText className="mb-4 h-12 w-12 text-muted-foreground" />
-        <h3 className="mb-2 text-lg font-semibold text-foreground">No posts yet</h3>
+        <h3 className="mb-2 text-lg font-semibold text-foreground">{t.noPostsYet}</h3>
         <p className="mb-4 text-sm text-muted-foreground">
-          Create your first post to engage members
+          {t.createFirstPost}
         </p>
       </div>
     );
@@ -102,18 +126,18 @@ export function PostsTable({
               <Checkbox
                 checked={allSelected}
                 onCheckedChange={onSelectAll}
-                aria-label="Select all posts"
+                aria-label={t.selectAll}
                 className={someSelected ? "opacity-50" : ""}
               />
             </TableHead>
-            <TableHead className="w-24">Status</TableHead>
-            <TableHead className="min-w-[300px]">Title / Excerpt</TableHead>
-            <TableHead className="w-20">Media</TableHead>
-            <TableHead className="w-32">Author</TableHead>
-            <TableHead className="w-24">Visibility</TableHead>
-            <TableHead className="w-28">Engagement</TableHead>
-            <TableHead className="w-32">Published At</TableHead>
-            <TableHead className="w-16">Actions</TableHead>
+            <TableHead className="w-24">{t.status}</TableHead>
+            <TableHead className="min-w-[300px]">{t.titleExcerpt}</TableHead>
+            <TableHead className="w-20">{t.media}</TableHead>
+            <TableHead className="w-32">{t.author}</TableHead>
+            <TableHead className="w-24">{t.visibility}</TableHead>
+            <TableHead className="w-28">{t.engagement}</TableHead>
+            <TableHead className="w-32">{t.publishedAt}</TableHead>
+            <TableHead className="w-16">{t.actions}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -131,13 +155,13 @@ export function PostsTable({
                   <Checkbox
                     checked={isSelected}
                     onCheckedChange={() => onSelectPost(post.id)}
-                    aria-label={`Select ${post.title}`}
+                    aria-label={`${t.select} ${post.title}`}
                   />
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">
                     <StatusBadge variant={statusMap[post.status]}>
-                      {post.status.replace("_", " ")}
+                      {statusLabels[post.status] || post.status}
                     </StatusBadge>
                     {post.pinned && <Pin className="h-3.5 w-3.5 text-primary" />}
                   </div>
@@ -151,7 +175,9 @@ export function PostsTable({
                 <TableCell>
                   <div className="flex items-center gap-1.5">
                     <MediaIcon className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-xs capitalize text-muted-foreground">{post.media}</span>
+                    <span className="text-xs capitalize text-muted-foreground">
+                      {mediaLabels[post.media] || post.media}
+                    </span>
                   </div>
                 </TableCell>
                 <TableCell>
@@ -170,7 +196,7 @@ export function PostsTable({
                       <Users className="h-4 w-4 text-muted-foreground" />
                     )}
                     <span className="text-xs capitalize text-muted-foreground">
-                      {post.visibility}
+                      {visibilityLabels[post.visibility] || post.visibility}
                     </span>
                   </div>
                 </TableCell>
@@ -199,32 +225,32 @@ export function PostsTable({
                     <DropdownMenuContent align="end" className="w-48">
                       <DropdownMenuItem onClick={() => onOpenDrawer(post)}>
                         <Eye className="mr-2 h-4 w-4" />
-                        Open Drawer
+                        {t.viewDetails}
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => onEdit(post)}>
                         <Edit className="mr-2 h-4 w-4" />
-                        Edit
+                        {t.edit}
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => onTogglePublish(post)}>
                         {post.status === "published" ? (
                           <>
                             <ToggleLeft className="mr-2 h-4 w-4" />
-                            Unpublish
+                            {t.unpublish}
                           </>
                         ) : (
                           <>
                             <ToggleRight className="mr-2 h-4 w-4" />
-                            Publish
+                            {t.publish}
                           </>
                         )}
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => onSchedule(post)}>
                         <Clock className="mr-2 h-4 w-4" />
-                        Schedule
+                        {t.schedule}
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => onTogglePin(post)}>
                         <Pin className="mr-2 h-4 w-4" />
-                        {post.pinned ? "Unpin" : "Pin to Top"}
+                        {post.pinned ? t.unpin : t.pinToTop}
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
@@ -232,7 +258,7 @@ export function PostsTable({
                         onClick={() => onDelete(post)}
                       >
                         <Trash2 className="mr-2 h-4 w-4" />
-                        Delete
+                        {t.delete}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>

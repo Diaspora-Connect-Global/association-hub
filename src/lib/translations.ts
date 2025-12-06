@@ -236,6 +236,18 @@ type TranslationKeys = {
   archived: string;
   removed: string;
   link: string;
+  noPostsYet: string;
+  createFirstPost: string;
+  selectAll: string;
+  select: string;
+  titleExcerpt: string;
+  media: string;
+  author: string;
+  engagement: string;
+  publishedAt: string;
+  schedule: string;
+  unpin: string;
+  pinToTop: string;
 
   // Events page
   eventsTitle: string;
@@ -701,6 +713,18 @@ const translations: Record<Language, TranslationKeys> = {
     archived: "Archived",
     removed: "Removed",
     link: "Link",
+    noPostsYet: "No posts yet",
+    createFirstPost: "Create your first post to engage members",
+    selectAll: "Select all",
+    select: "Select",
+    titleExcerpt: "Title / Excerpt",
+    media: "Media",
+    author: "Author",
+    engagement: "Engagement",
+    publishedAt: "Published At",
+    schedule: "Schedule",
+    unpin: "Unpin",
+    pinToTop: "Pin to Top",
     viewDetails: "View Details",
     editEvent: "Edit Event",
     manageRegistrations: "Manage Registrations",
@@ -1056,6 +1080,18 @@ const translations: Record<Language, TranslationKeys> = {
     archived: "Archivé",
     removed: "Supprimé",
     link: "Lien",
+    noPostsYet: "Pas encore de publications",
+    createFirstPost: "Créez votre première publication pour engager les membres",
+    selectAll: "Tout sélectionner",
+    select: "Sélectionner",
+    titleExcerpt: "Titre / Extrait",
+    media: "Média",
+    author: "Auteur",
+    engagement: "Engagement",
+    publishedAt: "Publié le",
+    schedule: "Programmer",
+    unpin: "Désépingler",
+    pinToTop: "Épingler en haut",
     viewDetails: "Voir les détails",
     editEvent: "Modifier l'événement",
     manageRegistrations: "Gérer les inscriptions",
@@ -1411,6 +1447,18 @@ const translations: Record<Language, TranslationKeys> = {
     archived: "Archiviert",
     removed: "Entfernt",
     link: "Link",
+    noPostsYet: "Noch keine Beiträge",
+    createFirstPost: "Erstellen Sie Ihren ersten Beitrag, um Mitglieder zu engagieren",
+    selectAll: "Alle auswählen",
+    select: "Auswählen",
+    titleExcerpt: "Titel / Auszug",
+    media: "Medien",
+    author: "Autor",
+    engagement: "Engagement",
+    publishedAt: "Veröffentlicht am",
+    schedule: "Planen",
+    unpin: "Lösen",
+    pinToTop: "Nach oben anheften",
     viewDetails: "Details anzeigen",
     editEvent: "Veranstaltung bearbeiten",
     manageRegistrations: "Anmeldungen verwalten",
@@ -1766,6 +1814,18 @@ const translations: Record<Language, TranslationKeys> = {
     archived: "Gearchiveerd",
     removed: "Verwijderd",
     link: "Link",
+    noPostsYet: "Nog geen berichten",
+    createFirstPost: "Maak je eerste bericht om leden te betrekken",
+    selectAll: "Alles selecteren",
+    select: "Selecteren",
+    titleExcerpt: "Titel / Uittreksel",
+    media: "Media",
+    author: "Auteur",
+    engagement: "Betrokkenheid",
+    publishedAt: "Gepubliceerd op",
+    schedule: "Plannen",
+    unpin: "Losmaken",
+    pinToTop: "Bovenaan vastzetten",
     viewDetails: "Details bekijken",
     editEvent: "Evenement bewerken",
     manageRegistrations: "Registraties beheren",
@@ -2121,6 +2181,18 @@ const translations: Record<Language, TranslationKeys> = {
     archived: "Archivado",
     removed: "Eliminado",
     link: "Enlace",
+    noPostsYet: "Aún no hay publicaciones",
+    createFirstPost: "Crea tu primera publicación para involucrar a los miembros",
+    selectAll: "Seleccionar todo",
+    select: "Seleccionar",
+    titleExcerpt: "Título / Extracto",
+    media: "Medios",
+    author: "Autor",
+    engagement: "Interacción",
+    publishedAt: "Publicado el",
+    schedule: "Programar",
+    unpin: "Desfijar",
+    pinToTop: "Fijar arriba",
     viewDetails: "Ver detalles",
     editEvent: "Editar evento",
     manageRegistrations: "Gestionar inscripciones",
