@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useT } from "@/hooks/useT";
+import diaspoPlugLogo from "@/assets/diaspo-plug-logo.svg";
 
 const associations = [
   { id: "1", name: "Ghana Tech Community", logo: "🇬🇭" },
@@ -71,16 +72,34 @@ export function Sidebar() {
 
   return (
     <aside className="fixed left-0 top-0 z-40 flex h-screen w-64 flex-col bg-sidebar border-r border-sidebar-border">
+      {/* App Logo */}
+      <div className="border-b border-sidebar-border p-4">
+        <div className="flex items-center gap-3 px-2">
+          <img 
+            src={diaspoPlugLogo} 
+            alt="DiaspoPlug" 
+            className="h-10 w-10 object-contain"
+          />
+          <div>
+            <h1 className="label-small font-bold text-sidebar-foreground">DiaspoPlug</h1>
+            <p className="caption-small text-muted-foreground">Admin Portal</p>
+          </div>
+        </div>
+      </div>
+
       {/* Association Selector */}
       <div className="border-b border-sidebar-border p-4">
+        <p className="mb-2 caption-small uppercase tracking-wider text-muted-foreground">
+          {t.associationProfile}
+        </p>
         <button
           onClick={() => setIsAssociationOpen(!isAssociationOpen)}
           className="flex w-full items-center justify-between rounded-lg bg-sidebar-accent p-3 transition-colors hover:bg-sidebar-accent/80"
         >
           <div className="flex items-center gap-3">
-            <span className="text-2xl">{selectedAssociation.logo}</span>
+            <span className="text-xl">{selectedAssociation.logo}</span>
             <div className="text-left">
-              <p className="label-small text-sidebar-foreground">
+              <p className="label-small text-sidebar-foreground line-clamp-1">
                 {selectedAssociation.name}
               </p>
               <p className="caption-small text-muted-foreground">{t.associationAdmin}</p>
@@ -88,7 +107,7 @@ export function Sidebar() {
           </div>
           <ChevronDown
             className={cn(
-              "h-4 w-4 text-muted-foreground transition-transform",
+              "h-4 w-4 text-muted-foreground transition-transform flex-shrink-0",
               isAssociationOpen && "rotate-180"
             )}
           />
@@ -111,7 +130,7 @@ export function Sidebar() {
                 )}
               >
                 <span className="text-lg">{assoc.logo}</span>
-                <span>{assoc.name}</span>
+                <span className="line-clamp-1">{assoc.name}</span>
               </button>
             ))}
           </div>
@@ -191,8 +210,8 @@ export function Sidebar() {
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground label-small">
             AK
           </div>
-          <div className="flex-1">
-            <p className="label-small text-sidebar-foreground">Akua Mensah</p>
+          <div className="flex-1 min-w-0">
+            <p className="label-small text-sidebar-foreground truncate">Akua Mensah</p>
             <p className="caption-small text-muted-foreground">Admin</p>
           </div>
           <button className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground">
