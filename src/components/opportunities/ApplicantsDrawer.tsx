@@ -44,6 +44,7 @@ import {
   Users,
 } from "lucide-react";
 import { Opportunity, Applicant, ApplicantStatus } from "@/types/opportunities";
+import { useT } from "@/hooks/useT";
 
 interface ApplicantsDrawerProps {
   open: boolean;
@@ -81,6 +82,7 @@ export function ApplicantsDrawer({
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [selectedApplicants, setSelectedApplicants] = useState<string[]>([]);
+  const t = useT();
 
   const filteredApplicants = applicants.filter((a) => {
     if (searchQuery && !a.name.toLowerCase().includes(searchQuery.toLowerCase()) && !a.email.toLowerCase().includes(searchQuery.toLowerCase())) {
@@ -112,10 +114,10 @@ export function ApplicantsDrawer({
         <SheetHeader className="p-6 pb-4">
           <SheetTitle className="flex items-center gap-2">
             <Users className="h-5 w-5" />
-            Applicants
+            {t.applicants}
           </SheetTitle>
           <p className="text-sm text-muted-foreground">
-            For: {opportunity.title}
+            {t.forOpportunity}: {opportunity.title}
           </p>
 
           {/* Controls */}
@@ -123,7 +125,7 @@ export function ApplicantsDrawer({
             <div className="relative flex-1 min-w-[200px]">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
-                placeholder="Search by name, email, phone"
+                placeholder={t.searchByNameEmailPhone}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-9"
@@ -131,40 +133,40 @@ export function ApplicantsDrawer({
             </div>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger className="w-36">
-                <SelectValue placeholder="Filter" />
+                <SelectValue placeholder={t.filter} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                <SelectItem value="pending">Pending</SelectItem>
-                <SelectItem value="shortlisted">Shortlisted</SelectItem>
-                <SelectItem value="rejected">Rejected</SelectItem>
-                <SelectItem value="hired">Hired</SelectItem>
+                <SelectItem value="all">{t.all}</SelectItem>
+                <SelectItem value="pending">{t.pending}</SelectItem>
+                <SelectItem value="shortlisted">{t.shortlisted}</SelectItem>
+                <SelectItem value="rejected">{t.rejected}</SelectItem>
+                <SelectItem value="hired">{t.hired}</SelectItem>
               </SelectContent>
             </Select>
             <Button variant="outline" className="gap-2" onClick={onExport}>
               <Download className="h-4 w-4" />
-              Export
+              {t.export}
             </Button>
             {selectedApplicants.length > 0 && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" className="gap-1">
-                    Bulk Actions
+                    {t.bulkActions}
                     <ChevronDown className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
                   <DropdownMenuItem>
                     <Star className="mr-2 h-4 w-4" />
-                    Shortlist Selected
+                    {t.shortlistSelected}
                   </DropdownMenuItem>
                   <DropdownMenuItem>
                     <MessageCircle className="mr-2 h-4 w-4" />
-                    Message Selected
+                    {t.messageSelected}
                   </DropdownMenuItem>
                   <DropdownMenuItem className="text-destructive">
                     <XCircle className="mr-2 h-4 w-4" />
-                    Reject Selected
+                    {t.rejectSelected}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -176,9 +178,9 @@ export function ApplicantsDrawer({
           {filteredApplicants.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16">
               <Users className="mb-4 h-12 w-12 text-muted-foreground" />
-              <h3 className="mb-2 text-lg font-semibold">No applicants yet</h3>
+              <h3 className="mb-2 text-lg font-semibold">{t.noApplicantsYet}</h3>
               <p className="text-sm text-muted-foreground">
-                Applicants will appear here after your opportunity is published
+                {t.applicantsWillAppear}
               </p>
             </div>
           ) : (
@@ -191,11 +193,11 @@ export function ApplicantsDrawer({
                       onCheckedChange={handleSelectAll}
                     />
                   </TableHead>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Applied At</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Score</TableHead>
-                  <TableHead className="w-16">Actions</TableHead>
+                  <TableHead>{t.name}</TableHead>
+                  <TableHead>{t.appliedAt}</TableHead>
+                  <TableHead>{t.status}</TableHead>
+                  <TableHead>{t.score}</TableHead>
+                  <TableHead className="w-16">{t.actions}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -238,23 +240,23 @@ export function ApplicantsDrawer({
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem onClick={() => onViewApplication(applicant)}>
                             <Eye className="mr-2 h-4 w-4" />
-                            View Application
+                            {t.viewApplication}
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => onShortlist(applicant)}>
                             <Star className="mr-2 h-4 w-4" />
-                            Shortlist
+                            {t.shortlist}
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => onMessage(applicant)}>
                             <MessageCircle className="mr-2 h-4 w-4" />
-                            Message
+                            {t.message}
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => onReject(applicant)}>
                             <XCircle className="mr-2 h-4 w-4" />
-                            Reject
+                            {t.reject}
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => onMarkHired(applicant)}>
                             <CheckCircle className="mr-2 h-4 w-4" />
-                            Mark Hired
+                            {t.markHired}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>

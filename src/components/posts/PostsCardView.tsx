@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Edit, Pin, Trash2, ToggleLeft, ToggleRight, Globe, Users, Image as ImageIcon, Video, FileText } from "lucide-react";
 import { Post } from "@/types/posts";
+import { useT } from "@/hooks/useT";
 
 interface PostsCardViewProps {
   posts: Post[];
@@ -30,13 +31,15 @@ export function PostsCardView({
   onTogglePin,
   onDelete,
 }: PostsCardViewProps) {
+  const t = useT();
+
   if (posts.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border bg-card py-16">
         <FileText className="mb-4 h-12 w-12 text-muted-foreground" />
-        <h3 className="mb-2 text-lg font-semibold text-foreground">No posts yet</h3>
+        <h3 className="mb-2 text-lg font-semibold text-foreground">{t.noPostsYetDesc}</h3>
         <p className="mb-4 text-sm text-muted-foreground">
-          Create your first post to engage members
+          {t.createFirstPostToEngage}
         </p>
       </div>
     );
