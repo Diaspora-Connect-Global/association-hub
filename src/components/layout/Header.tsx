@@ -48,7 +48,7 @@ export function Header({ title, subtitle }: HeaderProps) {
             {isAssociationOpen && (
               <div className="absolute left-0 top-full mt-2 w-64 animate-fade-in rounded-lg border border-border bg-card p-2 shadow-lg z-50">
                 <p className="px-3 py-2 caption-small uppercase tracking-wider text-muted-foreground">
-                  Switch Association
+                  {t.switchAssociation}
                 </p>
                 {associations.map((assoc) => (
                   <button
