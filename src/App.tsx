@@ -8,6 +8,7 @@ import Members from "./pages/Members";
 import Posts from "./pages/Posts";
 import Events from "./pages/Events";
 import Marketplace from "./pages/Marketplace";
+import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -20,6 +21,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="/members" element={<Members />} />
           <Route path="/posts" element={<Posts />} />
           <Route path="/events" element={<Events />} />
