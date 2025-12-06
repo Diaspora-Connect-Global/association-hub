@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { AdminLayout } from "@/components/layout/AdminLayout";
+import { useT } from "@/hooks/useT";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -148,6 +150,8 @@ const mockEvents: Event[] = [
 ];
 
 export default function Events() {
+  const location = useLocation();
+  const t = useT();
   const [events] = useState<Event[]>(mockEvents);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -160,8 +164,15 @@ export default function Events() {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [detailsDrawerOpen, setDetailsDrawerOpen] = useState(false);
   const [registrationsDrawerOpen, setRegistrationsDrawerOpen] = useState(false);
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [eventToDelete, setEventToDelete] = useState<Event | null>(null);
+
+  // Handle quick action navigation
+  useEffect(() => {
+    if (location.state?.openCreate) {
+      setCreateModalOpen(true);
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   // Filter and sort events
   const filteredEvents = events

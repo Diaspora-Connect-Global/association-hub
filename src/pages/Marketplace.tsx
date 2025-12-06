@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { AdminLayout } from "@/components/layout/AdminLayout";
+import { useT } from "@/hooks/useT";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -152,6 +154,8 @@ const mockListings: Listing[] = [
 ];
 
 export default function Marketplace() {
+  const location = useLocation();
+  const t = useT();
   const [listings] = useState<Listing[]>(mockListings);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import {
   Home,
   FileText,
@@ -20,22 +20,7 @@ import {
   LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-const navItems = [
-  { id: "dashboard", label: "Dashboard", icon: Home, path: "/" },
-  { id: "profile", label: "Association Profile", icon: FileText, path: "/profile" },
-  { id: "members", label: "Members", icon: Users, path: "/members" },
-  { id: "posts", label: "Posts", icon: MessageSquare, path: "/posts" },
-  { id: "opportunities", label: "Opportunities", icon: Briefcase, path: "/opportunities" },
-  { id: "events", label: "Events", icon: Calendar, path: "/events" },
-  { id: "marketplace", label: "Marketplace", icon: ShoppingCart, path: "/marketplace" },
-  { id: "orders", label: "Orders", icon: Package, path: "/orders" },
-  { id: "groups", label: "Groups", icon: Users, path: "/groups" },
-  { id: "tickets", label: "Support Tickets", icon: LifeBuoy, path: "/tickets" },
-  { id: "analytics", label: "Analytics", icon: BarChart2, path: "/analytics" },
-  { id: "audit", label: "Audit Logs", icon: FileText, path: "/audit-logs" },
-  { id: "settings", label: "Settings", icon: Settings, path: "/settings" },
-];
+import { useT } from "@/hooks/useT";
 
 const associations = [
   { id: "1", name: "Ghana Tech Community", logo: "🇬🇭" },
@@ -45,8 +30,44 @@ const associations = [
 
 export function Sidebar() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const t = useT();
   const [selectedAssociation, setSelectedAssociation] = useState(associations[0]);
   const [isAssociationOpen, setIsAssociationOpen] = useState(false);
+
+  const navItems = [
+    { id: "dashboard", label: t.dashboard, icon: Home, path: "/" },
+    { id: "profile", label: t.associationProfile, icon: FileText, path: "/profile" },
+    { id: "members", label: t.members, icon: Users, path: "/members" },
+    { id: "posts", label: t.posts, icon: MessageSquare, path: "/posts" },
+    { id: "opportunities", label: t.opportunities, icon: Briefcase, path: "/opportunities" },
+    { id: "events", label: t.events, icon: Calendar, path: "/events" },
+    { id: "marketplace", label: t.marketplace, icon: ShoppingCart, path: "/marketplace" },
+    { id: "orders", label: t.orders, icon: Package, path: "/orders" },
+    { id: "groups", label: t.groups, icon: Users, path: "/groups" },
+    { id: "tickets", label: t.supportTickets, icon: LifeBuoy, path: "/tickets" },
+    { id: "analytics", label: t.analytics, icon: BarChart2, path: "/analytics" },
+    { id: "audit", label: t.auditLogs, icon: FileText, path: "/audit-logs" },
+    { id: "settings", label: t.settings, icon: Settings, path: "/settings" },
+  ];
+
+  // Quick action handlers
+  const handleQuickAction = (action: "post" | "event" | "opportunity" | "listing") => {
+    switch (action) {
+      case "post":
+        navigate("/posts", { state: { openCreate: true } });
+        break;
+      case "event":
+        navigate("/events", { state: { openCreate: true } });
+        break;
+      case "opportunity":
+        navigate("/opportunities", { state: { openCreate: true } });
+        break;
+      case "listing":
+        navigate("/marketplace", { state: { openCreate: true } });
+        break;
+    }
+  };
 
   return (
     <aside className="fixed left-0 top-0 z-40 flex h-screen w-64 flex-col bg-sidebar border-r border-sidebar-border">
@@ -62,7 +83,7 @@ export function Sidebar() {
               <p className="label-small text-sidebar-foreground">
                 {selectedAssociation.name}
               </p>
-              <p className="caption-small text-muted-foreground">Association Admin</p>
+              <p className="caption-small text-muted-foreground">{t.associationAdmin}</p>
             </div>
           </div>
           <ChevronDown
@@ -100,24 +121,36 @@ export function Sidebar() {
       {/* Quick Actions */}
       <div className="border-b border-sidebar-border p-4">
         <p className="mb-3 caption-small uppercase tracking-wider text-muted-foreground">
-          Quick Actions
+          {t.quickActions}
         </p>
         <div className="grid grid-cols-2 gap-2">
-          <button className="flex items-center justify-center gap-1.5 rounded-lg bg-primary px-3 py-2 caption-small text-primary-foreground transition-all hover:opacity-90">
+          <button 
+            onClick={() => handleQuickAction("post")}
+            className="flex items-center justify-center gap-1.5 rounded-lg bg-primary px-3 py-2 caption-small text-primary-foreground transition-all hover:opacity-90"
+          >
             <Plus className="h-3.5 w-3.5" />
-            Post
+            {t.newPost}
           </button>
-          <button className="flex items-center justify-center gap-1.5 rounded-lg bg-sidebar-accent px-3 py-2 caption-small text-sidebar-foreground transition-all hover:bg-sidebar-accent/80">
+          <button 
+            onClick={() => handleQuickAction("event")}
+            className="flex items-center justify-center gap-1.5 rounded-lg bg-sidebar-accent px-3 py-2 caption-small text-sidebar-foreground transition-all hover:bg-sidebar-accent/80"
+          >
             <CalendarPlus className="h-3.5 w-3.5" />
-            Event
+            {t.newEvent}
           </button>
-          <button className="flex items-center justify-center gap-1.5 rounded-lg bg-sidebar-accent px-3 py-2 caption-small text-sidebar-foreground transition-all hover:bg-sidebar-accent/80">
+          <button 
+            onClick={() => handleQuickAction("opportunity")}
+            className="flex items-center justify-center gap-1.5 rounded-lg bg-sidebar-accent px-3 py-2 caption-small text-sidebar-foreground transition-all hover:bg-sidebar-accent/80"
+          >
             <PlusCircle className="h-3.5 w-3.5" />
-            Opportunity
+            {t.newOpportunity}
           </button>
-          <button className="flex items-center justify-center gap-1.5 rounded-lg bg-sidebar-accent px-3 py-2 caption-small text-sidebar-foreground transition-all hover:bg-sidebar-accent/80">
+          <button 
+            onClick={() => handleQuickAction("listing")}
+            className="flex items-center justify-center gap-1.5 rounded-lg bg-sidebar-accent px-3 py-2 caption-small text-sidebar-foreground transition-all hover:bg-sidebar-accent/80"
+          >
             <Tag className="h-3.5 w-3.5" />
-            Listing
+            {t.newListing}
           </button>
         </div>
       </div>

@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { AdminLayout } from "@/components/layout/AdminLayout";
+import { useT } from "@/hooks/useT";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -38,6 +40,8 @@ const mockApplicants: Applicant[] = [
 ];
 
 export default function Opportunities() {
+  const location = useLocation();
+  const t = useT();
   const [opportunities] = useState<Opportunity[]>(mockOpportunities);
   const [viewMode, setViewMode] = useState<"list" | "card">("list");
   const [selectedOpportunities, setSelectedOpportunities] = useState<string[]>([]);

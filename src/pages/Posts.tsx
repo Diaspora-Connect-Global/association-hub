@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import { Button } from "@/components/ui/button";
+import { useT } from "@/hooks/useT";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -128,6 +130,8 @@ const mockComments: Comment[] = [
 ];
 
 export default function Posts() {
+  const location = useLocation();
+  const t = useT();
   const [posts] = useState<Post[]>(mockPosts);
   const [viewMode, setViewMode] = useState<"list" | "card">("list");
   const [selectedPosts, setSelectedPosts] = useState<string[]>([]);
@@ -147,6 +151,14 @@ export default function Posts() {
   const [deletePost, setDeletePost] = useState<Post | null>(null);
   const [scheduleModalOpen, setScheduleModalOpen] = useState(false);
   const [schedulePost, setSchedulePost] = useState<Post | null>(null);
+
+  // Handle quick action navigation
+  useEffect(() => {
+    if (location.state?.openCreate) {
+      setCreateModalOpen(true);
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   // Filter posts
   const filteredPosts = posts.filter((post) => {
