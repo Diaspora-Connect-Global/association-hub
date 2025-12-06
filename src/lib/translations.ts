@@ -713,6 +713,52 @@ type TranslationKeys = {
   markHired: string;
   hired: string;
   withdrawn: string;
+
+  // Analytics page
+  totalUsersLabel: string;
+  activePostsLabel: string;
+  eventsCreated: string;
+  productsServices: string;
+  ordersCompleted: string;
+  activeGroupsLabel: string;
+  supportTicketsLabel: string;
+  userGrowthOverTime: string;
+  opportunitiesByStatus: string;
+  postsByCategory: string;
+  eventsParticipation: string;
+  overviewTab: string;
+  usersTab: string;
+  contentTab: string;
+  commerceTab: string;
+  refreshButton: string;
+  exportReportButton: string;
+
+  // Audit Logs page
+  totalLogsLabel: string;
+  todaysActivity: string;
+  uniqueUsers: string;
+  criticalActions: string;
+  analyticsButton: string;
+  hideAnalyticsButton: string;
+  refreshLogsButton: string;
+  exportLogsButton: string;
+  searchLogsPlaceholder: string;
+  userTypeFilter: string;
+  allUsersLabel: string;
+  individualUser: string;
+  allActionsLabel: string;
+  allModulesLabel: string;
+  dateRangeLabel: string;
+  logsSelected: string;
+  exportSelectedButton: string;
+  timestampColumn: string;
+  userColumn: string;
+  actionColumn: string;
+  moduleColumn: string;
+  objectAffectedColumn: string;
+  ipAddressColumn: string;
+  noLogsFound: string;
+  noLogsFoundDesc: string;
 };
 
 const translations: Record<Language, TranslationKeys> = {
@@ -1433,6 +1479,52 @@ const translations: Record<Language, TranslationKeys> = {
     markHired: "Mark Hired",
     hired: "Hired",
     withdrawn: "Withdrawn",
+
+    // Analytics page
+    totalUsersLabel: "Total Users",
+    activePostsLabel: "Active Posts",
+    eventsCreated: "Events Created",
+    productsServices: "Products/Services",
+    ordersCompleted: "Orders Completed",
+    activeGroupsLabel: "Active Groups",
+    supportTicketsLabel: "Support Tickets",
+    userGrowthOverTime: "User Growth Over Time",
+    opportunitiesByStatus: "Opportunities by Status",
+    postsByCategory: "Posts by Category",
+    eventsParticipation: "Events Participation Over Time",
+    overviewTab: "Overview",
+    usersTab: "Users",
+    contentTab: "Content",
+    commerceTab: "Commerce",
+    refreshButton: "Refresh",
+    exportReportButton: "Export Report",
+
+    // Audit Logs page
+    totalLogsLabel: "Total Logs",
+    todaysActivity: "Today's Activity",
+    uniqueUsers: "Unique Users",
+    criticalActions: "Critical Actions",
+    analyticsButton: "Analytics",
+    hideAnalyticsButton: "Hide Analytics",
+    refreshLogsButton: "Refresh",
+    exportLogsButton: "Export Logs",
+    searchLogsPlaceholder: "Search logs by user, action, or object",
+    userTypeFilter: "User Type",
+    allUsersLabel: "All Users",
+    individualUser: "Individual",
+    allActionsLabel: "All Actions",
+    allModulesLabel: "All Modules",
+    dateRangeLabel: "Date Range",
+    logsSelected: "log(s) selected",
+    exportSelectedButton: "Export Selected",
+    timestampColumn: "Timestamp",
+    userColumn: "User",
+    actionColumn: "Action",
+    moduleColumn: "Module",
+    objectAffectedColumn: "Object Affected",
+    ipAddressColumn: "IP Address",
+    noLogsFound: "No logs found",
+    noLogsFoundDesc: "No audit log entries match your current filters.",
   },
   fr: {
     // Navigation
@@ -2151,6 +2243,52 @@ const translations: Record<Language, TranslationKeys> = {
     markHired: "Marquer embauché",
     hired: "Embauché",
     withdrawn: "Retiré",
+
+    // Analytics page
+    totalUsersLabel: "Total des utilisateurs",
+    activePostsLabel: "Publications actives",
+    eventsCreated: "Événements créés",
+    productsServices: "Produits/Services",
+    ordersCompleted: "Commandes terminées",
+    activeGroupsLabel: "Groupes actifs",
+    supportTicketsLabel: "Tickets de support",
+    userGrowthOverTime: "Croissance des utilisateurs",
+    opportunitiesByStatus: "Opportunités par statut",
+    postsByCategory: "Publications par catégorie",
+    eventsParticipation: "Participation aux événements",
+    overviewTab: "Aperçu",
+    usersTab: "Utilisateurs",
+    contentTab: "Contenu",
+    commerceTab: "Commerce",
+    refreshButton: "Actualiser",
+    exportReportButton: "Exporter le rapport",
+
+    // Audit Logs page
+    totalLogsLabel: "Total des journaux",
+    todaysActivity: "Activité du jour",
+    uniqueUsers: "Utilisateurs uniques",
+    criticalActions: "Actions critiques",
+    analyticsButton: "Analytique",
+    hideAnalyticsButton: "Masquer analytique",
+    refreshLogsButton: "Actualiser",
+    exportLogsButton: "Exporter les journaux",
+    searchLogsPlaceholder: "Rechercher par utilisateur, action ou objet",
+    userTypeFilter: "Type d'utilisateur",
+    allUsersLabel: "Tous les utilisateurs",
+    individualUser: "Individuel",
+    allActionsLabel: "Toutes les actions",
+    allModulesLabel: "Tous les modules",
+    dateRangeLabel: "Période",
+    logsSelected: "journal(aux) sélectionné(s)",
+    exportSelectedButton: "Exporter la sélection",
+    timestampColumn: "Horodatage",
+    userColumn: "Utilisateur",
+    actionColumn: "Action",
+    moduleColumn: "Module",
+    objectAffectedColumn: "Objet concerné",
+    ipAddressColumn: "Adresse IP",
+    noLogsFound: "Aucun journal trouvé",
+    noLogsFoundDesc: "Aucune entrée de journal ne correspond à vos filtres.",
   },
   de: {
     // Navigation
@@ -2869,6 +3007,52 @@ const translations: Record<Language, TranslationKeys> = {
     markHired: "Als eingestellt markieren",
     hired: "Eingestellt",
     withdrawn: "Zurückgezogen",
+
+    // Analytics page
+    totalUsersLabel: "Gesamtnutzer",
+    activePostsLabel: "Aktive Beiträge",
+    eventsCreated: "Erstellte Veranstaltungen",
+    productsServices: "Produkte/Dienste",
+    ordersCompleted: "Abgeschlossene Bestellungen",
+    activeGroupsLabel: "Aktive Gruppen",
+    supportTicketsLabel: "Support-Tickets",
+    userGrowthOverTime: "Nutzerwachstum",
+    opportunitiesByStatus: "Möglichkeiten nach Status",
+    postsByCategory: "Beiträge nach Kategorie",
+    eventsParticipation: "Veranstaltungsteilnahme",
+    overviewTab: "Übersicht",
+    usersTab: "Benutzer",
+    contentTab: "Inhalt",
+    commerceTab: "Handel",
+    refreshButton: "Aktualisieren",
+    exportReportButton: "Bericht exportieren",
+
+    // Audit Logs page
+    totalLogsLabel: "Gesamte Protokolle",
+    todaysActivity: "Heutige Aktivität",
+    uniqueUsers: "Eindeutige Benutzer",
+    criticalActions: "Kritische Aktionen",
+    analyticsButton: "Analytik",
+    hideAnalyticsButton: "Analytik ausblenden",
+    refreshLogsButton: "Aktualisieren",
+    exportLogsButton: "Protokolle exportieren",
+    searchLogsPlaceholder: "Nach Benutzer, Aktion oder Objekt suchen",
+    userTypeFilter: "Benutzertyp",
+    allUsersLabel: "Alle Benutzer",
+    individualUser: "Einzelperson",
+    allActionsLabel: "Alle Aktionen",
+    allModulesLabel: "Alle Module",
+    dateRangeLabel: "Zeitraum",
+    logsSelected: "Protokoll(e) ausgewählt",
+    exportSelectedButton: "Auswahl exportieren",
+    timestampColumn: "Zeitstempel",
+    userColumn: "Benutzer",
+    actionColumn: "Aktion",
+    moduleColumn: "Modul",
+    objectAffectedColumn: "Betroffenes Objekt",
+    ipAddressColumn: "IP-Adresse",
+    noLogsFound: "Keine Protokolle gefunden",
+    noLogsFoundDesc: "Keine Protokolleinträge entsprechen Ihren Filtern.",
   },
   nl: {
     // Navigation
@@ -3587,6 +3771,52 @@ const translations: Record<Language, TranslationKeys> = {
     markHired: "Markeren als aangenomen",
     hired: "Aangenomen",
     withdrawn: "Teruggetrokken",
+
+    // Analytics page
+    totalUsersLabel: "Totaal gebruikers",
+    activePostsLabel: "Actieve berichten",
+    eventsCreated: "Aangemaakte evenementen",
+    productsServices: "Producten/Diensten",
+    ordersCompleted: "Voltooide bestellingen",
+    activeGroupsLabel: "Actieve groepen",
+    supportTicketsLabel: "Supporttickets",
+    userGrowthOverTime: "Gebruikersgroei",
+    opportunitiesByStatus: "Kansen per status",
+    postsByCategory: "Berichten per categorie",
+    eventsParticipation: "Evenementdeelname",
+    overviewTab: "Overzicht",
+    usersTab: "Gebruikers",
+    contentTab: "Inhoud",
+    commerceTab: "Handel",
+    refreshButton: "Vernieuwen",
+    exportReportButton: "Rapport exporteren",
+
+    // Audit Logs page
+    totalLogsLabel: "Totaal logs",
+    todaysActivity: "Activiteit vandaag",
+    uniqueUsers: "Unieke gebruikers",
+    criticalActions: "Kritieke acties",
+    analyticsButton: "Analyse",
+    hideAnalyticsButton: "Analyse verbergen",
+    refreshLogsButton: "Vernieuwen",
+    exportLogsButton: "Logs exporteren",
+    searchLogsPlaceholder: "Zoeken op gebruiker, actie of object",
+    userTypeFilter: "Gebruikerstype",
+    allUsersLabel: "Alle gebruikers",
+    individualUser: "Individueel",
+    allActionsLabel: "Alle acties",
+    allModulesLabel: "Alle modules",
+    dateRangeLabel: "Datumbereik",
+    logsSelected: "log(s) geselecteerd",
+    exportSelectedButton: "Selectie exporteren",
+    timestampColumn: "Tijdstempel",
+    userColumn: "Gebruiker",
+    actionColumn: "Actie",
+    moduleColumn: "Module",
+    objectAffectedColumn: "Betreffend object",
+    ipAddressColumn: "IP-adres",
+    noLogsFound: "Geen logs gevonden",
+    noLogsFoundDesc: "Geen logboekitems komen overeen met uw filters.",
   },
   es: {
     // Navigation
@@ -4293,6 +4523,52 @@ const translations: Record<Language, TranslationKeys> = {
     markHired: "Marcar contratado",
     hired: "Contratado",
     withdrawn: "Retirado",
+
+    // Analytics page
+    totalUsersLabel: "Total de usuarios",
+    activePostsLabel: "Publicaciones activas",
+    eventsCreated: "Eventos creados",
+    productsServices: "Productos/Servicios",
+    ordersCompleted: "Pedidos completados",
+    activeGroupsLabel: "Grupos activos",
+    supportTicketsLabel: "Tickets de soporte",
+    userGrowthOverTime: "Crecimiento de usuarios",
+    opportunitiesByStatus: "Oportunidades por estado",
+    postsByCategory: "Publicaciones por categoría",
+    eventsParticipation: "Participación en eventos",
+    overviewTab: "Resumen",
+    usersTab: "Usuarios",
+    contentTab: "Contenido",
+    commerceTab: "Comercio",
+    refreshButton: "Actualizar",
+    exportReportButton: "Exportar informe",
+
+    // Audit Logs page
+    totalLogsLabel: "Total de registros",
+    todaysActivity: "Actividad de hoy",
+    uniqueUsers: "Usuarios únicos",
+    criticalActions: "Acciones críticas",
+    analyticsButton: "Análisis",
+    hideAnalyticsButton: "Ocultar análisis",
+    refreshLogsButton: "Actualizar",
+    exportLogsButton: "Exportar registros",
+    searchLogsPlaceholder: "Buscar por usuario, acción u objeto",
+    userTypeFilter: "Tipo de usuario",
+    allUsersLabel: "Todos los usuarios",
+    individualUser: "Individual",
+    allActionsLabel: "Todas las acciones",
+    allModulesLabel: "Todos los módulos",
+    dateRangeLabel: "Rango de fechas",
+    logsSelected: "registro(s) seleccionado(s)",
+    exportSelectedButton: "Exportar selección",
+    timestampColumn: "Marca de tiempo",
+    userColumn: "Usuario",
+    actionColumn: "Acción",
+    moduleColumn: "Módulo",
+    objectAffectedColumn: "Objeto afectado",
+    ipAddressColumn: "Dirección IP",
+    noLogsFound: "No se encontraron registros",
+    noLogsFoundDesc: "Ningún registro coincide con sus filtros actuales.",
   },
 };
 
