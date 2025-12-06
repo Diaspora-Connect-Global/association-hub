@@ -21,6 +21,7 @@ import {
 import { ChevronLeft, ChevronRight, Upload, Check, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { useT } from "@/hooks/useT";
 
 interface CreateEditListingModalProps {
   open: boolean;
@@ -28,12 +29,6 @@ interface CreateEditListingModalProps {
   listing?: Listing | null;
   onSubmit: (data: ListingFormData) => void;
 }
-
-const steps = [
-  { id: 1, title: "Basic Information" },
-  { id: 2, title: "Pricing & Inventory" },
-  { id: 3, title: "Visibility & Options" },
-];
 
 const categories = ["Electronics", "Clothing", "Food", "Training", "Consulting", "Art", "Accessories", "Other"];
 
@@ -43,6 +38,14 @@ export function CreateEditListingModal({
   listing,
   onSubmit,
 }: CreateEditListingModalProps) {
+  const t = useT();
+  
+  const steps = [
+    { id: 1, title: t.basicInformationStep },
+    { id: 2, title: t.pricingInventory },
+    { id: 3, title: t.visibilityOptions },
+  ];
+  
   const [currentStep, setCurrentStep] = useState(1);
   const [tagInput, setTagInput] = useState("");
   const [formData, setFormData] = useState<ListingFormData>({
@@ -109,7 +112,7 @@ export function CreateEditListingModal({
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
-            {listing ? "Edit Listing" : "Add Product/Service"}
+            {listing ? t.editListing : t.addListing}
           </DialogTitle>
         </DialogHeader>
 
@@ -151,16 +154,16 @@ export function CreateEditListingModal({
           {currentStep === 1 && (
             <>
               <div className="space-y-2">
-                <Label htmlFor="title">Title *</Label>
+                <Label htmlFor="title">{t.title} *</Label>
                 <Input
                   id="title"
-                  placeholder="Enter product/service name"
+                  placeholder={t.enterProductServiceName}
                   value={formData.title}
                   onChange={(e) => updateField("title", e.target.value)}
                 />
               </div>
               <div className="space-y-2">
-                <Label>Type *</Label>
+                <Label>{t.type} *</Label>
                 <Select
                   value={formData.type}
                   onValueChange={(value: ListingType) => updateField("type", value)}
@@ -169,29 +172,29 @@ export function CreateEditListingModal({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="product">Product</SelectItem>
-                    <SelectItem value="service">Service</SelectItem>
+                    <SelectItem value="product">{t.product}</SelectItem>
+                    <SelectItem value="service">{t.service}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="description">Description *</Label>
+                <Label htmlFor="description">{t.description} *</Label>
                 <Textarea
                   id="description"
-                  placeholder="Enter a detailed description"
+                  placeholder={t.enterDetailedDescription}
                   rows={4}
                   value={formData.description}
                   onChange={(e) => updateField("description", e.target.value)}
                 />
               </div>
               <div className="space-y-2">
-                <Label>Category</Label>
+                <Label>{t.category}</Label>
                 <Select
                   value={formData.category}
                   onValueChange={(value) => updateField("category", value)}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select category" />
+                    <SelectValue placeholder={t.selectCategory} />
                   </SelectTrigger>
                   <SelectContent>
                     {categories.map(cat => (
@@ -201,9 +204,9 @@ export function CreateEditListingModal({
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label>Tags</Label>
+                <Label>{t.tags}</Label>
                 <Input
-                  placeholder="Type and press Enter to add tags"
+                  placeholder={t.typeAndPressEnter}
                   value={tagInput}
                   onChange={(e) => setTagInput(e.target.value)}
                   onKeyDown={handleAddTag}
@@ -222,10 +225,10 @@ export function CreateEditListingModal({
                 )}
               </div>
               <div className="space-y-2">
-                <Label>Main Image *</Label>
+                <Label>{t.mainImageRequired} *</Label>
                 <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary/50 transition-colors cursor-pointer">
                   <Upload className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
-                  <p className="text-sm text-muted-foreground">Click to upload or drag and drop</p>
+                  <p className="text-sm text-muted-foreground">{t.clickUploadOrDrag}</p>
                 </div>
               </div>
             </>
@@ -235,7 +238,7 @@ export function CreateEditListingModal({
             <>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Currency</Label>
+                  <Label>{t.currency}</Label>
                   <Select
                     value={formData.currency}
                     onValueChange={(value) => updateField("currency", value)}
@@ -251,7 +254,7 @@ export function CreateEditListingModal({
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="price">Price *</Label>
+                  <Label htmlFor="price">{t.ticketPrice} *</Label>
                   <Input
                     id="price"
                     type="number"
@@ -268,9 +271,9 @@ export function CreateEditListingModal({
                 <>
                   <div className="flex items-center justify-between p-4 rounded-lg border border-border">
                     <div>
-                      <Label>Unlimited Inventory</Label>
+                      <Label>{t.unlimitedInventory}</Label>
                       <p className="text-sm text-muted-foreground">
-                        No stock limit for this product
+                        {t.noStockLimit}
                       </p>
                     </div>
                     <Switch
@@ -281,12 +284,12 @@ export function CreateEditListingModal({
 
                   {!formData.unlimitedInventory && (
                     <div className="space-y-2">
-                      <Label htmlFor="inventory">Inventory Quantity</Label>
+                      <Label htmlFor="inventory">{t.inventoryQuantity}</Label>
                       <Input
                         id="inventory"
                         type="number"
                         min="0"
-                        placeholder="Quantity available"
+                        placeholder={t.quantityAvailable}
                         value={formData.inventory || ""}
                         onChange={(e) => updateField("inventory", parseInt(e.target.value) || 0)}
                       />
@@ -297,9 +300,9 @@ export function CreateEditListingModal({
 
               <div className="flex items-center justify-between p-4 rounded-lg border border-border">
                 <div>
-                  <Label>Allow Pre-orders</Label>
+                  <Label>{t.allowPreorders}</Label>
                   <p className="text-sm text-muted-foreground">
-                    Accept orders before stock is available
+                    {t.acceptOrdersBeforeStock}
                   </p>
                 </div>
                 <Switch
@@ -314,9 +317,9 @@ export function CreateEditListingModal({
             <>
               <div className="flex items-center justify-between p-4 rounded-lg border border-border">
                 <div>
-                  <Label>Publish Now?</Label>
+                  <Label>{t.publishNow}</Label>
                   <p className="text-sm text-muted-foreground">
-                    Make listing visible in the marketplace immediately
+                    {t.makeListingVisible}
                   </p>
                 </div>
                 <Switch
@@ -327,9 +330,9 @@ export function CreateEditListingModal({
 
               <div className="flex items-center justify-between p-4 rounded-lg border border-border">
                 <div>
-                  <Label>Allow Reviews?</Label>
+                  <Label>{t.allowReviews}</Label>
                   <p className="text-sm text-muted-foreground">
-                    Let customers leave reviews on this listing
+                    {t.letCustomersReview}
                   </p>
                 </div>
                 <Switch
@@ -340,9 +343,9 @@ export function CreateEditListingModal({
 
               <div className="flex items-center justify-between p-4 rounded-lg border border-border">
                 <div>
-                  <Label>Featured Listing?</Label>
+                  <Label>{t.featuredListing}</Label>
                   <p className="text-sm text-muted-foreground">
-                    Highlight this listing in the marketplace
+                    {t.highlightListing}
                   </p>
                 </div>
                 <Switch
@@ -362,24 +365,24 @@ export function CreateEditListingModal({
             disabled={currentStep === 1}
           >
             <ChevronLeft className="h-4 w-4 mr-1" />
-            Back
+            {t.back}
           </Button>
           <div className="flex gap-2">
             <Button variant="outline" onClick={handleClose}>
-              Cancel
+              {t.cancel}
             </Button>
             {currentStep < steps.length ? (
               <Button onClick={handleNext}>
-                Next
+                {t.next}
                 <ChevronRight className="h-4 w-4 ml-1" />
               </Button>
             ) : (
               <>
                 <Button variant="outline" onClick={() => handleSubmit(true)}>
-                  Save Draft
+                  {t.saveDraftListing}
                 </Button>
                 <Button onClick={() => handleSubmit(false)}>
-                  {listing ? "Save Changes" : "Save & Publish"}
+                  {listing ? t.saveChanges : t.saveAndPublish}
                 </Button>
               </>
             )}

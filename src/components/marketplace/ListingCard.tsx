@@ -18,6 +18,7 @@ import {
   Package,
   Star
 } from "lucide-react";
+import { useT } from "@/hooks/useT";
 
 interface ListingCardProps {
   listing: Listing;
@@ -42,6 +43,8 @@ export function ListingCard({
   onDelete,
   onViewOrders,
 }: ListingCardProps) {
+  const t = useT();
+  
   const isLowStock = listing.type === "product" && 
     !listing.unlimitedInventory && 
     listing.inventory !== undefined && 
@@ -62,17 +65,17 @@ export function ListingCard({
         )}
         <div className="absolute left-3 top-3">
           <span className="rounded-full bg-background/90 px-2.5 py-1 text-xs font-medium capitalize text-foreground">
-            {listing.type}
+            {listing.type === "product" ? t.product : t.service}
           </span>
         </div>
         <div className="absolute right-3 top-3 flex flex-col gap-1 items-end">
           <StatusBadge variant={statusVariants[listing.status]}>
-            {listing.status}
+            {listing.status === "published" ? t.published : listing.status === "draft" ? t.draft : t.unpublishListing}
           </StatusBadge>
           {listing.isFeatured && (
             <span className="flex items-center gap-1 rounded-full bg-primary/90 px-2 py-0.5 text-xs font-medium text-primary-foreground">
               <Star className="h-3 w-3" />
-              Featured
+              {t.featured}
             </span>
           )}
         </div>
@@ -104,10 +107,10 @@ export function ListingCard({
               }`}
             >
               {listing.unlimitedInventory 
-                ? "Unlimited" 
+                ? t.unlimited 
                 : isOutOfStock 
-                  ? "Out of stock" 
-                  : `${listing.inventory} in stock`}
+                  ? t.outOfStock 
+                  : `${listing.inventory} ${t.inStock}`}
             </span>
           )}
         </div>
@@ -116,7 +119,7 @@ export function ListingCard({
         <div className="mb-4 flex items-center gap-4 text-sm text-muted-foreground">
           <div className="flex items-center gap-1.5">
             <ShoppingCart className="h-4 w-4" />
-            <span>{listing.orders} orders</span>
+            <span>{listing.orders} {t.orders.toLowerCase()}</span>
           </div>
           {listing.allowReviews && listing.reviewCount > 0 && (
             <div className="flex items-center gap-1.5">
@@ -140,19 +143,19 @@ export function ListingCard({
             <DropdownMenuContent align="end" className="w-48">
               <DropdownMenuItem onClick={() => onViewDetails(listing)}>
                 <Eye className="mr-2 h-4 w-4" />
-                View Details
+                {t.viewDetails}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => onEdit(listing)}>
                 <Edit className="mr-2 h-4 w-4" />
-                Edit Listing
+                {t.editListing}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => onTogglePublish(listing)}>
                 <ToggleLeft className="mr-2 h-4 w-4" />
-                {listing.status === "published" ? "Unpublish" : "Publish"}
+                {listing.status === "published" ? t.unpublishListing : t.publishListing}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => onViewOrders(listing)}>
                 <Package className="mr-2 h-4 w-4" />
-                View Orders
+                {t.viewOrders}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem 
@@ -160,7 +163,7 @@ export function ListingCard({
                 className="text-destructive focus:text-destructive"
               >
                 <Trash2 className="mr-2 h-4 w-4" />
-                Delete Listing
+                {t.deleteListing}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
