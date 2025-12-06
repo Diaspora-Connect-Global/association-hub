@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { AlertTriangle, Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { useT } from "@/hooks/useT";
 
 interface CloseTicketModalProps {
   open: boolean;
@@ -24,6 +25,7 @@ export function CloseTicketModal({
   onOpenChange,
   ticket,
 }: CloseTicketModalProps) {
+  const t = useT();
   const [isClosing, setIsClosing] = useState(false);
 
   if (!ticket) return null;
@@ -34,8 +36,8 @@ export function CloseTicketModal({
       setIsClosing(false);
       onOpenChange(false);
       toast({
-        title: "Ticket Closed",
-        description: "The ticket has been closed and user has been notified.",
+        title: t.ticketClosed,
+        description: t.ticketClosedDesc,
       });
     }, 1000);
   };
@@ -46,18 +48,18 @@ export function CloseTicketModal({
         <AlertDialogHeader>
           <AlertDialogTitle className="flex items-center gap-2">
             <AlertTriangle className="h-5 w-5 text-destructive" />
-            Close Ticket #{ticket.id}
+            {t.closeTicketTitle} #{ticket.id}
           </AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to close this ticket? User will be notified.
+            {t.closeTicketConfirm}
           </AlertDialogDescription>
         </AlertDialogHeader>
 
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogCancel>{t.cancel}</AlertDialogCancel>
           <Button variant="destructive" onClick={handleClose} disabled={isClosing}>
             {isClosing && <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />}
-            Close Ticket
+            {t.closeTicket}
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>

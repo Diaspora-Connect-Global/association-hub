@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/select";
 import { Loader2, Paperclip, X } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { useT } from "@/hooks/useT";
 
 interface CreateTicketModalProps {
   open: boolean;
@@ -26,25 +27,12 @@ interface CreateTicketModalProps {
   onSubmit: (data: TicketFormData) => void;
 }
 
-const categoryOptions: { value: TicketCategory; label: string }[] = [
-  { value: "technical", label: "Technical" },
-  { value: "billing", label: "Billing" },
-  { value: "product_inquiry", label: "Product Inquiry" },
-  { value: "general", label: "General" },
-];
-
-const priorityOptions: { value: TicketPriority; label: string }[] = [
-  { value: "low", label: "Low" },
-  { value: "medium", label: "Medium" },
-  { value: "high", label: "High" },
-  { value: "urgent", label: "Urgent" },
-];
-
 export function CreateTicketModal({
   open,
   onOpenChange,
   onSubmit,
 }: CreateTicketModalProps) {
+  const t = useT();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<TicketFormData>({
     userName: "",
@@ -56,13 +44,27 @@ export function CreateTicketModal({
   });
   const [attachments, setAttachments] = useState<File[]>([]);
 
+  const categoryOptions: { value: TicketCategory; label: string }[] = [
+    { value: "technical", label: t.technical },
+    { value: "billing", label: t.billing },
+    { value: "product_inquiry", label: t.productInquiry },
+    { value: "general", label: t.general },
+  ];
+
+  const priorityOptions: { value: TicketPriority; label: string }[] = [
+    { value: "low", label: t.low },
+    { value: "medium", label: t.medium },
+    { value: "high", label: t.high },
+    { value: "urgent", label: t.urgent },
+  ];
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!formData.userName || !formData.userEmail || !formData.subject || !formData.description) {
       toast({
-        title: "Validation Error",
-        description: "Please fill in all required fields.",
+        title: t.validationError,
+        description: t.fillRequiredFields,
         variant: "destructive",
       });
       return;
@@ -75,8 +77,8 @@ export function CreateTicketModal({
       onOpenChange(false);
       resetForm();
       toast({
-        title: "Ticket Created",
-        description: "Support ticket has been created successfully.",
+        title: t.ticketCreated,
+        description: t.ticketCreatedDesc,
       });
     }, 1000);
   };
@@ -107,16 +109,16 @@ export function CreateTicketModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Create Support Ticket</DialogTitle>
+          <DialogTitle>{t.createSupportTicket}</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="userName">User Name *</Label>
+              <Label htmlFor="userName">{t.userName} *</Label>
               <Input
                 id="userName"
-                placeholder="Enter user's name"
+                placeholder={t.enterUserName}
                 value={formData.userName}
                 onChange={(e) => setFormData({ ...formData, userName: e.target.value })}
                 required
@@ -124,11 +126,11 @@ export function CreateTicketModal({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="userEmail">Email *</Label>
+              <Label htmlFor="userEmail">{t.email} *</Label>
               <Input
                 id="userEmail"
                 type="email"
-                placeholder="Enter user's email"
+                placeholder={t.enterUserEmail}
                 value={formData.userEmail}
                 onChange={(e) => setFormData({ ...formData, userEmail: e.target.value })}
                 required
@@ -138,7 +140,7 @@ export function CreateTicketModal({
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>Category *</Label>
+              <Label>{t.category} *</Label>
               <Select
                 value={formData.category}
                 onValueChange={(value: TicketCategory) => setFormData({ ...formData, category: value })}
@@ -157,7 +159,7 @@ export function CreateTicketModal({
             </div>
 
             <div className="space-y-2">
-              <Label>Priority *</Label>
+              <Label>{t.priority} *</Label>
               <Select
                 value={formData.priority}
                 onValueChange={(value: TicketPriority) => setFormData({ ...formData, priority: value })}
@@ -177,10 +179,10 @@ export function CreateTicketModal({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="subject">Subject *</Label>
+            <Label htmlFor="subject">{t.subject} *</Label>
             <Input
               id="subject"
-              placeholder="Brief summary of the issue"
+              placeholder={t.briefSummary}
               value={formData.subject}
               onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
               required
@@ -188,10 +190,10 @@ export function CreateTicketModal({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">Description *</Label>
+            <Label htmlFor="description">{t.description} *</Label>
             <Textarea
               id="description"
-              placeholder="Detailed explanation of the issue"
+              placeholder={t.detailedExplanation}
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               rows={4}
@@ -200,7 +202,7 @@ export function CreateTicketModal({
           </div>
 
           <div className="space-y-2">
-            <Label>Attachments</Label>
+            <Label>{t.attachments}</Label>
             <div className="flex items-center gap-2">
               <Button
                 type="button"
@@ -209,7 +211,7 @@ export function CreateTicketModal({
                 onClick={() => document.getElementById('file-upload')?.click()}
               >
                 <Paperclip className="h-4 w-4 mr-1.5" />
-                Add Files
+                {t.addFiles}
               </Button>
               <input
                 id="file-upload"
@@ -242,11 +244,11 @@ export function CreateTicketModal({
 
           <div className="flex justify-end gap-2 pt-4">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              Cancel
+              {t.cancel}
             </Button>
             <Button type="submit" disabled={isSubmitting}>
               {isSubmitting && <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />}
-              Create Ticket
+              {t.createTicket}
             </Button>
           </div>
         </form>

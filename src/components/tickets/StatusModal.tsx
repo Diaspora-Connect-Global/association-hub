@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/select";
 import { Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { useT } from "@/hooks/useT";
 
 interface StatusModalProps {
   open: boolean;
@@ -25,30 +26,31 @@ interface StatusModalProps {
   ticket: Ticket | null;
 }
 
-const statusOptions: { value: TicketStatus; label: string }[] = [
-  { value: "open", label: "Open" },
-  { value: "in_progress", label: "In Progress" },
-  { value: "resolved", label: "Resolved" },
-  { value: "closed", label: "Closed" },
-];
-
 export function StatusModal({
   open,
   onOpenChange,
   ticket,
 }: StatusModalProps) {
+  const t = useT();
   const [status, setStatus] = useState<TicketStatus | "">(ticket?.status || "");
   const [note, setNote] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!ticket) return null;
 
+  const statusOptions: { value: TicketStatus; label: string }[] = [
+    { value: "open", label: t.open },
+    { value: "in_progress", label: t.inProgress },
+    { value: "resolved", label: t.resolved },
+    { value: "closed", label: t.closed },
+  ];
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!status) {
       toast({
-        title: "Error",
-        description: "Please select a status.",
+        title: t.error,
+        description: t.fillRequiredFields,
         variant: "destructive",
       });
       return;
@@ -61,8 +63,8 @@ export function StatusModal({
       setStatus("");
       setNote("");
       toast({
-        title: "Status Updated",
-        description: `Ticket status has been updated to ${status.replace("_", " ")}.`,
+        title: t.statusUpdated,
+        description: `${t.statusUpdatedTo} ${status.replace("_", " ")}.`,
       });
     }, 1000);
   };
@@ -71,15 +73,15 @@ export function StatusModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Update Status - Ticket #{ticket.id}</DialogTitle>
+          <DialogTitle>{t.updateStatusTitle} - {t.ticketId} #{ticket.id}</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label>Status *</Label>
+            <Label>{t.status} *</Label>
             <Select value={status} onValueChange={(v: TicketStatus) => setStatus(v)}>
               <SelectTrigger>
-                <SelectValue placeholder="Select status" />
+                <SelectValue placeholder={t.selectStatus} />
               </SelectTrigger>
               <SelectContent>
                 {statusOptions.map((opt) => (
@@ -92,9 +94,9 @@ export function StatusModal({
           </div>
 
           <div className="space-y-2">
-            <Label>Note (Optional)</Label>
+            <Label>{t.noteOptional}</Label>
             <Textarea
-              placeholder="Optional note for user or internal"
+              placeholder={t.noteToAdmin}
               value={note}
               onChange={(e) => setNote(e.target.value)}
               rows={3}
@@ -103,11 +105,11 @@ export function StatusModal({
 
           <div className="flex justify-end gap-2">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              Cancel
+              {t.cancel}
             </Button>
             <Button type="submit" disabled={isSubmitting}>
               {isSubmitting && <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />}
-              Update Status
+              {t.update} {t.status}
             </Button>
           </div>
         </form>

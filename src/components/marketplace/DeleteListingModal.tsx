@@ -10,6 +10,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { AlertTriangle } from "lucide-react";
+import { useT } from "@/hooks/useT";
 
 interface DeleteListingModalProps {
   open: boolean;
@@ -24,6 +25,8 @@ export function DeleteListingModal({
   listing,
   onConfirm,
 }: DeleteListingModalProps) {
+  const t = useT();
+  
   if (!listing) return null;
 
   return (
@@ -34,27 +37,27 @@ export function DeleteListingModal({
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-destructive/10">
               <AlertTriangle className="h-5 w-5 text-destructive" />
             </div>
-            <AlertDialogTitle>Delete Listing</AlertDialogTitle>
+            <AlertDialogTitle>{t.deleteListingTitle}</AlertDialogTitle>
           </div>
           <AlertDialogDescription className="pt-2">
-            Are you sure you want to delete <strong>"{listing.title}"</strong>? This action cannot be undone.
+            {t.deleteListingConfirm} <strong>"{listing.title}"</strong>?
           </AlertDialogDescription>
         </AlertDialogHeader>
 
         <div className="my-4 space-y-2 text-sm text-muted-foreground">
           <p className="flex items-center gap-2">
             <span className="h-1.5 w-1.5 rounded-full bg-destructive" />
-            All orders for this listing will remain, but listing will not be visible to users.
+            {t.ordersWillRemain}
           </p>
         </div>
 
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogCancel>{t.cancel}</AlertDialogCancel>
           <AlertDialogAction
             onClick={onConfirm}
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
           >
-            Delete
+            {t.delete}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
