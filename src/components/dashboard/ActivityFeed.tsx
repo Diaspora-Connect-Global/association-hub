@@ -56,11 +56,11 @@ const iconMap = {
 };
 
 const colorMap = {
-  member: "bg-chart-4/10 text-chart-4",
-  post: "bg-primary/10 text-primary",
-  order: "bg-success/10 text-success",
-  event: "bg-accent/10 text-accent",
-  join: "bg-chart-5/10 text-chart-5",
+  member: "surface-info text-info",
+  post: "bg-muted text-foreground",
+  order: "surface-success text-success",
+  event: "surface-warning text-warning",
+  join: "surface-brand-light text-brand",
 };
 
 export function ActivityFeed() {
@@ -68,7 +68,7 @@ export function ActivityFeed() {
     <div className="rounded-xl border border-border bg-card p-6">
       <div className="mb-6 flex items-center justify-between">
         <h3 className="section-header">Recent Activity</h3>
-        <button className="text-sm font-medium text-primary hover:text-primary/80">
+        <button className="label-small text-brand hover:opacity-80">
           View all
         </button>
       </div>
@@ -93,14 +93,14 @@ export function ActivityFeed() {
                 <Icon className="h-5 w-5" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-foreground">
+                <p className="label-small text-foreground">
                   {activity.title}
                 </p>
-                <p className="truncate text-sm text-muted-foreground">
+                <p className="truncate body-small text-muted-foreground">
                   {activity.description}
                 </p>
               </div>
-              <span className="flex-shrink-0 text-xs text-muted-foreground">
+              <span className="flex-shrink-0 caption-small text-muted-foreground">
                 {activity.time}
               </span>
             </div>
