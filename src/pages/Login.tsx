@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { Mail, Lock, Eye, EyeOff, Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { useAdminAuthStore } from "@/stores/adminAuthStore";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -48,20 +49,27 @@ export default function Login() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
-    
+
     setIsLoading(true);
-    
-    // Simulate login
-    setTimeout(() => {
-      setIsLoading(false);
+    const { login } = useAdminAuthStore.getState();
+    const result = await login(email, password);
+    setIsLoading(false);
+
+    if (result.success) {
       toast({
         title: "Login Successful",
         description: "Welcome back! Redirecting to dashboard...",
       });
       navigate("/");
-    }, 1500);
+    } else {
+      toast({
+        title: "Login Failed",
+        description: result.error ?? "Invalid email or password.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleForgotPassword = async (e: React.FormEvent) => {
