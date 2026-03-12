@@ -34,67 +34,86 @@ import {
 import {
   Search,
   Download,
-  ChevronDown,
   MoreHorizontal,
   Eye,
-  Star,
-  MessageCircle,
   XCircle,
   CheckCircle,
   Users,
+  RefreshCw,
 } from "lucide-react";
-import { Opportunity, Applicant, ApplicantStatus } from "@/types/opportunities";
-import { useT } from "@/hooks/useT";
+import type {
+  ApplicationStatusEnum,
+  ApplicationType,
+  OpportunityType,
+} from "@/services/graphql/opportunities";
 
 interface ApplicantsDrawerProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  opportunity: Opportunity | null;
-  applicants: Applicant[];
-  onViewApplication: (applicant: Applicant) => void;
-  onShortlist: (applicant: Applicant) => void;
-  onMessage: (applicant: Applicant) => void;
-  onReject: (applicant: Applicant) => void;
-  onMarkHired: (applicant: Applicant) => void;
+  opportunity: OpportunityType | null;
+  applications: ApplicationType[];
+  loading?: boolean;
+  onRefresh: () => void;
+  onViewApplication: (application: ApplicationType) => void;
+  onReview: (application: ApplicationType) => void;
+  onReject: (application: ApplicationType) => void;
+  onAccept: (application: ApplicationType) => void;
   onExport: () => void;
 }
 
-const statusColors: Record<ApplicantStatus, string> = {
-  pending: "secondary",
-  shortlisted: "default",
-  rejected: "destructive",
-  hired: "default",
-  withdrawn: "secondary",
+const statusColors: Record<ApplicationStatusEnum, string> = {
+  PENDING: "secondary",
+  REVIEWING: "default",
+  ACCEPTED: "default",
+  REJECTED: "destructive",
+  WITHDRAWN: "secondary",
 };
+
+function formatEnumLabel(value: string): string {
+  return value
+    .toLowerCase()
+    .split("_")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+function formatDate(value: string): string {
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? value : parsed.toLocaleString();
+}
 
 export function ApplicantsDrawer({
   open,
   onOpenChange,
   opportunity,
-  applicants,
+  applications,
+  loading = false,
+  onRefresh,
   onViewApplication,
-  onShortlist,
-  onMessage,
+  onReview,
   onReject,
-  onMarkHired,
+  onAccept,
   onExport,
 }: ApplicantsDrawerProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [selectedApplicants, setSelectedApplicants] = useState<string[]>([]);
-  const t = useT();
 
-  const filteredApplicants = applicants.filter((a) => {
-    if (searchQuery && !a.name.toLowerCase().includes(searchQuery.toLowerCase()) && !a.email.toLowerCase().includes(searchQuery.toLowerCase())) {
+  const filteredApplicants = applications.filter((application) => {
+    if (
+      searchQuery &&
+      !application.applicantId.toLowerCase().includes(searchQuery.toLowerCase()) &&
+      !application.id.toLowerCase().includes(searchQuery.toLowerCase())
+    ) {
       return false;
     }
-    if (statusFilter !== "all" && a.status !== statusFilter) return false;
+    if (statusFilter !== "all" && application.status !== statusFilter) return false;
     return true;
   });
 
   const handleSelectApplicant = (id: string) => {
     setSelectedApplicants((prev) =>
-      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
     );
   };
 
@@ -102,7 +121,7 @@ export function ApplicantsDrawer({
     setSelectedApplicants(
       selectedApplicants.length === filteredApplicants.length
         ? []
-        : filteredApplicants.map((a) => a.id)
+        : filteredApplicants.map((application) => application.id)
     );
   };
 
@@ -114,18 +133,15 @@ export function ApplicantsDrawer({
         <SheetHeader className="p-6 pb-4">
           <SheetTitle className="flex items-center gap-2">
             <Users className="h-5 w-5" />
-            {t.applicants}
+            Applications
           </SheetTitle>
-          <p className="text-sm text-muted-foreground">
-            {t.forOpportunity}: {opportunity.title}
-          </p>
+          <p className="text-sm text-muted-foreground">For opportunity: {opportunity.title}</p>
 
-          {/* Controls */}
           <div className="mt-4 flex flex-wrap gap-2">
             <div className="relative flex-1 min-w-[200px]">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
-                placeholder={t.searchByNameEmailPhone}
+                placeholder="Search by applicant ID or application ID"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-9"
@@ -133,55 +149,38 @@ export function ApplicantsDrawer({
             </div>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger className="w-36">
-                <SelectValue placeholder={t.filter} />
+                <SelectValue placeholder="Filter" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">{t.all}</SelectItem>
-                <SelectItem value="pending">{t.pending}</SelectItem>
-                <SelectItem value="shortlisted">{t.shortlisted}</SelectItem>
-                <SelectItem value="rejected">{t.rejected}</SelectItem>
-                <SelectItem value="hired">{t.hired}</SelectItem>
+                <SelectItem value="all">All</SelectItem>
+                <SelectItem value="PENDING">Pending</SelectItem>
+                <SelectItem value="REVIEWING">Reviewing</SelectItem>
+                <SelectItem value="ACCEPTED">Accepted</SelectItem>
+                <SelectItem value="REJECTED">Rejected</SelectItem>
+                <SelectItem value="WITHDRAWN">Withdrawn</SelectItem>
               </SelectContent>
             </Select>
+            <Button variant="outline" className="gap-2" onClick={onRefresh}>
+              <RefreshCw className="h-4 w-4" />
+              Refresh
+            </Button>
             <Button variant="outline" className="gap-2" onClick={onExport}>
               <Download className="h-4 w-4" />
-              {t.export}
+              Export
             </Button>
-            {selectedApplicants.length > 0 && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="gap-1">
-                    {t.bulkActions}
-                    <ChevronDown className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuItem>
-                    <Star className="mr-2 h-4 w-4" />
-                    {t.shortlistSelected}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <MessageCircle className="mr-2 h-4 w-4" />
-                    {t.messageSelected}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="text-destructive">
-                    <XCircle className="mr-2 h-4 w-4" />
-                    {t.rejectSelected}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
           </div>
         </SheetHeader>
 
         <ScrollArea className="h-[calc(100vh-220px)]">
-          {filteredApplicants.length === 0 ? (
+          {loading ? (
+            <div className="flex flex-col items-center justify-center py-16 text-sm text-muted-foreground">
+              Loading applications...
+            </div>
+          ) : filteredApplicants.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16">
               <Users className="mb-4 h-12 w-12 text-muted-foreground" />
-              <h3 className="mb-2 text-lg font-semibold">{t.noApplicantsYet}</h3>
-              <p className="text-sm text-muted-foreground">
-                {t.applicantsWillAppear}
-              </p>
+              <h3 className="mb-2 text-lg font-semibold">No applications yet</h3>
+              <p className="text-sm text-muted-foreground">Applications will appear here after members apply.</p>
             </div>
           ) : (
             <Table>
@@ -193,39 +192,37 @@ export function ApplicantsDrawer({
                       onCheckedChange={handleSelectAll}
                     />
                   </TableHead>
-                  <TableHead>{t.name}</TableHead>
-                  <TableHead>{t.appliedAt}</TableHead>
-                  <TableHead>{t.status}</TableHead>
-                  <TableHead>{t.score}</TableHead>
-                  <TableHead className="w-16">{t.actions}</TableHead>
+                  <TableHead>Applicant</TableHead>
+                  <TableHead>Applied</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Reviewed</TableHead>
+                  <TableHead className="w-16">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredApplicants.map((applicant) => (
-                  <TableRow key={applicant.id}>
+                {filteredApplicants.map((application) => (
+                  <TableRow key={application.id}>
                     <TableCell>
                       <Checkbox
-                        checked={selectedApplicants.includes(applicant.id)}
-                        onCheckedChange={() => handleSelectApplicant(applicant.id)}
+                        checked={selectedApplicants.includes(application.id)}
+                        onCheckedChange={() => handleSelectApplicant(application.id)}
                       />
                     </TableCell>
                     <TableCell>
                       <div>
-                        <p className="font-medium">{applicant.name}</p>
-                        <p className="text-xs text-muted-foreground">{applicant.email}</p>
+                        <p className="font-medium">{application.applicantId}</p>
+                        <p className="text-xs text-muted-foreground">Application ID: {application.id}</p>
                       </div>
                     </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
-                      {applicant.appliedAt}
-                    </TableCell>
+                    <TableCell className="text-sm text-muted-foreground">{formatDate(application.createdAt)}</TableCell>
                     <TableCell>
-                      <Badge variant={statusColors[applicant.status] as any} className="capitalize">
-                        {applicant.status}
+                      <Badge variant={statusColors[application.status] as any} className="capitalize">
+                        {formatEnumLabel(application.status)}
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      {applicant.screeningScore !== undefined ? (
-                        <span className="text-sm">{applicant.screeningScore}%</span>
+                      {application.reviewedAt ? (
+                        <span className="text-sm">{formatDate(application.reviewedAt)}</span>
                       ) : (
                         <span className="text-sm text-muted-foreground">—</span>
                       )}
@@ -238,25 +235,21 @@ export function ApplicantsDrawer({
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => onViewApplication(applicant)}>
+                          <DropdownMenuItem onClick={() => onViewApplication(application)}>
                             <Eye className="mr-2 h-4 w-4" />
-                            {t.viewApplication}
+                            View application
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => onShortlist(applicant)}>
-                            <Star className="mr-2 h-4 w-4" />
-                            {t.shortlist}
+                          <DropdownMenuItem onClick={() => onReview(application)}>
+                            <Users className="mr-2 h-4 w-4" />
+                            Move to reviewing
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => onMessage(applicant)}>
-                            <MessageCircle className="mr-2 h-4 w-4" />
-                            {t.message}
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => onReject(applicant)}>
-                            <XCircle className="mr-2 h-4 w-4" />
-                            {t.reject}
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => onMarkHired(applicant)}>
+                          <DropdownMenuItem onClick={() => onAccept(application)}>
                             <CheckCircle className="mr-2 h-4 w-4" />
-                            {t.markHired}
+                            Accept
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => onReject(application)}>
+                            <XCircle className="mr-2 h-4 w-4" />
+                            Reject
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>

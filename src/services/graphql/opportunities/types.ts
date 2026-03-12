@@ -46,15 +46,25 @@ export interface OpportunityOwnerType {
   type: string;
 }
 
-export interface OpportunityType {
+export interface OpportunityListItemType {
+  id: string;
+  title: string;
+  status: OpportunityStatusEnum;
+  type: OpportunityTypeEnum;
+  category: OpportunityCategoryEnum;
+  applicationMethod: ApplicationMethodEnum;
+  applicationCount: number;
+  priorityLevel: PriorityLevelEnum;
+  createdAt: string;
+  publishedAt: string | null;
+  closedAt: string | null;
+}
+
+export interface OpportunityType extends OpportunityListItemType {
   id: string;
   ownerType: OwnerTypeEnum;
   ownerId: string;
-  owner: OpportunityOwnerType | null;
-  type: OpportunityTypeEnum;
-  category: OpportunityCategoryEnum;
   subCategory: string | null;
-  title: string;
   description: string;
   responsibilities: string | null;
   requirements: string | null;
@@ -62,36 +72,23 @@ export interface OpportunityType {
   engagementType: EngagementTypeEnum | null;
   location: string | null;
   visibility: VisibilityEnum;
-  applicationMethod: ApplicationMethodEnum;
   externalLink: string | null;
   applicationEmail: string | null;
-  status: OpportunityStatusEnum;
-  priorityLevel: PriorityLevelEnum;
   salaryMin: number | null;
   salaryMax: number | null;
   salaryCurrency: string | null;
   deadline: string | null;
-  applicationCount: number;
   skills: string[];
   tags: string[];
-  isSavedByCurrentUser: boolean | null;
-  hasCurrentUserApplied: boolean | null;
-  currentUserApplicationId: string | null;
-  createdAt: string;
   updatedAt: string;
-  publishedAt: string | null;
-  closedAt: string | null;
 }
 
 export interface CreateOpportunityResponse {
   id: string;
-  title: string;
-  status: string;
-  createdAt: string;
 }
 
 export interface OpportunityListResponse {
-  opportunities: OpportunityType[];
+  opportunities: OpportunityListItemType[];
   total: number;
 }
 
@@ -108,7 +105,7 @@ export interface ListOpportunitiesInput {
   location?: string;
   ownerType?: OwnerTypeEnum;
   ownerId?: string;
-  status?: string;
+  status?: OpportunityStatusEnum;
   sortBy?: "CREATED_AT" | "DEADLINE" | "SALARY" | "RELEVANCE";
   sortOrder?: "ASC" | "DESC";
 }
@@ -121,19 +118,28 @@ export interface FileRefType {
 }
 
 export interface ApplicationType {
+export interface ApplicationOpportunityRef {
+  id: string;
+  title: string;
+}
+
+export interface ApplicationType {
   id: string;
   opportunityId: string;
   applicantId: string;
   status: ApplicationStatusEnum;
-  resumeFileRef: FileRefType | null;
   coverLetter: string | null;
-  customAnswers: string | null;
   reviewNotes: string | null;
   reviewedBy: string | null;
   reviewedAt: string | null;
   createdAt: string;
   updatedAt: string | null;
-  opportunity: OpportunityType | null;
+}
+
+export interface ApplicationDetailType extends ApplicationType {
+  resumeFileRef: FileRefType | null;
+  customAnswers: string | null;
+  opportunity: ApplicationOpportunityRef | null;
 }
 
 export interface ApplicationListResponse {
@@ -181,6 +187,9 @@ export interface UpdateOpportunityInput {
   description?: string;
   responsibilities?: string;
   requirements?: string;
+  applicationMethod?: ApplicationMethodEnum;
+  externalLink?: string;
+  applicationEmail?: string;
   workMode?: WorkModeEnum;
   engagementType?: EngagementTypeEnum;
   location?: string;
@@ -193,9 +202,12 @@ export interface UpdateOpportunityInput {
   tags?: string[];
 }
 
+export interface GetApplicationResult {
+  getApplication: ApplicationDetailType | null;
+}
+
 /** Review application input */
 export interface ReviewApplicationInput {
   applicationId: string;
-  reviewNotes?: string | null;
-  status?: string;
+  notes?: string | null;
 }

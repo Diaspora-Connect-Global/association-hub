@@ -13,12 +13,12 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { XCircle } from "lucide-react";
-import { Applicant } from "@/types/opportunities";
+import type { ApplicationType } from "@/services/graphql/opportunities";
 
 interface RejectApplicantModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  applicant: Applicant | null;
+  applicant: ApplicationType | null;
   onConfirm: (reason: string, sendEmail: boolean) => void;
 }
 
@@ -51,7 +51,7 @@ export function RejectApplicantModal({
             <AlertDialogTitle>Reject Applicant</AlertDialogTitle>
           </div>
           <AlertDialogDescription className="pt-2">
-            Are you sure you want to reject <strong>{applicant.name}</strong>? This action will update their application status.
+            Are you sure you want to reject <strong>{applicant.applicantId}</strong>? This action will update their application status.
           </AlertDialogDescription>
         </AlertDialogHeader>
 
@@ -70,9 +70,7 @@ export function RejectApplicantModal({
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label>Send Rejection Email</Label>
-              <p className="text-xs text-muted-foreground">
-                Notify the applicant via email
-              </p>
+              <p className="text-xs text-muted-foreground">Notify the applicant via email</p>
             </div>
             <Switch checked={sendEmail} onCheckedChange={setSendEmail} />
           </div>

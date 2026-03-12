@@ -1,12 +1,14 @@
 export {
   getOpportunity,
   listOpportunities,
+  getApplication,
   getApplications,
   createOpportunity,
   updateOpportunity,
   publishOpportunity,
   closeOpportunity,
   deleteOpportunity,
+  setOpportunityPriority,
   acceptApplication,
   rejectApplication,
   reviewApplication,
@@ -22,10 +24,12 @@ export type {
 
 export type {
   OpportunityType,
+  OpportunityListItemType,
   OpportunityListResponse,
   OpportunityOwnerType,
   CreateOpportunityResponse,
   ApplicationType,
+  ApplicationDetailType,
   ApplicationListResponse,
   FileRefType,
   OpportunityTypeEnum,

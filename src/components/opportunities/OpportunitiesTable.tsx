@@ -23,37 +23,46 @@ import {
   Edit,
   Trash2,
   Users,
-  Globe,
-  Lock,
-  ToggleLeft,
   ToggleRight,
   XCircle,
   Briefcase,
 } from "lucide-react";
-import { Opportunity, OpportunityType } from "@/types/opportunities";
+import type { OpportunityListItemType, OpportunityTypeEnum } from "@/services/graphql/opportunities";
 import { useT } from "@/hooks/useT";
 
 interface OpportunitiesTableProps {
-  opportunities: Opportunity[];
+  opportunities: OpportunityListItemType[];
   selectedOpportunities: string[];
   onSelectOpportunity: (id: string) => void;
   onSelectAll: () => void;
-  onOpenDrawer: (opp: Opportunity) => void;
-  onEdit: (opp: Opportunity) => void;
-  onTogglePublish: (opp: Opportunity) => void;
-  onClose: (opp: Opportunity) => void;
-  onViewApplicants: (opp: Opportunity) => void;
-  onDelete: (opp: Opportunity) => void;
+  onOpenDrawer: (opp: OpportunityListItemType) => void;
+  onEdit: (opp: OpportunityListItemType) => void;
+  onTogglePublish: (opp: OpportunityListItemType) => void;
+  onClose: (opp: OpportunityListItemType) => void;
+  onViewApplicants: (opp: OpportunityListItemType) => void;
+  onDelete: (opp: OpportunityListItemType) => void;
 }
 
 const statusMap = {
-  published: "active" as const,
-  draft: "inactive" as const,
-  scheduled: "pending" as const,
-  closed: "inactive" as const,
-  archived: "inactive" as const,
-  removed: "inactive" as const,
+  PUBLISHED: "active" as const,
+  DRAFT: "inactive" as const,
+  CLOSED: "inactive" as const,
+  ARCHIVED: "inactive" as const,
 };
+
+function formatEnumLabel(value: string): string {
+  return value
+    .toLowerCase()
+    .split("_")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+function formatDate(value: string | null): string {
+  if (!value) return "—";
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? value : parsed.toLocaleDateString();
+}
 
 export function OpportunitiesTable({
   opportunities,
@@ -71,27 +80,16 @@ export function OpportunitiesTable({
   const allSelected = opportunities.length > 0 && selectedOpportunities.length === opportunities.length;
   const someSelected = selectedOpportunities.length > 0 && selectedOpportunities.length < opportunities.length;
 
-  const typeLabels: Record<OpportunityType, string> = {
-    job: t.job,
-    volunteer: t.volunteer,
-    training: t.training,
-    funding: t.funding,
-    scholarship: t.scholarship,
-    other: t.other,
-  };
-
-  const statusLabels: Record<string, string> = {
-    published: t.published,
-    draft: t.draft,
-    scheduled: t.scheduled,
-    closed: t.closed,
-    archived: t.archived,
-    removed: t.removed,
-  };
-
-  const visibilityLabels: Record<string, string> = {
-    public: t.public,
-    members: t.membersOnly,
+  const typeLabels: Record<OpportunityTypeEnum, string> = {
+    EMPLOYMENT: "Employment",
+    SCHOLARSHIP: "Scholarship",
+    INVESTMENT: "Investment",
+    FELLOWSHIP: "Fellowship",
+    INITIATIVE: "Initiative",
+    GRANT: "Grant",
+    PROGRAM: "Program",
+    VOLUNTEER: "Volunteer",
+    CONTRACT: "Contract",
   };
 
   if (opportunities.length === 0) {
@@ -99,9 +97,7 @@ export function OpportunitiesTable({
       <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border bg-card py-16">
         <Briefcase className="mb-4 h-12 w-12 text-muted-foreground" />
         <h3 className="mb-2 text-lg font-semibold text-foreground">{t.noOpportunitiesYet}</h3>
-        <p className="mb-4 text-sm text-muted-foreground">
-          {t.createFirstOpportunity}
-        </p>
+        <p className="mb-4 text-sm text-muted-foreground">{t.createFirstOpportunity}</p>
       </div>
     );
   }
@@ -122,9 +118,9 @@ export function OpportunitiesTable({
             <TableHead className="w-24">{t.status}</TableHead>
             <TableHead className="min-w-[250px]">{t.title}</TableHead>
             <TableHead className="w-28">{t.type}</TableHead>
+            <TableHead className="w-28">Priority</TableHead>
             <TableHead className="w-28">{t.applicants}</TableHead>
-            <TableHead className="w-24">{t.visibility}</TableHead>
-            <TableHead className="w-28">{t.deadline}</TableHead>
+            <TableHead className="w-28">Closed At</TableHead>
             <TableHead className="w-28">{t.publishedAt}</TableHead>
             <TableHead className="w-16">{t.actions}</TableHead>
           </TableRow>
@@ -134,11 +130,7 @@ export function OpportunitiesTable({
             const isSelected = selectedOpportunities.includes(opp.id);
 
             return (
-              <TableRow
-                key={opp.id}
-                className="cursor-pointer"
-                onClick={() => onOpenDrawer(opp)}
-              >
+              <TableRow key={opp.id} className="cursor-pointer" onClick={() => onOpenDrawer(opp)}>
                 <TableCell onClick={(e) => e.stopPropagation()}>
                   <Checkbox
                     checked={isSelected}
@@ -147,48 +139,35 @@ export function OpportunitiesTable({
                   />
                 </TableCell>
                 <TableCell>
-                  <StatusBadge variant={statusMap[opp.status]}>
-                    {statusLabels[opp.status] || opp.status}
-                  </StatusBadge>
+                  <StatusBadge variant={statusMap[opp.status]}>{formatEnumLabel(opp.status)}</StatusBadge>
                 </TableCell>
                 <TableCell>
                   <div className="min-w-0">
                     <p className="font-medium text-foreground line-clamp-1">{opp.title}</p>
-                    <p className="text-sm text-muted-foreground line-clamp-1">{opp.shortDescription}</p>
+                    <p className="text-sm text-muted-foreground line-clamp-1">
+                      {formatEnumLabel(opp.category)} • {formatEnumLabel(opp.applicationMethod)}
+                    </p>
                   </div>
                 </TableCell>
                 <TableCell>
                   <Badge variant="outline" className="capitalize">
-                    {typeLabels[opp.type]}
+                    {typeLabels[opp.type] ?? formatEnumLabel(opp.type)}
                   </Badge>
+                </TableCell>
+                <TableCell>
+                  <Badge variant="secondary">{formatEnumLabel(opp.priorityLevel)}</Badge>
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-1.5">
                     <Users className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm">{opp.applicantsCount}</span>
+                    <span className="text-sm">{opp.applicationCount}</span>
                   </div>
                 </TableCell>
                 <TableCell>
-                  <div className="flex items-center gap-1.5">
-                    {opp.visibility === "public" ? (
-                      <Globe className="h-4 w-4 text-muted-foreground" />
-                    ) : (
-                      <Lock className="h-4 w-4 text-muted-foreground" />
-                    )}
-                    <span className="text-xs capitalize text-muted-foreground">
-                      {visibilityLabels[opp.visibility] || opp.visibility}
-                    </span>
-                  </div>
+                  <span className="text-sm text-muted-foreground">{formatDate(opp.closedAt)}</span>
                 </TableCell>
                 <TableCell>
-                  <span className="text-sm text-muted-foreground">
-                    {opp.deadline || t.open}
-                  </span>
-                </TableCell>
-                <TableCell>
-                  <span className="text-sm text-muted-foreground">
-                    {opp.publishedAt || "—"}
-                  </span>
+                  <span className="text-sm text-muted-foreground">{formatDate(opp.publishedAt)}</span>
                 </TableCell>
                 <TableCell onClick={(e) => e.stopPropagation()}>
                   <DropdownMenu>
@@ -207,17 +186,8 @@ export function OpportunitiesTable({
                         {t.edit}
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => onTogglePublish(opp)}>
-                        {opp.status === "published" ? (
-                          <>
-                            <ToggleLeft className="mr-2 h-4 w-4" />
-                            {t.unpublish}
-                          </>
-                        ) : (
-                          <>
-                            <ToggleRight className="mr-2 h-4 w-4" />
-                            {t.publish}
-                          </>
-                        )}
+                        <ToggleRight className="mr-2 h-4 w-4" />
+                        {opp.status === "PUBLISHED" ? t.closeApplications : t.publish}
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => onClose(opp)}>
                         <XCircle className="mr-2 h-4 w-4" />
@@ -228,10 +198,7 @@ export function OpportunitiesTable({
                         {t.viewApplicants}
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem
-                        className="text-destructive"
-                        onClick={() => onDelete(opp)}
-                      >
+                      <DropdownMenuItem className="text-destructive" onClick={() => onDelete(opp)}>
                         <Trash2 className="mr-2 h-4 w-4" />
                         {t.delete}
                       </DropdownMenuItem>

@@ -1,46 +1,99 @@
 import { getGraphQLClient } from "@/core/graphql-client";
 import type {
   OpportunityType,
+  OpportunityListItemType,
   OpportunityListResponse,
   ListOpportunitiesInput,
   ApplicationListResponse,
   GetApplicationsInput,
+  ApplicationDetailType,
   CreateOpportunityInput,
   CreateOpportunityResponse,
   UpdateOpportunityInput,
   ReviewApplicationInput,
+  PriorityLevelEnum,
 } from "./types";
 
-const OPPORTUNITY_FIELDS = `
+const OPPORTUNITY_LIST_FIELDS = `
   id
-  ownerType ownerId
-  owner { id name avatarUrl type }
+  title
+  status
+  type
+  category
+  applicationMethod
+  applicationCount
+  priorityLevel
+  createdAt
+  publishedAt
+  closedAt
+`;
+
+const OPPORTUNITY_DETAIL_FIELDS = `
+  id
+  title
+  description
+  responsibilities
+  requirements
+  status
+  priorityLevel
+  applicationMethod
+  externalLink
+  applicationEmail
+  workMode
+  engagementType
+  location
+  salaryMin
+  salaryMax
+  salaryCurrency
+  deadline
+  skills
+  tags
+  applicationCount
+  ownerType
+  ownerId
+  createdAt
+  updatedAt
+  publishedAt
+  closedAt
   type category subCategory
-  title description responsibilities requirements
-  workMode engagementType location
-  visibility applicationMethod externalLink applicationEmail
-  status priorityLevel
-  salaryMin salaryMax salaryCurrency
-  deadline applicationCount skills tags
-  isSavedByCurrentUser hasCurrentUserApplied currentUserApplicationId
-  createdAt updatedAt publishedAt closedAt
+  visibility
 `;
 
 const GET_OPPORTUNITY = /* GraphQL */ `
-  query GetOpportunity($id: String!) {
-    opportunity(id: $id) {
-      ${OPPORTUNITY_FIELDS}
+  query GetOpportunity($id: ID!) {
+    getOpportunity(id: $id) {
+      ${OPPORTUNITY_DETAIL_FIELDS}
     }
   }
 `;
 
 const LIST_OPPORTUNITIES = /* GraphQL */ `
   query ListOpportunities($input: ListOpportunitiesInput) {
-    opportunities(input: $input) {
+    listOpportunities(input: $input) {
       total
       opportunities {
-        ${OPPORTUNITY_FIELDS}
+        ${OPPORTUNITY_LIST_FIELDS}
       }
+    }
+  }
+`;
+
+const GET_APPLICATION = /* GraphQL */ `
+  query GetApplication($id: ID!) {
+    getApplication(id: $id) {
+      id
+      opportunityId
+      applicantId
+      status
+      coverLetter
+      reviewNotes
+      reviewedBy
+      reviewedAt
+      createdAt
+      updatedAt
+      customAnswers
+      resumeFileRef { path filename mimeType sizeBytes }
+      opportunity { id title }
     }
   }
 `;
@@ -51,13 +104,8 @@ const GET_APPLICATIONS = /* GraphQL */ `
       total
       applications {
         id opportunityId applicantId status
-        coverLetter customAnswers reviewNotes reviewedBy reviewedAt
+        coverLetter reviewNotes reviewedBy reviewedAt
         createdAt updatedAt
-        resumeFileRef { path filename mimeType sizeBytes }
-        opportunity {
-          id title type category status
-          owner { id name avatarUrl type }
-        }
       }
     }
   }
@@ -66,50 +114,56 @@ const GET_APPLICATIONS = /* GraphQL */ `
 const CREATE_OPPORTUNITY = /* GraphQL */ `
   mutation CreateOpportunity($input: CreateOpportunityInput!) {
     createOpportunity(input: $input) {
-      id title status createdAt
+      id
     }
   }
 `;
 
 const UPDATE_OPPORTUNITY = /* GraphQL */ `
-  mutation UpdateOpportunity($id: String!, $input: UpdateOpportunityInput!) {
+  mutation UpdateOpportunity($id: ID!, $input: UpdateOpportunityInput!) {
     updateOpportunity(id: $id, input: $input)
   }
 `;
 
 const PUBLISH_OPPORTUNITY = /* GraphQL */ `
-  mutation PublishOpportunity($id: String!) {
+  mutation PublishOpportunity($id: ID!) {
     publishOpportunity(id: $id)
   }
 `;
 
 const CLOSE_OPPORTUNITY = /* GraphQL */ `
-  mutation CloseOpportunity($id: String!, $reason: String) {
+  mutation CloseOpportunity($id: ID!, $reason: String) {
     closeOpportunity(id: $id, reason: $reason)
   }
 `;
 
 const DELETE_OPPORTUNITY = /* GraphQL */ `
-  mutation DeleteOpportunity($id: String!) {
+  mutation DeleteOpportunity($id: ID!) {
     deleteOpportunity(id: $id)
   }
 `;
 
+const SET_OPPORTUNITY_PRIORITY = /* GraphQL */ `
+  mutation SetOpportunityPriority($opportunityId: ID!, $priority: String!) {
+    setOpportunityPriority(opportunityId: $opportunityId, priority: $priority)
+  }
+`;
+
 const ACCEPT_APPLICATION = /* GraphQL */ `
-  mutation AcceptApplication($id: String!) {
-    acceptApplication(id: $id)
+  mutation AcceptApplication($id: ID!, $notes: String) {
+    acceptApplication(id: $id, notes: $notes)
   }
 `;
 
 const REJECT_APPLICATION = /* GraphQL */ `
-  mutation RejectApplication($id: String!, $reason: String) {
+  mutation RejectApplication($id: ID!, $reason: String) {
     rejectApplication(id: $id, reason: $reason)
   }
 `;
 
 const REVIEW_APPLICATION = /* GraphQL */ `
-  mutation ReviewApplication($input: ReviewApplicationInput!) {
-    reviewApplication(input: $input)
+  mutation ReviewApplication($applicationId: ID!, $notes: String) {
+    reviewApplication(applicationId: $applicationId, notes: $notes)
   }
 `;
 
@@ -119,7 +173,7 @@ export interface GetOpportunityVariables {
   id: string;
 }
 export interface GetOpportunityResult {
-  opportunity: OpportunityType | null;
+  getOpportunity: OpportunityType | null;
 }
 
 export async function getOpportunity(id: string): Promise<OpportunityType | null> {
@@ -128,14 +182,14 @@ export async function getOpportunity(id: string): Promise<OpportunityType | null
     GET_OPPORTUNITY,
     { id }
   );
-  return data.opportunity;
+  return data.getOpportunity;
 }
 
 export interface ListOpportunitiesVariables {
   input?: ListOpportunitiesInput | null;
 }
 export interface ListOpportunitiesResult {
-  opportunities: OpportunityListResponse;
+  listOpportunities: OpportunityListResponse;
 }
 
 export async function listOpportunities(
@@ -146,7 +200,23 @@ export async function listOpportunities(
     LIST_OPPORTUNITIES,
     { input: input ?? undefined }
   );
-  return data.opportunities;
+  return data.listOpportunities;
+}
+
+export interface GetApplicationVariables {
+  id: string;
+}
+export interface GetApplicationResult {
+  getApplication: ApplicationDetailType | null;
+}
+
+export async function getApplication(id: string): Promise<ApplicationDetailType | null> {
+  const client = getGraphQLClient();
+  const data = await client.request<GetApplicationResult, GetApplicationVariables>(
+    GET_APPLICATION,
+    { id }
+  );
+  return data.getApplication;
 }
 
 export interface GetApplicationsVariables {
@@ -217,10 +287,26 @@ export async function deleteOpportunity(id: string): Promise<boolean> {
   return data.deleteOpportunity;
 }
 
-export async function acceptApplication(id: string): Promise<boolean> {
+export async function setOpportunityPriority(
+  opportunityId: string,
+  priority: PriorityLevelEnum
+): Promise<boolean> {
+  const client = getGraphQLClient();
+  const data = await client.request<{ setOpportunityPriority: boolean }>(
+    SET_OPPORTUNITY_PRIORITY,
+    {
+      opportunityId,
+      priority,
+    }
+  );
+  return data.setOpportunityPriority;
+}
+
+export async function acceptApplication(id: string, notes?: string | null): Promise<boolean> {
   const client = getGraphQLClient();
   const data = await client.request<{ acceptApplication: boolean }>(ACCEPT_APPLICATION, {
     id,
+    notes: notes ?? undefined,
   });
   return data.acceptApplication;
 }
@@ -236,8 +322,12 @@ export async function rejectApplication(id: string, reason?: string | null): Pro
 
 export async function reviewApplication(input: ReviewApplicationInput): Promise<boolean> {
   const client = getGraphQLClient();
-  const data = await client.request<{ reviewApplication: boolean }>(REVIEW_APPLICATION, {
-    input,
-  });
+  const data = await client.request<{ reviewApplication: boolean }>(
+    REVIEW_APPLICATION,
+    {
+      applicationId: input.applicationId,
+      notes: input.notes ?? undefined,
+    }
+  );
   return data.reviewApplication;
 }

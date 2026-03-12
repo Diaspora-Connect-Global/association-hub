@@ -12,12 +12,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AlertTriangle } from "lucide-react";
-import { Opportunity } from "@/types/opportunities";
+import type { OpportunityListItemType } from "@/services/graphql/opportunities";
 
 interface DeleteOpportunityModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  opportunity: Opportunity | null;
+  opportunity: OpportunityListItemType | null;
   onConfirm: () => void;
 }
 
@@ -58,8 +58,8 @@ export function DeleteOpportunityModal({
 
         <div className="rounded-lg bg-muted/50 p-3 text-sm text-muted-foreground">
           <p>• This will permanently delete the opportunity</p>
-          <p>• All {opportunity.applicantsCount} applicant records will be archived</p>
-          <p>• Associated drafts will be removed</p>
+          <p>• All {opportunity.applicationCount} application records will be removed</p>
+          <p>• This action cannot be undone</p>
         </div>
 
         <div className="space-y-2 py-2">
