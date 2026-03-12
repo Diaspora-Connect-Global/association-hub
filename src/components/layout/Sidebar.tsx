@@ -299,11 +299,19 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
             "flex items-center gap-3",
             collapsed ? "justify-center" : "px-2"
           )}>
-            <img 
-              src={diaspoPlugLogo} 
-              alt="DiaspoPlug" 
-              className="h-10 w-10 object-contain flex-shrink-0"
-            />
+            {association?.avatarUrl ? (
+              <img
+                src={association.avatarUrl}
+                alt={association.name}
+                className="h-10 w-10 rounded-full object-cover flex-shrink-0"
+              />
+            ) : (
+              <img 
+                src={diaspoPlugLogo} 
+                alt="DiaspoPlug" 
+                className="h-10 w-10 object-contain flex-shrink-0"
+              />
+            )}
             {!collapsed && (
               <div>
                 <h1 className="label-small font-bold text-sidebar-foreground">DiaspoPlug</h1>

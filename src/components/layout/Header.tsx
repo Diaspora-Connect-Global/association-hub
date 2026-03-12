@@ -59,13 +59,22 @@ export function Header({ title, subtitle, sidebarCollapsed, onToggleSidebar }: H
           )}
 
           {/* Association Scope */}
-          <div className="rounded-lg border border-border bg-card px-3 py-2">
-            <p className="caption-small uppercase tracking-wider text-muted-foreground">
-              {associationLabel}
-            </p>
-            <p className="label-small text-foreground line-clamp-1 max-w-[220px]">
-              {adminLabel}
-            </p>
+          <div className="flex items-center gap-3 rounded-lg border border-border bg-card px-3 py-2">
+            {association?.avatarUrl ? (
+              <img src={association.avatarUrl} alt={associationLabel} className="h-10 w-10 rounded-full object-cover" />
+            ) : (
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">
+                {associationLabel.charAt(0).toUpperCase()}
+              </div>
+            )}
+            <div>
+              <p className="caption-small uppercase tracking-wider text-muted-foreground">
+                {associationLabel}
+              </p>
+              <p className="label-small text-foreground line-clamp-1 max-w-[220px]">
+                {adminLabel}
+              </p>
+            </div>
           </div>
 
           {/* Divider */}
