@@ -1,0 +1,124 @@
+export type JoinPolicy = "OPEN" | "REQUEST" | "INVITE_ONLY";
+export type AssociationVisibility = "PUBLIC" | "PRIVATE";
+export type MembershipStatus = "ACTIVE" | "SUSPENDED";
+export type MemberRole = "MEMBER" | "MODERATOR";
+export type ReportStatus = "PENDING" | "RESOLVED";
+export type ReportResolution = "WARNING_ISSUED" | "MEMBER_REMOVED" | "NO_ACTION";
+
+export interface AssociationType {
+  id: string;
+  name: string;
+  description: string | null;
+  joinPolicy: JoinPolicy;
+  visibility: AssociationVisibility;
+  memberCount: number;
+  avatarUrl: string | null;
+  defaultGroupId: string | null;
+  createdAt: string;
+}
+
+export interface AssociationStatsType {
+  totalMembers: number;
+  activeMembers: number;
+  pendingRequests: number;
+}
+
+export interface UpdateAssociationInput {
+  id: string;
+  name?: string;
+  description?: string;
+  joinPolicy?: JoinPolicy;
+  visibility?: AssociationVisibility;
+  avatarKey?: string;
+}
+
+export interface AssociationAvatarUploadType {
+  uploadUrl: string;
+  fileKey: string;
+}
+
+export interface AssociationMemberType {
+  userId: string;
+  role: MemberRole;
+  status: MembershipStatus;
+  joinedAt: string;
+}
+
+export interface AssociationMemberListType {
+  members: AssociationMemberType[];
+  total: number;
+  page: number;
+}
+
+export interface PendingMembershipRequestType {
+  userId: string;
+  requestedAt: string;
+  message: string | null;
+}
+
+export interface PendingMembershipRequestListType {
+  requests: PendingMembershipRequestType[];
+  total: number;
+}
+
+export interface MemberActionInput {
+  entityId: string;
+  entityType: "ASSOCIATION";
+  userId: string;
+}
+
+export interface RemoveMemberInput extends MemberActionInput {
+  reason: string;
+}
+
+export interface SuspendMemberInput extends MemberActionInput {
+  reason: string;
+}
+
+export interface UpdateMemberRoleInput extends MemberActionInput {
+  role: MemberRole;
+}
+
+export interface MutationResultType {
+  success: boolean;
+  message: string | null;
+}
+
+export interface MemberReportType {
+  id: string;
+  reportedUserId: string;
+  reportedBy: string;
+  reason: string;
+  details: string | null;
+  status: ReportStatus;
+  createdAt: string;
+}
+
+export interface MemberReportListType {
+  reports: MemberReportType[];
+  total: number;
+}
+
+export interface ResolveReportInput {
+  reportId: string;
+  resolution: ReportResolution;
+  notes?: string;
+}
+
+export interface GroupType {
+  id: string;
+  name: string;
+  memberCount: number;
+  privacy: string;
+}
+
+export interface GroupMemberType {
+  userId: string;
+  role: string;
+  status: string;
+}
+
+export interface GroupMemberListType {
+  members: GroupMemberType[];
+  total: number;
+}

@@ -2,7 +2,8 @@ import { Bell, Search, HelpCircle, LogOut, PanelLeft, PanelLeftClose } from "luc
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useT } from "@/hooks/useT";
-import { useAdminAuthStore } from "@/stores/adminAuthStore";
+import { clearAdminSession, useAdminAuthStore } from "@/stores/adminAuthStore";
+import { useAssociationAdminStore } from "@/stores/associationAdminStore";
 import {
   Tooltip,
   TooltipContent,
@@ -20,16 +21,14 @@ export function Header({ title, subtitle, sidebarCollapsed, onToggleSidebar }: H
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const t = useT();
-  const { admin, logout } = useAdminAuthStore((state) => ({
-    admin: state.admin,
-    logout: state.logout,
-  }));
+  const admin = useAdminAuthStore((state) => state.admin);
+  const association = useAssociationAdminStore((state) => state.association);
 
-  const associationLabel = admin?.scopeId ? `Association ${admin.scopeId}` : "Association scope";
+  const associationLabel = association?.name || (admin?.scopeId ? `Association ${admin.scopeId}` : "Association scope");
   const adminLabel = admin?.role?.name || admin?.userId || "Association admin";
 
   const handleLogout = () => {
-    logout();
+    clearAdminSession();
     navigate("/login", { replace: true });
   };
 

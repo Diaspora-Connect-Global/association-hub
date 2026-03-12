@@ -31,3 +31,9 @@ export interface AdminLoginResponse {
   refreshToken: string | null;
   admin: AdminUserInfo | null;
 }
+
+export interface RefreshAdminTokenResponse {
+  success: boolean;
+  accessToken: string | null;
+  refreshToken: string | null;
+}

@@ -1,321 +1,135 @@
-import { useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { UsersRound, Search, UserPlus } from "lucide-react";
-import { Group, GroupFormData } from "@/types/groups";
-import { GroupCard } from "@/components/groups/GroupCard";
-import { CreateEditGroupModal } from "@/components/groups/CreateEditGroupModal";
-import { GroupDetailsModal } from "@/components/groups/GroupDetailsModal";
-import { MembersManagementModal } from "@/components/groups/MembersManagementModal";
-import { DeleteGroupModal } from "@/components/groups/DeleteGroupModal";
-import { InviteLinkModal } from "@/components/groups/InviteLinkModal";
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { RefreshCw, UsersRound } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useT } from "@/hooks/useT";
-
-// Mock data
-const mockGroups: Group[] = [
-  {
-    id: "1",
-    name: "General Discussion",
-    description: "A place for all members to chat and share ideas.",
-    avatarEmoji: "💬",
-    privacy: "public",
-    defaultNotifications: "all",
-    memberCount: 156,
-    createdAt: "Nov 10, 2024",
-    updatedAt: "Dec 1, 2024",
-    createdBy: "admin",
-  },
-  {
-    id: "2",
-    name: "Tech Talk",
-    description: "Discuss technology trends, share resources, and collaborate on projects.",
-    avatarEmoji: "💻",
-    privacy: "public",
-    defaultNotifications: "all",
-    memberCount: 89,
-    createdAt: "Nov 15, 2024",
-    updatedAt: "Nov 28, 2024",
-    createdBy: "admin",
-  },
-  {
-    id: "3",
-    name: "Leadership Committee",
-    description: "Private group for association leadership discussions.",
-    avatarEmoji: "👔",
-    privacy: "private",
-    defaultNotifications: "mentions",
-    memberCount: 12,
-    createdAt: "Oct 20, 2024",
-    updatedAt: "Dec 2, 2024",
-    createdBy: "admin",
-  },
-  {
-    id: "4",
-    name: "Event Planning",
-    description: "Coordinate and plan upcoming association events.",
-    avatarEmoji: "📅",
-    privacy: "private",
-    defaultNotifications: "all",
-    memberCount: 24,
-    createdAt: "Nov 5, 2024",
-    updatedAt: "Dec 3, 2024",
-    createdBy: "admin",
-  },
-  {
-    id: "5",
-    name: "Mentorship Network",
-    description: "Connect mentors with mentees for professional growth.",
-    avatarEmoji: "🎓",
-    privacy: "private",
-    defaultNotifications: "mentions",
-    memberCount: 45,
-    createdAt: "Sep 15, 2024",
-    updatedAt: "Nov 20, 2024",
-    createdBy: "admin",
-  },
-  {
-    id: "6",
-    name: "Social & Networking",
-    description: "Casual conversations and networking opportunities.",
-    avatarEmoji: "🎉",
-    privacy: "public",
-    defaultNotifications: "muted",
-    memberCount: 203,
-    createdAt: "Aug 1, 2024",
-    updatedAt: "Dec 4, 2024",
-    createdBy: "admin",
-  },
-];
+import { getAdminAssociationId } from "@/stores/adminAuthStore";
+import { useAssociationAdminStore } from "@/stores/associationAdminStore";
+import { getAssociation, getGroup, getGroupMembers, type GroupMemberType, type GroupType } from "@/services/graphql/association";
 
 export default function Groups() {
   const t = useT();
-  const [groups] = useState<Group[]>(mockGroups);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [privacyFilter, setPrivacyFilter] = useState<string>("all");
-  const [sortBy, setSortBy] = useState<string>("newest");
+  const associationId = useMemo(() => getAdminAssociationId(), []);
+  const setAssociation = useAssociationAdminStore((state) => state.setAssociation);
 
-  // Modal states
-  const [createModalOpen, setCreateModalOpen] = useState(false);
-  const [editingGroup, setEditingGroup] = useState<Group | null>(null);
-  const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
-  const [detailsModalOpen, setDetailsModalOpen] = useState(false);
-  const [membersModalOpen, setMembersModalOpen] = useState(false);
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [groupToDelete, setGroupToDelete] = useState<Group | null>(null);
-  const [inviteLinkModalOpen, setInviteLinkModalOpen] = useState(false);
-  const [inviteLinkGroup, setInviteLinkGroup] = useState<Group | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [defaultGroup, setDefaultGroup] = useState<GroupType | null>(null);
+  const [groupMembers, setGroupMembers] = useState<GroupMemberType[]>([]);
 
-  // Filter and sort groups
-  const filteredGroups = groups
-    .filter((group) => {
-      const matchesSearch = group.name.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesPrivacy = privacyFilter === "all" || group.privacy === privacyFilter;
-      return matchesSearch && matchesPrivacy;
-    })
-    .sort((a, b) => {
-      switch (sortBy) {
-        case "oldest":
-          return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
-        case "alphabetical":
-          return a.name.localeCompare(b.name);
-        default:
-          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  const loadDefaultGroup = useCallback(async () => {
+    if (!associationId) return;
+    setLoading(true);
+
+    try {
+      const association = await getAssociation(associationId);
+      setAssociation(association);
+
+      if (!association.defaultGroupId) {
+        setDefaultGroup(null);
+        setGroupMembers([]);
+        return;
       }
-    });
 
-  // Stats
-  const totalGroups = groups.length;
-  const publicGroups = groups.filter(g => g.privacy === "public").length;
-  const privateGroups = groups.filter(g => g.privacy === "private").length;
-  const totalMembers = groups.reduce((sum, g) => sum + g.memberCount, 0);
+      const [group, members] = await Promise.all([
+        getGroup(association.defaultGroupId),
+        getGroupMembers({ groupId: association.defaultGroupId, page: 1, limit: 50 }),
+      ]);
 
-  // Handlers
-  const handleViewDetails = (group: Group) => {
-    setSelectedGroup(group);
-    setDetailsModalOpen(true);
-  };
+      setDefaultGroup(group);
+      setGroupMembers(members.members);
+    } catch (err) {
+      toast({
+        title: "Group load failed",
+        description: err instanceof Error ? err.message : "Unable to load default group.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  }, [associationId, setAssociation]);
 
-  const handleEdit = (group: Group) => {
-    setEditingGroup(group);
-    setCreateModalOpen(true);
-  };
-
-  const handleManageMembers = (group: Group) => {
-    setSelectedGroup(group);
-    setMembersModalOpen(true);
-  };
-
-  const handleDelete = (group: Group) => {
-    setGroupToDelete(group);
-    setDeleteModalOpen(true);
-  };
-
-  const handleInviteLink = (group: Group) => {
-    setInviteLinkGroup(group);
-    setInviteLinkModalOpen(true);
-  };
-
-  const handleConfirmDelete = () => {
-    toast({
-      title: t.delete,
-      description: "The group has been permanently deleted.",
-    });
-    setDeleteModalOpen(false);
-    setGroupToDelete(null);
-  };
-
-  const handleCreateSubmit = (data: GroupFormData) => {
-    toast({
-      title: editingGroup ? t.edit : t.create,
-      description: editingGroup 
-        ? "Group details updated successfully."
-        : "Your new group is ready.",
-    });
-    setEditingGroup(null);
-  };
+  useEffect(() => {
+    void loadDefaultGroup();
+  }, [loadDefaultGroup]);
 
   return (
-    <AdminLayout title={t.groupsTitle} subtitle={t.groupsSubtitle}>
-      {/* Top Controls */}
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder={`${t.search}...`}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 w-64"
-            />
-          </div>
-          <Select value={privacyFilter} onValueChange={setPrivacyFilter}>
-            <SelectTrigger className="w-[130px]">
-              <SelectValue placeholder={t.filter} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">{t.allVisibility}</SelectItem>
-              <SelectItem value="public">{t.public}</SelectItem>
-              <SelectItem value="private">Private</SelectItem>
-            </SelectContent>
-          </Select>
-          <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="w-[150px]">
-              <SelectValue placeholder="Sort" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="newest">Newest First</SelectItem>
-              <SelectItem value="oldest">Oldest First</SelectItem>
-              <SelectItem value="alphabetical">Alphabetical</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <Button onClick={() => setCreateModalOpen(true)}>
-          <UserPlus className="h-4 w-4 mr-2" />
-          {t.createGroup}
-        </Button>
-      </div>
-
-      {/* Stats */}
-      <div className="mb-6 grid gap-4 sm:grid-cols-4">
-        <div className="rounded-lg border border-border bg-card p-4">
-          <p className="text-sm text-muted-foreground">{t.activeGroups}</p>
-          <p className="text-2xl font-bold text-foreground">{totalGroups}</p>
-        </div>
-        <div className="rounded-lg border border-border bg-card p-4">
-          <p className="text-sm text-muted-foreground">{t.public}</p>
-          <p className="text-2xl font-bold text-primary">{publicGroups}</p>
-        </div>
-        <div className="rounded-lg border border-border bg-card p-4">
-          <p className="text-sm text-muted-foreground">Private</p>
-          <p className="text-2xl font-bold text-foreground">{privateGroups}</p>
-        </div>
-        <div className="rounded-lg border border-border bg-card p-4">
-          <p className="text-sm text-muted-foreground">{t.totalGroupMembers}</p>
-          <p className="text-2xl font-bold text-foreground">{totalMembers}</p>
-        </div>
-      </div>
-
-      {/* Groups Grid */}
-      {filteredGroups.length > 0 ? (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {filteredGroups.map((group, index) => (
-            <div
-              key={group.id}
-              className="animate-slide-up"
-              style={{ animationDelay: `${index * 50}ms` }}
-            >
-              <GroupCard
-                group={group}
-                onViewDetails={handleViewDetails}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-                onManageMembers={handleManageMembers}
-                onInviteLink={handleInviteLink}
-              />
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div className="text-center py-16 border border-dashed border-border rounded-lg">
-          <UsersRound className="h-16 w-16 mx-auto text-muted-foreground/50 mb-4" />
-          <h3 className="text-lg font-semibold text-foreground mb-2">{t.noResults}</h3>
-          <p className="text-muted-foreground mb-4">
-            Start by creating your first chat group for your association.
-          </p>
-          <Button onClick={() => setCreateModalOpen(true)}>
-            <UserPlus className="h-4 w-4 mr-2" />
-            {t.createGroup}
+    <AdminLayout title={t.groupsTitle} subtitle="Default group (read-only)">
+      <div className="space-y-6">
+        <div className="flex justify-end">
+          <Button variant="outline" onClick={() => void loadDefaultGroup()} disabled={loading}>
+            <RefreshCw className={`mr-2 h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+            Refresh
           </Button>
         </div>
-      )}
 
-      {/* Modals */}
-      <CreateEditGroupModal
-        open={createModalOpen}
-        onOpenChange={(open) => {
-          setCreateModalOpen(open);
-          if (!open) setEditingGroup(null);
-        }}
-        group={editingGroup}
-        onSubmit={handleCreateSubmit}
-      />
+        <Card>
+          <CardHeader>
+            <CardTitle>Default group</CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-2 text-sm text-muted-foreground md:grid-cols-3">
+            <p><span className="font-medium text-foreground">Name:</span> {defaultGroup?.name ?? "—"}</p>
+            <p><span className="font-medium text-foreground">Privacy:</span> {defaultGroup?.privacy ?? "—"}</p>
+            <p><span className="font-medium text-foreground">Member count:</span> {defaultGroup?.memberCount ?? 0}</p>
+          </CardContent>
+        </Card>
 
-      <GroupDetailsModal
-        open={detailsModalOpen}
-        onOpenChange={setDetailsModalOpen}
-        group={selectedGroup}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-        onManageMembers={handleManageMembers}
-      />
+        <Card>
+          <CardHeader>
+            <CardTitle>Group members</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>User ID</TableHead>
+                  <TableHead>Role</TableHead>
+                  <TableHead>Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {groupMembers.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={3} className="text-center text-muted-foreground">
+                      No members found.
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  groupMembers.map((member) => (
+                    <TableRow key={member.userId}>
+                      <TableCell>{member.userId}</TableCell>
+                      <TableCell>{member.role}</TableCell>
+                      <TableCell>{member.status}</TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
 
-      <MembersManagementModal
-        open={membersModalOpen}
-        onOpenChange={setMembersModalOpen}
-        group={selectedGroup}
-      />
+        <div className="rounded-lg border border-dashed border-border p-4 text-sm text-muted-foreground">
+          Group membership is synchronized automatically by the backend when association membership changes.
+          This view is read-only by design.
+        </div>
 
-      <DeleteGroupModal
-        open={deleteModalOpen}
-        onOpenChange={setDeleteModalOpen}
-        group={groupToDelete}
-        onConfirm={handleConfirmDelete}
-      />
-
-      <InviteLinkModal
-        open={inviteLinkModalOpen}
-        onOpenChange={setInviteLinkModalOpen}
-        group={inviteLinkGroup}
-      />
+        {!defaultGroup && (
+          <div className="text-center py-16 border border-dashed border-border rounded-lg">
+            <UsersRound className="h-16 w-16 mx-auto text-muted-foreground/50 mb-4" />
+            <h3 className="text-lg font-semibold text-foreground mb-2">No default group available</h3>
+            <p className="text-muted-foreground">This association does not currently expose a default group.</p>
+          </div>
+        )}
+      </div>
     </AdminLayout>
   );
 }

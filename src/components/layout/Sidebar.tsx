@@ -26,7 +26,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useT } from "@/hooks/useT";
-import { useAdminAuthStore } from "@/stores/adminAuthStore";
+import { clearAdminSession, useAdminAuthStore } from "@/stores/adminAuthStore";
+import { useAssociationAdminStore } from "@/stores/associationAdminStore";
 import diaspoPlugLogo from "@/assets/diaspo-plug-logo.svg";
 import {
   Collapsible,
@@ -46,6 +47,7 @@ interface NavItem {
   icon: React.ElementType;
   path?: string;
   children?: NavItem[];
+  badge?: number;
 }
 
 interface SidebarProps {
@@ -57,9 +59,11 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const t = useT();
-  const { admin, logout } = useAdminAuthStore((state) => ({
-    admin: state.admin,
-    logout: state.logout,
+  const admin = useAdminAuthStore((state) => state.admin);
+  const { pendingRequestsCount, pendingReportsCount, association } = useAssociationAdminStore((state) => ({
+    pendingRequestsCount: state.pendingRequestsCount,
+    pendingReportsCount: state.pendingReportsCount,
+    association: state.association,
   }));
 
   // Check if any vendor path is active
@@ -77,7 +81,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
     .join("") || "AA";
 
   const handleLogout = () => {
-    logout();
+    clearAdminSession();
     navigate("/login", { replace: true });
   };
 
@@ -103,11 +107,23 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
 
   const bottomNavItems: NavItem[] = [
     { id: "groups", label: t.groups, icon: Users, path: "/groups" },
-    { id: "tickets", label: t.supportTickets, icon: LifeBuoy, path: "/tickets" },
+    {
+      id: "tickets",
+      label: t.supportTickets,
+      icon: LifeBuoy,
+      path: "/tickets",
+      badge: pendingReportsCount > 0 ? pendingReportsCount : undefined,
+    },
     { id: "analytics", label: t.analytics, icon: BarChart2, path: "/analytics" },
     { id: "audit", label: t.auditLogs, icon: FileText, path: "/audit-logs" },
     { id: "settings", label: t.settings, icon: Settings, path: "/settings" },
   ];
+
+  const mergedMainNavItems = mainNavItems.map((item) =>
+    item.id === "members"
+      ? { ...item, badge: pendingRequestsCount > 0 ? pendingRequestsCount : undefined }
+      : item
+  );
 
   // Quick action handlers
   const handleQuickAction = (action: "post" | "event" | "opportunity" | "listing") => {
@@ -146,7 +162,16 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
           <span className="absolute left-0 h-6 w-1 rounded-r-full bg-primary" />
         )}
         <Icon className="h-4 w-4 flex-shrink-0" />
-        {!collapsed && item.label}
+        {!collapsed && (
+          <>
+            <span className="flex-1 truncate">{item.label}</span>
+            {typeof item.badge === "number" && item.badge > 0 && (
+              <span className="min-w-5 rounded-full bg-primary px-1.5 py-0.5 text-center text-[10px] font-semibold text-primary-foreground">
+                {item.badge > 99 ? "99+" : item.badge}
+              </span>
+            )}
+          </>
+        )}
       </NavLink>
     );
 
@@ -282,7 +307,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
             {!collapsed && (
               <div>
                 <h1 className="label-small font-bold text-sidebar-foreground">DiaspoPlug</h1>
-                <p className="caption-small text-muted-foreground">Admin Portal</p>
+                <p className="caption-small text-muted-foreground">{association?.name ?? "Admin Portal"}</p>
               </div>
             )}
           </div>
@@ -349,7 +374,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
         {/* Navigation */}
         <nav className="scrollbar-thin flex-1 overflow-y-auto p-4">
           <ul className="space-y-1">
-            {mainNavItems.map(renderNavItem)}
+            {mergedMainNavItems.map(renderNavItem)}
             {renderVendorSubmenu()}
             {bottomNavItems.map(renderNavItem)}
           </ul>

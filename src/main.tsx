@@ -1,11 +1,18 @@
 import { createRoot } from "react-dom/client";
 import { initGraphQLClient } from "@/core/graphql-client";
-import { clearAdminSession, getAdminAccessToken } from "@/stores/adminAuthStore";
+import {
+	clearAdminSession,
+	getAdminAccessToken,
+	getAdminRefreshToken,
+	updateAdminTokens,
+} from "@/stores/adminAuthStore";
 import App from "./App.tsx";
 import "./index.css";
 
 initGraphQLClient({
 	getAccessToken: getAdminAccessToken,
+	getRefreshToken: getAdminRefreshToken,
+	onAuthRefresh: updateAdminTokens,
 	onUnauthenticated: clearAdminSession,
 });
 

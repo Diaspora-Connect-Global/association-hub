@@ -1,108 +1,117 @@
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import { MetricCard } from "@/components/dashboard/MetricCard";
 import { ActivityFeed } from "@/components/dashboard/ActivityFeed";
 import { EngagementChart } from "@/components/dashboard/EngagementChart";
-import {
-  Users,
-  MessageSquare,
-  Briefcase,
-  Calendar,
-  ShoppingCart,
-  Package,
-  DollarSign,
-  UserCheck,
-  RefreshCw,
-} from "lucide-react";
-import { useState } from "react";
+import { Users, UserCheck, Clock3, RefreshCw, ShieldAlert } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useT } from "@/hooks/useT";
+import { toast } from "@/hooks/use-toast";
+import { getAdminAssociationId } from "@/stores/adminAuthStore";
+import { useAssociationAdminStore } from "@/stores/associationAdminStore";
+import {
+  getAssociation,
+  getAssociationStats,
+  getMemberReports,
+  getPendingMembershipRequests,
+} from "@/services/graphql/association";
 
 export default function Dashboard() {
   const t = useT();
-  const [dateRange, setDateRange] = useState("30d");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { association, stats, setAssociation, setStats, setPendingRequestsCount, setPendingReportsCount } =
+    useAssociationAdminStore((state) => ({
+      association: state.association,
+      stats: state.stats,
+      setAssociation: state.setAssociation,
+      setStats: state.setStats,
+      setPendingRequestsCount: state.setPendingRequestsCount,
+      setPendingReportsCount: state.setPendingReportsCount,
+    }));
+
+  const associationId = useMemo(() => getAdminAssociationId(), []);
+
+  const loadDashboard = useCallback(async () => {
+    if (!associationId) {
+      setError("Association scope is missing. Please sign in again.");
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const [associationData, statsData, pendingRequests, pendingReports] = await Promise.all([
+        getAssociation(associationId),
+        getAssociationStats(associationId),
+        getPendingMembershipRequests({ entityId: associationId, entityType: "ASSOCIATION", page: 1, limit: 1 }),
+        getMemberReports({ entityId: associationId, entityType: "ASSOCIATION", page: 1, limit: 1, status: "PENDING" }),
+      ]);
+
+      setAssociation(associationData);
+      setStats(statsData);
+      setPendingRequestsCount(pendingRequests.total ?? statsData.pendingRequests ?? 0);
+      setPendingReportsCount(pendingReports.total ?? 0);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to load association dashboard.";
+      setError(message);
+      toast({ title: "Dashboard load failed", description: message, variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
+  }, [associationId, setAssociation, setPendingReportsCount, setPendingRequestsCount, setStats]);
+
+  useEffect(() => {
+    void loadDashboard();
+  }, [loadDashboard]);
 
   return (
-    <AdminLayout title={t.dashboard} subtitle={`${t.welcomeBack}, Akua`}>
-      {/* Controls */}
-      <div className="mb-6 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <select
-            value={dateRange}
-            onChange={(e) => setDateRange(e.target.value)}
-            className="rounded-lg border border-input bg-background px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-          >
-            <option value="7d">{t.last7Days}</option>
-            <option value="30d">{t.last30Days}</option>
-            <option value="90d">{t.last90Days}</option>
-            <option value="365d">{t.lastYear}</option>
-          </select>
-        </div>
-        <button className="flex items-center gap-2 rounded-lg border border-input bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-muted">
-          <RefreshCw className="h-4 w-4" />
+    <AdminLayout title={t.dashboard} subtitle={association?.name ?? "Association overview"}>
+      <div className="mb-6 flex items-center justify-end">
+        <Button variant="outline" className="gap-2" onClick={() => void loadDashboard()} disabled={loading}>
+          <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
           {t.refresh}
-        </button>
+        </Button>
       </div>
 
-      {/* Metrics Grid */}
-      <div className="mb-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        <MetricCard
-          label={t.totalMembers}
-          value="1,284"
-          icon={Users}
-          trend={{ value: 12, isPositive: true }}
-        />
-        <MetricCard
-          label={t.activeMembers}
-          value="847"
-          icon={UserCheck}
-          trend={{ value: 8, isPositive: true }}
-        />
-        <MetricCard
-          label={t.activePosts}
-          value="156"
-          icon={MessageSquare}
-          trend={{ value: 24, isPositive: true }}
-        />
-        <MetricCard
-          label={t.activeOpportunities}
-          value="12"
-          icon={Briefcase}
-        />
-      </div>
+      {error && (
+        <Card className="mb-6 border-destructive/30">
+          <CardHeader>
+            <CardTitle className="text-destructive">Unable to load dashboard</CardTitle>
+          </CardHeader>
+          <CardContent>{error}</CardContent>
+        </Card>
+      )}
 
       <div className="mb-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <MetricCard label={t.totalMembers} value={stats?.totalMembers ?? "—"} icon={Users} />
+        <MetricCard label={t.activeMembers} value={stats?.activeMembers ?? "—"} icon={UserCheck} />
+        <MetricCard label="Pending requests" value={stats?.pendingRequests ?? "—"} icon={Clock3} />
         <MetricCard
-          label={t.upcomingEvents}
-          value="8"
-          icon={Calendar}
-        />
-        <MetricCard
-          label={t.activeListings}
-          value="34"
-          icon={ShoppingCart}
-        />
-        <MetricCard
-          label={t.totalOrders}
-          value="89"
-          icon={Package}
-          trend={{ value: 18, isPositive: true }}
-        />
-        <MetricCard
-          label={t.revenue}
-          value="$4,520"
-          icon={DollarSign}
-          trend={{ value: 22, isPositive: true }}
+          label="Join policy"
+          value={association?.joinPolicy ? association.joinPolicy.replace("_", " ") : "—"}
+          icon={ShieldAlert}
         />
       </div>
 
-      {/* Charts and Activity */}
-      <div className="grid gap-6 lg:grid-cols-5">
-        <div className="lg:col-span-3">
-          <EngagementChart />
-        </div>
-        <div className="lg:col-span-2">
-          <ActivityFeed />
-        </div>
+      <div className="mb-8 grid gap-6 lg:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle>Association profile</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2 text-sm text-muted-foreground">
+            <p><span className="font-medium text-foreground">Name:</span> {association?.name ?? "—"}</p>
+            <p><span className="font-medium text-foreground">Visibility:</span> {association?.visibility ?? "—"}</p>
+            <p><span className="font-medium text-foreground">Description:</span> {association?.description ?? "—"}</p>
+            <p><span className="font-medium text-foreground">Default group:</span> {association?.defaultGroupId ?? "—"}</p>
+          </CardContent>
+        </Card>
+        <EngagementChart />
       </div>
+
+      <ActivityFeed />
     </AdminLayout>
   );
 }

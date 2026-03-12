@@ -1,7 +1,8 @@
-export { adminLogin } from "./operations";
+export { adminLogin, refreshAdminToken } from "./operations";
 export type {
   AdminLoginInput,
   AdminLoginResponse,
+  RefreshAdminTokenResponse,
   AdminUserInfo,
   AdminRoleInfo,
   AdminScopeType,

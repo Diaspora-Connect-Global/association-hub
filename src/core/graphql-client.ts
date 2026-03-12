@@ -6,6 +6,8 @@ let client: GraphQLClient | null = null;
 
 interface GraphQLClientOptions {
   getAccessToken?: () => string | null;
+  getRefreshToken?: () => string | null;
+  onAuthRefresh?: (accessToken: string, refreshToken?: string | null) => void;
   onUnauthenticated?: () => void;
 }
 
@@ -27,7 +29,50 @@ function redirectToLogin() {
  * Creates a GraphQL client that adds Authorization header on each request when getAccessToken returns a value.
  */
 export function createGraphQLClient(options: GraphQLClientOptions = {}): GraphQLClient {
-  const { getAccessToken, onUnauthenticated } = options;
+  const { getAccessToken, getRefreshToken, onAuthRefresh, onUnauthenticated } = options;
+  let refreshPromise: Promise<string | null> | null = null;
+
+  const refreshAccessToken = async (): Promise<string | null> => {
+    if (!getRefreshToken) return null;
+    const refreshToken = getRefreshToken();
+    if (!refreshToken) return null;
+
+    if (!refreshPromise) {
+      refreshPromise = (async () => {
+        const response = await fetch(graphqlEndpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            query:
+              "mutation RefreshAdminToken($refreshToken: String!) { refreshAdminToken(refreshToken: $refreshToken) { success accessToken refreshToken } }",
+            variables: { refreshToken },
+          }),
+        });
+
+        const payload = (await response.json()) as {
+          data?: {
+            refreshAdminToken?: {
+              success?: boolean;
+              accessToken?: string | null;
+              refreshToken?: string | null;
+            };
+          };
+        };
+
+        const refreshed = payload?.data?.refreshAdminToken;
+        if (refreshed?.success && refreshed.accessToken) {
+          onAuthRefresh?.(refreshed.accessToken, refreshed.refreshToken ?? null);
+          return refreshed.accessToken;
+        }
+
+        return null;
+      })().finally(() => {
+        refreshPromise = null;
+      });
+    }
+
+    return refreshPromise;
+  };
 
   return new GraphQLClient(graphqlEndpoint, {
     fetch: async (url, init) => {
@@ -43,6 +88,9 @@ export function createGraphQLClient(options: GraphQLClientOptions = {}): GraphQL
       if (contentType.includes("application/json")) {
         try {
           const payload = await response.clone().json();
+          const hasRetried = headers.get("x-auth-retried") === "1";
+          const bodyText = typeof init?.body === "string" ? init.body : "";
+          const isRefreshOperation = bodyText.includes("refreshAdminToken");
           const hasUnauthenticatedError = Array.isArray(payload?.errors)
             ? payload.errors.some(
                 (error: { extensions?: { code?: string } }) =>
@@ -51,6 +99,17 @@ export function createGraphQLClient(options: GraphQLClientOptions = {}): GraphQL
             : false;
 
           if (hasUnauthenticatedError) {
+            if (!hasRetried && !isRefreshOperation) {
+              const refreshedAccessToken = await refreshAccessToken();
+
+              if (refreshedAccessToken) {
+                const retryHeaders = new Headers(init?.headers);
+                retryHeaders.set("Authorization", `Bearer ${refreshedAccessToken}`);
+                retryHeaders.set("x-auth-retried", "1");
+                return fetch(url, { ...init, headers: retryHeaders });
+              }
+            }
+
             onUnauthenticated?.();
             redirectToLogin();
           }

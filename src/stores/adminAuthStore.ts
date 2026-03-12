@@ -2,6 +2,17 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { adminLogin as adminLoginApi } from "@/services/graphql/adminAuth";
 import type { AdminUserInfo } from "@/services/graphql/adminAuth";
+import { useAssociationAdminStore } from "@/stores/associationAdminStore";
+
+type JwtRole = "ASSOCIATION_ADMIN" | string;
+type JwtScopeType = "ASSOCIATION" | string;
+
+interface DecodedAdminJwt {
+  role?: JwtRole;
+  scopeType?: JwtScopeType;
+  scopeId?: string;
+  exp?: number;
+}
 
 function decodeJwtPayload(token: string): Record<string, unknown> | null {
   try {
@@ -18,6 +29,19 @@ function decodeJwtPayload(token: string): Record<string, unknown> | null {
   }
 }
 
+function decodeAdminJwt(token: string | null): DecodedAdminJwt | null {
+  if (!token) return null;
+  const payload = decodeJwtPayload(token);
+  if (!payload) return null;
+
+  return {
+    role: typeof payload.role === "string" ? payload.role : undefined,
+    scopeType: typeof payload.scopeType === "string" ? payload.scopeType : undefined,
+    scopeId: typeof payload.scopeId === "string" ? payload.scopeId : undefined,
+    exp: typeof payload.exp === "number" ? payload.exp : undefined,
+  };
+}
+
 function getTokenExpiry(token: string | null): number | null {
   if (!token) return null;
 
@@ -31,6 +55,7 @@ interface AdminAuthState {
   accessToken: string | null;
   refreshToken: string | null;
   admin: AdminUserInfo | null;
+  myAssociationId: string | null;
   tokenExpiresAt: number | null;
   isAuthenticated: boolean;
   isLoading: boolean;
@@ -48,6 +73,7 @@ export const useAdminAuthStore = create<AdminAuthState>()(
       accessToken: null,
       refreshToken: null,
       admin: null,
+      myAssociationId: null,
       tokenExpiresAt: null,
       isAuthenticated: false,
       isLoading: false,
@@ -57,16 +83,35 @@ export const useAdminAuthStore = create<AdminAuthState>()(
         set({ isLoading: true, error: null });
         try {
           const response = await adminLoginApi({ email, password });
+
+          if (response.success && response.admin?.isActive === false) {
+            const inactiveMessage = "Your account has been disabled. Contact the system administrator.";
+            set({ isLoading: false, error: inactiveMessage });
+            return { success: false, error: inactiveMessage };
+          }
+
+          const decodedJwt = decodeAdminJwt(response.accessToken ?? null);
+          const jwtScopeId = decodedJwt?.scopeId;
+          const jwtScopeType = decodedJwt?.scopeType;
+          const jwtRole = decodedJwt?.role;
+          const derivedAssociationId =
+            jwtScopeType === "ASSOCIATION" && jwtScopeId ? jwtScopeId : response.admin?.scopeId ?? null;
+
           if (
             response.success &&
             response.accessToken &&
             response.admin &&
-            response.admin.scopeType === "ASSOCIATION"
+            response.admin.scopeType === "ASSOCIATION" &&
+            response.admin.isActive &&
+            derivedAssociationId &&
+            jwtScopeType === "ASSOCIATION" &&
+            jwtRole === "ASSOCIATION_ADMIN"
           ) {
             set({
               accessToken: response.accessToken,
               refreshToken: response.refreshToken ?? null,
               admin: response.admin,
+              myAssociationId: derivedAssociationId,
               tokenExpiresAt: getTokenExpiry(response.accessToken),
               isAuthenticated: true,
               isLoading: false,
@@ -80,6 +125,8 @@ export const useAdminAuthStore = create<AdminAuthState>()(
             response.message ??
             (response.admin?.scopeType && response.admin.scopeType !== "ASSOCIATION"
               ? "This portal is restricted to association admin accounts."
+              : !response.admin?.isActive
+                ? "Your account has been disabled. Contact the system administrator."
               : "Login failed");
 
           set({
@@ -99,6 +146,7 @@ export const useAdminAuthStore = create<AdminAuthState>()(
           accessToken: null,
           refreshToken: null,
           admin: null,
+          myAssociationId: null,
           tokenExpiresAt: null,
           isAuthenticated: false,
           error: null,
@@ -114,15 +162,24 @@ export const useAdminAuthStore = create<AdminAuthState>()(
         if (!state) return;
 
         const expiry = getTokenExpiry(state.accessToken);
+        const decoded = decodeAdminJwt(state.accessToken);
+        const associationId =
+          decoded?.scopeType === "ASSOCIATION" && decoded.scopeId
+            ? decoded.scopeId
+            : state.admin?.scopeType === "ASSOCIATION"
+              ? state.admin.scopeId
+              : null;
         const isExpired = typeof expiry === "number" ? Date.now() >= expiry : false;
 
         state.tokenExpiresAt = expiry;
-        state.isAuthenticated = Boolean(state.accessToken && state.admin && !isExpired);
+        state.myAssociationId = associationId;
+        state.isAuthenticated = Boolean(state.accessToken && state.admin && associationId && !isExpired);
 
         if (isExpired) {
           state.accessToken = null;
           state.refreshToken = null;
           state.admin = null;
+          state.myAssociationId = null;
           state.tokenExpiresAt = null;
           state.isAuthenticated = false;
         }
@@ -131,6 +188,7 @@ export const useAdminAuthStore = create<AdminAuthState>()(
         accessToken: state.accessToken,
         refreshToken: state.refreshToken,
         admin: state.admin,
+        myAssociationId: state.myAssociationId,
         tokenExpiresAt: state.tokenExpiresAt,
         isAuthenticated: state.isAuthenticated,
       }),
@@ -144,8 +202,13 @@ export function getAdminAccessToken(): string | null {
 }
 
 export function getAdminAssociationId(): string | null {
-  const admin = useAdminAuthStore.getState().admin;
-  return admin?.scopeType === "ASSOCIATION" ? admin.scopeId : null;
+  const state = useAdminAuthStore.getState();
+  if (state.myAssociationId) return state.myAssociationId;
+
+  const decoded = decodeAdminJwt(state.accessToken);
+  if (decoded?.scopeType === "ASSOCIATION" && decoded.scopeId) return decoded.scopeId;
+
+  return state.admin?.scopeType === "ASSOCIATION" ? state.admin.scopeId : null;
 }
 
 export function getAdminPermissions(): string[] {
@@ -163,4 +226,27 @@ export function isAdminSessionExpired(): boolean {
 
 export function clearAdminSession(): void {
   useAdminAuthStore.getState().logout();
+  useAssociationAdminStore.getState().clear();
+}
+
+export function getAdminRefreshToken(): string | null {
+  return useAdminAuthStore.getState().refreshToken;
+}
+
+export function updateAdminTokens(accessToken: string, refreshToken?: string | null): void {
+  const state = useAdminAuthStore.getState();
+  const decoded = decodeAdminJwt(accessToken);
+  const associationId =
+    decoded?.scopeType === "ASSOCIATION" && decoded.scopeId
+      ? decoded.scopeId
+      : state.myAssociationId ?? (state.admin?.scopeType === "ASSOCIATION" ? state.admin.scopeId : null);
+
+  useAdminAuthStore.setState({
+    accessToken,
+    refreshToken: refreshToken ?? state.refreshToken,
+    myAssociationId: associationId,
+    tokenExpiresAt: getTokenExpiry(accessToken),
+    isAuthenticated: Boolean(state.admin && associationId),
+    error: null,
+  });
 }

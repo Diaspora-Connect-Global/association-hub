@@ -1,270 +1,351 @@
-import { useState } from "react";
-import { UserPlus, Download } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { RefreshCw, ShieldMinus, ShieldPlus, UserMinus, UserPlus } from "lucide-react";
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import { Button } from "@/components/ui/button";
-import { MembersFilters } from "@/components/members/MembersFilters";
-import { MemberStats } from "@/components/members/MemberStats";
-import { MembersTable, type Member } from "@/components/members/MembersTable";
-import { BulkActionsBar } from "@/components/members/BulkActionsBar";
-import { InviteMemberModal } from "@/components/members/InviteMemberModal";
-import { RoleManagementModal } from "@/components/members/RoleManagementModal";
-import { RemoveMemberModal } from "@/components/members/RemoveMemberModal";
-import { MemberDetailsModal } from "@/components/members/MemberDetailsModal";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { toast } from "@/hooks/use-toast";
 import { useT } from "@/hooks/useT";
+import { getAdminAssociationId } from "@/stores/adminAuthStore";
+import { useAssociationAdminStore } from "@/stores/associationAdminStore";
+import {
+  approveMembership,
+  blockMember,
+  getAssociationMembers,
+  getPendingMembershipRequests,
+  inviteMember,
+  rejectMembership,
+  removeMember,
+  suspendMember,
+  unsuspendMember,
+  updateMemberRole,
+  type AssociationMemberType,
+  type PendingMembershipRequestType,
+  type MembershipStatus,
+  type MemberRole,
+} from "@/services/graphql/association";
 
-// Mock data
-const mockMembers: Member[] = [
-  {
-    id: "1",
-    name: "Kofi Asante",
-    email: "kofi.asante@email.com",
-    phone: "+233 55 123 4567",
-    avatar: "KA",
-    role: "member",
-    status: "active",
-    paymentStatus: "subscription_active",
-    joinedAt: "Nov 15, 2024",
-  },
-  {
-    id: "2",
-    name: "Ama Serwaa",
-    email: "ama.serwaa@email.com",
-    phone: "+233 24 987 6543",
-    avatar: "AS",
-    role: "sub-admin",
-    status: "active",
-    paymentStatus: "paid",
-    joinedAt: "Oct 22, 2024",
-  },
-  {
-    id: "3",
-    name: "Kwame Mensah",
-    email: "kwame.m@email.com",
-    phone: "+233 20 555 1234",
-    avatar: "KM",
-    role: "member",
-    status: "pending",
-    joinedAt: "Dec 01, 2024",
-  },
-  {
-    id: "4",
-    name: "Efua Osei",
-    email: "efua.osei@email.com",
-    phone: "+233 54 321 9876",
-    avatar: "EO",
-    role: "admin",
-    status: "active",
-    paymentStatus: "subscription_active",
-    joinedAt: "Sep 10, 2024",
-  },
-  {
-    id: "5",
-    name: "Yaw Boateng",
-    email: "yaw.b@email.com",
-    phone: "+233 27 444 5555",
-    avatar: "YB",
-    role: "member",
-    status: "suspended",
-    paymentStatus: "subscription_failed",
-    joinedAt: "Aug 05, 2024",
-  },
-];
+type MembersTab = "ACTIVE" | "PENDING" | "SUSPENDED";
 
 export default function Members() {
   const t = useT();
-  
-  // Filter states
-  const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [paymentFilter, setPaymentFilter] = useState("all");
-  const [roleFilter, setRoleFilter] = useState("all");
-  const [sortBy, setSortBy] = useState("date_newest");
+  const associationId = useMemo(() => getAdminAssociationId(), []);
+  const [tab, setTab] = useState<MembersTab>("ACTIVE");
+  const [loading, setLoading] = useState(false);
+  const [activeMembers, setActiveMembers] = useState<AssociationMemberType[]>([]);
+  const [suspendedMembers, setSuspendedMembers] = useState<AssociationMemberType[]>([]);
+  const [pendingRequests, setPendingRequests] = useState<PendingMembershipRequestType[]>([]);
+  const [pendingTotal, setPendingTotal] = useState(0);
+  const [inviteUserId, setInviteUserId] = useState("");
+  const [busyUserId, setBusyUserId] = useState<string | null>(null);
+  const setPendingRequestsCount = useAssociationAdminStore((state) => state.setPendingRequestsCount);
 
-  // Selection state
-  const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
+  const loadMembers = useCallback(async () => {
+    if (!associationId) return;
 
-  // Modal states
-  const [inviteModalOpen, setInviteModalOpen] = useState(false);
-  const [roleModalOpen, setRoleModalOpen] = useState(false);
-  const [removeModalOpen, setRemoveModalOpen] = useState(false);
-  const [detailsModalOpen, setDetailsModalOpen] = useState(false);
-  const [selectedMember, setSelectedMember] = useState<Member | null>(null);
+    setLoading(true);
+    try {
+      const [active, suspended, pending] = await Promise.all([
+        getAssociationMembers({ associationId, page: 1, limit: 50, status: "ACTIVE" }),
+        getAssociationMembers({ associationId, page: 1, limit: 50, status: "SUSPENDED" }),
+        getPendingMembershipRequests({ entityId: associationId, entityType: "ASSOCIATION", page: 1, limit: 50 }),
+      ]);
 
-  // Configuration - would come from association settings
-  const isPaidAssociation = true;
-
-  // Filter members
-  const filteredMembers = mockMembers.filter((member) => {
-    const matchesSearch =
-      member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      member.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      member.phone.includes(searchQuery);
-
-    const matchesStatus = statusFilter === "all" || member.status === statusFilter;
-    const matchesPayment = paymentFilter === "all" || member.paymentStatus === paymentFilter;
-    const matchesRole = roleFilter === "all" || member.role === roleFilter;
-
-    return matchesSearch && matchesStatus && matchesPayment && matchesRole;
-  });
-
-  // Sort members
-  const sortedMembers = [...filteredMembers].sort((a, b) => {
-    switch (sortBy) {
-      case "name_asc":
-        return a.name.localeCompare(b.name);
-      case "name_desc":
-        return b.name.localeCompare(a.name);
-      case "date_newest":
-        return new Date(b.joinedAt).getTime() - new Date(a.joinedAt).getTime();
-      case "date_oldest":
-        return new Date(a.joinedAt).getTime() - new Date(b.joinedAt).getTime();
-      default:
-        return 0;
+      setActiveMembers(active.members);
+      setSuspendedMembers(suspended.members);
+      setPendingRequests(pending.requests);
+      setPendingTotal(pending.total ?? 0);
+      setPendingRequestsCount(pending.total ?? 0);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to load members.";
+      toast({ title: "Members load failed", description: message, variant: "destructive" });
+    } finally {
+      setLoading(false);
     }
-  });
+  }, [associationId, setPendingRequestsCount]);
 
-  // Stats
-  const stats = {
-    total: mockMembers.length,
-    active: mockMembers.filter((m) => m.status === "active").length,
-    pending: mockMembers.filter((m) => m.status === "pending").length,
-    suspended: mockMembers.filter((m) => m.status === "suspended").length,
-  };
+  useEffect(() => {
+    void loadMembers();
+  }, [loadMembers]);
 
-  // Handlers
-  const handleSelectMember = (id: string) => {
-    setSelectedMembers((prev) =>
-      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
+  const runMemberAction = useCallback(
+    async (userId: string, action: () => Promise<{ success: boolean; message: string | null }>, successMessage: string) => {
+      setBusyUserId(userId);
+      try {
+        const result = await action();
+        if (!result.success) {
+          throw new Error(result.message ?? "Action failed");
+        }
+        toast({ title: successMessage, description: result.message ?? userId });
+        await loadMembers();
+      } catch (err) {
+        toast({
+          title: "Action failed",
+          description: err instanceof Error ? err.message : "Please try again.",
+          variant: "destructive",
+        });
+      } finally {
+        setBusyUserId(null);
+      }
+    },
+    [loadMembers]
+  );
+
+  const handleChangeRole = (userId: string, role: MemberRole) => {
+    if (!associationId) return;
+    void runMemberAction(
+      userId,
+      () => updateMemberRole({ entityId: associationId, entityType: "ASSOCIATION", userId, role }),
+      "Role updated"
     );
   };
 
-  const handleSelectAll = () => {
-    if (selectedMembers.length === sortedMembers.length) {
-      setSelectedMembers([]);
-    } else {
-      setSelectedMembers(sortedMembers.map((m) => m.id));
+  const handleToggleSuspend = (userId: string, status: MembershipStatus) => {
+    if (!associationId) return;
+    if (status === "ACTIVE") {
+      void runMemberAction(
+        userId,
+        () => suspendMember({ entityId: associationId, entityType: "ASSOCIATION", userId, reason: "Suspended by association admin" }),
+        "Member suspended"
+      );
+      return;
     }
+
+    void runMemberAction(
+      userId,
+      () => unsuspendMember({ entityId: associationId, entityType: "ASSOCIATION", userId }),
+      "Member unsuspended"
+    );
   };
 
-  const handleViewProfile = (member: Member) => {
-    setSelectedMember(member);
-    setDetailsModalOpen(true);
+  const handleRemove = (userId: string) => {
+    if (!associationId) return;
+    void runMemberAction(
+      userId,
+      () => removeMember({ entityId: associationId, entityType: "ASSOCIATION", userId, reason: "Removed by association admin" }),
+      "Member removed"
+    );
   };
 
-  const handleChangeRole = (member: Member) => {
-    setSelectedMember(member);
-    setRoleModalOpen(true);
+  const handleBlock = (userId: string) => {
+    if (!associationId) return;
+    void runMemberAction(
+      userId,
+      () => blockMember({ entityId: associationId, entityType: "ASSOCIATION", userId }),
+      "Member blocked"
+    );
   };
 
-  const handleRemoveMember = (member: Member) => {
-    setSelectedMember(member);
-    setRemoveModalOpen(true);
+  const handleApprove = (userId: string) => {
+    if (!associationId) return;
+    void runMemberAction(
+      userId,
+      () => approveMembership({ entityId: associationId, entityType: "ASSOCIATION", userId }),
+      "Request approved"
+    );
   };
 
-  const handleExportCSV = () => {
-    toast({
-      title: t.export,
-      description: "Your member list is being exported to CSV.",
-    });
+  const handleReject = (userId: string) => {
+    if (!associationId) return;
+    void runMemberAction(
+      userId,
+      () => rejectMembership({ entityId: associationId, entityType: "ASSOCIATION", userId }),
+      "Request rejected"
+    );
   };
 
-  const hasPendingMembers = selectedMembers.some((id) =>
-    mockMembers.find((m) => m.id === id && m.status === "pending")
+  const handleInvite = async () => {
+    if (!associationId || !inviteUserId.trim()) return;
+    await runMemberAction(
+      inviteUserId.trim(),
+      () => inviteMember({ entityId: associationId, entityType: "ASSOCIATION", userId: inviteUserId.trim() }),
+      "Invite sent"
+    );
+    setInviteUserId("");
+  };
+
+  const renderMemberRows = (members: AssociationMemberType[]) => (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>User ID</TableHead>
+          <TableHead>Role</TableHead>
+          <TableHead>Status</TableHead>
+          <TableHead>Joined</TableHead>
+          <TableHead className="text-right">Actions</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {members.length === 0 ? (
+          <TableRow>
+            <TableCell colSpan={5} className="text-center text-muted-foreground">No members found.</TableCell>
+          </TableRow>
+        ) : (
+          members.map((member) => (
+            <TableRow key={member.userId}>
+              <TableCell className="font-medium">{member.userId}</TableCell>
+              <TableCell>{member.role}</TableCell>
+              <TableCell>{member.status}</TableCell>
+              <TableCell>{new Date(member.joinedAt).toLocaleString()}</TableCell>
+              <TableCell className="text-right">
+                <div className="flex justify-end gap-2">
+                  {member.status === "ACTIVE" ? (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleToggleSuspend(member.userId, member.status)}
+                      disabled={busyUserId === member.userId}
+                    >
+                      <ShieldMinus className="mr-1 h-4 w-4" />
+                      Suspend
+                    </Button>
+                  ) : (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleToggleSuspend(member.userId, member.status)}
+                      disabled={busyUserId === member.userId}
+                    >
+                      <ShieldPlus className="mr-1 h-4 w-4" />
+                      Unsuspend
+                    </Button>
+                  )}
+
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => handleChangeRole(member.userId, member.role === "MEMBER" ? "MODERATOR" : "MEMBER")}
+                    disabled={busyUserId === member.userId}
+                  >
+                    {member.role === "MEMBER" ? "Make moderator" : "Set member"}
+                  </Button>
+
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => handleRemove(member.userId)}
+                    disabled={busyUserId === member.userId}
+                  >
+                    <UserMinus className="mr-1 h-4 w-4" />
+                    Remove
+                  </Button>
+
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    onClick={() => handleBlock(member.userId)}
+                    disabled={busyUserId === member.userId}
+                  >
+                    Block
+                  </Button>
+                </div>
+              </TableCell>
+            </TableRow>
+          ))
+        )}
+      </TableBody>
+    </Table>
   );
 
   return (
-    <AdminLayout title={t.membersTitle} subtitle={t.membersSubtitle}>
-      {/* Top Bar */}
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-        <MembersFilters
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          statusFilter={statusFilter}
-          onStatusChange={setStatusFilter}
-          paymentFilter={paymentFilter}
-          onPaymentChange={setPaymentFilter}
-          roleFilter={roleFilter}
-          onRoleChange={setRoleFilter}
-          sortBy={sortBy}
-          onSortChange={setSortBy}
-          isPaidAssociation={isPaidAssociation}
-        />
-        <div className="flex items-center gap-3">
-          <Button variant="outline" className="gap-2" onClick={handleExportCSV}>
-            <Download className="h-4 w-4" />
-            {t.export} CSV
-          </Button>
-          <Button className="gap-2" onClick={() => setInviteModalOpen(true)}>
-            <UserPlus className="h-4 w-4" />
-            {t.inviteMember}
-          </Button>
+    <AdminLayout title={t.membersTitle} subtitle={`Pending requests: ${pendingTotal}`}>
+      <div className="space-y-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Invite user</CardTitle>
+          </CardHeader>
+          <CardContent className="flex gap-2">
+            <Input
+              value={inviteUserId}
+              onChange={(e) => setInviteUserId(e.target.value)}
+              placeholder="User UUID"
+            />
+            <Button onClick={() => void handleInvite()} disabled={!inviteUserId.trim() || loading}>
+              <UserPlus className="mr-1 h-4 w-4" />
+              Invite
+            </Button>
+            <Button variant="outline" onClick={() => void loadMembers()} disabled={loading}>
+              <RefreshCw className={`mr-1 h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+              Refresh
+            </Button>
+          </CardContent>
+        </Card>
+
+        <div className="flex gap-2">
+          {(["ACTIVE", "PENDING", "SUSPENDED"] as MembersTab[]).map((value) => (
+            <Button
+              key={value}
+              variant={tab === value ? "default" : "outline"}
+              onClick={() => setTab(value)}
+            >
+              {value === "PENDING" ? `${value} (${pendingTotal})` : value}
+            </Button>
+          ))}
         </div>
+
+        <Card>
+          <CardContent className="pt-6">
+            {tab === "ACTIVE" && renderMemberRows(activeMembers)}
+            {tab === "SUSPENDED" && renderMemberRows(suspendedMembers)}
+            {tab === "PENDING" && (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>User ID</TableHead>
+                    <TableHead>Requested at</TableHead>
+                    <TableHead>Message</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {pendingRequests.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={4} className="text-center text-muted-foreground">
+                        No pending membership requests.
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    pendingRequests.map((request) => (
+                      <TableRow key={request.userId}>
+                        <TableCell className="font-medium">{request.userId}</TableCell>
+                        <TableCell>{new Date(request.requestedAt).toLocaleString()}</TableCell>
+                        <TableCell>{request.message || "—"}</TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex justify-end gap-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleReject(request.userId)}
+                              disabled={busyUserId === request.userId}
+                            >
+                              Reject
+                            </Button>
+                            <Button
+                              size="sm"
+                              onClick={() => handleApprove(request.userId)}
+                              disabled={busyUserId === request.userId}
+                            >
+                              Approve
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            )}
+          </CardContent>
+        </Card>
       </div>
-
-      {/* Stats */}
-      <div className="mb-6">
-        <MemberStats
-          totalMembers={stats.total}
-          activeMembers={stats.active}
-          pendingMembers={stats.pending}
-          suspendedMembers={stats.suspended}
-        />
-      </div>
-
-      {/* Bulk Actions Bar */}
-      <div className="mb-4">
-        <BulkActionsBar
-          selectedCount={selectedMembers.length}
-          onClearSelection={() => setSelectedMembers([])}
-          onSendAnnouncement={() => toast({ title: "Send announcement", description: "Feature coming soon" })}
-          onApproveSelected={() => toast({ title: "Approve members", description: "Feature coming soon" })}
-          onChangeRole={() => toast({ title: "Change roles", description: "Feature coming soon" })}
-          onRemoveSelected={() => toast({ title: "Remove members", description: "Feature coming soon" })}
-          hasPendingMembers={hasPendingMembers}
-        />
-      </div>
-
-      {/* Table */}
-      <MembersTable
-        members={sortedMembers}
-        selectedMembers={selectedMembers}
-        onSelectMember={handleSelectMember}
-        onSelectAll={handleSelectAll}
-        onViewProfile={handleViewProfile}
-        onChangeRole={handleChangeRole}
-        onRemoveMember={handleRemoveMember}
-        isPaidAssociation={isPaidAssociation}
-        onInvite={() => setInviteModalOpen(true)}
-      />
-
-      {/* Modals */}
-      <InviteMemberModal
-        open={inviteModalOpen}
-        onOpenChange={setInviteModalOpen}
-      />
-
-      <RoleManagementModal
-        open={roleModalOpen}
-        onOpenChange={setRoleModalOpen}
-        member={selectedMember}
-      />
-
-      <RemoveMemberModal
-        open={removeModalOpen}
-        onOpenChange={setRemoveModalOpen}
-        member={selectedMember}
-        isPaidAssociation={isPaidAssociation}
-      />
-
-      <MemberDetailsModal
-        open={detailsModalOpen}
-        onOpenChange={setDetailsModalOpen}
-        member={selectedMember}
-        onChangeRole={handleChangeRole}
-        onRemoveMember={handleRemoveMember}
-        isPaidAssociation={isPaidAssociation}
-      />
     </AdminLayout>
   );
 }
