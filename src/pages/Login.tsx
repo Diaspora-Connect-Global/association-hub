@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,6 +18,8 @@ import { useAdminAuthStore } from "@/stores/adminAuthStore";
 
 export default function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -27,6 +29,46 @@ export default function Login() {
   const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
   const [resetEmail, setResetEmail] = useState("");
   const [isResetting, setIsResetting] = useState(false);
+  const hasShownExpiryMessage = useRef(false);
+  const { accessToken, admin, isAuthenticated, tokenExpiresAt, logout } = useAdminAuthStore((state) => ({
+    accessToken: state.accessToken,
+    admin: state.admin,
+    isAuthenticated: state.isAuthenticated,
+    tokenExpiresAt: state.tokenExpiresAt,
+    logout: state.logout,
+  }));
+
+  const redirectTarget = useMemo(() => {
+    const requestedRedirect = searchParams.get("redirect");
+    const locationState = location.state as { from?: { pathname?: string } } | null;
+    return requestedRedirect || locationState?.from?.pathname || "/";
+  }, [location.state, searchParams]);
+
+  useEffect(() => {
+    const isExpired = typeof tokenExpiresAt === "number" ? Date.now() >= tokenExpiresAt : false;
+
+    if ((accessToken || admin) && isExpired) {
+      logout();
+    }
+
+    if (searchParams.get("expired") === "1" && !hasShownExpiryMessage.current) {
+      hasShownExpiryMessage.current = true;
+      toast({
+        title: "Session expired",
+        description: "Please sign in again to continue.",
+        variant: "destructive",
+      });
+    }
+  }, [accessToken, admin, logout, searchParams, tokenExpiresAt]);
+
+  useEffect(() => {
+    const isExpired = typeof tokenExpiresAt === "number" ? Date.now() >= tokenExpiresAt : false;
+    const hasAssociationScope = admin?.scopeType === "ASSOCIATION" && Boolean(admin.scopeId);
+
+    if (isAuthenticated && accessToken && hasAssociationScope && !isExpired) {
+      navigate(redirectTarget, { replace: true });
+    }
+  }, [accessToken, admin, isAuthenticated, navigate, redirectTarget, tokenExpiresAt]);
 
   const validateForm = () => {
     const newErrors: { email?: string; password?: string } = {};
@@ -60,9 +102,9 @@ export default function Login() {
     if (result.success) {
       toast({
         title: "Login Successful",
-        description: "Welcome back! Redirecting to dashboard...",
+        description: "Welcome back! Redirecting to your association dashboard...",
       });
-      navigate("/");
+      navigate(redirectTarget, { replace: true });
     } else {
       toast({
         title: "Login Failed",
@@ -110,7 +152,7 @@ export default function Login() {
               </div>
             </div>
             <h1 className="text-2xl font-bold text-foreground">DiaspoPlug</h1>
-            <p className="text-sm text-muted-foreground">Admin Portal</p>
+            <p className="text-sm text-muted-foreground">Association Admin Portal</p>
           </div>
 
           {/* Login Card */}
@@ -118,7 +160,7 @@ export default function Login() {
             <CardHeader className="space-y-1">
               <CardTitle className="text-xl">Welcome back</CardTitle>
               <CardDescription>
-                Sign in to your admin account to continue
+                Sign in with your association admin account to continue
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -221,7 +263,7 @@ export default function Login() {
 
               {/* Security Note */}
               <p className="mt-4 text-xs text-center text-muted-foreground">
-                Sessions expire after inactivity for security.
+                Access is limited to authenticated association admin sessions.
               </p>
             </CardContent>
           </Card>

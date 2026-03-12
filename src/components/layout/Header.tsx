@@ -1,7 +1,8 @@
-import { Bell, Search, HelpCircle, ChevronDown, PanelLeft, PanelLeftClose } from "lucide-react";
+import { Bell, Search, HelpCircle, LogOut, PanelLeft, PanelLeftClose } from "lucide-react";
 import { useState } from "react";
-import { cn } from "@/lib/utils";
+import { useNavigate } from "react-router-dom";
 import { useT } from "@/hooks/useT";
+import { useAdminAuthStore } from "@/stores/adminAuthStore";
 import {
   Tooltip,
   TooltipContent,
@@ -15,17 +16,22 @@ interface HeaderProps {
   onToggleSidebar?: () => void;
 }
 
-const associations = [
-  { id: "1", name: "Ghana Tech Community", logo: "🇬🇭" },
-  { id: "2", name: "African Developers Network", logo: "🌍" },
-  { id: "3", name: "Diaspora Business Hub", logo: "💼" },
-];
-
 export function Header({ title, subtitle, sidebarCollapsed, onToggleSidebar }: HeaderProps) {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedAssociation, setSelectedAssociation] = useState(associations[0]);
-  const [isAssociationOpen, setIsAssociationOpen] = useState(false);
   const t = useT();
+  const { admin, logout } = useAdminAuthStore((state) => ({
+    admin: state.admin,
+    logout: state.logout,
+  }));
+
+  const associationLabel = admin?.scopeId ? `Association ${admin.scopeId}` : "Association scope";
+  const adminLabel = admin?.role?.name || admin?.userId || "Association admin";
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login", { replace: true });
+  };
 
   return (
     <header className="sticky top-0 z-30 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -53,51 +59,14 @@ export function Header({ title, subtitle, sidebarCollapsed, onToggleSidebar }: H
             </Tooltip>
           )}
 
-          {/* Association Selector */}
-          <div className="relative">
-            <button
-              onClick={() => setIsAssociationOpen(!isAssociationOpen)}
-              className="flex items-center gap-3 rounded-lg border border-border bg-card px-3 py-2 transition-colors hover:bg-muted"
-            >
-              <span className="text-xl">{selectedAssociation.logo}</span>
-              <div className="text-left hidden sm:block">
-                <p className="label-small text-foreground line-clamp-1 max-w-[160px]">
-                  {selectedAssociation.name}
-                </p>
-              </div>
-              <ChevronDown
-                className={cn(
-                  "h-4 w-4 text-muted-foreground transition-transform flex-shrink-0",
-                  isAssociationOpen && "rotate-180"
-                )}
-              />
-            </button>
-
-            {isAssociationOpen && (
-              <div className="absolute left-0 top-full mt-2 w-64 animate-fade-in rounded-lg border border-border bg-card p-2 shadow-lg z-50">
-                <p className="px-3 py-2 caption-small uppercase tracking-wider text-muted-foreground">
-                  {t.switchAssociation}
-                </p>
-                {associations.map((assoc) => (
-                  <button
-                    key={assoc.id}
-                    onClick={() => {
-                      setSelectedAssociation(assoc);
-                      setIsAssociationOpen(false);
-                    }}
-                    className={cn(
-                      "flex w-full items-center gap-3 rounded-md px-3 py-2 body-small transition-colors",
-                      selectedAssociation.id === assoc.id
-                        ? "bg-primary text-primary-foreground"
-                        : "text-foreground hover:bg-muted"
-                    )}
-                  >
-                    <span className="text-lg">{assoc.logo}</span>
-                    <span className="line-clamp-1">{assoc.name}</span>
-                  </button>
-                ))}
-              </div>
-            )}
+          {/* Association Scope */}
+          <div className="rounded-lg border border-border bg-card px-3 py-2">
+            <p className="caption-small uppercase tracking-wider text-muted-foreground">
+              {associationLabel}
+            </p>
+            <p className="label-small text-foreground line-clamp-1 max-w-[220px]">
+              {adminLabel}
+            </p>
           </div>
 
           {/* Divider */}
@@ -135,6 +104,16 @@ export function Header({ title, subtitle, sidebarCollapsed, onToggleSidebar }: H
             <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-destructive caption-small text-primary-foreground">
               3
             </span>
+          </button>
+
+          {/* Logout */}
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="flex h-9 items-center gap-2 rounded-lg border border-border px-3 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          >
+            <LogOut className="h-4 w-4" />
+            <span className="hidden sm:inline">{t.logout}</span>
           </button>
         </div>
       </div>

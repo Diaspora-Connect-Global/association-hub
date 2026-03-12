@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { SettingsProvider } from "@/contexts/SettingsContext";
+import { RequireAdminAuth } from "@/components/auth/RequireAdminAuth";
 import Index from "./pages/Index";
 import Members from "./pages/Members";
 import Posts from "./pages/Posts";
@@ -33,21 +34,23 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/login" element={<Login />} />
-            <Route path="/" element={<Index />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/admin-profile" element={<AdminProfile />} />
-            <Route path="/members" element={<Members />} />
-            <Route path="/posts" element={<Posts />} />
-            <Route path="/events" element={<Events />} />
-            <Route path="/marketplace" element={<Marketplace />} />
-            <Route path="/orders" element={<Orders />} />
-            <Route path="/groups" element={<Groups />} />
-            <Route path="/opportunities" element={<Opportunities />} />
-            <Route path="/tickets" element={<Tickets />} />
-            <Route path="/audit-logs" element={<AuditLogs />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/vendor-escrow-settings" element={<VendorEscrowSettings />} />
-            <Route path="/analytics" element={<Analytics />} />
+            <Route element={<RequireAdminAuth />}>
+              <Route path="/" element={<Index />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/admin-profile" element={<AdminProfile />} />
+              <Route path="/members" element={<Members />} />
+              <Route path="/posts" element={<Posts />} />
+              <Route path="/events" element={<Events />} />
+              <Route path="/marketplace" element={<Marketplace />} />
+              <Route path="/orders" element={<Orders />} />
+              <Route path="/groups" element={<Groups />} />
+              <Route path="/opportunities" element={<Opportunities />} />
+              <Route path="/tickets" element={<Tickets />} />
+              <Route path="/audit-logs" element={<AuditLogs />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/vendor-escrow-settings" element={<VendorEscrowSettings />} />
+              <Route path="/analytics" element={<Analytics />} />
+            </Route>
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

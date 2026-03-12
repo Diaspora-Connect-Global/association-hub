@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useT } from "@/hooks/useT";
+import { useAdminAuthStore } from "@/stores/adminAuthStore";
 import diaspoPlugLogo from "@/assets/diaspo-plug-logo.svg";
 import {
   Collapsible,
@@ -56,12 +57,29 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const t = useT();
+  const { admin, logout } = useAdminAuthStore((state) => ({
+    admin: state.admin,
+    logout: state.logout,
+  }));
 
   // Check if any vendor path is active
   const vendorPaths = ["/marketplace", "/orders", "/vendor-escrow-settings"];
   const isVendorActive = vendorPaths.some((path) => location.pathname === path);
   
   const [vendorOpen, setVendorOpen] = useState(isVendorActive);
+  const adminName = admin?.userId || "Association Admin";
+  const adminRole = admin?.role?.name || "Admin";
+  const adminInitials = adminName
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("") || "AA";
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login", { replace: true });
+  };
 
   const mainNavItems: NavItem[] = [
     { id: "dashboard", label: t.dashboard, icon: Home, path: "/" },
@@ -349,12 +367,12 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
                   to="/admin-profile"
                   className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground label-small hover:opacity-90 transition-opacity flex-shrink-0"
                 >
-                  AK
+                  {adminInitials}
                 </NavLink>
               </TooltipTrigger>
               {collapsed && (
                 <TooltipContent side="right">
-                  Akua Mensah
+                  {adminName}
                 </TooltipContent>
               )}
             </Tooltip>
@@ -365,11 +383,15 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
                     to="/admin-profile"
                     className="label-small text-sidebar-foreground truncate block hover:text-primary transition-colors"
                   >
-                    Akua Mensah
+                    {adminName}
                   </NavLink>
-                  <p className="caption-small text-muted-foreground">Admin</p>
+                  <p className="caption-small text-muted-foreground">{adminRole}</p>
                 </div>
-                <button className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground">
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground"
+                >
                   <LogOut className="h-4 w-4" />
                 </button>
               </>
