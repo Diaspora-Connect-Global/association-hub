@@ -1,0 +1,42 @@
+// Barrel export for vendor service
+export * from "@/types/vendor-service";
+export { vendorService } from "@/services/graphql/vendor/operations";
+export {
+  useGetMyVendor,
+  useGetVendor,
+  useGetVendorDashboard,
+  useGetVendorEligibility,
+  useListVendorProducts,
+  useListVendorServicePackages,
+  useListVendorOrders,
+  useCreateVendor,
+  useRequestVendorUploadUrl,
+  useUploadFileToGCS,
+  useCreateProduct,
+  useUpdateProduct,
+  usePublishProduct,
+  useDeleteProduct,
+  useCreateServicePackage,
+  useAddMilestone,
+  usePublishServicePackage,
+  useRequestPayout,
+  useSuspendVendor,
+  useReinstateVendor,
+} from "@/hooks/vendor";
+export {
+  uploadFileAndGetUrl,
+  uploadMultipleFiles,
+  checkEligibilityFromResponse,
+  formatPrice,
+  getNextPaginationOffset,
+  getPreviousPaginationOffset,
+  isLastPage,
+  isFirstPage,
+  vendorStatusConfig,
+  productStatusConfig,
+  orderStatusConfig,
+  canEditProduct,
+  calculateMilestonesTotal,
+  validateMilestonePercentages,
+  currencySymbols,
+} from "@/lib/vendor-utils";
