@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,6 +29,9 @@ import {
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { useT } from "@/hooks/useT";
+import { getAdminAssociationId } from "@/stores/adminAuthStore";
+import { getAssociation, updateAssociation } from "@/services/graphql/association/operations";
+import type { JoinPolicy, AssociationVisibility } from "@/services/graphql/association/types";
 
 const associationTypes = [
   "NGO",
@@ -68,17 +71,18 @@ const admins = [
 
 export default function Profile() {
   const t = useT();
+  const associationId = useMemo(() => getAdminAssociationId(), []);
   const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState({
-    associationName: "Ghana Tech Community",
-    description: "A vibrant community connecting Ghanaian tech professionals across the globe.",
+    associationName: "",
+    description: "",
     associationType: "Professional Network",
     privacyType: "Public",
-    contactEmail: "info@ghanatechcommunity.org",
-    contactPhone: "+233 55 123 4567",
-    website: "https://ghanatechcommunity.org",
-    address: "Accra, Ghana",
-    countriesServed: ["Ghana", "United Kingdom", "United States"],
+    contactEmail: "",
+    contactPhone: "",
+    website: "",
+    address: "",
+    countriesServed: [] as string[],
     joinPolicy: "Open (Anyone Can Join)",
     whoCanPost: "Admins Only",
     paidAssociation: false,
@@ -88,14 +92,36 @@ export default function Profile() {
     paymentCurrency: "USD",
   });
 
-  const handleSave = async () => {
-    setIsSaving(true);
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    setIsSaving(false);
-    toast({
-      title: t.success,
-      description: t.settingsSaved,
+  useEffect(() => {
+    if (!associationId) return;
+    void getAssociation(associationId).then((assoc) => {
+      setFormData((prev) => ({
+        ...prev,
+        associationName: assoc.name,
+        description: assoc.description ?? "",
+        privacyType: assoc.visibility === "PUBLIC" ? "Public" : "Private",
+        joinPolicy: assoc.joinPolicy === "OPEN" ? "Open (Anyone Can Join)" : "Approval Required",
+      }));
     });
+  }, [associationId]);
+
+  const handleSave = async () => {
+    if (!associationId) return;
+    setIsSaving(true);
+    try {
+      await updateAssociation({
+        id: associationId,
+        name: formData.associationName,
+        description: formData.description || undefined,
+        visibility: (formData.privacyType === "Public" ? "PUBLIC" : "PRIVATE") as AssociationVisibility,
+        joinPolicy: (formData.joinPolicy === "Open (Anyone Can Join)" ? "OPEN" : "REQUEST") as JoinPolicy,
+      });
+      toast({ title: t.success, description: t.settingsSaved });
+    } catch (err) {
+      toast({ title: "Save failed", description: err instanceof Error ? err.message : "Could not save changes.", variant: "destructive" });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleCancel = () => {

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { AuditLog, ActionType, ModuleType, UserType } from "@/types/auditLogs";
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import { Button } from "@/components/ui/button";
@@ -41,8 +41,39 @@ import { toast } from "@/hooks/use-toast";
 import { AuditLogDetailsModal } from "@/components/auditLogs/AuditLogDetailsModal";
 import { AuditLogsAnalyticsWidget } from "@/components/auditLogs/AuditLogsAnalyticsWidget";
 import { useT } from "@/hooks/useT";
+import { getAuditLogs } from "@/services/graphql/adminAudit/operations";
+import type { AdminAuditLogItem } from "@/services/graphql/adminAudit/operations";
 
-// Mock data
+function mapApiLog(item: AdminAuditLogItem): AuditLog {
+  const actionMap: Record<string, AuditLog["actionType"]> = {
+    CREATE: "create", UPDATE: "update", DELETE: "delete", LOGIN: "login",
+    LOGOUT: "logout", APPROVE: "approve", REJECT: "reject",
+  };
+  const moduleMap: Record<string, AuditLog["module"]> = {
+    USER: "users", GROUP: "groups", POST: "posts", OPPORTUNITY: "opportunities",
+    EVENT: "events", PRODUCT: "marketplace", ORDER: "orders",
+    SUPPORT_TICKET: "support_tickets", SETTINGS: "settings",
+  };
+  const upperAction = item.action.toUpperCase();
+  const upperResource = item.resourceType.toUpperCase();
+  return {
+    id: item.id,
+    timestamp: new Date(item.createdAt).toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit" }),
+    userId: item.actorId,
+    userName: item.actorId.slice(0, 8) + "...",
+    userRole: "association_admin",
+    actionType: Object.entries(actionMap).find(([k]) => upperAction.includes(k))?.[1] ?? "update",
+    module: moduleMap[upperResource] ?? "settings",
+    objectAffected: `${item.resourceType} ${item.resourceId.slice(0, 8)}`,
+    objectId: item.resourceId,
+    detailsSummary: `${item.action} on ${item.resourceType}`,
+    ipAddress: item.ipAddress ?? "—",
+    device: "—",
+    browser: "—",
+  };
+}
+
+// Legacy mock data (unused after real data loads)
 const mockLogs: AuditLog[] = [
   {
     id: "log-001",
@@ -189,12 +220,26 @@ const userTypeLabels: Record<UserType, string> = {
 
 export default function AuditLogs() {
   const t = useT();
-  const [logs] = useState<AuditLog[]>(mockLogs);
+  const [logs, setLogs] = useState<AuditLog[]>(mockLogs);
   const [searchQuery, setSearchQuery] = useState("");
   const [userTypeFilter, setUserTypeFilter] = useState<string>("all");
   const [actionTypeFilter, setActionTypeFilter] = useState<string>("all");
   const [moduleFilter, setModuleFilter] = useState<string>("all");
   const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({});
+
+  const fetchLogs = useCallback(async () => {
+    try {
+      const result = await getAuditLogs({ limit: 100, offset: 0 });
+      const mapped = (result.items ?? []).map(mapApiLog);
+      if (mapped.length > 0) setLogs(mapped);
+    } catch {
+      // keep mock data on failure
+    }
+  }, []);
+
+  useEffect(() => {
+    void fetchLogs();
+  }, [fetchLogs]);
   const [selectedLogs, setSelectedLogs] = useState<string[]>([]);
   
   // Modals

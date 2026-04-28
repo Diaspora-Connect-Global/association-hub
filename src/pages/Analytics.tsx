@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -57,6 +57,8 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
 import { useT } from "@/hooks/useT";
+import { getAdminAssociationId } from "@/stores/adminAuthStore";
+import { getAssociationStats } from "@/services/graphql/association/operations";
 
 // Mock data for charts
 const userGrowthData = [
@@ -127,7 +129,18 @@ const getMetricsConfig = (t: any) => [
 
 export default function Analytics() {
   const t = useT();
-  const metricsConfig = getMetricsConfig(t);
+  const associationId = useMemo(() => getAdminAssociationId(), []);
+  const [stats, setStats] = useState<{ totalMembers: number; activeMembers: number; pendingRequests: number } | null>(null);
+
+  useEffect(() => {
+    if (!associationId) return;
+    void getAssociationStats(associationId).then(setStats).catch(() => {/* keep null */});
+  }, [associationId]);
+
+  const metricsConfig = getMetricsConfig(t).map((m) => {
+    if (m.key === "users" && stats) return { ...m, value: stats.totalMembers };
+    return m;
+  });
   const [searchQuery, setSearchQuery] = useState("");
   const [moduleFilter, setModuleFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");

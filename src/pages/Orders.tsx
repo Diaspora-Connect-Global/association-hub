@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -46,8 +46,38 @@ import { CancelOrderModal } from "@/components/orders/CancelOrderModal";
 import { OrdersAnalyticsWidget } from "@/components/orders/OrdersAnalyticsWidget";
 import { toast } from "@/hooks/use-toast";
 import { useT } from "@/hooks/useT";
+import { vendorService } from "@/services/graphql/vendor/operations";
+import type { VendorOrderDTO } from "@/types/vendor-service";
 
-// Mock orders data
+function mapVendorOrderToOrder(o: VendorOrderDTO): Order {
+  const statusMap: Record<string, Order["fulfillmentStatus"]> = {
+    COMPLETED: "fulfilled",
+    CANCELLED: "cancelled",
+    REFUNDED: "cancelled",
+  };
+  const paymentMap: Record<string, Order["paymentStatus"]> = {
+    COMPLETED: "paid",
+    CANCELLED: "refunded",
+    REFUNDED: "refunded",
+  };
+  return {
+    id: o.id,
+    listingId: "",
+    listingTitle: "",
+    userId: o.buyerId,
+    userName: o.buyerId,
+    userEmail: "",
+    quantity: 1,
+    totalAmount: o.totalAmount,
+    currency: o.currency,
+    paymentStatus: paymentMap[o.status] ?? "pending",
+    fulfillmentStatus: statusMap[o.status] ?? "pending",
+    orderDate: new Date(o.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+    vendorId: o.vendorId,
+  };
+}
+
+// Legacy mock data (unused after real data loads)
 const mockOrders: Order[] = [
   {
     id: "ORD-001",
@@ -193,11 +223,25 @@ const mockOrders: Order[] = [
 
 export default function Orders() {
   const t = useT();
-  const [orders] = useState<Order[]>(mockOrders);
+  const [orders, setOrders] = useState<Order[]>(mockOrders);
   const [searchQuery, setSearchQuery] = useState("");
   const [orderStatusFilter, setOrderStatusFilter] = useState<string>("all");
   const [paymentStatusFilter, setPaymentStatusFilter] = useState<string>("all");
   const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
+
+  const fetchOrders = useCallback(async () => {
+    try {
+      const result = await vendorService.listVendorOrders(undefined, undefined, 100, 0);
+      const mapped = (result.items ?? []).map(mapVendorOrderToOrder);
+      if (mapped.length > 0) setOrders(mapped);
+    } catch {
+      // keep fallback data on failure
+    }
+  }, []);
+
+  useEffect(() => {
+    void fetchOrders();
+  }, [fetchOrders]);
 
   // Modal states
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);

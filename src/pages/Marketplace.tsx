@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useLocation } from "react-router-dom";
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import { useT } from "@/hooks/useT";
@@ -21,8 +21,68 @@ import { OrdersDrawer } from "@/components/marketplace/OrdersDrawer";
 import { DeleteListingModal } from "@/components/marketplace/DeleteListingModal";
 import { MarketplaceAnalyticsWidget } from "@/components/marketplace/MarketplaceAnalyticsWidget";
 import { toast } from "@/hooks/use-toast";
+import { vendorService } from "@/services/graphql/vendor/operations";
+import type { ProductDTO, ServicePackageDTO } from "@/types/vendor-service";
 
-// Mock data
+function mapProductToListing(p: ProductDTO): Listing {
+  const status: Listing["status"] =
+    p.status === "PUBLISHED" ? "published" : p.status === "ARCHIVED" ? "unpublished" : "draft";
+  return {
+    id: p.id,
+    title: p.title,
+    type: "product",
+    description: p.description,
+    category: p.tags?.[0] ?? "",
+    tags: p.tags ?? [],
+    price: p.price,
+    currency: p.currency,
+    inventory: p.inventoryCount,
+    unlimitedInventory: p.inventoryCount === 0,
+    allowPreorders: false,
+    status,
+    publishNow: false,
+    allowReviews: false,
+    isFeatured: false,
+    mainImage: p.images?.[0],
+    galleryImages: p.images?.slice(1) ?? [],
+    orders: 0,
+    revenue: 0,
+    views: 0,
+    reviewCount: 0,
+    createdAt: new Date(p.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+    updatedAt: new Date(p.updatedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+  };
+}
+
+function mapServiceToListing(s: ServicePackageDTO): Listing {
+  const status: Listing["status"] =
+    s.status === "PUBLISHED" ? "published" : "draft";
+  return {
+    id: s.id,
+    title: s.title,
+    type: "service",
+    description: s.description,
+    category: s.benefits?.[0] ?? "Service",
+    tags: s.benefits ?? [],
+    price: s.basePrice,
+    currency: s.currency,
+    unlimitedInventory: true,
+    allowPreorders: false,
+    status,
+    publishNow: false,
+    allowReviews: false,
+    isFeatured: false,
+    galleryImages: [],
+    orders: 0,
+    revenue: 0,
+    views: 0,
+    reviewCount: 0,
+    createdAt: new Date(s.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+    updatedAt: new Date(s.updatedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+  };
+}
+
+// Legacy mock data (unused after real data loads)
 const mockListings: Listing[] = [
   {
     id: "1",
@@ -156,11 +216,31 @@ const mockListings: Listing[] = [
 export default function Marketplace() {
   const location = useLocation();
   const t = useT();
-  const [listings] = useState<Listing[]>(mockListings);
+  const [listings, setListings] = useState<Listing[]>(mockListings);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("newest");
+
+  const fetchListings = useCallback(async () => {
+    try {
+      const [productsResult, servicesResult] = await Promise.all([
+        vendorService.listVendorProducts(undefined, undefined, 100, 0),
+        vendorService.listVendorServicePackages(undefined, undefined, 100, 0),
+      ]);
+      const mapped: Listing[] = [
+        ...(productsResult.items ?? []).map(mapProductToListing),
+        ...(servicesResult.items ?? []).map(mapServiceToListing),
+      ];
+      if (mapped.length > 0) setListings(mapped);
+    } catch {
+      // keep fallback data on failure
+    }
+  }, []);
+
+  useEffect(() => {
+    void fetchListings();
+  }, [fetchListings]);
 
   // Modal states
   const [createModalOpen, setCreateModalOpen] = useState(false);
