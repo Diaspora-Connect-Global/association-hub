@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useLocation } from "react-router-dom";
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import { useT } from "@/hooks/useT";
@@ -21,138 +21,100 @@ import { RegistrationsDrawer } from "@/components/events/RegistrationsDrawer";
 import { DeleteEventModal } from "@/components/events/DeleteEventModal";
 import { EventAnalyticsWidget } from "@/components/events/EventAnalyticsWidget";
 import { toast } from "@/hooks/use-toast";
+import { getAdminAssociationId } from "@/stores/adminAuthStore";
+import {
+  getEventsByOwner,
+  publishEvent,
+  cancelEvent,
+  deleteEvent,
+  createEvent,
+  updateEvent,
+  type EventType as BackendEvent,
+} from "@/services/graphql/events/operations";
 
-// Mock data
-const mockEvents: Event[] = [
-  {
-    id: "1",
-    title: "Annual General Meeting 2024",
-    description: "Join us for our yearly gathering to discuss association matters and elect new leaders. This is an important event for all members.",
-    bannerEmoji: "🎤",
-    date: "Dec 15, 2024",
-    startTime: "2:00 PM",
-    endTime: "5:00 PM",
-    eventType: "virtual",
-    virtualLink: "https://zoom.us/meeting",
-    isPaid: false,
-    hasParticipantLimit: true,
-    maxParticipants: 500,
-    registeredCount: 342,
-    status: "published",
-    publishNow: true,
-    notifyMembers: true,
-    allowComments: true,
-    views: 1250,
-    ticketsSold: 0,
-    revenue: 0,
-    createdAt: "2024-11-01",
-    updatedAt: "2024-11-15",
-  },
-  {
-    id: "2",
-    title: "Tech Career Workshop",
-    description: "Learn about career opportunities in the tech industry from industry experts. Network with professionals and get career advice.",
-    bannerEmoji: "💼",
-    date: "Dec 20, 2024",
-    startTime: "10:00 AM",
-    endTime: "1:00 PM",
-    eventType: "in-person",
-    location: "Accra Innovation Hub, Ghana",
-    isPaid: true,
-    ticketPrice: 25,
-    currency: "$",
-    hasParticipantLimit: true,
-    maxParticipants: 100,
-    registeredCount: 87,
-    status: "published",
-    publishNow: true,
-    notifyMembers: true,
-    allowComments: true,
-    views: 890,
-    ticketsSold: 87,
-    revenue: 2175,
-    createdAt: "2024-11-10",
-    updatedAt: "2024-11-20",
-  },
-  {
-    id: "3",
-    title: "Networking Dinner",
-    description: "An evening of networking and celebration with fellow diaspora members. Enjoy great food and make new connections.",
-    bannerEmoji: "🍽️",
-    date: "Dec 28, 2024",
-    startTime: "6:00 PM",
-    endTime: "10:00 PM",
-    eventType: "in-person",
-    location: "Marriott Hotel, Accra",
-    isPaid: true,
-    ticketPrice: 75,
-    currency: "$",
-    hasParticipantLimit: true,
-    maxParticipants: 150,
-    registeredCount: 150,
-    status: "published",
-    publishNow: true,
-    notifyMembers: true,
-    allowComments: true,
-    views: 2100,
-    ticketsSold: 150,
-    revenue: 11250,
-    createdAt: "2024-11-05",
-    updatedAt: "2024-11-25",
-  },
-  {
-    id: "4",
-    title: "Webinar: Investment in Ghana",
-    description: "Explore investment opportunities in Ghana's growing economy. Learn from experts about real estate, agriculture, and tech investments.",
-    bannerEmoji: "📈",
-    date: "Nov 30, 2024",
-    startTime: "3:00 PM",
-    endTime: "5:00 PM",
-    eventType: "virtual",
-    virtualLink: "https://meet.google.com/abc-defg",
-    isPaid: false,
-    hasParticipantLimit: true,
-    maxParticipants: 300,
-    registeredCount: 256,
-    status: "completed",
-    publishNow: true,
-    notifyMembers: true,
-    allowComments: true,
-    views: 3200,
-    ticketsSold: 0,
-    revenue: 0,
-    createdAt: "2024-10-15",
-    updatedAt: "2024-11-30",
-  },
-  {
-    id: "5",
-    title: "Community Health Fair",
-    description: "Free health screenings and wellness education for all community members.",
-    bannerEmoji: "🏥",
-    date: "Jan 15, 2025",
-    startTime: "9:00 AM",
-    endTime: "4:00 PM",
-    eventType: "in-person",
-    location: "Community Center, Tema",
-    isPaid: false,
+// -------------------------------------------------------------------------
+// Helpers: map backend EventType → UI Event type
+// -------------------------------------------------------------------------
+
+function formatBackendDate(isoString: string): string {
+  try {
+    return new Date(isoString).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  } catch {
+    return isoString;
+  }
+}
+
+function formatBackendTime(isoString: string): string {
+  try {
+    return new Date(isoString).toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+    });
+  } catch {
+    return "";
+  }
+}
+
+function mapBackendStatus(
+  status: BackendEvent["status"],
+): Event["status"] {
+  switch (status) {
+    case "PUBLISHED":
+      return "published";
+    case "CANCELLED":
+      return "cancelled";
+    case "COMPLETED":
+      return "completed";
+    case "ONGOING":
+      return "ongoing";
+    case "DRAFT":
+    default:
+      return "draft";
+  }
+}
+
+function mapBackendToUiEvent(e: BackendEvent): Event {
+  return {
+    id: e.id,
+    title: e.title,
+    description: e.description,
+    bannerImage: e.coverImageUrl ?? undefined,
+    date: formatBackendDate(e.startAt),
+    startTime: formatBackendTime(e.startAt),
+    endTime: formatBackendTime(e.endAt),
+    eventType: e.locationType?.toLowerCase() === "physical" ? "in-person" : "virtual",
+    location: e.locationDetails ?? undefined,
+    virtualLink: e.locationType?.toLowerCase() !== "physical" ? (e.locationDetails ?? undefined) : undefined,
+    isPaid: e.isPaid,
     hasParticipantLimit: false,
-    registeredCount: 45,
-    status: "draft",
-    publishNow: false,
+    registeredCount: e.registrationCount ?? 0,
+    status: mapBackendStatus(e.status),
+    publishNow: e.status === "PUBLISHED",
     notifyMembers: true,
     allowComments: true,
-    views: 0,
-    ticketsSold: 0,
+    views: e.viewCount ?? 0,
+    ticketsSold: e.registrationCount ?? 0,
     revenue: 0,
-    createdAt: "2024-12-01",
-    updatedAt: "2024-12-01",
-  },
-];
+    createdAt: e.createdAt,
+    updatedAt: e.updatedAt,
+  };
+}
+
+// -------------------------------------------------------------------------
+// Component
+// -------------------------------------------------------------------------
 
 export default function Events() {
   const location = useLocation();
   const t = useT();
-  const [events] = useState<Event[]>(mockEvents);
+  const associationId = useMemo(() => getAdminAssociationId(), []);
+
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [typeFilter, setTypeFilter] = useState<string>("all");
@@ -167,6 +129,28 @@ export default function Events() {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [eventToDelete, setEventToDelete] = useState<Event | null>(null);
 
+  // -----------------------------------------------------------------------
+  // Data fetching
+  // -----------------------------------------------------------------------
+
+  const loadEvents = useCallback(async () => {
+    if (!associationId) return;
+    setLoading(true);
+    try {
+      const response = await getEventsByOwner("ASSOCIATION", associationId, 1, 100);
+      setEvents((response.events ?? []).map(mapBackendToUiEvent));
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to load events.";
+      toast({ title: "Error loading events", description: message, variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
+  }, [associationId]);
+
+  useEffect(() => {
+    void loadEvents();
+  }, [loadEvents]);
+
   // Handle quick action navigation
   useEffect(() => {
     if (location.state?.openCreate) {
@@ -175,15 +159,18 @@ export default function Events() {
     }
   }, [location.state]);
 
-  // Filter and sort events
+  // -----------------------------------------------------------------------
+  // Filter and sort
+  // -----------------------------------------------------------------------
+
   const filteredEvents = events
     .filter((event) => {
-      const matchesSearch = 
+      const matchesSearch =
         event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         event.description.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesStatus = statusFilter === "all" || event.status === statusFilter;
-      const matchesType = 
-        typeFilter === "all" || 
+      const matchesType =
+        typeFilter === "all" ||
         (typeFilter === "free" && !event.isPaid) ||
         (typeFilter === "paid" && event.isPaid);
       return matchesSearch && matchesStatus && matchesType;
@@ -202,16 +189,23 @@ export default function Events() {
     });
 
   // Stats
-  const upcomingCount = events.filter(e => e.status === "published" || e.status === "draft").length;
+  const upcomingCount = events.filter((e) => e.status === "published" || e.status === "draft").length;
   const totalRegistrations = events.reduce((sum, e) => sum + e.registeredCount, 0);
   const totalRevenue = events.reduce((sum, e) => sum + e.revenue, 0);
-  const avgAttendance = events.length > 0 
-    ? Math.round((events.filter(e => e.hasParticipantLimit && e.maxParticipants)
-        .reduce((sum, e) => sum + (e.registeredCount / (e.maxParticipants || 1)) * 100, 0) / 
-        events.filter(e => e.hasParticipantLimit).length) || 0)
-    : 0;
+  const avgAttendance =
+    events.length > 0
+      ? Math.round(
+          (events
+            .filter((e) => e.hasParticipantLimit && e.maxParticipants)
+            .reduce((sum, e) => sum + (e.registeredCount / (e.maxParticipants || 1)) * 100, 0) /
+            (events.filter((e) => e.hasParticipantLimit).length || 1)) || 0,
+        )
+      : 0;
 
+  // -----------------------------------------------------------------------
   // Handlers
+  // -----------------------------------------------------------------------
+
   const handleViewDetails = (event: Event) => {
     setSelectedEvent(event);
     setDetailsDrawerOpen(true);
@@ -227,13 +221,22 @@ export default function Events() {
     setRegistrationsDrawerOpen(true);
   };
 
-  const handleTogglePublish = (event: Event) => {
-    toast({
-      title: event.status === "published" ? "Event Unpublished" : "Event Published",
-      description: event.status === "published" 
-        ? "Event is now hidden from members." 
-        : "Your event is now live!",
-    });
+  const handleTogglePublish = async (event: Event) => {
+    if (!associationId) return;
+    try {
+      if (event.status === "published") {
+        // Cancel as a lightweight "unpublish" proxy
+        await cancelEvent(event.id);
+        toast({ title: "Event Unpublished", description: "Event is now hidden from members." });
+      } else {
+        await publishEvent(event.id);
+        toast({ title: "Event Published", description: "Your event is now live!" });
+      }
+      await loadEvents();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Action failed.";
+      toast({ title: "Error", description: message, variant: "destructive" });
+    }
   };
 
   const handleDelete = (event: Event) => {
@@ -241,25 +244,91 @@ export default function Events() {
     setDeleteModalOpen(true);
   };
 
-  const handleConfirmDelete = () => {
-    toast({
-      title: "Event Deleted",
-      description: "The event has been permanently deleted.",
-    });
-    setDeleteModalOpen(false);
-    setEventToDelete(null);
+  const handleConfirmDelete = async () => {
+    if (!eventToDelete) return;
+    try {
+      await deleteEvent(eventToDelete.id);
+      toast({ title: "Event Deleted", description: "The event has been permanently deleted." });
+      setDeleteModalOpen(false);
+      setEventToDelete(null);
+      await loadEvents();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Delete failed.";
+      toast({ title: "Error deleting event", description: message, variant: "destructive" });
+    }
   };
 
-  const handleCreateSubmit = (data: EventFormData) => {
-    toast({
-      title: editingEvent ? "Event Updated" : "Event Created",
-      description: editingEvent 
-        ? "Your changes have been saved."
-        : data.publishNow 
-          ? "Your event is now live!" 
-          : "Event saved as draft.",
-    });
-    setEditingEvent(null);
+  const handleCreateSubmit = async (data: EventFormData) => {
+    if (!associationId) return;
+    try {
+      if (editingEvent) {
+        // Update existing
+        const input: Parameters<typeof updateEvent>[1] = {
+          title: data.title,
+          description: data.description,
+          locationType: data.eventType === "in-person" ? "PHYSICAL" : "VIRTUAL",
+          locationDetails: data.eventType === "in-person" ? data.location : data.virtualLink,
+          isPaid: data.isPaid,
+          ticketPrice: data.ticketPrice,
+          currency: data.currency,
+          maxParticipants: data.hasParticipantLimit ? data.maxParticipants : undefined,
+        };
+        if (data.date) {
+          const [hours, minutes] = (data.startTime || "00:00").split(":").map(Number);
+          const start = new Date(data.date);
+          start.setHours(hours || 0, minutes || 0, 0, 0);
+          input.startAt = start.toISOString();
+
+          const [eHours, eMinutes] = (data.endTime || "00:00").split(":").map(Number);
+          const end = new Date(data.date);
+          end.setHours(eHours || 0, eMinutes || 0, 0, 0);
+          input.endAt = end.toISOString();
+        }
+        await updateEvent(editingEvent.id, input);
+        if (data.publishNow) {
+          await publishEvent(editingEvent.id);
+        }
+        toast({ title: "Event Updated", description: "Your changes have been saved." });
+      } else {
+        // Create new
+        const startDate = data.date ? new Date(data.date) : new Date();
+        const [sHours, sMinutes] = (data.startTime || "00:00").split(":").map(Number);
+        startDate.setHours(sHours || 0, sMinutes || 0, 0, 0);
+
+        const endDate = data.date ? new Date(data.date) : new Date();
+        const [eHours, eMinutes] = (data.endTime || "00:00").split(":").map(Number);
+        endDate.setHours(eHours || 0, eMinutes || 0, 0, 0);
+
+        const created = await createEvent({
+          title: data.title,
+          description: data.description,
+          startAt: startDate.toISOString(),
+          endAt: endDate.toISOString(),
+          locationType: data.eventType === "in-person" ? "PHYSICAL" : "VIRTUAL",
+          locationDetails: data.eventType === "in-person" ? data.location : data.virtualLink,
+          isPaid: data.isPaid,
+          ticketPrice: data.ticketPrice,
+          currency: data.currency,
+          maxParticipants: data.hasParticipantLimit ? data.maxParticipants : undefined,
+          ownerType: "ASSOCIATION",
+          ownerId: associationId,
+        });
+
+        if (data.publishNow) {
+          await publishEvent(created.id);
+        }
+
+        toast({
+          title: "Event Created",
+          description: data.publishNow ? "Your event is now live!" : "Event saved as draft.",
+        });
+      }
+      setEditingEvent(null);
+      await loadEvents();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to save event.";
+      toast({ title: "Error saving event", description: message, variant: "destructive" });
+    }
   };
 
   return (
@@ -352,8 +421,9 @@ export default function Events() {
         </TabsList>
 
         <TabsContent value="events">
-          {/* Events Grid */}
-          {filteredEvents.length > 0 ? (
+          {loading ? (
+            <div className="text-center py-16 text-muted-foreground">Loading events…</div>
+          ) : filteredEvents.length > 0 ? (
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {filteredEvents.map((event, index) => (
                 <div

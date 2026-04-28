@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useLocation } from "react-router-dom";
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import { Button } from "@/components/ui/button";
@@ -22,120 +22,92 @@ import { BulkActionsBar } from "@/components/posts/BulkActionsBar";
 import { Plus, RefreshCw, LayoutList, LayoutGrid, Search } from "lucide-react";
 import { Post, Comment } from "@/types/posts";
 import { toast } from "@/hooks/use-toast";
+import { getAdminAssociationId } from "@/stores/adminAuthStore";
+import {
+  getAssociationPosts,
+  publishPost,
+  deletePost,
+  editPost as editPostMutation,
+  hidePost,
+  createPost,
+  type PostType as BackendPost,
+} from "@/services/graphql/posts/operations";
 
-// Mock data
-const mockPosts: Post[] = [
-  {
-    id: "1",
-    title: "Welcome to our December Newsletter!",
-    excerpt: "Check out the latest updates from our community including upcoming events and member highlights...",
-    body: "Full newsletter content here...",
-    author: "Akua Mensah",
-    authorAvatar: "AM",
-    media: "image",
-    comments: 24,
-    reactions: 156,
-    saves: 12,
-    impressions: 1240,
-    status: "published",
-    visibility: "members",
-    pinned: true,
-    allowComments: true,
-    allowReactions: true,
-    publishedAt: "Dec 01, 2024",
-    createdAt: "Dec 01, 2024",
-    updatedAt: "Dec 01, 2024",
-    tags: ["newsletter", "december"],
-  },
-  {
-    id: "2",
-    title: "Annual General Meeting Announcement",
-    excerpt: "Join us for our 2024 AGM where we'll discuss the year's achievements and plan for 2025...",
-    author: "Kofi Asante",
-    authorAvatar: "KA",
+// -------------------------------------------------------------------------
+// Helpers: map backend PostType → UI Post type
+// -------------------------------------------------------------------------
+
+function formatBackendDate(isoString: string): string {
+  try {
+    return new Date(isoString).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  } catch {
+    return isoString;
+  }
+}
+
+function mapBackendStatus(status: BackendPost["status"]): Post["status"] {
+  switch (status) {
+    case "PUBLISHED":
+      return "published";
+    case "ARCHIVED":
+      return "archived";
+    case "REMOVED":
+      return "removed";
+    case "PENDING_REVIEW":
+      return "pending_review";
+    case "DRAFT":
+    default:
+      return "draft";
+  }
+}
+
+function mapBackendVisibility(visibility: BackendPost["visibility"]): Post["visibility"] {
+  if (visibility === "PUBLIC") return "public";
+  return "members";
+}
+
+function mapBackendToUiPost(p: BackendPost): Post {
+  return {
+    id: p.id,
+    title: p.text?.slice(0, 80) ?? "",
+    excerpt: p.text?.slice(0, 160) ?? "",
+    body: p.text,
+    author: p.authorId ?? "",
+    authorAvatar: (p.authorId ?? "").slice(0, 2).toUpperCase() || "??",
     media: "text",
-    comments: 42,
-    reactions: 89,
-    status: "published",
-    visibility: "members",
+    comments: p.commentsCount ?? 0,
+    reactions: p.likesCount ?? 0,
+    saves: 0,
+    impressions: p.viewsCount ?? 0,
+    status: mapBackendStatus(p.status),
+    visibility: mapBackendVisibility(p.visibility),
     pinned: false,
     allowComments: true,
     allowReactions: true,
-    publishedAt: "Nov 28, 2024",
-    createdAt: "Nov 28, 2024",
-    updatedAt: "Nov 28, 2024",
-    tags: ["agm", "meeting"],
-  },
-  {
-    id: "3",
-    title: "Member Spotlight: Ama Serwaa",
-    excerpt: "This month we're featuring Ama Serwaa, a software engineer who has been making waves...",
-    author: "Efua Osei",
-    authorAvatar: "EO",
-    media: "video",
-    comments: 18,
-    reactions: 234,
-    status: "published",
-    visibility: "public",
-    pinned: false,
-    allowComments: true,
-    allowReactions: true,
-    publishedAt: "Nov 25, 2024",
-    createdAt: "Nov 25, 2024",
-    updatedAt: "Nov 25, 2024",
-  },
-  {
-    id: "4",
-    title: "Tech Industry Insights Report 2024",
-    excerpt: "Our latest report on the tech industry in Ghana and opportunities for diaspora members...",
-    author: "Akua Mensah",
-    authorAvatar: "AM",
-    media: "image",
-    comments: 0,
-    reactions: 0,
-    status: "draft",
-    visibility: "members",
-    pinned: false,
-    allowComments: true,
-    allowReactions: true,
-    publishedAt: null,
-    createdAt: "Dec 02, 2024",
-    updatedAt: "Dec 02, 2024",
-  },
-  {
-    id: "5",
-    title: "Cultural Festival Photos",
-    excerpt: "Highlights from our recent cultural festival celebrating Ghanaian heritage...",
-    author: "Yaw Boateng",
-    authorAvatar: "YB",
-    media: "image",
-    comments: 5,
-    reactions: 45,
-    status: "scheduled",
-    visibility: "public",
-    pinned: false,
-    allowComments: true,
-    allowReactions: true,
-    publishedAt: null,
-    scheduledAt: "Dec 10, 2024",
-    createdAt: "Nov 30, 2024",
-    updatedAt: "Nov 30, 2024",
-  },
-];
+    publishedAt: p.status === "PUBLISHED" ? formatBackendDate(p.updatedAt) : null,
+    createdAt: formatBackendDate(p.createdAt),
+    updatedAt: formatBackendDate(p.updatedAt),
+  };
+}
 
-const mockComments: Comment[] = [
-  { id: "1", postId: "1", author: "John Doe", authorAvatar: "JD", content: "Great newsletter!", createdAt: "2h ago", flagged: false },
-  { id: "2", postId: "1", author: "Jane Smith", authorAvatar: "JS", content: "Looking forward to the events!", createdAt: "3h ago", flagged: false },
-  { id: "3", postId: "2", author: "Mike Johnson", authorAvatar: "MJ", content: "Will there be virtual attendance?", createdAt: "1d ago", flagged: true, flagReason: "spam" },
-];
+// -------------------------------------------------------------------------
+// Component
+// -------------------------------------------------------------------------
 
 export default function Posts() {
   const location = useLocation();
   const t = useT();
-  const [posts] = useState<Post[]>(mockPosts);
+  const associationId = useMemo(() => getAdminAssociationId(), []);
+
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(false);
   const [viewMode, setViewMode] = useState<"list" | "card">("list");
   const [selectedPosts, setSelectedPosts] = useState<string[]>([]);
-  
+
   // Filters
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -148,9 +120,31 @@ export default function Posts() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerPost, setDrawerPost] = useState<Post | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [deletePost, setDeletePost] = useState<Post | null>(null);
+  const [deletePostState, setDeletePostState] = useState<Post | null>(null);
   const [scheduleModalOpen, setScheduleModalOpen] = useState(false);
   const [schedulePost, setSchedulePost] = useState<Post | null>(null);
+
+  // -----------------------------------------------------------------------
+  // Data fetching
+  // -----------------------------------------------------------------------
+
+  const loadPosts = useCallback(async () => {
+    if (!associationId) return;
+    setLoading(true);
+    try {
+      const backendPosts = await getAssociationPosts(associationId, 100, 0);
+      setPosts(backendPosts.map(mapBackendToUiPost));
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to load posts.";
+      toast({ title: "Error loading posts", description: message, variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
+  }, [associationId]);
+
+  useEffect(() => {
+    void loadPosts();
+  }, [loadPosts]);
 
   // Handle quick action navigation
   useEffect(() => {
@@ -160,7 +154,10 @@ export default function Posts() {
     }
   }, [location.state]);
 
+  // -----------------------------------------------------------------------
   // Filter posts
+  // -----------------------------------------------------------------------
+
   const filteredPosts = posts.filter((post) => {
     if (searchQuery && !post.title.toLowerCase().includes(searchQuery.toLowerCase())) return false;
     if (statusFilter !== "all" && post.status !== statusFilter) return false;
@@ -169,9 +166,13 @@ export default function Posts() {
     return true;
   });
 
+  // -----------------------------------------------------------------------
+  // Handlers
+  // -----------------------------------------------------------------------
+
   const handleSelectPost = (postId: string) => {
     setSelectedPosts((prev) =>
-      prev.includes(postId) ? prev.filter((id) => id !== postId) : [...prev, postId]
+      prev.includes(postId) ? prev.filter((id) => id !== postId) : [...prev, postId],
     );
   };
 
@@ -184,8 +185,70 @@ export default function Posts() {
     setDrawerOpen(true);
   };
 
-  const handleSavePost = (postData: Partial<Post>, action: string) => {
-    toast({ title: `Post ${action === "draft" ? "saved as draft" : action === "schedule" ? "scheduled" : "published"}` });
+  const handleTogglePublish = async (post: Post) => {
+    try {
+      if (post.status === "published") {
+        await hidePost(post.id, "Unpublished by admin");
+        toast({ title: "Post unpublished" });
+      } else {
+        await publishPost(post.id);
+        toast({ title: "Post published" });
+      }
+      await loadPosts();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Action failed.";
+      toast({ title: "Error", description: message, variant: "destructive" });
+    }
+  };
+
+  const handleTogglePin = (post: Post) => {
+    // Pin is a UI-only concept for now — no backend RPC yet
+    toast({ title: post.pinned ? "Post unpinned" : "Post pinned" });
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deletePostState) return;
+    try {
+      await deletePost(deletePostState.id);
+      toast({ title: "Post deleted" });
+      setDeleteModalOpen(false);
+      setDeletePostState(null);
+      await loadPosts();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Delete failed.";
+      toast({ title: "Error deleting post", description: message, variant: "destructive" });
+    }
+  };
+
+  const handleSavePost = async (postData: Partial<Post>, action: string) => {
+    if (!associationId) return;
+    try {
+      if (editPost?.id) {
+        // Update existing post
+        await editPostMutation({ postId: editPost.id, text: postData.body ?? postData.excerpt ?? "" });
+        if (action === "publish") {
+          await publishPost(editPost.id);
+        }
+      } else {
+        // Create new post
+        const created = await createPost({
+          authorId: associationId,
+          authorType: "ASSOCIATION",
+          text: postData.body ?? postData.excerpt ?? postData.title ?? "",
+          visibility: postData.visibility === "public" ? "PUBLIC" : "MEMBERS_ONLY",
+        });
+        if (action === "publish") {
+          await publishPost(created.id);
+        }
+      }
+      toast({
+        title: `Post ${action === "draft" ? "saved as draft" : action === "schedule" ? "scheduled" : "published"}`,
+      });
+      await loadPosts();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to save post.";
+      toast({ title: "Error saving post", description: message, variant: "destructive" });
+    }
   };
 
   return (
@@ -249,7 +312,7 @@ export default function Posts() {
               </TabsTrigger>
             </TabsList>
           </Tabs>
-          <Button variant="outline" size="icon" className="h-9 w-9">
+          <Button variant="outline" size="icon" className="h-9 w-9" onClick={() => void loadPosts()}>
             <RefreshCw className="h-4 w-4" />
           </Button>
           <Button className="gap-2" onClick={() => setCreateModalOpen(true)}>
@@ -267,54 +330,82 @@ export default function Posts() {
         </div>
         <div className="rounded-xl border border-border bg-card p-4">
           <p className="text-sm text-muted-foreground">{t.published}</p>
-          <p className="text-2xl font-semibold text-foreground">{posts.filter(p => p.status === "published").length}</p>
+          <p className="text-2xl font-semibold text-foreground">
+            {posts.filter((p) => p.status === "published").length}
+          </p>
         </div>
         <div className="rounded-xl border border-border bg-card p-4">
           <p className="text-sm text-muted-foreground">{t.drafts}</p>
-          <p className="text-2xl font-semibold text-foreground">{posts.filter(p => p.status === "draft").length}</p>
+          <p className="text-2xl font-semibold text-foreground">
+            {posts.filter((p) => p.status === "draft").length}
+          </p>
         </div>
         <div className="rounded-xl border border-border bg-card p-4">
           <p className="text-sm text-muted-foreground">{t.scheduled}</p>
-          <p className="text-2xl font-semibold text-foreground">{posts.filter(p => p.status === "scheduled").length}</p>
+          <p className="text-2xl font-semibold text-foreground">
+            {posts.filter((p) => p.status === "scheduled").length}
+          </p>
         </div>
       </div>
 
       {/* Results Info */}
       <div className="mb-4">
         <p className="text-sm text-muted-foreground">
-          {t.showingXOfYPosts.replace("{filtered}", filteredPosts.length.toString()).replace("{total}", posts.length.toString())}
+          {t.showingXOfYPosts
+            .replace("{filtered}", filteredPosts.length.toString())
+            .replace("{total}", posts.length.toString())}
         </p>
       </div>
 
       {/* Posts View */}
-      {viewMode === "list" ? (
+      {loading ? (
+        <div className="text-center py-16 text-muted-foreground">Loading posts…</div>
+      ) : viewMode === "list" ? (
         <PostsTable
           posts={filteredPosts}
           selectedPosts={selectedPosts}
           onSelectPost={handleSelectPost}
           onSelectAll={handleSelectAll}
           onOpenDrawer={handleOpenDrawer}
-          onEdit={(post) => { setEditPost(post); setCreateModalOpen(true); }}
-          onTogglePublish={(post) => toast({ title: `Post ${post.status === "published" ? "unpublished" : "published"}` })}
-          onSchedule={(post) => { setSchedulePost(post); setScheduleModalOpen(true); }}
-          onTogglePin={(post) => toast({ title: `Post ${post.pinned ? "unpinned" : "pinned"}` })}
-          onDelete={(post) => { setDeletePost(post); setDeleteModalOpen(true); }}
+          onEdit={(post) => {
+            setEditPost(post);
+            setCreateModalOpen(true);
+          }}
+          onTogglePublish={handleTogglePublish}
+          onSchedule={(post) => {
+            setSchedulePost(post);
+            setScheduleModalOpen(true);
+          }}
+          onTogglePin={handleTogglePin}
+          onDelete={(post) => {
+            setDeletePostState(post);
+            setDeleteModalOpen(true);
+          }}
         />
       ) : (
         <PostsCardView
           posts={filteredPosts}
           onOpenDrawer={handleOpenDrawer}
-          onEdit={(post) => { setEditPost(post); setCreateModalOpen(true); }}
-          onTogglePublish={(post) => toast({ title: `Post ${post.status === "published" ? "unpublished" : "published"}` })}
-          onTogglePin={(post) => toast({ title: `Post ${post.pinned ? "unpinned" : "pinned"}` })}
-          onDelete={(post) => { setDeletePost(post); setDeleteModalOpen(true); }}
+          onEdit={(post) => {
+            setEditPost(post);
+            setCreateModalOpen(true);
+          }}
+          onTogglePublish={handleTogglePublish}
+          onTogglePin={handleTogglePin}
+          onDelete={(post) => {
+            setDeletePostState(post);
+            setDeleteModalOpen(true);
+          }}
         />
       )}
 
       {/* Modals */}
       <CreateEditPostModal
         open={createModalOpen}
-        onOpenChange={(open) => { setCreateModalOpen(open); if (!open) setEditPost(null); }}
+        onOpenChange={(open) => {
+          setCreateModalOpen(open);
+          if (!open) setEditPost(null);
+        }}
         post={editPost}
         onSave={handleSavePost}
       />
@@ -322,32 +413,77 @@ export default function Posts() {
         open={drawerOpen}
         onOpenChange={setDrawerOpen}
         post={drawerPost}
-        comments={mockComments.filter((c) => c.postId === drawerPost?.id)}
-        onEdit={() => { setEditPost(drawerPost); setCreateModalOpen(true); setDrawerOpen(false); }}
-        onTogglePublish={() => toast({ title: "Publish toggled" })}
-        onTogglePin={() => toast({ title: "Pin toggled" })}
-        onHide={() => toast({ title: "Post hidden" })}
-        onDelete={() => { setDeletePost(drawerPost); setDeleteModalOpen(true); }}
+        comments={[] as Comment[]}
+        onEdit={() => {
+          setEditPost(drawerPost);
+          setCreateModalOpen(true);
+          setDrawerOpen(false);
+        }}
+        onTogglePublish={() => drawerPost && handleTogglePublish(drawerPost)}
+        onTogglePin={() => drawerPost && handleTogglePin(drawerPost)}
+        onHide={async () => {
+          if (!drawerPost) return;
+          try {
+            await hidePost(drawerPost.id, "Hidden by admin");
+            toast({ title: "Post hidden" });
+            await loadPosts();
+          } catch {
+            toast({ title: "Failed to hide post", variant: "destructive" });
+          }
+        }}
+        onDelete={() => {
+          setDeletePostState(drawerPost);
+          setDeleteModalOpen(true);
+        }}
         onOpenAnalytics={() => toast({ title: "Analytics opened" })}
       />
       <DeletePostModal
         open={deleteModalOpen}
         onOpenChange={setDeleteModalOpen}
-        post={deletePost}
-        onConfirm={() => { toast({ title: "Post deleted" }); setDeleteModalOpen(false); }}
+        post={deletePostState}
+        onConfirm={handleDeleteConfirm}
       />
       <SchedulePostModal
         open={scheduleModalOpen}
         onOpenChange={setScheduleModalOpen}
         post={schedulePost}
-        onConfirm={(date) => toast({ title: `Post scheduled for ${date.toLocaleDateString()}` })}
+        onConfirm={(date) =>
+          toast({ title: `Post scheduled for ${date.toLocaleDateString()}` })
+        }
       />
       <BulkActionsBar
         selectedCount={selectedPosts.length}
         onClearSelection={() => setSelectedPosts([])}
-        onBulkPublish={() => toast({ title: `${selectedPosts.length} posts published` })}
-        onBulkUnpublish={() => toast({ title: `${selectedPosts.length} posts unpublished` })}
-        onBulkDelete={() => toast({ title: `${selectedPosts.length} posts deleted` })}
+        onBulkPublish={async () => {
+          try {
+            await Promise.all(selectedPosts.map((id) => publishPost(id)));
+            toast({ title: `${selectedPosts.length} posts published` });
+            setSelectedPosts([]);
+            await loadPosts();
+          } catch {
+            toast({ title: "Bulk publish failed", variant: "destructive" });
+          }
+        }}
+        onBulkUnpublish={async () => {
+          try {
+            await Promise.all(selectedPosts.map((id) => hidePost(id, "Bulk unpublished by admin")));
+            toast({ title: `${selectedPosts.length} posts unpublished` });
+            setSelectedPosts([]);
+            await loadPosts();
+          } catch {
+            toast({ title: "Bulk unpublish failed", variant: "destructive" });
+          }
+        }}
+        onBulkDelete={async () => {
+          try {
+            await Promise.all(selectedPosts.map((id) => deletePost(id)));
+            toast({ title: `${selectedPosts.length} posts deleted` });
+            setSelectedPosts([]);
+            await loadPosts();
+          } catch {
+            toast({ title: "Bulk delete failed", variant: "destructive" });
+          }
+        }}
         onBulkExport={() => toast({ title: `Exporting ${selectedPosts.length} posts` })}
       />
     </AdminLayout>
