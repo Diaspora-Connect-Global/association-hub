@@ -127,9 +127,13 @@ export default function VendorEscrowSettings() {
     await updateEscrowSettings({
       vendorId,
       escrowEnabled: settings.escrowEnabled,
+      escrowPercentage: settings.escrowFeePercentage,
       releaseAfterDays: settings.autoReleaseAfterDays,
       autoRelease: settings.autoReleaseAfterDays > 0,
       requireDeliveryConfirmation: settings.requireBuyerConfirmation,
+      currency: settings.currency,
+      disputeWindowDays: settings.disputeWindowDays,
+      minimumOrderAmountForEscrow: settings.minimumOrderAmountForEscrow,
       defaultMilestones: settings.defaultMilestones.map((m) => ({
         title: m.name,
         percentage: m.percentage,

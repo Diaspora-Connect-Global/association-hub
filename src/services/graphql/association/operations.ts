@@ -1,6 +1,7 @@
 import { getGraphQLClient } from "@/core/graphql-client";
 import type {
   AssociationAvatarUploadType,
+  AssociationAnalyticsType,
   AssociationMemberListType,
   AssociationStatsType,
   AssociationType,
@@ -375,4 +376,132 @@ export async function getGroupMembers(input: {
     { groupId: string; page: number; limit: number }
   >(GET_GROUP_MEMBERS, input);
   return data.getGroupMembers;
+}
+
+// ── Association Admin Operations ──────────────────────────────────────────────
+
+export interface AssociationAdminResult {
+  success: boolean;
+  message?: string;
+}
+
+const LINK_ASSOCIATION = /* GraphQL */ `
+  mutation LinkAssociation($input: LinkAssociationInput!) {
+    linkAssociation(input: $input) {
+      success
+      message
+    }
+  }
+`;
+
+const UNLINK_ASSOCIATION = /* GraphQL */ `
+  mutation UnlinkAssociation($input: UnlinkAssociationInput!) {
+    unlinkAssociation(input: $input) {
+      success
+      message
+    }
+  }
+`;
+
+const ASSIGN_ASSOCIATION_ADMIN = /* GraphQL */ `
+  mutation AssignAssociationAdmin($input: AssignAssociationAdminInput!) {
+    assignAssociationAdmin(input: $input) {
+      success
+      message
+    }
+  }
+`;
+
+const REMOVE_ASSOCIATION_ADMIN = /* GraphQL */ `
+  mutation RemoveAssociationAdmin($input: RemoveAssociationAdminInput!) {
+    removeAssociationAdmin(input: $input) {
+      success
+      message
+    }
+  }
+`;
+
+export async function linkCommunityToAssociation(
+  associationId: string,
+  communityId: string
+): Promise<AssociationAdminResult> {
+  const client = getGraphQLClient();
+  const data = await client.request<
+    { linkAssociation: AssociationAdminResult },
+    { input: { associationId: string; communityId: string } }
+  >(LINK_ASSOCIATION, { input: { associationId, communityId } });
+  return data.linkAssociation;
+}
+
+export async function unlinkCommunityFromAssociation(
+  associationId: string,
+  communityId: string
+): Promise<AssociationAdminResult> {
+  const client = getGraphQLClient();
+  const data = await client.request<
+    { unlinkAssociation: AssociationAdminResult },
+    { input: { associationId: string; communityId: string } }
+  >(UNLINK_ASSOCIATION, { input: { associationId, communityId } });
+  return data.unlinkAssociation;
+}
+
+export async function assignAssociationAdmin(
+  associationId: string,
+  userId: string,
+  role?: string
+): Promise<AssociationAdminResult> {
+  const client = getGraphQLClient();
+  const data = await client.request<
+    { assignAssociationAdmin: AssociationAdminResult },
+    { input: { associationId: string; userId: string; role?: string } }
+  >(ASSIGN_ASSOCIATION_ADMIN, { input: { associationId, userId, role } });
+  return data.assignAssociationAdmin;
+}
+
+export async function removeAssociationAdmin(
+  associationId: string,
+  adminId: string
+): Promise<AssociationAdminResult> {
+  const client = getGraphQLClient();
+  const data = await client.request<
+    { removeAssociationAdmin: AssociationAdminResult },
+    { input: { associationId: string; adminId: string } }
+  >(REMOVE_ASSOCIATION_ADMIN, { input: { associationId, adminId } });
+  return data.removeAssociationAdmin;
+}
+
+// ── Analytics ─────────────────────────────────────────────────────────────────
+
+const GET_ASSOCIATION_ANALYTICS = /* GraphQL */ `
+  query GetAssociationAnalytics($associationId: String!, $period: String) {
+    getAssociationAnalytics(associationId: $associationId, period: $period) {
+      totalMembers
+      newMembersThisPeriod
+      totalPosts
+      newPostsThisPeriod
+      totalEvents
+      activeOpportunities
+      totalRevenue
+      memberGrowthData {
+        date
+        value
+      }
+      activityData {
+        date
+        value
+      }
+    }
+  }
+`;
+
+export async function getAssociationAnalytics(
+  associationId: string,
+  period?: string
+): Promise<AssociationAnalyticsType> {
+  const client = getGraphQLClient();
+  const data = await client.request<
+    { getAssociationAnalytics: AssociationAnalyticsType },
+    { associationId: string; period?: string }
+  >(GET_ASSOCIATION_ANALYTICS, { associationId, period });
+  return data.getAssociationAnalytics;
 }

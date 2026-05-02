@@ -133,3 +133,130 @@ export async function getAssociationAdmins(
   );
   return data.getAssociationAdmins;
 }
+
+// ── Password & 2FA ────────────────────────────────────────────────────────────
+
+const UPDATE_ADMIN_PASSWORD = /* GraphQL */ `
+  mutation UpdateAdminPassword($currentPassword: String!, $newPassword: String!) {
+    updateAdminPassword(currentPassword: $currentPassword, newPassword: $newPassword) {
+      success
+      message
+    }
+  }
+`;
+
+interface UpdateAdminPasswordResult {
+  updateAdminPassword: { success: boolean; message?: string };
+}
+
+export async function updateAdminPassword(
+  currentPassword: string,
+  newPassword: string,
+): Promise<{ success: boolean; message?: string }> {
+  const client = getGraphQLClient();
+  const data = await client.request<
+    UpdateAdminPasswordResult,
+    { currentPassword: string; newPassword: string }
+  >(UPDATE_ADMIN_PASSWORD, { currentPassword, newPassword });
+  return data.updateAdminPassword;
+}
+
+const REQUEST_ADMIN_AVATAR_UPLOAD_URL = /* GraphQL */ `
+  mutation RequestAdminAvatarUploadUrl($filename: String!, $contentType: String!) {
+    requestAdminAvatarUploadUrl(filename: $filename, contentType: $contentType) {
+      uploadUrl
+      readUrl
+    }
+  }
+`;
+
+export interface AdminAvatarUploadUrlResponse {
+  uploadUrl: string;
+  readUrl: string;
+}
+
+interface RequestAdminAvatarUploadUrlResult {
+  requestAdminAvatarUploadUrl: AdminAvatarUploadUrlResponse;
+}
+
+export async function requestAdminAvatarUploadUrl(
+  filename: string,
+  contentType: string,
+): Promise<AdminAvatarUploadUrlResponse> {
+  const client = getGraphQLClient();
+  const data = await client.request<
+    RequestAdminAvatarUploadUrlResult,
+    { filename: string; contentType: string }
+  >(REQUEST_ADMIN_AVATAR_UPLOAD_URL, { filename, contentType });
+  return data.requestAdminAvatarUploadUrl;
+}
+
+const ENABLE_TWO_FACTOR = /* GraphQL */ `
+  mutation EnableTwoFactor($method: String!) {
+    enableTwoFactor(method: $method) {
+      success
+      message
+      qrCode
+    }
+  }
+`;
+
+export interface TwoFactorResponse {
+  success: boolean;
+  message?: string;
+  qrCode?: string;
+}
+
+interface EnableTwoFactorResult {
+  enableTwoFactor: TwoFactorResponse;
+}
+
+export async function enableTwoFactor(method: "APP" | "SMS"): Promise<TwoFactorResponse> {
+  const client = getGraphQLClient();
+  const data = await client.request<EnableTwoFactorResult, { method: string }>(
+    ENABLE_TWO_FACTOR,
+    { method },
+  );
+  return data.enableTwoFactor;
+}
+
+const VERIFY_TWO_FACTOR = /* GraphQL */ `
+  mutation VerifyTwoFactor($code: String!) {
+    verifyTwoFactor(code: $code) {
+      success
+      message
+    }
+  }
+`;
+
+interface VerifyTwoFactorResult {
+  verifyTwoFactor: { success: boolean; message?: string };
+}
+
+export async function verifyTwoFactor(code: string): Promise<{ success: boolean; message?: string }> {
+  const client = getGraphQLClient();
+  const data = await client.request<VerifyTwoFactorResult, { code: string }>(
+    VERIFY_TWO_FACTOR,
+    { code },
+  );
+  return data.verifyTwoFactor;
+}
+
+const DISABLE_TWO_FACTOR = /* GraphQL */ `
+  mutation DisableTwoFactor {
+    disableTwoFactor {
+      success
+      message
+    }
+  }
+`;
+
+interface DisableTwoFactorResult {
+  disableTwoFactor: { success: boolean; message?: string };
+}
+
+export async function disableTwoFactor(): Promise<{ success: boolean; message?: string }> {
+  const client = getGraphQLClient();
+  const data = await client.request<DisableTwoFactorResult>(DISABLE_TWO_FACTOR);
+  return data.disableTwoFactor;
+}

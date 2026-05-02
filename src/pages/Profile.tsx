@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -17,6 +17,23 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
   Info,
   Mail,
   Users,
@@ -29,17 +46,27 @@ import {
   Eye,
   Link2,
   User,
+  Loader2,
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { useT } from "@/hooks/useT";
 import { getAdminAssociationId } from "@/stores/adminAuthStore";
-import { getAssociation, updateAssociation } from "@/services/graphql/association/operations";
+import {
+  getAssociation,
+  updateAssociation,
+  getAssociationAvatarUploadUrl,
+  uploadAssociationAvatar,
+} from "@/services/graphql/association/operations";
 import type { JoinPolicy, AssociationVisibility } from "@/services/graphql/association/types";
 import {
   useGetCurrentAdmin,
   useGetLinkedCommunities,
   useGetAssociationAdmins,
+  useLinkCommunity,
+  useUnlinkCommunity,
+  useAssignAssociationAdmin,
+  useRemoveAssociationAdmin,
 } from "@/hooks/adminProfile";
 
 // ── Constants ────────────────────────────────────────────────────────────────
@@ -101,6 +128,30 @@ export default function Profile() {
   const { communities: linkedCommunities } = useGetLinkedCommunities(associationId);
   const { admins } = useGetAssociationAdmins(associationId);
 
+  // ── Hooks for community/admin mutations ───────────────────────────────────
+  const linkCommunity = useLinkCommunity(associationId);
+  const unlinkCommunity = useUnlinkCommunity(associationId);
+  const assignAdmin = useAssignAssociationAdmin(associationId);
+  const removeAdmin = useRemoveAssociationAdmin(associationId);
+
+  // ── Upload refs ───────────────────────────────────────────────────────────
+  const logoInputRef = useRef<HTMLInputElement>(null);
+  const bannerInputRef = useRef<HTMLInputElement>(null);
+  const [logoUploading, setLogoUploading] = useState(false);
+  const [bannerUploading, setBannerUploading] = useState(false);
+
+  // ── Link community dialog state ───────────────────────────────────────────
+  const [linkCommunityDialogOpen, setLinkCommunityDialogOpen] = useState(false);
+  const [linkCommunityId, setLinkCommunityId] = useState("");
+
+  // ── Assign admin dialog state ─────────────────────────────────────────────
+  const [assignAdminDialogOpen, setAssignAdminDialogOpen] = useState(false);
+  const [assignAdminUserId, setAssignAdminUserId] = useState("");
+  const [assignAdminRole, setAssignAdminRole] = useState<"ADMIN" | "MODERATOR">("ADMIN");
+
+  // ── Remove admin confirm state ────────────────────────────────────────────
+  const [removeAdminTarget, setRemoveAdminTarget] = useState<{ id: string; name: string } | null>(null);
+
   const {
     register,
     handleSubmit,
@@ -151,12 +202,31 @@ export default function Profile() {
   const onSubmit = async (values: AssociationFormValues) => {
     if (!associationId) return;
     try {
+      const parsedPaymentAmount = parseFloat(values.paymentAmount);
       await updateAssociation({
         id: associationId,
         name: values.associationName,
         description: values.description || undefined,
         visibility: (values.privacyType === "Public" ? "PUBLIC" : "PRIVATE") as AssociationVisibility,
         joinPolicy: (values.joinPolicy === "Open (Anyone Can Join)" ? "OPEN" : "REQUEST") as JoinPolicy,
+        // Contact tab
+        contactEmail: values.contactEmail || undefined,
+        contactPhone: values.contactPhone || undefined,
+        website: values.website || undefined,
+        address: values.address || undefined,
+        // Basic info tab
+        countriesServed: values.countriesServed.length > 0 ? values.countriesServed : undefined,
+        associationType: values.associationType || undefined,
+        // Membership tab
+        whoCanPost: values.whoCanPost || undefined,
+        // Payment tab
+        paidAssociation: values.paidAssociation,
+        ...(values.paidAssociation && {
+          paymentType: values.paymentType || undefined,
+          paymentAmount: !isNaN(parsedPaymentAmount) && values.paymentAmount !== "" ? parsedPaymentAmount : undefined,
+          subscriptionPeriod: values.subscriptionPeriod || undefined,
+          paymentCurrency: values.paymentCurrency || undefined,
+        }),
       });
       toast({ title: t.success, description: t.settingsSaved });
     } catch (err) {
@@ -171,6 +241,96 @@ export default function Profile() {
   const handleCancel = () => {
     reset();
     toast({ title: t.cancel, description: "Changes discarded." });
+  };
+
+  // ── Logo upload handler ───────────────────────────────────────────────────
+  const handleLogoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !associationId) return;
+    setLogoUploading(true);
+    try {
+      const { uploadUrl, fileKey } = await getAssociationAvatarUploadUrl(associationId);
+      await uploadAssociationAvatar(uploadUrl, file);
+      // Build the read URL from the fileKey (S3 CDN pattern used by this codebase)
+      const readUrl = fileKey;
+      setValue("associationName", watch("associationName")); // touch form to mark dirty
+      // Store avatarKey via updateAssociation so the server records the new avatar
+      await updateAssociation({ id: associationId, avatarKey: fileKey });
+      toast({ title: "Success", description: "Logo uploaded successfully." });
+      // readUrl can be used for a future <img> preview; suppressing unused-var warning below
+      void readUrl;
+      // Reset so the same file can be re-selected
+      e.target.value = "";
+    } catch (err) {
+      toast({
+        title: "Upload failed",
+        description: err instanceof Error ? err.message : "Could not upload logo.",
+        variant: "destructive",
+      });
+    } finally {
+      setLogoUploading(false);
+    }
+  };
+
+  // ── Banner upload handler (TODO: add getAssociationCoverUploadUrl when available) ─
+  const handleBannerChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !associationId) return;
+    setBannerUploading(true);
+    try {
+      // TODO: replace with getAssociationCoverUploadUrl once backend exposes it
+      const { uploadUrl } = await getAssociationAvatarUploadUrl(associationId);
+      await uploadAssociationAvatar(uploadUrl, file);
+      toast({ title: "Success", description: "Banner uploaded successfully." });
+      e.target.value = "";
+    } catch (err) {
+      toast({
+        title: "Upload failed",
+        description: err instanceof Error ? err.message : "Could not upload banner.",
+        variant: "destructive",
+      });
+    } finally {
+      setBannerUploading(false);
+    }
+  };
+
+  // ── Link community handlers ───────────────────────────────────────────────
+  const handleLinkCommunityConfirm = () => {
+    if (!linkCommunityId.trim()) return;
+    linkCommunity.mutate(linkCommunityId.trim(), {
+      onSuccess: () => {
+        setLinkCommunityDialogOpen(false);
+        setLinkCommunityId("");
+        toast({ title: "Success", description: "Community linked." });
+      },
+    });
+  };
+
+  // ── Assign admin handlers ─────────────────────────────────────────────────
+  const handleAssignAdminConfirm = () => {
+    if (!assignAdminUserId.trim()) return;
+    assignAdmin.mutate(
+      { userId: assignAdminUserId.trim(), role: assignAdminRole },
+      {
+        onSuccess: () => {
+          setAssignAdminDialogOpen(false);
+          setAssignAdminUserId("");
+          setAssignAdminRole("ADMIN");
+          toast({ title: "Success", description: "Admin assigned." });
+        },
+      }
+    );
+  };
+
+  // ── Remove admin handlers ─────────────────────────────────────────────────
+  const handleRemoveAdminConfirm = () => {
+    if (!removeAdminTarget) return;
+    removeAdmin.mutate(removeAdminTarget.id, {
+      onSuccess: () => {
+        setRemoveAdminTarget(null);
+        toast({ title: "Success", description: "Admin removed." });
+      },
+    });
   };
 
   return (
@@ -284,10 +444,30 @@ export default function Profile() {
                 <Label className="label-small">{t.logo}</Label>
                 <div className="flex items-center gap-4">
                   <div className="flex h-20 w-20 items-center justify-center rounded-lg border-2 border-dashed border-border bg-muted">
-                    <Upload className="h-6 w-6 text-muted-foreground" />
+                    {logoUploading ? (
+                      <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                    ) : (
+                      <Upload className="h-6 w-6 text-muted-foreground" />
+                    )}
                   </div>
-                  <Button variant="outline" size="sm">
-                    {t.uploadLogo}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    ref={logoInputRef}
+                    className="hidden"
+                    onChange={(e) => { void handleLogoChange(e); }}
+                  />
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={logoUploading}
+                    onClick={() => logoInputRef.current?.click()}
+                  >
+                    {logoUploading ? (
+                      <><Loader2 className="h-4 w-4 animate-spin mr-1" /> Uploading…</>
+                    ) : (
+                      t.uploadLogo
+                    )}
                   </Button>
                 </div>
               </div>
@@ -296,10 +476,30 @@ export default function Profile() {
                 <Label className="label-small">{t.bannerImage}</Label>
                 <div className="flex items-center gap-4">
                   <div className="flex h-20 w-32 items-center justify-center rounded-lg border-2 border-dashed border-border bg-muted">
-                    <Upload className="h-6 w-6 text-muted-foreground" />
+                    {bannerUploading ? (
+                      <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                    ) : (
+                      <Upload className="h-6 w-6 text-muted-foreground" />
+                    )}
                   </div>
-                  <Button variant="outline" size="sm">
-                    {t.uploadBanner}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    ref={bannerInputRef}
+                    className="hidden"
+                    onChange={(e) => { void handleBannerChange(e); }}
+                  />
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={bannerUploading}
+                    onClick={() => bannerInputRef.current?.click()}
+                  >
+                    {bannerUploading ? (
+                      <><Loader2 className="h-4 w-4 animate-spin mr-1" /> Uploading…</>
+                    ) : (
+                      t.uploadBanner
+                    )}
                   </Button>
                 </div>
               </div>
@@ -555,7 +755,7 @@ export default function Profile() {
               <div>
                 <h3 className="section-header">{t.linkedCommunities}</h3>
               </div>
-              <Button className="gap-2">
+              <Button className="gap-2" onClick={() => setLinkCommunityDialogOpen(true)}>
                 <Link2 className="h-4 w-4" />
                 {t.linkCommunities}
               </Button>
@@ -617,8 +817,14 @@ export default function Profile() {
                               variant="ghost"
                               size="sm"
                               className="gap-1 text-destructive hover:text-destructive"
+                              disabled={unlinkCommunity.isPending}
+                              onClick={() => unlinkCommunity.mutate(community.id)}
                             >
-                              <Trash2 className="h-4 w-4" />
+                              {unlinkCommunity.isPending ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                              ) : (
+                                <Trash2 className="h-4 w-4" />
+                              )}
                               {t.unlink}
                             </Button>
                           </div>
@@ -630,6 +836,41 @@ export default function Profile() {
               </table>
             </div>
           </div>
+
+          {/* Link Community Dialog */}
+          <Dialog open={linkCommunityDialogOpen} onOpenChange={setLinkCommunityDialogOpen}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Link a Community</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-3 py-2">
+                <Label className="label-small">Community ID</Label>
+                <Input
+                  placeholder="Enter community ID"
+                  value={linkCommunityId}
+                  onChange={(e) => setLinkCommunityId(e.target.value)}
+                />
+              </div>
+              <DialogFooter>
+                <Button
+                  variant="outline"
+                  onClick={() => { setLinkCommunityDialogOpen(false); setLinkCommunityId(""); }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleLinkCommunityConfirm}
+                  disabled={linkCommunity.isPending || !linkCommunityId.trim()}
+                >
+                  {linkCommunity.isPending ? (
+                    <><Loader2 className="h-4 w-4 animate-spin mr-1" /> Linking…</>
+                  ) : (
+                    "Link Community"
+                  )}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </TabsContent>
 
         {/* Admins Tab */}
@@ -669,7 +910,7 @@ export default function Profile() {
               <div>
                 <h3 className="section-header">{t.manageAdmins}</h3>
               </div>
-              <Button className="gap-2">
+              <Button className="gap-2" onClick={() => setAssignAdminDialogOpen(true)}>
                 <Plus className="h-4 w-4" />
                 {t.assignNewAdmin}
               </Button>
@@ -752,9 +993,17 @@ export default function Profile() {
                               variant="ghost"
                               size="sm"
                               className="gap-1 text-destructive hover:text-destructive"
-                              disabled={isPrimary}
+                              disabled={isPrimary || removeAdmin.isPending}
+                              onClick={() =>
+                                !isPrimary &&
+                                setRemoveAdminTarget({ id: admin.id, name: displayName })
+                              }
                             >
-                              <Trash2 className="h-4 w-4" />
+                              {removeAdmin.isPending && removeAdminTarget?.id === admin.id ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                              ) : (
+                                <Trash2 className="h-4 w-4" />
+                              )}
                               {t.remove}
                             </Button>
                           </td>
@@ -766,6 +1015,89 @@ export default function Profile() {
               </table>
             </div>
           </div>
+
+          {/* Assign Admin Dialog */}
+          <Dialog open={assignAdminDialogOpen} onOpenChange={setAssignAdminDialogOpen}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Assign New Admin</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 py-2">
+                <div className="space-y-2">
+                  <Label className="label-small">User ID</Label>
+                  <Input
+                    placeholder="Enter user ID"
+                    value={assignAdminUserId}
+                    onChange={(e) => setAssignAdminUserId(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="label-small">Role</Label>
+                  <Select
+                    value={assignAdminRole}
+                    onValueChange={(v) => setAssignAdminRole(v as "ADMIN" | "MODERATOR")}
+                  >
+                    <SelectTrigger className="bg-background">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-popover z-50">
+                      <SelectItem value="ADMIN">Admin</SelectItem>
+                      <SelectItem value="MODERATOR">Moderator</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <DialogFooter>
+                <Button
+                  variant="outline"
+                  onClick={() => { setAssignAdminDialogOpen(false); setAssignAdminUserId(""); }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleAssignAdminConfirm}
+                  disabled={assignAdmin.isPending || !assignAdminUserId.trim()}
+                >
+                  {assignAdmin.isPending ? (
+                    <><Loader2 className="h-4 w-4 animate-spin mr-1" /> Assigning…</>
+                  ) : (
+                    "Assign Admin"
+                  )}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+
+          {/* Remove Admin Confirmation */}
+          <AlertDialog
+            open={!!removeAdminTarget}
+            onOpenChange={(open) => { if (!open) setRemoveAdminTarget(null); }}
+          >
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Remove Admin</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Are you sure you want to remove{" "}
+                  <strong>{removeAdminTarget?.name}</strong> as an admin? This action cannot be
+                  undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={handleRemoveAdminConfirm}
+                  disabled={removeAdmin.isPending}
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                >
+                  {removeAdmin.isPending ? (
+                    <><Loader2 className="h-4 w-4 animate-spin mr-1" /> Removing…</>
+                  ) : (
+                    "Remove"
+                  )}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </TabsContent>
       </Tabs>
     </AdminLayout>

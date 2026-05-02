@@ -258,4 +258,7 @@ export interface UpdateVendorEscrowSettingsInput {
   autoRelease?: boolean;
   requireDeliveryConfirmation?: boolean;
   defaultMilestones?: EscrowMilestoneTemplate[];
+  currency?: string;
+  disputeWindowDays?: number;
+  minimumOrderAmountForEscrow?: number;
 }

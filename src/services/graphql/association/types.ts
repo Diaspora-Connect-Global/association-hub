@@ -30,6 +30,35 @@ export interface UpdateAssociationInput {
   joinPolicy?: JoinPolicy;
   visibility?: AssociationVisibility;
   avatarKey?: string;
+  contactEmail?: string;
+  contactPhone?: string;
+  website?: string;
+  address?: string;
+  countriesServed?: string[];
+  associationType?: string;
+  whoCanPost?: string;
+  paidAssociation?: boolean;
+  paymentType?: string;
+  paymentAmount?: number;
+  subscriptionPeriod?: string;
+  paymentCurrency?: string;
+}
+
+export interface AssociationAnalyticsDataPoint {
+  date: string;
+  value: number;
+}
+
+export interface AssociationAnalyticsType {
+  totalMembers: number;
+  newMembersThisPeriod: number;
+  totalPosts: number;
+  newPostsThisPeriod: number;
+  totalEvents: number;
+  activeOpportunities: number;
+  totalRevenue: number;
+  memberGrowthData: AssociationAnalyticsDataPoint[];
+  activityData: AssociationAnalyticsDataPoint[];
 }
 
 export interface AssociationAvatarUploadType {
