@@ -122,3 +122,25 @@ export interface GroupMemberListType {
   members: GroupMemberType[];
   total: number;
 }
+
+export interface LinkedCommunityType {
+  id: string;
+  name: string;
+  memberCount: number;
+  avatarUrl: string | null;
+  visibility: string;
+  createdAt: string;
+}
+
+export interface AssociationAdminType {
+  id: string;
+  userId: string;
+  displayName: string | null;
+  email: string | null;
+  role: string;
+  assignedAt: string;
+}
+
+export interface AssociationAdminListResponseType {
+  admins: AssociationAdminType[];
+}

@@ -129,9 +129,13 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem(STORAGE_KEY);
   };
 
-  // Auto-save on change
+  // Persist settings to localStorage whenever they change
   useEffect(() => {
-    saveSettings();
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+    } catch (e) {
+      console.error("Failed to save settings:", e);
+    }
   }, [settings]);
 
   return (

@@ -1,4 +1,7 @@
-import { useState, useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,6 +28,7 @@ import {
   Plus,
   Eye,
   Link2,
+  User,
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -32,6 +36,13 @@ import { useT } from "@/hooks/useT";
 import { getAdminAssociationId } from "@/stores/adminAuthStore";
 import { getAssociation, updateAssociation } from "@/services/graphql/association/operations";
 import type { JoinPolicy, AssociationVisibility } from "@/services/graphql/association/types";
+import {
+  useGetCurrentAdmin,
+  useGetLinkedCommunities,
+  useGetAssociationAdmins,
+} from "@/hooks/adminProfile";
+
+// ── Constants ────────────────────────────────────────────────────────────────
 
 const associationTypes = [
   "NGO",
@@ -59,43 +70,75 @@ const countries = [
 
 const currencies = ["USD", "EUR", "GBP", "GHS", "NGN", "ZAR"];
 
-const linkedCommunities = [
-  { id: "1", name: "African Tech Network", type: "Professional", countries: "Global", status: "Active" },
-  { id: "2", name: "Ghanaian Diaspora Europe", type: "Cultural", countries: "Europe", status: "Active" },
-];
+// ── Schema ───────────────────────────────────────────────────────────────────
 
-const admins = [
-  { id: "1", name: "Akua Mensah", email: "akua@example.com", role: "Primary Admin", status: "Active" },
-  { id: "2", name: "Kofi Asante", email: "kofi@example.com", role: "Admin", status: "Active" },
-];
+const associationSchema = z.object({
+  associationName: z.string().min(1, "Association name is required").max(100),
+  description: z.string().max(2000).optional().or(z.literal("")),
+  associationType: z.string().min(1),
+  privacyType: z.enum(["Public", "Private"]),
+  contactEmail: z.string().email("Invalid email").optional().or(z.literal("")),
+  contactPhone: z.string().max(20).optional().or(z.literal("")),
+  website: z.string().url("Invalid URL").optional().or(z.literal("")),
+  address: z.string().max(200).optional().or(z.literal("")),
+  countriesServed: z.array(z.string()),
+  joinPolicy: z.string().min(1),
+  whoCanPost: z.string().min(1),
+  paidAssociation: z.boolean(),
+  paymentType: z.string(),
+  paymentAmount: z.string(),
+  subscriptionPeriod: z.string(),
+  paymentCurrency: z.string(),
+});
+type AssociationFormValues = z.infer<typeof associationSchema>;
+
+// ── Component ────────────────────────────────────────────────────────────────
 
 export default function Profile() {
   const t = useT();
   const associationId = useMemo(() => getAdminAssociationId(), []);
-  const [isSaving, setIsSaving] = useState(false);
-  const [formData, setFormData] = useState({
-    associationName: "",
-    description: "",
-    associationType: "Professional Network",
-    privacyType: "Public",
-    contactEmail: "",
-    contactPhone: "",
-    website: "",
-    address: "",
-    countriesServed: [] as string[],
-    joinPolicy: "Open (Anyone Can Join)",
-    whoCanPost: "Admins Only",
-    paidAssociation: false,
-    paymentType: "One-time",
-    paymentAmount: "",
-    subscriptionPeriod: "Monthly",
-    paymentCurrency: "USD",
+  const { profile: adminProfile, loading: adminLoading } = useGetCurrentAdmin();
+  const { communities: linkedCommunities } = useGetLinkedCommunities(associationId);
+  const { admins } = useGetAssociationAdmins(associationId);
+
+  const {
+    register,
+    handleSubmit,
+    control,
+    reset,
+    watch,
+    setValue,
+    formState: { errors, isSubmitting },
+  } = useForm<AssociationFormValues>({
+    resolver: zodResolver(associationSchema),
+    defaultValues: {
+      associationName: "",
+      description: "",
+      associationType: "Professional Network",
+      privacyType: "Public",
+      contactEmail: "",
+      contactPhone: "",
+      website: "",
+      address: "",
+      countriesServed: [],
+      joinPolicy: "Open (Anyone Can Join)",
+      whoCanPost: "Admins Only",
+      paidAssociation: false,
+      paymentType: "One-time",
+      paymentAmount: "",
+      subscriptionPeriod: "Monthly",
+      paymentCurrency: "USD",
+    },
   });
+
+  const paidAssociation = watch("paidAssociation");
+  const paymentType = watch("paymentType");
+  const countriesServed = watch("countriesServed");
 
   useEffect(() => {
     if (!associationId) return;
     void getAssociation(associationId).then((assoc) => {
-      setFormData((prev) => ({
+      reset((prev) => ({
         ...prev,
         associationName: assoc.name,
         description: assoc.description ?? "",
@@ -103,32 +146,31 @@ export default function Profile() {
         joinPolicy: assoc.joinPolicy === "OPEN" ? "Open (Anyone Can Join)" : "Approval Required",
       }));
     });
-  }, [associationId]);
+  }, [associationId, reset]);
 
-  const handleSave = async () => {
+  const onSubmit = async (values: AssociationFormValues) => {
     if (!associationId) return;
-    setIsSaving(true);
     try {
       await updateAssociation({
         id: associationId,
-        name: formData.associationName,
-        description: formData.description || undefined,
-        visibility: (formData.privacyType === "Public" ? "PUBLIC" : "PRIVATE") as AssociationVisibility,
-        joinPolicy: (formData.joinPolicy === "Open (Anyone Can Join)" ? "OPEN" : "REQUEST") as JoinPolicy,
+        name: values.associationName,
+        description: values.description || undefined,
+        visibility: (values.privacyType === "Public" ? "PUBLIC" : "PRIVATE") as AssociationVisibility,
+        joinPolicy: (values.joinPolicy === "Open (Anyone Can Join)" ? "OPEN" : "REQUEST") as JoinPolicy,
       });
       toast({ title: t.success, description: t.settingsSaved });
     } catch (err) {
-      toast({ title: "Save failed", description: err instanceof Error ? err.message : "Could not save changes.", variant: "destructive" });
-    } finally {
-      setIsSaving(false);
+      toast({
+        title: "Save failed",
+        description: err instanceof Error ? err.message : "Could not save changes.",
+        variant: "destructive",
+      });
     }
   };
 
   const handleCancel = () => {
-    toast({
-      title: t.cancel,
-      description: t.settingsSaved,
-    });
+    reset();
+    toast({ title: t.cancel, description: "Changes discarded." });
   };
 
   return (
@@ -137,8 +179,8 @@ export default function Profile() {
         <Button variant="outline" onClick={handleCancel}>
           {t.cancel}
         </Button>
-        <Button onClick={handleSave} disabled={isSaving}>
-          {isSaving ? t.loading : t.saveChanges}
+        <Button onClick={handleSubmit(onSubmit)} disabled={isSubmitting}>
+          {isSubmitting ? t.loading : t.saveChanges}
         </Button>
       </div>
 
@@ -179,56 +221,63 @@ export default function Profile() {
 
             <div className="grid gap-6 lg:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="name" className="label-small">{t.associationName} *</Label>
-                <Input
-                  id="name"
-                  value={formData.associationName}
-                  onChange={(e) => setFormData({ ...formData, associationName: e.target.value })}
-                />
+                <Label htmlFor="name" className="label-small">
+                  {t.associationName} *
+                </Label>
+                <Input id="name" {...register("associationName")} />
+                {errors.associationName && (
+                  <p className="text-xs text-destructive mt-1">
+                    {errors.associationName.message}
+                  </p>
+                )}
               </div>
 
               <div className="space-y-2">
                 <Label className="label-small">{t.associationType} *</Label>
-                <Select
-                  value={formData.associationType}
-                  onValueChange={(value) => setFormData({ ...formData, associationType: value })}
-                >
-                  <SelectTrigger className="bg-background">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-popover z-50">
-                    {associationTypes.map((type) => (
-                      <SelectItem key={type} value={type}>{type}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Controller
+                  control={control}
+                  name="associationType"
+                  render={({ field }) => (
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger className="bg-background">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-popover z-50">
+                        {associationTypes.map((type) => (
+                          <SelectItem key={type} value={type}>
+                            {type}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
               </div>
 
               <div className="space-y-2">
                 <Label className="label-small">{t.privacyType} *</Label>
-                <Select
-                  value={formData.privacyType}
-                  onValueChange={(value) => setFormData({ ...formData, privacyType: value })}
-                >
-                  <SelectTrigger className="bg-background">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-popover z-50">
-                    <SelectItem value="Public">{t.publicType}</SelectItem>
-                    <SelectItem value="Private">{t.privateType}</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Controller
+                  control={control}
+                  name="privacyType"
+                  render={({ field }) => (
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger className="bg-background">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-popover z-50">
+                        <SelectItem value="Public">{t.publicType}</SelectItem>
+                        <SelectItem value="Private">{t.privateType}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
               </div>
 
               <div className="space-y-2 lg:col-span-2">
-                <Label htmlFor="description" className="label-small">{t.description}</Label>
-                <Textarea
-                  id="description"
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  rows={4}
-                  maxLength={2000}
-                />
+                <Label htmlFor="description" className="label-small">
+                  {t.description}
+                </Label>
+                <Textarea id="description" rows={4} maxLength={2000} {...register("description")} />
               </div>
 
               <div className="space-y-2">
@@ -237,7 +286,9 @@ export default function Profile() {
                   <div className="flex h-20 w-20 items-center justify-center rounded-lg border-2 border-dashed border-border bg-muted">
                     <Upload className="h-6 w-6 text-muted-foreground" />
                   </div>
-                  <Button variant="outline" size="sm">{t.uploadLogo}</Button>
+                  <Button variant="outline" size="sm">
+                    {t.uploadLogo}
+                  </Button>
                 </div>
               </div>
 
@@ -247,7 +298,9 @@ export default function Profile() {
                   <div className="flex h-20 w-32 items-center justify-center rounded-lg border-2 border-dashed border-border bg-muted">
                     <Upload className="h-6 w-6 text-muted-foreground" />
                   </div>
-                  <Button variant="outline" size="sm">{t.uploadBanner}</Button>
+                  <Button variant="outline" size="sm">
+                    {t.uploadBanner}
+                  </Button>
                 </div>
               </div>
             </div>
@@ -264,42 +317,39 @@ export default function Profile() {
 
               <div className="grid gap-6 lg:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="label-small">{t.contactEmail}</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={formData.contactEmail}
-                    onChange={(e) => setFormData({ ...formData, contactEmail: e.target.value })}
-                  />
+                  <Label htmlFor="email" className="label-small">
+                    {t.contactEmail}
+                  </Label>
+                  <Input id="email" type="email" {...register("contactEmail")} />
+                  {errors.contactEmail && (
+                    <p className="text-xs text-destructive mt-1">
+                      {errors.contactEmail.message}
+                    </p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="phone" className="label-small">{t.contactPhone}</Label>
-                  <Input
-                    id="phone"
-                    type="tel"
-                    value={formData.contactPhone}
-                    onChange={(e) => setFormData({ ...formData, contactPhone: e.target.value })}
-                  />
+                  <Label htmlFor="phone" className="label-small">
+                    {t.contactPhone}
+                  </Label>
+                  <Input id="phone" type="tel" {...register("contactPhone")} />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="website" className="label-small">{t.website}</Label>
-                  <Input
-                    id="website"
-                    type="url"
-                    value={formData.website}
-                    onChange={(e) => setFormData({ ...formData, website: e.target.value })}
-                  />
+                  <Label htmlFor="website" className="label-small">
+                    {t.website}
+                  </Label>
+                  <Input id="website" type="url" {...register("website")} />
+                  {errors.website && (
+                    <p className="text-xs text-destructive mt-1">{errors.website.message}</p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="address" className="label-small">{t.address}</Label>
-                  <Input
-                    id="address"
-                    value={formData.address}
-                    onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                  />
+                  <Label htmlFor="address" className="label-small">
+                    {t.address}
+                  </Label>
+                  <Input id="address" {...register("address")} />
                 </div>
               </div>
             </div>
@@ -310,21 +360,42 @@ export default function Profile() {
               </div>
 
               <div className="space-y-2">
-                <Select>
+                <Select
+                  onValueChange={(value) => {
+                    if (!countriesServed.includes(value)) {
+                      setValue("countriesServed", [...countriesServed, value]);
+                    }
+                  }}
+                >
                   <SelectTrigger className="bg-background">
                     <SelectValue placeholder={t.countriesServed} />
                   </SelectTrigger>
                   <SelectContent className="bg-popover z-50">
                     {countries.map((country) => (
-                      <SelectItem key={country} value={country}>{country}</SelectItem>
+                      <SelectItem key={country} value={country}>
+                        {country}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
                 <div className="flex flex-wrap gap-2 mt-3">
-                  {formData.countriesServed.map((country) => (
-                    <span key={country} className="inline-flex items-center gap-1 rounded-full bg-muted px-3 py-1 caption-small">
+                  {countriesServed.map((country) => (
+                    <span
+                      key={country}
+                      className="inline-flex items-center gap-1 rounded-full bg-muted px-3 py-1 caption-small"
+                    >
                       {country}
-                      <button className="ml-1 text-muted-foreground hover:text-foreground">×</button>
+                      <button
+                        className="ml-1 text-muted-foreground hover:text-foreground"
+                        onClick={() =>
+                          setValue(
+                            "countriesServed",
+                            countriesServed.filter((c) => c !== country)
+                          )
+                        }
+                      >
+                        ×
+                      </button>
                     </span>
                   ))}
                 </div>
@@ -343,33 +414,39 @@ export default function Profile() {
             <div className="grid gap-6 lg:grid-cols-2">
               <div className="space-y-2">
                 <Label className="label-small">{t.joinPolicy} *</Label>
-                <Select
-                  value={formData.joinPolicy}
-                  onValueChange={(value) => setFormData({ ...formData, joinPolicy: value })}
-                >
-                  <SelectTrigger className="bg-background">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-popover z-50">
-                    <SelectItem value="Open (Anyone Can Join)">{t.openAnyone}</SelectItem>
-                    <SelectItem value="Approval Required">{t.approvalRequired}</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Controller
+                  control={control}
+                  name="joinPolicy"
+                  render={({ field }) => (
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger className="bg-background">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-popover z-50">
+                        <SelectItem value="Open (Anyone Can Join)">{t.openAnyone}</SelectItem>
+                        <SelectItem value="Approval Required">{t.approvalRequired}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
               </div>
 
               <div className="space-y-2">
                 <Label className="label-small">{t.whoCanPost} *</Label>
-                <Select
-                  value={formData.whoCanPost}
-                  onValueChange={(value) => setFormData({ ...formData, whoCanPost: value })}
-                >
-                  <SelectTrigger className="bg-background">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-popover z-50">
-                    <SelectItem value="Admins Only">{t.adminsOnly}</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Controller
+                  control={control}
+                  name="whoCanPost"
+                  render={({ field }) => (
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger className="bg-background">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-popover z-50">
+                        <SelectItem value="Admins Only">{t.adminsOnly}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
               </div>
             </div>
           </div>
@@ -387,74 +464,83 @@ export default function Profile() {
                 <div>
                   <p className="label-small">{t.paidAssociation}</p>
                 </div>
-                <Switch
-                  checked={formData.paidAssociation}
-                  onCheckedChange={(checked) => setFormData({ ...formData, paidAssociation: checked })}
+                <Controller
+                  control={control}
+                  name="paidAssociation"
+                  render={({ field }) => (
+                    <Switch checked={field.value} onCheckedChange={field.onChange} />
+                  )}
                 />
               </div>
 
-              {formData.paidAssociation && (
+              {paidAssociation && (
                 <div className="grid gap-6 lg:grid-cols-2 animate-fade-in">
                   <div className="space-y-2">
                     <Label className="label-small">{t.paymentType}</Label>
-                    <Select
-                      value={formData.paymentType}
-                      onValueChange={(value) => setFormData({ ...formData, paymentType: value })}
-                    >
-                      <SelectTrigger className="bg-background">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="bg-popover z-50">
-                        <SelectItem value="One-time">{t.oneTime}</SelectItem>
-                        <SelectItem value="Subscription">{t.subscription}</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <Controller
+                      control={control}
+                      name="paymentType"
+                      render={({ field }) => (
+                        <Select value={field.value} onValueChange={field.onChange}>
+                          <SelectTrigger className="bg-background">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent className="bg-popover z-50">
+                            <SelectItem value="One-time">{t.oneTime}</SelectItem>
+                            <SelectItem value="Subscription">{t.subscription}</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      )}
+                    />
                   </div>
 
                   <div className="space-y-2">
                     <Label className="label-small">{t.paymentAmount}</Label>
-                    <Input
-                      type="number"
-                      min="1"
-                      value={formData.paymentAmount}
-                      onChange={(e) => setFormData({ ...formData, paymentAmount: e.target.value })}
-                    />
+                    <Input type="number" min="1" {...register("paymentAmount")} />
                   </div>
 
-                  {formData.paymentType === "Subscription" && (
+                  {paymentType === "Subscription" && (
                     <div className="space-y-2">
                       <Label className="label-small">{t.subscriptionPeriod}</Label>
-                      <Select
-                        value={formData.subscriptionPeriod}
-                        onValueChange={(value) => setFormData({ ...formData, subscriptionPeriod: value })}
-                      >
-                        <SelectTrigger className="bg-background">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent className="bg-popover z-50">
-                          <SelectItem value="Monthly">{t.monthly}</SelectItem>
-                          <SelectItem value="Quarterly">{t.quarterly}</SelectItem>
-                          <SelectItem value="Yearly">{t.yearly}</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <Controller
+                        control={control}
+                        name="subscriptionPeriod"
+                        render={({ field }) => (
+                          <Select value={field.value} onValueChange={field.onChange}>
+                            <SelectTrigger className="bg-background">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="bg-popover z-50">
+                              <SelectItem value="Monthly">{t.monthly}</SelectItem>
+                              <SelectItem value="Quarterly">{t.quarterly}</SelectItem>
+                              <SelectItem value="Yearly">{t.yearly}</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        )}
+                      />
                     </div>
                   )}
 
                   <div className="space-y-2">
                     <Label className="label-small">{t.paymentCurrency}</Label>
-                    <Select
-                      value={formData.paymentCurrency}
-                      onValueChange={(value) => setFormData({ ...formData, paymentCurrency: value })}
-                    >
-                      <SelectTrigger className="bg-background">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="bg-popover z-50">
-                        {currencies.map((currency) => (
-                          <SelectItem key={currency} value={currency}>{currency}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <Controller
+                      control={control}
+                      name="paymentCurrency"
+                      render={({ field }) => (
+                        <Select value={field.value} onValueChange={field.onChange}>
+                          <SelectTrigger className="bg-background">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent className="bg-popover z-50">
+                            {currencies.map((currency) => (
+                              <SelectItem key={currency} value={currency}>
+                                {currency}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      )}
+                    />
                   </div>
                 </div>
               )}
@@ -479,38 +565,67 @@ export default function Profile() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-border bg-muted/50">
-                    <th className="px-6 py-4 text-left label-small text-muted-foreground">{t.communityName}</th>
-                    <th className="px-6 py-4 text-left label-small text-muted-foreground">{t.type}</th>
-                    <th className="px-6 py-4 text-left label-small text-muted-foreground">{t.countriesServed}</th>
-                    <th className="px-6 py-4 text-left label-small text-muted-foreground">{t.status}</th>
-                    <th className="px-6 py-4 text-left label-small text-muted-foreground">{t.actions}</th>
+                    <th className="px-6 py-4 text-left label-small text-muted-foreground">
+                      {t.communityName}
+                    </th>
+                    <th className="px-6 py-4 text-left label-small text-muted-foreground">
+                      {t.type}
+                    </th>
+                    <th className="px-6 py-4 text-left label-small text-muted-foreground">
+                      {t.countriesServed}
+                    </th>
+                    <th className="px-6 py-4 text-left label-small text-muted-foreground">
+                      {t.status}
+                    </th>
+                    <th className="px-6 py-4 text-left label-small text-muted-foreground">
+                      {t.actions}
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
-                  {linkedCommunities.map((community) => (
-                    <tr key={community.id} className="border-b border-border">
-                      <td className="px-6 py-4 label-small">{community.name}</td>
-                      <td className="px-6 py-4 body-small text-muted-foreground">{community.type}</td>
-                      <td className="px-6 py-4 body-small text-muted-foreground">{community.countries}</td>
-                      <td className="px-6 py-4">
-                        <span className="inline-flex items-center rounded-full surface-success text-success px-2.5 py-0.5 caption-small">
-                          {community.status}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-2">
-                          <Button variant="ghost" size="sm" className="gap-1">
-                            <Eye className="h-4 w-4" />
-                            {t.view}
-                          </Button>
-                          <Button variant="ghost" size="sm" className="gap-1 text-destructive hover:text-destructive">
-                            <Trash2 className="h-4 w-4" />
-                            {t.unlink}
-                          </Button>
-                        </div>
+                  {linkedCommunities.length === 0 ? (
+                    <tr>
+                      <td
+                        colSpan={5}
+                        className="px-6 py-8 text-center body-small text-muted-foreground"
+                      >
+                        No linked communities yet.
                       </td>
                     </tr>
-                  ))}
+                  ) : (
+                    linkedCommunities.map((community) => (
+                      <tr key={community.id} className="border-b border-border">
+                        <td className="px-6 py-4 label-small">{community.name}</td>
+                        <td className="px-6 py-4 body-small text-muted-foreground">—</td>
+                        <td className="px-6 py-4 body-small text-muted-foreground">
+                          {community.memberCount != null
+                            ? `${community.memberCount} members`
+                            : "—"}
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className="inline-flex items-center rounded-full surface-success text-success px-2.5 py-0.5 caption-small">
+                            {community.visibility}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-2">
+                            <Button variant="ghost" size="sm" className="gap-1">
+                              <Eye className="h-4 w-4" />
+                              {t.view}
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="gap-1 text-destructive hover:text-destructive"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                              {t.unlink}
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
@@ -519,6 +634,36 @@ export default function Profile() {
 
         {/* Admins Tab */}
         <TabsContent value="admins">
+          <div className="rounded-xl border border-border bg-card p-6 mb-6">
+            <div className="mb-4 flex items-center gap-2">
+              <User className="h-4 w-4 text-muted-foreground" />
+              <h3 className="section-header">Your Admin Identity</h3>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-3">
+              <div>
+                <p className="caption-small text-muted-foreground mb-1">Name</p>
+                <p className="label-small">
+                  {adminLoading
+                    ? "—"
+                    : `${adminProfile?.firstName ?? ""} ${adminProfile?.lastName ?? ""}`.trim() ||
+                      "—"}
+                </p>
+              </div>
+              <div>
+                <p className="caption-small text-muted-foreground mb-1">Email</p>
+                <p className="label-small">
+                  {adminLoading ? "—" : (adminProfile?.email ?? "—")}
+                </p>
+              </div>
+              <div>
+                <p className="caption-small text-muted-foreground mb-1">Phone</p>
+                <p className="label-small">
+                  {adminLoading ? "—" : (adminProfile?.phone ?? "—")}
+                </p>
+              </div>
+            </div>
+          </div>
+
           <div className="rounded-xl border border-border bg-card p-6">
             <div className="mb-6 flex items-center justify-between">
               <div>
@@ -534,51 +679,89 @@ export default function Profile() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-border bg-muted/50">
-                    <th className="px-6 py-4 text-left label-small text-muted-foreground">{t.name}</th>
-                    <th className="px-6 py-4 text-left label-small text-muted-foreground">{t.email}</th>
-                    <th className="px-6 py-4 text-left label-small text-muted-foreground">{t.role}</th>
-                    <th className="px-6 py-4 text-left label-small text-muted-foreground">{t.status}</th>
-                    <th className="px-6 py-4 text-left label-small text-muted-foreground">{t.actions}</th>
+                    <th className="px-6 py-4 text-left label-small text-muted-foreground">
+                      {t.name}
+                    </th>
+                    <th className="px-6 py-4 text-left label-small text-muted-foreground">
+                      {t.email}
+                    </th>
+                    <th className="px-6 py-4 text-left label-small text-muted-foreground">
+                      {t.role}
+                    </th>
+                    <th className="px-6 py-4 text-left label-small text-muted-foreground">
+                      {t.status}
+                    </th>
+                    <th className="px-6 py-4 text-left label-small text-muted-foreground">
+                      {t.actions}
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
-                  {admins.map((admin) => (
-                    <tr key={admin.id} className="border-b border-border">
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-primary-foreground caption-small font-semibold">
-                            {admin.name.split(" ").map((n) => n[0]).join("")}
-                          </div>
-                          <span className="label-small">{admin.name}</span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 body-small text-muted-foreground">{admin.email}</td>
-                      <td className="px-6 py-4">
-                        <span className={cn(
-                          "inline-flex items-center rounded-full px-2.5 py-0.5 caption-small",
-                          admin.role === "Primary Admin" ? "surface-info text-info" : "bg-muted text-muted-foreground"
-                        )}>
-                          {admin.role === "Primary Admin" ? t.primaryAdmin : t.admin}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className="inline-flex items-center rounded-full surface-success text-success px-2.5 py-0.5 caption-small">
-                          {t.active}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          className="gap-1 text-destructive hover:text-destructive"
-                          disabled={admin.role === "Primary Admin"}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                          {t.remove}
-                        </Button>
+                  {admins.length === 0 ? (
+                    <tr>
+                      <td
+                        colSpan={5}
+                        className="px-6 py-8 text-center body-small text-muted-foreground"
+                      >
+                        No admins found.
                       </td>
                     </tr>
-                  ))}
+                  ) : (
+                    admins.map((admin) => {
+                      const displayName = admin.displayName ?? admin.email ?? admin.userId;
+                      const initials = displayName
+                        .split(" ")
+                        .map((n) => n[0])
+                        .join("")
+                        .toUpperCase()
+                        .slice(0, 2);
+                      const isPrimary =
+                        admin.role === "PRIMARY_ADMIN" || admin.role === "Primary Admin";
+                      return (
+                        <tr key={admin.id} className="border-b border-border">
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-3">
+                              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-primary-foreground caption-small font-semibold">
+                                {initials}
+                              </div>
+                              <span className="label-small">{displayName}</span>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 body-small text-muted-foreground">
+                            {admin.email ?? "—"}
+                          </td>
+                          <td className="px-6 py-4">
+                            <span
+                              className={cn(
+                                "inline-flex items-center rounded-full px-2.5 py-0.5 caption-small",
+                                isPrimary
+                                  ? "surface-info text-info"
+                                  : "bg-muted text-muted-foreground"
+                              )}
+                            >
+                              {isPrimary ? t.primaryAdmin : t.admin}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="inline-flex items-center rounded-full surface-success text-success px-2.5 py-0.5 caption-small">
+                              {t.active}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="gap-1 text-destructive hover:text-destructive"
+                              disabled={isPrimary}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                              {t.remove}
+                            </Button>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
                 </tbody>
               </table>
             </div>

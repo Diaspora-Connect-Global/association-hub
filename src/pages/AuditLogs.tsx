@@ -73,131 +73,6 @@ function mapApiLog(item: AdminAuditLogItem): AuditLog {
   };
 }
 
-// Legacy mock data (unused after real data loads)
-const mockLogs: AuditLog[] = [
-  {
-    id: "log-001",
-    timestamp: "Dec 5, 2024 14:32:15",
-    userId: "u1",
-    userName: "John Doe",
-    userRole: "association_admin",
-    actionType: "create",
-    module: "posts",
-    objectAffected: "New Announcement Post",
-    objectId: "post-123",
-    detailsSummary: "Created a new announcement post for upcoming event",
-    ipAddress: "192.168.1.45",
-    device: "MacBook Pro",
-    browser: "Chrome 120.0",
-    changesMade: "Created post with title 'Upcoming Annual Meeting'",
-  },
-  {
-    id: "log-002",
-    timestamp: "Dec 5, 2024 13:15:42",
-    userId: "u2",
-    userName: "Jane Smith",
-    userRole: "association_member",
-    actionType: "update",
-    module: "users",
-    objectAffected: "Profile Settings",
-    objectId: "user-456",
-    detailsSummary: "Updated profile information",
-    ipAddress: "10.0.0.12",
-    device: "iPhone 15",
-    browser: "Safari 17.0",
-    previousValue: "Email: jane@old.com",
-    newValue: "Email: jane@new.com",
-  },
-  {
-    id: "log-003",
-    timestamp: "Dec 5, 2024 11:45:00",
-    userId: "u3",
-    userName: "Mike Johnson",
-    userRole: "association_admin",
-    actionType: "delete",
-    module: "groups",
-    objectAffected: "Inactive Group",
-    objectId: "grp-789",
-    detailsSummary: "Deleted inactive group with no members",
-    ipAddress: "172.16.0.100",
-    device: "Windows PC",
-    browser: "Edge 119.0",
-  },
-  {
-    id: "log-004",
-    timestamp: "Dec 5, 2024 10:20:33",
-    userId: "u4",
-    userName: "Sarah Williams",
-    userRole: "individual",
-    actionType: "login",
-    module: "users",
-    objectAffected: "User Session",
-    detailsSummary: "Logged in successfully",
-    ipAddress: "203.45.67.89",
-    device: "Android Phone",
-    browser: "Chrome Mobile 120.0",
-  },
-  {
-    id: "log-005",
-    timestamp: "Dec 4, 2024 16:45:12",
-    userId: "u1",
-    userName: "John Doe",
-    userRole: "association_admin",
-    actionType: "approve",
-    module: "opportunities",
-    objectAffected: "Job Posting Application",
-    objectId: "app-321",
-    detailsSummary: "Approved application for Software Developer position",
-    ipAddress: "192.168.1.45",
-    device: "MacBook Pro",
-    browser: "Chrome 120.0",
-  },
-  {
-    id: "log-006",
-    timestamp: "Dec 4, 2024 14:30:00",
-    userId: "u5",
-    userName: "Alex Turner",
-    userRole: "association_member",
-    actionType: "upload",
-    module: "posts",
-    objectAffected: "Event Banner Image",
-    objectId: "img-654",
-    detailsSummary: "Uploaded new banner image for holiday event",
-    ipAddress: "10.0.0.55",
-    device: "iPad Pro",
-    browser: "Safari 17.0",
-  },
-  {
-    id: "log-007",
-    timestamp: "Dec 4, 2024 12:15:45",
-    userId: "u2",
-    userName: "Jane Smith",
-    userRole: "association_member",
-    actionType: "comment",
-    module: "posts",
-    objectAffected: "Community Discussion",
-    objectId: "post-987",
-    detailsSummary: "Added comment to community discussion thread",
-    ipAddress: "10.0.0.12",
-    device: "iPhone 15",
-    browser: "Safari 17.0",
-  },
-  {
-    id: "log-008",
-    timestamp: "Dec 4, 2024 09:00:00",
-    userId: "u3",
-    userName: "Mike Johnson",
-    userRole: "association_admin",
-    actionType: "reject",
-    module: "support_tickets",
-    objectAffected: "Refund Request",
-    objectId: "tkt-555",
-    detailsSummary: "Rejected refund request due to policy violation",
-    ipAddress: "172.16.0.100",
-    device: "Windows PC",
-    browser: "Edge 119.0",
-  },
-];
 
 const actionTypeColors: Record<ActionType, "default" | "secondary" | "outline" | "destructive"> = {
   create: "default",
@@ -220,7 +95,8 @@ const userTypeLabels: Record<UserType, string> = {
 
 export default function AuditLogs() {
   const t = useT();
-  const [logs, setLogs] = useState<AuditLog[]>(mockLogs);
+  const [logs, setLogs] = useState<AuditLog[]>([]);
+  const [logsLoading, setLogsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [userTypeFilter, setUserTypeFilter] = useState<string>("all");
   const [actionTypeFilter, setActionTypeFilter] = useState<string>("all");
@@ -228,12 +104,14 @@ export default function AuditLogs() {
   const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({});
 
   const fetchLogs = useCallback(async () => {
+    setLogsLoading(true);
     try {
       const result = await getAuditLogs({ limit: 100, offset: 0 });
-      const mapped = (result.items ?? []).map(mapApiLog);
-      if (mapped.length > 0) setLogs(mapped);
+      setLogs((result.items ?? []).map(mapApiLog));
     } catch {
-      // keep mock data on failure
+      setLogs([]);
+    } finally {
+      setLogsLoading(false);
     }
   }, []);
 
@@ -277,10 +155,7 @@ export default function AuditLogs() {
   };
 
   const handleRefresh = () => {
-    toast({
-      title: "Logs Refreshed",
-      description: "Audit logs have been refreshed.",
-    });
+    void fetchLogs();
   };
 
   const openDetails = (log: AuditLog) => {
@@ -290,7 +165,8 @@ export default function AuditLogs() {
 
   // Stats
   const totalLogs = logs.length;
-  const todayLogs = logs.filter((l) => l.timestamp.includes("Dec 5")).length;
+  const todayPrefix = new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  const todayLogs = logs.filter((l) => l.timestamp.startsWith(todayPrefix)).length;
   const uniqueUsers = new Set(logs.map((l) => l.userId)).size;
   const criticalActions = logs.filter((l) => l.actionType === "delete" || l.actionType === "reject").length;
 
@@ -304,8 +180,8 @@ export default function AuditLogs() {
               <TrendingUp className="h-4 w-4 mr-1.5" />
               {showAnalytics ? t.hideAnalyticsButton : t.analyticsButton}
             </Button>
-            <Button variant="outline" onClick={handleRefresh}>
-              <RefreshCw className="h-4 w-4 mr-1.5" />
+            <Button variant="outline" onClick={handleRefresh} disabled={logsLoading}>
+              <RefreshCw className={`h-4 w-4 mr-1.5 ${logsLoading ? "animate-spin" : ""}`} />
               {t.refreshLogsButton}
             </Button>
           </div>
@@ -469,7 +345,11 @@ export default function AuditLogs() {
         )}
 
         {/* Logs Table */}
-        {filteredLogs.length > 0 ? (
+        {logsLoading ? (
+          <div className="flex items-center justify-center py-16 border border-dashed border-border rounded-lg">
+            <RefreshCw className="h-6 w-6 animate-spin text-muted-foreground" />
+          </div>
+        ) : filteredLogs.length > 0 ? (
           <div className="rounded-lg border border-border overflow-hidden">
             <Table>
               <TableHeader>

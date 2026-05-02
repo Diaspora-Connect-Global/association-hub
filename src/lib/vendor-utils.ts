@@ -5,6 +5,7 @@ import type {
   CreateProductInput,
   FileUploadType,
 } from "@/types/vendor-service";
+import { currencyInfo } from "@/types/vendor";
 
 /**
  * Full file upload flow: request signed URL, upload to GCS, return readUrl
@@ -88,25 +89,8 @@ export function checkEligibilityFromResponse(
 /**
  * Format currency with symbol
  */
-export const currencySymbols: Record<string, string> = {
-  USD: "$",
-  EUR: "€",
-  GBP: "£",
-  CAD: "C$",
-  AUD: "A$",
-  CHF: "CHF",
-  JPY: "¥",
-  CNY: "¥",
-  NGN: "₦",
-  KES: "KSh",
-  ZAR: "R",
-  GHS: "₵",
-  XOF: "CFA",
-  XAF: "FCFA",
-};
-
 export function formatPrice(amount: number, currency: string): string {
-  const symbol = currencySymbols[currency] || currency;
+  const symbol = currencyInfo[currency as keyof typeof currencyInfo]?.symbol ?? currency;
   return `${symbol}${amount.toFixed(2)}`;
 }
 

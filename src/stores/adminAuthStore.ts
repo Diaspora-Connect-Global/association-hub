@@ -4,8 +4,8 @@ import { adminLogin as adminLoginApi } from "@/services/graphql/adminAuth";
 import type { AdminUserInfo } from "@/services/graphql/adminAuth";
 import { useAssociationAdminStore } from "@/stores/associationAdminStore";
 
-type JwtRole = "ASSOCIATION_ADMIN" | string;
-type JwtScopeType = "ASSOCIATION" | string;
+type JwtRole = "ASSOCIATION_ADMIN";
+type JwtScopeType = "ASSOCIATION";
 
 interface DecodedAdminJwt {
   role?: JwtRole;
@@ -35,8 +35,8 @@ function decodeAdminJwt(token: string | null): DecodedAdminJwt | null {
   if (!payload) return null;
 
   return {
-    role: typeof payload.role === "string" ? payload.role : undefined,
-    scopeType: typeof payload.scopeType === "string" ? payload.scopeType : undefined,
+    role: typeof payload.role === "string" ? (payload.role as JwtRole) : undefined,
+    scopeType: typeof payload.scopeType === "string" ? (payload.scopeType as JwtScopeType) : undefined,
     scopeId: typeof payload.scopeId === "string" ? payload.scopeId : undefined,
     exp: typeof payload.exp === "number" ? payload.exp : undefined,
   };

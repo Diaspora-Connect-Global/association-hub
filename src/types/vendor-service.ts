@@ -67,7 +67,7 @@ export interface ProductListPaginatedDTO {
 
 // ============ Service Package DTOs ============
 
-export interface Milestone {
+export interface ServiceMilestone {
   id: string;
   title: string;
   description: string;
@@ -87,7 +87,7 @@ export interface ServicePackageDTO {
   estimatedDuration: number;
   status: ProductStatus;
   benefits: string[];
-  milestones: Milestone[];
+  milestones: ServiceMilestone[];
   createdAt: string;
   updatedAt: string;
 }
@@ -230,4 +230,32 @@ export interface RequestVendorUploadUrlInput {
 export interface SuspendVendorInput {
   vendorId: string;
   reason: string;
+}
+
+// ============ Escrow Settings DTOs ============
+
+export interface EscrowMilestoneTemplate {
+  title: string;
+  percentage: number;
+  description?: string;
+}
+
+export interface VendorEscrowSettingsResponse {
+  vendorId: string;
+  escrowEnabled: boolean;
+  escrowPercentage: number;
+  releaseAfterDays: number;
+  autoRelease: boolean;
+  requireDeliveryConfirmation: boolean;
+  defaultMilestones: EscrowMilestoneTemplate[];
+}
+
+export interface UpdateVendorEscrowSettingsInput {
+  vendorId: string;
+  escrowEnabled?: boolean;
+  escrowPercentage?: number;
+  releaseAfterDays?: number;
+  autoRelease?: boolean;
+  requireDeliveryConfirmation?: boolean;
+  defaultMilestones?: EscrowMilestoneTemplate[];
 }

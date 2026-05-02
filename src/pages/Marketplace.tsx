@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PlusCircle, Search, ShoppingBag, BarChart3 } from "lucide-react";
+import { PlusCircle, Search, ShoppingBag, BarChart3, RefreshCw } from "lucide-react";
 import { Listing, ListingFormData } from "@/types/marketplace";
 import { ListingCard } from "@/components/marketplace/ListingCard";
 import { CreateEditListingModal } from "@/components/marketplace/CreateEditListingModal";
@@ -82,159 +82,32 @@ function mapServiceToListing(s: ServicePackageDTO): Listing {
   };
 }
 
-// Legacy mock data (unused after real data loads)
-const mockListings: Listing[] = [
-  {
-    id: "1",
-    title: "Ghana Tech Community T-Shirt",
-    type: "product",
-    description: "Premium quality cotton t-shirt with the official Ghana Tech Community logo. Available in multiple sizes.",
-    category: "Clothing",
-    tags: ["apparel", "merchandise", "community"],
-    price: 25,
-    currency: "USD",
-    inventory: 150,
-    unlimitedInventory: false,
-    allowPreorders: false,
-    status: "published",
-    publishNow: true,
-    allowReviews: true,
-    isFeatured: true,
-    mainImageEmoji: "👕",
-    galleryImages: [],
-    orders: 42,
-    revenue: 1050,
-    views: 890,
-    averageRating: 4.8,
-    reviewCount: 28,
-    createdAt: "Nov 10, 2024",
-    updatedAt: "Dec 1, 2024",
-  },
-  {
-    id: "2",
-    title: "Business Consultation (1 Hour)",
-    type: "service",
-    description: "One-on-one business consultation with experienced mentors. Get personalized advice for your venture.",
-    category: "Consulting",
-    tags: ["business", "mentorship", "professional"],
-    price: 100,
-    currency: "USD",
-    unlimitedInventory: true,
-    allowPreorders: true,
-    status: "published",
-    publishNow: true,
-    allowReviews: true,
-    isFeatured: false,
-    mainImageEmoji: "💼",
-    galleryImages: [],
-    orders: 18,
-    revenue: 1800,
-    views: 456,
-    averageRating: 4.9,
-    reviewCount: 12,
-    createdAt: "Oct 22, 2024",
-    updatedAt: "Nov 15, 2024",
-  },
-  {
-    id: "3",
-    title: "Annual Membership Pin",
-    type: "product",
-    description: "Exclusive membership pin for 2024 members. Limited edition collectible.",
-    category: "Accessories",
-    tags: ["collectible", "membership", "exclusive"],
-    price: 15,
-    currency: "USD",
-    inventory: 200,
-    unlimitedInventory: false,
-    allowPreorders: false,
-    status: "published",
-    publishNow: true,
-    allowReviews: true,
-    isFeatured: false,
-    mainImageEmoji: "📌",
-    galleryImages: [],
-    orders: 89,
-    revenue: 1335,
-    views: 1200,
-    averageRating: 4.7,
-    reviewCount: 45,
-    createdAt: "Sep 15, 2024",
-    updatedAt: "Oct 20, 2024",
-  },
-  {
-    id: "4",
-    title: "Mentorship Program Access",
-    type: "service",
-    description: "6-month mentorship program with industry experts. Includes weekly sessions and resources.",
-    category: "Training",
-    tags: ["education", "mentorship", "career"],
-    price: 250,
-    currency: "USD",
-    unlimitedInventory: true,
-    allowPreorders: true,
-    status: "draft",
-    publishNow: false,
-    allowReviews: true,
-    isFeatured: false,
-    mainImageEmoji: "🎓",
-    galleryImages: [],
-    orders: 12,
-    revenue: 3000,
-    views: 320,
-    reviewCount: 0,
-    createdAt: "Dec 01, 2024",
-    updatedAt: "Dec 01, 2024",
-  },
-  {
-    id: "5",
-    title: "Cultural Artifacts Collection",
-    type: "product",
-    description: "Handcrafted cultural artifacts from local artisans. Each piece tells a unique story.",
-    category: "Art",
-    tags: ["art", "culture", "handmade"],
-    price: 75,
-    currency: "USD",
-    inventory: 0,
-    unlimitedInventory: false,
-    allowPreorders: true,
-    status: "unpublished",
-    publishNow: false,
-    allowReviews: true,
-    isFeatured: false,
-    mainImageEmoji: "🎨",
-    galleryImages: [],
-    orders: 35,
-    revenue: 2625,
-    views: 780,
-    averageRating: 4.6,
-    reviewCount: 18,
-    createdAt: "Aug 30, 2024",
-    updatedAt: "Nov 10, 2024",
-  },
-];
 
 export default function Marketplace() {
   const location = useLocation();
   const t = useT();
-  const [listings, setListings] = useState<Listing[]>(mockListings);
+  const [listings, setListings] = useState<Listing[]>([]);
+  const [listingsLoading, setListingsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("newest");
 
   const fetchListings = useCallback(async () => {
+    setListingsLoading(true);
     try {
       const [productsResult, servicesResult] = await Promise.all([
         vendorService.listVendorProducts(undefined, undefined, 100, 0),
         vendorService.listVendorServicePackages(undefined, undefined, 100, 0),
       ]);
-      const mapped: Listing[] = [
+      setListings([
         ...(productsResult.items ?? []).map(mapProductToListing),
         ...(servicesResult.items ?? []).map(mapServiceToListing),
-      ];
-      if (mapped.length > 0) setListings(mapped);
+      ]);
     } catch {
-      // keep fallback data on failure
+      setListings([]);
+    } finally {
+      setListingsLoading(false);
     }
   }, []);
 
@@ -421,7 +294,11 @@ export default function Marketplace() {
 
         <TabsContent value="listings">
           {/* Listings Grid */}
-          {filteredListings.length > 0 ? (
+          {listingsLoading ? (
+            <div className="flex items-center justify-center py-16 border border-dashed border-border rounded-lg">
+              <RefreshCw className="h-6 w-6 animate-spin text-muted-foreground" />
+            </div>
+          ) : filteredListings.length > 0 ? (
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {filteredListings.map((listing, index) => (
                 <div

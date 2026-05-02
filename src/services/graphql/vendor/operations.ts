@@ -20,6 +20,8 @@ import type {
   RequestPayoutInput,
   RequestVendorUploadUrlInput,
   SuspendVendorInput,
+  VendorEscrowSettingsResponse,
+  UpdateVendorEscrowSettingsInput,
 } from "@/types/vendor-service";
 
 // ============ QUERIES ============
@@ -392,6 +394,42 @@ const REINSTATE_VENDOR = /* GraphQL */ `
   }
 `;
 
+const GET_VENDOR_ESCROW_SETTINGS = /* GraphQL */ `
+  query GetVendorEscrowSettingsV2($vendorId: String!) {
+    getVendorEscrowSettingsV2(vendorId: $vendorId) {
+      vendorId
+      escrowEnabled
+      escrowPercentage
+      releaseAfterDays
+      autoRelease
+      requireDeliveryConfirmation
+      defaultMilestones {
+        title
+        percentage
+        description
+      }
+    }
+  }
+`;
+
+const UPDATE_VENDOR_ESCROW_SETTINGS = /* GraphQL */ `
+  mutation UpdateVendorEscrowSettingsV2($input: UpdateVendorEscrowSettingsInput!) {
+    updateVendorEscrowSettingsV2(input: $input) {
+      vendorId
+      escrowEnabled
+      escrowPercentage
+      releaseAfterDays
+      autoRelease
+      requireDeliveryConfirmation
+      defaultMilestones {
+        title
+        percentage
+        description
+      }
+    }
+  }
+`;
+
 // ============ API FUNCTIONS ============
 
 export const vendorService = {
@@ -635,5 +673,21 @@ export const vendorService = {
       { vendorId }
     );
     return reinstateVendor;
+  },
+
+  async getVendorEscrowSettings(vendorId: string): Promise<VendorEscrowSettingsResponse> {
+    const client = getGraphQLClient();
+    const { getVendorEscrowSettingsV2 } = await client.request<{
+      getVendorEscrowSettingsV2: VendorEscrowSettingsResponse;
+    }>(GET_VENDOR_ESCROW_SETTINGS, { vendorId });
+    return getVendorEscrowSettingsV2;
+  },
+
+  async updateVendorEscrowSettings(input: UpdateVendorEscrowSettingsInput): Promise<VendorEscrowSettingsResponse> {
+    const client = getGraphQLClient();
+    const { updateVendorEscrowSettingsV2 } = await client.request<{
+      updateVendorEscrowSettingsV2: VendorEscrowSettingsResponse;
+    }>(UPDATE_VENDOR_ESCROW_SETTINGS, { input });
+    return updateVendorEscrowSettingsV2;
   },
 };

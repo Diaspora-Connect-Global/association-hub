@@ -1,7 +1,7 @@
 export type EscrowStatus = "held" | "partially_released" | "fully_released" | "disputed" | "refunded";
 export type MilestoneStatus = "pending" | "in_progress" | "completed" | "released" | "disputed";
 
-export interface Milestone {
+export interface EscrowMilestone {
   id: string;
   orderId: string;
   name: string;
@@ -29,7 +29,7 @@ export interface EscrowOrder {
   vendorName: string;
   buyerId: string;
   buyerName: string;
-  milestones: Milestone[];
+  milestones: EscrowMilestone[];
   disputeReason?: string;
   disputedAt?: string;
   createdAt: string;

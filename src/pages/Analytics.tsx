@@ -20,26 +20,10 @@ import {
 } from "@/components/ui/table";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  LineChart,
-  Line,
-  BarChart,
-  Bar,
-  PieChart,
-  Pie,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  Cell,
-} from "recharts";
-import { 
-  Download, 
-  Search, 
+  Download,
+  Search,
   CalendarIcon,
   Users,
   FileText,
@@ -49,9 +33,6 @@ import {
   ShoppingCart,
   HelpCircle,
   RefreshCw,
-  Eye,
-  TrendingUp,
-  TrendingDown
 } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -60,71 +41,15 @@ import { useT } from "@/hooks/useT";
 import { getAdminAssociationId } from "@/stores/adminAuthStore";
 import { getAssociationStats } from "@/services/graphql/association/operations";
 
-// Mock data for charts
-const userGrowthData = [
-  { month: "Jan", users: 120 },
-  { month: "Feb", users: 145 },
-  { month: "Mar", users: 178 },
-  { month: "Apr", users: 210 },
-  { month: "May", users: 265 },
-  { month: "Jun", users: 320 },
-];
-
-const postsByCategoryData = [
-  { category: "Announcements", count: 45 },
-  { category: "News", count: 32 },
-  { category: "Events", count: 28 },
-  { category: "Resources", count: 22 },
-  { category: "Discussions", count: 38 },
-];
-
-const opportunitiesStatusData = [
-  { name: "Open", value: 35, color: "hsl(var(--primary))" },
-  { name: "In Progress", value: 25, color: "hsl(var(--secondary))" },
-  { name: "Filled", value: 45, color: "hsl(142, 76%, 36%)" },
-  { name: "Closed", value: 15, color: "hsl(var(--muted-foreground))" },
-];
-
-const ordersData = [
-  { category: "Products", pending: 12, completed: 45, cancelled: 5 },
-  { category: "Services", pending: 8, completed: 32, cancelled: 3 },
-  { category: "Events", pending: 15, completed: 78, cancelled: 8 },
-  { category: "Courses", pending: 6, completed: 28, cancelled: 2 },
-];
-
-const eventsParticipationData = [
-  { month: "Jan", participants: 85 },
-  { month: "Feb", participants: 120 },
-  { month: "Mar", participants: 95 },
-  { month: "Apr", participants: 165 },
-  { month: "May", participants: 210 },
-  { month: "Jun", participants: 280 },
-];
-
-const ticketsByStatusData = [
-  { status: "Open", count: 15 },
-  { status: "In Progress", count: 25 },
-  { status: "Resolved", count: 45 },
-  { status: "Closed", count: 35 },
-];
-
-const detailedAnalyticsData = [
-  { date: "Dec 5, 2024", module: "Posts", item: "Annual Report 2024", category: "Announcement", action: "Published", user: "John Doe", value: 1 },
-  { date: "Dec 5, 2024", module: "Events", item: "Holiday Networking", category: "Social", action: "Created", user: "Jane Smith", value: 1 },
-  { date: "Dec 4, 2024", module: "Orders", item: "Premium Membership", category: "Services", action: "Completed", user: "Mike Johnson", value: 150 },
-  { date: "Dec 4, 2024", module: "Opportunities", item: "Software Engineer", category: "Jobs", action: "Filled", user: "Sarah Williams", value: 1 },
-  { date: "Dec 3, 2024", module: "Groups", item: "Tech Enthusiasts", category: "Community", action: "Created", user: "Alex Turner", value: 1 },
-];
-
-const getMetricsConfig = (t: any) => [
-  { key: "users", title: t.totalUsersLabel, icon: Users, value: 1247, change: 12.5, changeType: "increase" },
-  { key: "posts", title: t.activePostsLabel, icon: FileText, value: 324, change: 8.2, changeType: "increase" },
-  { key: "opportunities", title: t.opportunities, icon: Briefcase, value: 89, change: -2.4, changeType: "decrease" },
-  { key: "events", title: t.eventsCreated, icon: CalendarLucide, value: 56, change: 15.8, changeType: "increase" },
-  { key: "products", title: t.productsServices, icon: ShoppingBag, value: 178, change: 5.3, changeType: "increase" },
-  { key: "orders", title: t.ordersCompleted, icon: ShoppingCart, value: 432, change: 22.1, changeType: "increase" },
-  { key: "groups", title: t.activeGroupsLabel, icon: Users, value: 28, change: 3.6, changeType: "increase" },
-  { key: "tickets", title: t.supportTicketsLabel, icon: HelpCircle, value: 67, change: -8.5, changeType: "decrease" },
+const getMetricsConfig = (t: ReturnType<typeof useT>, totalMembers: number) => [
+  { key: "users", title: t.totalUsersLabel, icon: Users, value: totalMembers },
+  { key: "posts", title: t.activePostsLabel, icon: FileText, value: 0 },
+  { key: "opportunities", title: t.opportunities, icon: Briefcase, value: 0 },
+  { key: "events", title: t.eventsCreated, icon: CalendarLucide, value: 0 },
+  { key: "products", title: t.productsServices, icon: ShoppingBag, value: 0 },
+  { key: "orders", title: t.ordersCompleted, icon: ShoppingCart, value: 0 },
+  { key: "groups", title: t.activeGroupsLabel, icon: Users, value: 0 },
+  { key: "tickets", title: t.supportTicketsLabel, icon: HelpCircle, value: 0 },
 ];
 
 export default function Analytics() {
@@ -137,10 +62,7 @@ export default function Analytics() {
     void getAssociationStats(associationId).then(setStats).catch(() => {/* keep null */});
   }, [associationId]);
 
-  const metricsConfig = getMetricsConfig(t).map((m) => {
-    if (m.key === "users" && stats) return { ...m, value: stats.totalMembers };
-    return m;
-  });
+  const metricsConfig = getMetricsConfig(t, stats?.totalMembers ?? 0);
   const [searchQuery, setSearchQuery] = useState("");
   const [moduleFilter, setModuleFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -230,20 +152,7 @@ export default function Analytics() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="flex items-end justify-between">
-                  <p className="text-2xl font-bold">{metric.value.toLocaleString()}</p>
-                  <div className={cn(
-                    "flex items-center gap-1 text-xs font-medium",
-                    metric.changeType === "increase" ? "text-green-600" : "text-destructive"
-                  )}>
-                    {metric.changeType === "increase" ? (
-                      <TrendingUp className="h-3 w-3" />
-                    ) : (
-                      <TrendingDown className="h-3 w-3" />
-                    )}
-                    {Math.abs(metric.change)}%
-                  </div>
-                </div>
+                <p className="text-2xl font-bold">{metric.value.toLocaleString()}</p>
               </CardContent>
             </Card>
           ))}
@@ -260,110 +169,36 @@ export default function Analytics() {
 
           <TabsContent value="overview" className="space-y-4">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              {/* User Growth */}
               <Card>
                 <CardHeader>
                   <CardTitle className="text-base">{t.userGrowthOverTime}</CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={250}>
-                    <LineChart data={userGrowthData}>
-                      <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                      <XAxis dataKey="month" tick={{ fontSize: 12 }} className="text-muted-foreground" />
-                      <YAxis tick={{ fontSize: 12 }} className="text-muted-foreground" />
-                      <Tooltip
-                        contentStyle={{
-                          backgroundColor: "hsl(var(--card))",
-                          border: "1px solid hsl(var(--border))",
-                          borderRadius: "8px",
-                        }}
-                      />
-                      <Line type="monotone" dataKey="users" stroke="hsl(var(--primary))" strokeWidth={2} dot={{ fill: "hsl(var(--primary))" }} />
-                    </LineChart>
-                  </ResponsiveContainer>
+                <CardContent className="flex items-center justify-center h-[250px] text-sm text-muted-foreground">
+                  Historical data not yet available
                 </CardContent>
               </Card>
-
-              {/* Opportunities by Status */}
               <Card>
                 <CardHeader>
                   <CardTitle className="text-base">{t.opportunitiesByStatus}</CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={250}>
-                    <PieChart>
-                      <Pie
-                        data={opportunitiesStatusData}
-                        dataKey="value"
-                        nameKey="name"
-                        cx="50%"
-                        cy="50%"
-                        innerRadius={50}
-                        outerRadius={80}
-                        paddingAngle={2}
-                      >
-                        {opportunitiesStatusData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color} />
-                        ))}
-                      </Pie>
-                      <Tooltip
-                        contentStyle={{
-                          backgroundColor: "hsl(var(--card))",
-                          border: "1px solid hsl(var(--border))",
-                          borderRadius: "8px",
-                        }}
-                      />
-                      <Legend wrapperStyle={{ fontSize: "12px" }} />
-                    </PieChart>
-                  </ResponsiveContainer>
+                <CardContent className="flex items-center justify-center h-[250px] text-sm text-muted-foreground">
+                  Historical data not yet available
                 </CardContent>
               </Card>
-
-              {/* Posts by Category */}
               <Card>
                 <CardHeader>
                   <CardTitle className="text-base">{t.postsByCategory}</CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={250}>
-                    <BarChart data={postsByCategoryData}>
-                      <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                      <XAxis dataKey="category" tick={{ fontSize: 10 }} className="text-muted-foreground" />
-                      <YAxis tick={{ fontSize: 12 }} className="text-muted-foreground" />
-                      <Tooltip
-                        contentStyle={{
-                          backgroundColor: "hsl(var(--card))",
-                          border: "1px solid hsl(var(--border))",
-                          borderRadius: "8px",
-                        }}
-                      />
-                      <Bar dataKey="count" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
-                    </BarChart>
-                  </ResponsiveContainer>
+                <CardContent className="flex items-center justify-center h-[250px] text-sm text-muted-foreground">
+                  Historical data not yet available
                 </CardContent>
               </Card>
-
-              {/* Events Participation */}
               <Card>
                 <CardHeader>
                   <CardTitle className="text-base">{t.eventsParticipation}</CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={250}>
-                    <LineChart data={eventsParticipationData}>
-                      <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                      <XAxis dataKey="month" tick={{ fontSize: 12 }} className="text-muted-foreground" />
-                      <YAxis tick={{ fontSize: 12 }} className="text-muted-foreground" />
-                      <Tooltip
-                        contentStyle={{
-                          backgroundColor: "hsl(var(--card))",
-                          border: "1px solid hsl(var(--border))",
-                          borderRadius: "8px",
-                        }}
-                      />
-                      <Line type="monotone" dataKey="participants" stroke="hsl(142, 76%, 36%)" strokeWidth={2} dot={{ fill: "hsl(142, 76%, 36%)" }} />
-                    </LineChart>
-                  </ResponsiveContainer>
+                <CardContent className="flex items-center justify-center h-[250px] text-sm text-muted-foreground">
+                  Historical data not yet available
                 </CardContent>
               </Card>
             </div>
@@ -374,23 +209,8 @@ export default function Analytics() {
               <CardHeader>
                 <CardTitle className="text-base">{t.userGrowthOverTime}</CardTitle>
               </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={350}>
-                  <LineChart data={userGrowthData}>
-                    <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                    <XAxis dataKey="month" tick={{ fontSize: 12 }} className="text-muted-foreground" />
-                    <YAxis tick={{ fontSize: 12 }} className="text-muted-foreground" />
-                    <Tooltip
-                      contentStyle={{
-                        backgroundColor: "hsl(var(--card))",
-                        border: "1px solid hsl(var(--border))",
-                        borderRadius: "8px",
-                      }}
-                    />
-                    <Legend />
-                    <Line type="monotone" dataKey="users" stroke="hsl(var(--primary))" strokeWidth={2} name="Total Users" />
-                  </LineChart>
-                </ResponsiveContainer>
+              <CardContent className="flex items-center justify-center h-[350px] text-sm text-muted-foreground">
+                Historical data not yet available
               </CardContent>
             </Card>
           </TabsContent>
@@ -401,45 +221,16 @@ export default function Analytics() {
                 <CardHeader>
                   <CardTitle className="text-base">{t.postsByCategory}</CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={postsByCategoryData} layout="vertical">
-                      <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                      <XAxis type="number" tick={{ fontSize: 12 }} className="text-muted-foreground" />
-                      <YAxis dataKey="category" type="category" tick={{ fontSize: 11 }} width={100} className="text-muted-foreground" />
-                      <Tooltip
-                        contentStyle={{
-                          backgroundColor: "hsl(var(--card))",
-                          border: "1px solid hsl(var(--border))",
-                          borderRadius: "8px",
-                        }}
-                      />
-                      <Bar dataKey="count" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} />
-                    </BarChart>
-                  </ResponsiveContainer>
+                <CardContent className="flex items-center justify-center h-[300px] text-sm text-muted-foreground">
+                  Historical data not yet available
                 </CardContent>
               </Card>
-
               <Card>
                 <CardHeader>
                   <CardTitle className="text-base">Support Tickets by Status</CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={ticketsByStatusData}>
-                      <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                      <XAxis dataKey="status" tick={{ fontSize: 12 }} className="text-muted-foreground" />
-                      <YAxis tick={{ fontSize: 12 }} className="text-muted-foreground" />
-                      <Tooltip
-                        contentStyle={{
-                          backgroundColor: "hsl(var(--card))",
-                          border: "1px solid hsl(var(--border))",
-                          borderRadius: "8px",
-                        }}
-                      />
-                      <Bar dataKey="count" fill="hsl(var(--secondary))" radius={[4, 4, 0, 0]} />
-                    </BarChart>
-                  </ResponsiveContainer>
+                <CardContent className="flex items-center justify-center h-[300px] text-sm text-muted-foreground">
+                  Historical data not yet available
                 </CardContent>
               </Card>
             </div>
@@ -448,27 +239,10 @@ export default function Analytics() {
           <TabsContent value="commerce" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Orders by Category & Status</CardTitle>
+                <CardTitle className="text-base">Orders by Category &amp; Status</CardTitle>
               </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={350}>
-                  <BarChart data={ordersData}>
-                    <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                    <XAxis dataKey="category" tick={{ fontSize: 12 }} className="text-muted-foreground" />
-                    <YAxis tick={{ fontSize: 12 }} className="text-muted-foreground" />
-                    <Tooltip
-                      contentStyle={{
-                        backgroundColor: "hsl(var(--card))",
-                        border: "1px solid hsl(var(--border))",
-                        borderRadius: "8px",
-                      }}
-                    />
-                    <Legend />
-                    <Bar dataKey="pending" stackId="a" fill="hsl(45, 93%, 47%)" name="Pending" />
-                    <Bar dataKey="completed" stackId="a" fill="hsl(142, 76%, 36%)" name="Completed" />
-                    <Bar dataKey="cancelled" stackId="a" fill="hsl(var(--destructive))" name="Cancelled" />
-                  </BarChart>
-                </ResponsiveContainer>
+              <CardContent className="flex items-center justify-center h-[350px] text-sm text-muted-foreground">
+                Historical data not yet available
               </CardContent>
             </Card>
           </TabsContent>
@@ -540,26 +314,11 @@ export default function Analytics() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {detailedAnalyticsData.map((row, index) => (
-                    <TableRow key={index}>
-                      <TableCell className="text-sm">{row.date}</TableCell>
-                      <TableCell>
-                        <Badge variant="outline">{row.module}</Badge>
-                      </TableCell>
-                      <TableCell className="text-sm font-medium">{row.item}</TableCell>
-                      <TableCell className="text-sm text-muted-foreground">{row.category}</TableCell>
-                      <TableCell>
-                        <Badge variant="secondary">{row.action}</Badge>
-                      </TableCell>
-                      <TableCell className="text-sm">{row.user}</TableCell>
-                      <TableCell className="text-sm font-medium">{row.value}</TableCell>
-                      <TableCell>
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                  <TableRow>
+                    <TableCell colSpan={8} className="text-center text-muted-foreground py-10">
+                      No data available
+                    </TableCell>
+                  </TableRow>
                 </TableBody>
               </Table>
             </div>

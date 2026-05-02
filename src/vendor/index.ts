@@ -38,5 +38,5 @@ export {
   canEditProduct,
   calculateMilestonesTotal,
   validateMilestonePercentages,
-  currencySymbols,
 } from "@/lib/vendor-utils";
+export { currencyInfo } from "@/types/vendor";

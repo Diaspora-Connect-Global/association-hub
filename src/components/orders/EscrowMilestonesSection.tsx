@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Milestone, EscrowOrder, EscrowStatus, MilestoneStatus } from "@/types/escrow";
+import { EscrowMilestone, EscrowOrder, EscrowStatus, MilestoneStatus } from "@/types/escrow";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -41,7 +41,7 @@ interface EscrowMilestonesSectionProps {
   isBuyer?: boolean;
   onMilestoneComplete?: (milestoneId: string) => void;
   onMilestoneRelease?: (milestoneId: string) => void;
-  onAddMilestone?: (milestone: Omit<Milestone, "id" | "orderId" | "status" | "amount" | "confirmedByBuyer" | "createdAt">) => void;
+  onAddMilestone?: (milestone: Omit<EscrowMilestone, "id" | "orderId" | "status" | "amount" | "confirmedByBuyer" | "createdAt">) => void;
   onDeleteMilestone?: (milestoneId: string) => void;
   onDispute?: (reason: string) => void;
 }

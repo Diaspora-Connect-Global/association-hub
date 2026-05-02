@@ -117,7 +117,6 @@ export interface FileRefType {
   sizeBytes: number;
 }
 
-export interface ApplicationType {
 export interface ApplicationOpportunityRef {
   id: string;
   title: string;

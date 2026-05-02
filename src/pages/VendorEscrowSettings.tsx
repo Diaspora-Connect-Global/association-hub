@@ -1,4 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useSearchParams } from "react-router-dom";
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,7 +17,6 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   Shield,
   Save,
-  Loader2,
   Plus,
   Trash2,
   Clock,
@@ -28,6 +31,10 @@ import {
 import { toast } from "@/hooks/use-toast";
 import { useSettings } from "@/contexts/SettingsContext";
 import { useTranslation } from "@/lib/translations";
+import {
+  useGetVendorEscrowSettings,
+  useUpdateVendorEscrowSettings,
+} from "@/hooks/vendor";
 import {
   VendorEscrowSettings as VendorEscrowSettingsType,
   VendorMilestoneTemplate,
@@ -52,89 +59,87 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-const mockVendorSettings: VendorEscrowSettingsType = {
-  ...defaultVendorEscrowSettings,
-  vendorId: "vendor-001",
-  escrowEnabled: true,
-  autoReleaseAfterDays: 14,
-  requireBuyerConfirmation: true,
-  disputeWindowDays: 7,
-  escrowFeePercentage: 2.5,
-  minimumOrderAmountForEscrow: 100,
-  currency: "USD",
-  defaultMilestones: [
-    {
-      id: "ms-1",
-      name: "Initial Deposit",
-      description: "Payment confirmation and order acceptance",
-      percentage: 30,
-      order: 1,
-    },
-    {
-      id: "ms-2",
-      name: "Production Complete",
-      description: "Order production/preparation finished",
-      percentage: 40,
-      order: 2,
-    },
-    {
-      id: "ms-3",
-      name: "Delivery Confirmed",
-      description: "Order delivered and accepted by buyer",
-      percentage: 30,
-      order: 3,
-    },
-  ],
-};
+// ── Schema ───────────────────────────────────────────────────────────────────
+
+const milestoneSchema = z.object({
+  name: z.string().min(1, "Milestone name is required").max(100),
+  percentage: z
+    .number({ invalid_type_error: "Percentage is required" })
+    .min(1)
+    .max(100),
+  description: z.string().max(500).optional().or(z.literal("")),
+});
+type MilestoneFormValues = z.infer<typeof milestoneSchema>;
+
+// ── Component ────────────────────────────────────────────────────────────────
 
 export default function VendorEscrowSettings() {
   const { settings: appSettings } = useSettings();
   const t = useTranslation(appSettings.language);
-  
-  const [settings, setSettings] = useState<VendorEscrowSettingsType>(mockVendorSettings);
-  const [isSaving, setIsSaving] = useState(false);
+  const [searchParams] = useSearchParams();
+  const vendorId = searchParams.get("vendorId");
+
+  const { settings: remoteSettings } = useGetVendorEscrowSettings(vendorId);
+  const { loading: saving, updateEscrowSettings } = useUpdateVendorEscrowSettings();
+
+  const [settings, setSettings] = useState<VendorEscrowSettingsType>(defaultVendorEscrowSettings);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [milestoneToDelete, setMilestoneToDelete] = useState<string | null>(null);
-  const [newMilestone, setNewMilestone] = useState<Partial<VendorMilestoneTemplate>>({
-    name: "",
-    description: "",
-    percentage: 0,
-  });
   const [showAddMilestone, setShowAddMilestone] = useState(false);
+
+  // ── Milestone Form ───────────────────────────────────────────────────────
+  const milestoneForm = useForm<MilestoneFormValues>({
+    resolver: zodResolver(milestoneSchema),
+    defaultValues: { name: "", percentage: 0, description: "" },
+  });
+
+  useEffect(() => {
+    if (!remoteSettings) return;
+    setSettings((prev) => ({
+      ...prev,
+      vendorId: remoteSettings.vendorId,
+      escrowEnabled: remoteSettings.escrowEnabled,
+      escrowFeePercentage: remoteSettings.escrowPercentage,
+      autoReleaseAfterDays: remoteSettings.releaseAfterDays,
+      requireBuyerConfirmation: remoteSettings.requireDeliveryConfirmation,
+      defaultMilestones: remoteSettings.defaultMilestones.map((m, idx) => ({
+        id: `ms-${idx}-${m.title}`,
+        name: m.title,
+        description: m.description,
+        percentage: m.percentage,
+        order: idx + 1,
+      })),
+    }));
+  }, [remoteSettings]);
 
   const totalPercentage = settings.defaultMilestones.reduce((sum, m) => sum + m.percentage, 0);
   const remainingPercentage = 100 - totalPercentage;
 
   const handleSave = async () => {
-    if (settings.escrowEnabled && totalPercentage !== 100) {
+    if (!vendorId) {
       toast({
-        title: t.error,
-        description: t.milestones + " " + t.milestonePercentage + " = 100%",
+        title: "No vendor selected",
+        description: "Please open this page with a ?vendorId= query parameter.",
         variant: "destructive",
       });
       return;
     }
-
-    setIsSaving(true);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    setIsSaving(false);
-    toast({
-      title: t.settingsSaved,
-      description: t.escrowSettings,
+    await updateEscrowSettings({
+      vendorId,
+      escrowEnabled: settings.escrowEnabled,
+      releaseAfterDays: settings.autoReleaseAfterDays,
+      autoRelease: settings.autoReleaseAfterDays > 0,
+      requireDeliveryConfirmation: settings.requireBuyerConfirmation,
+      defaultMilestones: settings.defaultMilestones.map((m) => ({
+        title: m.name,
+        percentage: m.percentage,
+        description: m.description,
+      })),
     });
   };
 
-  const handleAddMilestone = () => {
-    if (!newMilestone.name || newMilestone.percentage === undefined || newMilestone.percentage <= 0) {
-      toast({
-        title: t.error,
-        description: t.milestoneName + " & " + t.milestonePercentage,
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (newMilestone.percentage > remainingPercentage) {
+  const onAddMilestone = (values: MilestoneFormValues) => {
+    if (values.percentage > remainingPercentage) {
       toast({
         title: t.error,
         description: `${remainingPercentage}% max`,
@@ -145,9 +150,9 @@ export default function VendorEscrowSettings() {
 
     const milestone: VendorMilestoneTemplate = {
       id: `ms-${Date.now()}`,
-      name: newMilestone.name,
-      description: newMilestone.description,
-      percentage: newMilestone.percentage,
+      name: values.name,
+      description: values.description,
+      percentage: values.percentage,
       order: settings.defaultMilestones.length + 1,
     };
 
@@ -156,9 +161,9 @@ export default function VendorEscrowSettings() {
       defaultMilestones: [...prev.defaultMilestones, milestone],
     }));
 
-    setNewMilestone({ name: "", description: "", percentage: 0 });
+    milestoneForm.reset();
     setShowAddMilestone(false);
-    
+
     toast({
       title: t.success,
       description: `"${milestone.name}" ${t.addMilestone}`,
@@ -180,7 +185,11 @@ export default function VendorEscrowSettings() {
     });
   };
 
-  const handleUpdateMilestone = (id: string, field: keyof VendorMilestoneTemplate, value: string | number) => {
+  const handleUpdateMilestone = (
+    id: string,
+    field: keyof VendorMilestoneTemplate,
+    value: string | number
+  ) => {
     setSettings((prev) => ({
       ...prev,
       defaultMilestones: prev.defaultMilestones.map((m) =>
@@ -192,7 +201,7 @@ export default function VendorEscrowSettings() {
   const moveMilestone = (id: string, direction: "up" | "down") => {
     const milestones = [...settings.defaultMilestones];
     const index = milestones.findIndex((m) => m.id === id);
-    
+
     if (direction === "up" && index > 0) {
       [milestones[index - 1], milestones[index]] = [milestones[index], milestones[index - 1]];
     } else if (direction === "down" && index < milestones.length - 1) {
@@ -218,9 +227,7 @@ export default function VendorEscrowSettings() {
                     <Shield className="h-5 w-5 text-primary" />
                     {t.escrowProtection}
                   </CardTitle>
-                  <CardDescription className="mt-1">
-                    {t.secureTransactions}
-                  </CardDescription>
+                  <CardDescription className="mt-1">{t.secureTransactions}</CardDescription>
                 </div>
                 <Switch
                   checked={settings.escrowEnabled}
@@ -247,7 +254,9 @@ export default function VendorEscrowSettings() {
                       <Clock className="h-4 w-4 text-blue-500" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium">{settings.disputeWindowDays} {t.disputeWindow}</p>
+                      <p className="text-sm font-medium">
+                        {settings.disputeWindowDays} {t.disputeWindow}
+                      </p>
                       <p className="text-xs text-muted-foreground">{t.timeToRaiseIssues}</p>
                     </div>
                   </div>
@@ -256,7 +265,9 @@ export default function VendorEscrowSettings() {
                       <DollarSign className="h-4 w-4 text-amber-500" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium">{settings.escrowFeePercentage}% {t.escrowFee}</p>
+                      <p className="text-sm font-medium">
+                        {settings.escrowFeePercentage}% {t.escrowFee}
+                      </p>
                       <p className="text-xs text-muted-foreground">{t.perTransaction}</p>
                     </div>
                   </div>
@@ -276,9 +287,7 @@ export default function VendorEscrowSettings() {
                         <Milestone className="h-5 w-5" />
                         {t.defaultMilestoneTemplate}
                       </CardTitle>
-                      <CardDescription>
-                        {t.setUpStandardMilestones}
-                      </CardDescription>
+                      <CardDescription>{t.setUpStandardMilestones}</CardDescription>
                     </div>
                     <Button
                       size="sm"
@@ -295,13 +304,23 @@ export default function VendorEscrowSettings() {
                   <div className="space-y-2">
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-muted-foreground">{t.totalAllocation}</span>
-                      <span className={totalPercentage === 100 ? "text-green-500 font-medium" : "text-amber-500 font-medium"}>
+                      <span
+                        className={
+                          totalPercentage === 100
+                            ? "text-green-500 font-medium"
+                            : "text-amber-500 font-medium"
+                        }
+                      >
                         {totalPercentage}% / 100%
                       </span>
                     </div>
-                    <Progress 
-                      value={totalPercentage} 
-                      className={totalPercentage === 100 ? "[&>div]:bg-green-500" : "[&>div]:bg-amber-500"}
+                    <Progress
+                      value={totalPercentage}
+                      className={
+                        totalPercentage === 100
+                          ? "[&>div]:bg-green-500"
+                          : "[&>div]:bg-amber-500"
+                      }
                     />
                     {totalPercentage !== 100 && (
                       <div className="flex items-center gap-2 text-xs text-amber-600">
@@ -354,33 +373,55 @@ export default function VendorEscrowSettings() {
                           <div className="flex-1 space-y-3">
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                               <div className="md:col-span-2">
-                                <Label className="text-xs text-muted-foreground">{t.milestoneName}</Label>
+                                <Label className="text-xs text-muted-foreground">
+                                  {t.milestoneName}
+                                </Label>
                                 <Input
                                   value={milestone.name}
-                                  onChange={(e) => handleUpdateMilestone(milestone.id, "name", e.target.value)}
+                                  onChange={(e) =>
+                                    handleUpdateMilestone(milestone.id, "name", e.target.value)
+                                  }
                                   className="mt-1"
                                 />
                               </div>
                               <div>
-                                <Label className="text-xs text-muted-foreground">{t.milestonePercentage}</Label>
+                                <Label className="text-xs text-muted-foreground">
+                                  {t.milestonePercentage}
+                                </Label>
                                 <div className="relative mt-1">
                                   <Input
                                     type="number"
                                     min="1"
                                     max="100"
                                     value={milestone.percentage}
-                                    onChange={(e) => handleUpdateMilestone(milestone.id, "percentage", parseInt(e.target.value) || 0)}
+                                    onChange={(e) =>
+                                      handleUpdateMilestone(
+                                        milestone.id,
+                                        "percentage",
+                                        parseInt(e.target.value) || 0
+                                      )
+                                    }
                                     className="pr-8"
                                   />
-                                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">%</span>
+                                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                                    %
+                                  </span>
                                 </div>
                               </div>
                             </div>
                             <div>
-                              <Label className="text-xs text-muted-foreground">{t.milestoneDescription}</Label>
+                              <Label className="text-xs text-muted-foreground">
+                                {t.milestoneDescription}
+                              </Label>
                               <Textarea
                                 value={milestone.description || ""}
-                                onChange={(e) => handleUpdateMilestone(milestone.id, "description", e.target.value)}
+                                onChange={(e) =>
+                                  handleUpdateMilestone(
+                                    milestone.id,
+                                    "description",
+                                    e.target.value
+                                  )
+                                }
                                 placeholder={t.milestoneDescription}
                                 className="mt-1 min-h-[60px]"
                               />
@@ -421,11 +462,15 @@ export default function VendorEscrowSettings() {
                           <div className="md:col-span-2">
                             <Label>{t.milestoneName} *</Label>
                             <Input
-                              value={newMilestone.name}
-                              onChange={(e) => setNewMilestone((prev) => ({ ...prev, name: e.target.value }))}
                               placeholder={t.milestoneName}
                               className="mt-1"
+                              {...milestoneForm.register("name")}
                             />
+                            {milestoneForm.formState.errors.name && (
+                              <p className="text-xs text-destructive mt-1">
+                                {milestoneForm.formState.errors.name.message}
+                              </p>
+                            )}
                           </div>
                           <div>
                             <Label>{t.milestonePercentage} *</Label>
@@ -434,29 +479,45 @@ export default function VendorEscrowSettings() {
                                 type="number"
                                 min="1"
                                 max={remainingPercentage}
-                                value={newMilestone.percentage || ""}
-                                onChange={(e) => setNewMilestone((prev) => ({ ...prev, percentage: parseInt(e.target.value) || 0 }))}
                                 placeholder="0"
                                 className="pr-8"
+                                {...milestoneForm.register("percentage", { valueAsNumber: true })}
                               />
-                              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">%</span>
+                              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                                %
+                              </span>
                             </div>
+                            {milestoneForm.formState.errors.percentage && (
+                              <p className="text-xs text-destructive mt-1">
+                                {milestoneForm.formState.errors.percentage.message}
+                              </p>
+                            )}
                           </div>
                         </div>
                         <div>
                           <Label>{t.milestoneDescription}</Label>
                           <Textarea
-                            value={newMilestone.description || ""}
-                            onChange={(e) => setNewMilestone((prev) => ({ ...prev, description: e.target.value }))}
                             placeholder={t.milestoneDescription}
                             className="mt-1"
+                            {...milestoneForm.register("description")}
                           />
+                          {milestoneForm.formState.errors.description && (
+                            <p className="text-xs text-destructive mt-1">
+                              {milestoneForm.formState.errors.description.message}
+                            </p>
+                          )}
                         </div>
                         <div className="flex justify-end gap-2">
-                          <Button variant="outline" onClick={() => setShowAddMilestone(false)}>
+                          <Button
+                            variant="outline"
+                            onClick={() => {
+                              setShowAddMilestone(false);
+                              milestoneForm.reset();
+                            }}
+                          >
                             {t.cancel}
                           </Button>
-                          <Button onClick={handleAddMilestone}>
+                          <Button onClick={milestoneForm.handleSubmit(onAddMilestone)}>
                             <Plus className="h-4 w-4 mr-1" />
                             {t.addMilestone}
                           </Button>
@@ -474,9 +535,7 @@ export default function VendorEscrowSettings() {
                     <Settings2 className="h-5 w-5" />
                     {t.escrowConfiguration}
                   </CardTitle>
-                  <CardDescription>
-                    {t.fineTuneEscrowSettings}
-                  </CardDescription>
+                  <CardDescription>{t.fineTuneEscrowSettings}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -505,7 +564,9 @@ export default function VendorEscrowSettings() {
                               <span className="flex items-center gap-2">
                                 <span className="font-mono">{currencyInfo[code].symbol}</span>
                                 <span>{code}</span>
-                                <span className="text-muted-foreground">- {currencyInfo[code].name}</span>
+                                <span className="text-muted-foreground">
+                                  - {currencyInfo[code].name}
+                                </span>
                               </span>
                             </SelectItem>
                           ))}
@@ -549,9 +610,7 @@ export default function VendorEscrowSettings() {
                           <TooltipTrigger>
                             <Info className="h-3.5 w-3.5 text-muted-foreground" />
                           </TooltipTrigger>
-                          <TooltipContent>
-                            {t.autoReleaseNote}
-                          </TooltipContent>
+                          <TooltipContent>{t.autoReleaseNote}</TooltipContent>
                         </Tooltip>
                       </div>
                       <Input
@@ -603,9 +662,7 @@ export default function VendorEscrowSettings() {
                   <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
                       <Label>{t.requireBuyerConfirmation}</Label>
-                      <p className="text-xs text-muted-foreground">
-                        {t.buyerMustConfirm}
-                      </p>
+                      <p className="text-xs text-muted-foreground">{t.buyerMustConfirm}</p>
                     </div>
                     <Switch
                       checked={settings.requireBuyerConfirmation}
@@ -634,13 +691,9 @@ export default function VendorEscrowSettings() {
           {/* Save Button */}
           <div className="flex justify-end gap-3 pt-4">
             <Button variant="outline">{t.cancel}</Button>
-            <Button onClick={handleSave} disabled={isSaving || (settings.escrowEnabled && totalPercentage !== 100)}>
-              {isSaving ? (
-                <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
-              ) : (
-                <Save className="h-4 w-4 mr-1.5" />
-              )}
-              {t.saveSettings}
+            <Button onClick={handleSave} disabled={saving}>
+              <Save className="h-4 w-4 mr-1.5" />
+              {saving ? "Saving…" : t.saveSettings}
             </Button>
           </div>
         </div>
@@ -651,7 +704,8 @@ export default function VendorEscrowSettings() {
             <AlertDialogHeader>
               <AlertDialogTitle>{t.deleteMilestone}?</AlertDialogTitle>
               <AlertDialogDescription>
-                {t.milestoneDescription}
+                This action cannot be undone. The milestone will be permanently removed from the
+                template.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>

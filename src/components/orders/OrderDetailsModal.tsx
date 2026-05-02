@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Order } from "@/types/marketplace";
-import { EscrowOrder, Milestone } from "@/types/escrow";
+import { EscrowOrder, EscrowMilestone } from "@/types/escrow";
 import {
   Dialog,
   DialogContent,
@@ -167,9 +167,9 @@ export function OrderDetailsModal({
     });
   };
 
-  const handleAddMilestone = (data: Omit<Milestone, "id" | "orderId" | "status" | "amount" | "confirmedByBuyer" | "createdAt">) => {
+  const handleAddMilestone = (data: Omit<EscrowMilestone, "id" | "orderId" | "status" | "amount" | "confirmedByBuyer" | "createdAt">) => {
     if (!currentEscrowOrder) return;
-    const newMilestone: Milestone = {
+    const newMilestone: EscrowMilestone = {
       id: `m${Date.now()}`,
       orderId: order.id,
       name: data.name,

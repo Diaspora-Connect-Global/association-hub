@@ -77,165 +77,25 @@ function mapVendorOrderToOrder(o: VendorOrderDTO): Order {
   };
 }
 
-// Legacy mock data (unused after real data loads)
-const mockOrders: Order[] = [
-  {
-    id: "ORD-001",
-    listingId: "1",
-    listingTitle: "Ghana Tech Community T-Shirt",
-    userId: "u1",
-    userName: "John Doe",
-    userEmail: "john@example.com",
-    quantity: 2,
-    totalAmount: 50,
-    currency: "USD",
-    paymentStatus: "paid",
-    fulfillmentStatus: "fulfilled",
-    orderDate: "Dec 1, 2024",
-    isEscrow: false,
-  },
-  {
-    id: "ORD-002",
-    listingId: "1",
-    listingTitle: "Ghana Tech Community T-Shirt",
-    userId: "u2",
-    userName: "Jane Smith",
-    userEmail: "jane@example.com",
-    quantity: 1,
-    totalAmount: 25,
-    currency: "USD",
-    paymentStatus: "paid",
-    fulfillmentStatus: "pending",
-    orderDate: "Dec 2, 2024",
-    isEscrow: false,
-  },
-  {
-    id: "ORD-003",
-    listingId: "2",
-    listingTitle: "Business Consultation (1 Hour)",
-    userId: "u3",
-    userName: "Mike Johnson",
-    userEmail: "mike@example.com",
-    quantity: 1,
-    totalAmount: 100,
-    currency: "USD",
-    paymentStatus: "paid",
-    fulfillmentStatus: "pending",
-    orderDate: "Dec 3, 2024",
-    isEscrow: true,
-    escrowStatus: "held",
-    escrowHeldAmount: 100,
-    escrowReleasedAmount: 0,
-    vendorId: "v1",
-    vendorName: "Business Mentors Inc",
-  },
-  {
-    id: "ORD-004",
-    listingId: "3",
-    listingTitle: "Annual Membership Pin",
-    userId: "u4",
-    userName: "Sarah Williams",
-    userEmail: "sarah@example.com",
-    quantity: 3,
-    totalAmount: 45,
-    currency: "USD",
-    paymentStatus: "pending",
-    fulfillmentStatus: "pending",
-    orderDate: "Dec 3, 2024",
-    isEscrow: false,
-  },
-  {
-    id: "ORD-005",
-    listingId: "1",
-    listingTitle: "Ghana Tech Community T-Shirt",
-    userId: "u5",
-    userName: "David Brown",
-    userEmail: "david@example.com",
-    quantity: 1,
-    totalAmount: 25,
-    currency: "USD",
-    paymentStatus: "refunded",
-    fulfillmentStatus: "cancelled",
-    orderDate: "Nov 28, 2024",
-    isEscrow: false,
-  },
-  {
-    id: "ORD-006",
-    listingId: "4",
-    listingTitle: "Mentorship Program Access",
-    userId: "u6",
-    userName: "Emily Chen",
-    userEmail: "emily@example.com",
-    quantity: 1,
-    totalAmount: 250,
-    currency: "USD",
-    paymentStatus: "paid",
-    fulfillmentStatus: "fulfilled",
-    orderDate: "Nov 25, 2024",
-    isEscrow: true,
-    escrowStatus: "fully_released",
-    escrowHeldAmount: 0,
-    escrowReleasedAmount: 250,
-    vendorId: "v2",
-    vendorName: "Career Accelerator LLC",
-  },
-  {
-    id: "ORD-007",
-    listingId: "2",
-    listingTitle: "Business Consultation (1 Hour)",
-    userId: "u7",
-    userName: "Robert Taylor",
-    userEmail: "robert@example.com",
-    quantity: 2,
-    totalAmount: 200,
-    currency: "USD",
-    paymentStatus: "paid",
-    fulfillmentStatus: "pending",
-    orderDate: "Nov 20, 2024",
-    isEscrow: true,
-    escrowStatus: "partially_released",
-    escrowHeldAmount: 100,
-    escrowReleasedAmount: 100,
-    vendorId: "v1",
-    vendorName: "Business Mentors Inc",
-  },
-  {
-    id: "ORD-008",
-    listingId: "5",
-    listingTitle: "Cultural Artifacts Collection",
-    userId: "u8",
-    userName: "Lisa Anderson",
-    userEmail: "lisa@example.com",
-    quantity: 1,
-    totalAmount: 75,
-    currency: "USD",
-    paymentStatus: "paid",
-    fulfillmentStatus: "pending",
-    orderDate: "Dec 4, 2024",
-    isEscrow: true,
-    escrowStatus: "held",
-    escrowHeldAmount: 75,
-    escrowReleasedAmount: 0,
-    vendorId: "v3",
-    vendorName: "Artisan Crafts Ghana",
-  },
-];
 
 export default function Orders() {
   const t = useT();
-  const [orders, setOrders] = useState<Order[]>(mockOrders);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [ordersLoading, setOrdersLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [orderStatusFilter, setOrderStatusFilter] = useState<string>("all");
   const [paymentStatusFilter, setPaymentStatusFilter] = useState<string>("all");
   const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
 
   const fetchOrders = useCallback(async () => {
+    setOrdersLoading(true);
     try {
       const result = await vendorService.listVendorOrders(undefined, undefined, 100, 0);
-      const mapped = (result.items ?? []).map(mapVendorOrderToOrder);
-      if (mapped.length > 0) setOrders(mapped);
+      setOrders((result.items ?? []).map(mapVendorOrderToOrder));
     } catch {
-      // keep fallback data on failure
+      setOrders([]);
+    } finally {
+      setOrdersLoading(false);
     }
   }, []);
 
@@ -449,7 +309,11 @@ export default function Orders() {
         </TabsList>
 
         <TabsContent value="orders">
-          {filteredOrders.length > 0 ? (
+          {ordersLoading ? (
+            <div className="flex items-center justify-center py-16 border border-dashed border-border rounded-lg">
+              <RefreshCw className="h-6 w-6 animate-spin text-muted-foreground" />
+            </div>
+          ) : filteredOrders.length > 0 ? (
             <div className="rounded-lg border border-border overflow-hidden">
               <Table>
                 <TableHeader>
