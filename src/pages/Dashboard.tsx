@@ -3,6 +3,7 @@ import { AdminLayout } from "@/components/layout/AdminLayout";
 import { MetricCard } from "@/components/dashboard/MetricCard";
 import { ActivityFeed } from "@/components/dashboard/ActivityFeed";
 import { EngagementChart } from "@/components/dashboard/EngagementChart";
+import { JoinMembershipSection } from "@/components/JoinMembershipSection";
 import { Users, UserCheck, Clock3, RefreshCw, ShieldAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -110,6 +111,16 @@ export default function Dashboard() {
         </Card>
         <EngagementChart />
       </div>
+
+      {associationId && (
+        <div className="mb-8">
+          <JoinMembershipSection
+            entityId={associationId}
+            entityType="ASSOCIATION"
+            entityName={association?.name ?? "this association"}
+          />
+        </div>
+      )}
 
       <ActivityFeed />
     </AdminLayout>

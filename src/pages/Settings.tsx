@@ -1,5 +1,6 @@
 import { ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { AdminLayout } from "@/components/layout/AdminLayout";
+import { JoinMembershipSection } from "@/components/JoinMembershipSection";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -221,6 +222,15 @@ export default function Settings() {
             </Button>
           </CardContent>
         </Card>
+
+
+        {associationId && (
+          <JoinMembershipSection
+            entityId={associationId}
+            entityType="ASSOCIATION"
+            entityName={name || "this association"}
+          />
+        )}
       </div>
     </AdminLayout>
   );
