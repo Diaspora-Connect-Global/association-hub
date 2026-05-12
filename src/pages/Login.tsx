@@ -30,13 +30,11 @@ export default function Login() {
   const [resetEmail, setResetEmail] = useState("");
   const [isResetting, setIsResetting] = useState(false);
   const hasShownExpiryMessage = useRef(false);
-  const { accessToken, admin, isAuthenticated, tokenExpiresAt, logout } = useAdminAuthStore((state) => ({
-    accessToken: state.accessToken,
-    admin: state.admin,
-    isAuthenticated: state.isAuthenticated,
-    tokenExpiresAt: state.tokenExpiresAt,
-    logout: state.logout,
-  }));
+  const accessToken = useAdminAuthStore((state) => state.accessToken);
+  const admin = useAdminAuthStore((state) => state.admin);
+  const isAuthenticated = useAdminAuthStore((state) => state.isAuthenticated);
+  const tokenExpiresAt = useAdminAuthStore((state) => state.tokenExpiresAt);
+  const logout = useAdminAuthStore((state) => state.logout);
 
   const redirectTarget = useMemo(() => {
     const requestedRedirect = searchParams.get("redirect");
