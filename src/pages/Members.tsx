@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { RefreshCw, ShieldMinus, ShieldPlus, UserMinus, UserPlus } from "lucide-react";
 import { AdminLayout } from "@/components/layout/AdminLayout";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -34,6 +35,32 @@ import {
 } from "@/services/graphql/association";
 
 type MembersTab = "ACTIVE" | "PENDING" | "SUSPENDED";
+
+function getMemberDisplayName(
+  member: Pick<AssociationMemberType, "fullName" | "displayName" | "firstName" | "lastName" | "userId">
+): string {
+  const full = member.fullName?.trim();
+  if (full) return full;
+  const display = member.displayName?.trim();
+  if (display) return display;
+  const combined = [member.firstName, member.lastName].filter(Boolean).join(" ").trim();
+  if (combined) return combined;
+  return member.userId;
+}
+
+function getInitials(
+  input: string | Pick<AssociationMemberType, "fullName" | "displayName" | "firstName" | "lastName" | "userId">
+): string {
+  if (typeof input === "string") {
+    return input.slice(0, 2).toUpperCase();
+  }
+  const name = getMemberDisplayName(input);
+  if (name === input.userId) return input.userId.slice(0, 2).toUpperCase();
+  const parts = name.split(/\s+/).filter(Boolean);
+  const initials =
+    parts.length >= 2 ? parts[0][0] + parts[parts.length - 1][0] : parts[0]?.slice(0, 2) ?? "";
+  return initials.toUpperCase();
+}
 
 export default function Members() {
   const t = useT();
@@ -176,7 +203,7 @@ export default function Members() {
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>User ID</TableHead>
+          <TableHead>Member</TableHead>
           <TableHead>Role</TableHead>
           <TableHead>Status</TableHead>
           <TableHead>Joined</TableHead>
@@ -189,9 +216,45 @@ export default function Members() {
             <TableCell colSpan={5} className="text-center text-muted-foreground">No members found.</TableCell>
           </TableRow>
         ) : (
-          members.map((member) => (
+          members.map((member) => {
+            const displayName = getMemberDisplayName(member);
+            const hasName = displayName !== member.userId;
+            return (
             <TableRow key={member.userId}>
-              <TableCell className="font-medium">{member.userId}</TableCell>
+              <TableCell>
+                <div className="flex items-center gap-3 min-w-0">
+                  <Avatar className="h-9 w-9 shrink-0">
+                    {member.avatarUrl ? (
+                      <AvatarImage src={member.avatarUrl} alt={displayName} />
+                    ) : null}
+                    <AvatarFallback className="bg-primary/10 text-primary text-xs font-medium">
+                      {getInitials(member)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="min-w-0 flex flex-col">
+                    {hasName ? (
+                      <>
+                        <span className="text-sm font-medium text-foreground truncate">
+                          {displayName}
+                        </span>
+                        {member.email ? (
+                          <span className="text-xs text-muted-foreground truncate">
+                            {member.email}
+                          </span>
+                        ) : (
+                          <span className="font-mono text-[11px] text-muted-foreground truncate">
+                            {member.userId}
+                          </span>
+                        )}
+                      </>
+                    ) : (
+                      <span className="font-mono text-xs text-muted-foreground truncate">
+                        {member.userId}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </TableCell>
               <TableCell>{member.role}</TableCell>
               <TableCell>{member.status}</TableCell>
               <TableCell>{new Date(member.joinedAt).toLocaleString()}</TableCell>
@@ -249,7 +312,8 @@ export default function Members() {
                 </div>
               </TableCell>
             </TableRow>
-          ))
+            );
+          })
         )}
       </TableBody>
     </Table>

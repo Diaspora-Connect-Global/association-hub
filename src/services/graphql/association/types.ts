@@ -71,6 +71,13 @@ export interface AssociationMemberType {
   role: MemberRole;
   status: MembershipStatus;
   joinedAt: string;
+  fullName?: string | null;
+  displayName?: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
+  email?: string | null;
+  avatarUrl?: string | null;
+  headline?: string | null;
 }
 
 export interface AssociationMemberListType {

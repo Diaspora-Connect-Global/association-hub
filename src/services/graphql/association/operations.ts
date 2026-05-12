@@ -79,6 +79,13 @@ const GET_ASSOCIATION_MEMBERS = /* GraphQL */ `
         role
         status
         joinedAt
+        fullName
+        displayName
+        firstName
+        lastName
+        email
+        avatarUrl
+        headline
       }
       total
       page
