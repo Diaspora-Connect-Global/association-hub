@@ -4,15 +4,11 @@ import { clearAdminSession, useAdminAuthStore } from "@/stores/adminAuthStore";
 
 export function RequireAdminAuth() {
   const location = useLocation();
-  const { accessToken, admin, myAssociationId, tokenExpiresAt, isAuthenticated } = useAdminAuthStore(
-    (state) => ({
-      accessToken: state.accessToken,
-      admin: state.admin,
-      myAssociationId: state.myAssociationId,
-      tokenExpiresAt: state.tokenExpiresAt,
-      isAuthenticated: state.isAuthenticated,
-    })
-  );
+  const accessToken = useAdminAuthStore((state) => state.accessToken);
+  const admin = useAdminAuthStore((state) => state.admin);
+  const myAssociationId = useAdminAuthStore((state) => state.myAssociationId);
+  const tokenExpiresAt = useAdminAuthStore((state) => state.tokenExpiresAt);
+  const isAuthenticated = useAdminAuthStore((state) => state.isAuthenticated);
 
   const isExpired = typeof tokenExpiresAt === "number" ? Date.now() >= tokenExpiresAt : false;
   const hasAssociationScope = admin?.scopeType === "ASSOCIATION" && Boolean(myAssociationId);
