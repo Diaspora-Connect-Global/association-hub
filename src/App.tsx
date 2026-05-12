@@ -2,6 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { lazy, Suspense } from "react";
 import { SettingsProvider } from "@/contexts/SettingsContext";
 import { RequireAdminAuth } from "@/components/auth/RequireAdminAuth";
 import Index from "./pages/Index";
@@ -21,6 +22,8 @@ import Analytics from "./pages/Analytics";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import VendorEscrowSettings from "./pages/VendorEscrowSettings";
+
+const GroupDetail = lazy(() => import("./pages/GroupDetail"));
 
 const queryClient = new QueryClient();
 
@@ -42,6 +45,14 @@ const App = () => (
               <Route path="/marketplace" element={<Marketplace />} />
               <Route path="/orders" element={<Orders />} />
               <Route path="/groups" element={<Groups />} />
+              <Route
+                path="/groups/:groupId"
+                element={
+                  <Suspense fallback={null}>
+                    <GroupDetail />
+                  </Suspense>
+                }
+              />
               <Route path="/opportunities" element={<Opportunities />} />
               <Route path="/tickets" element={<Tickets />} />
               <Route path="/audit-logs" element={<AuditLogs />} />

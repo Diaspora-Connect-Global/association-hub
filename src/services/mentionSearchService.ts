@@ -1,0 +1,165 @@
+import { getGraphQLClient } from "@/core/graphql-client";
+import type { MentionEntityType } from "@/services/graphql/posts";
+
+export interface MentionCandidate {
+  entityId: string;
+  entityType: MentionEntityType;
+  displayName: string;
+  avatarUrl?: string | null;
+  subtitle?: string | null;
+}
+
+const SEARCH_USERS = `
+  query SearchUsers($input: SearchUsersInput!) {
+    searchUsers(input: $input) {
+      profiles {
+        id
+        userId
+        firstName
+        lastName
+        avatarUrl
+        headline
+      }
+    }
+  }
+`;
+
+const LIST_COMMUNITIES = `
+  query ListCommunities($searchTerm: String, $limit: Int) {
+    listCommunities(searchTerm: $searchTerm, limit: $limit) {
+      communities {
+        id
+        name
+        avatarUrl
+        description
+      }
+    }
+  }
+`;
+
+const SEARCH_ASSOCIATIONS = `
+  query SearchAssociations($input: SearchAssociationsInput!) {
+    searchAssociations(input: $input) {
+      associations {
+        id
+        name
+        avatarUrl
+        description
+      }
+    }
+  }
+`;
+
+interface SearchUsersResponse {
+  searchUsers: {
+    profiles: Array<{
+      id: string;
+      userId?: string;
+      firstName?: string | null;
+      lastName?: string | null;
+      avatarUrl?: string | null;
+      headline?: string | null;
+    }>;
+  };
+}
+
+interface ListCommunitiesResponse {
+  listCommunities: {
+    communities: Array<{
+      id: string;
+      name: string;
+      avatarUrl?: string | null;
+      description?: string | null;
+    }>;
+  };
+}
+
+interface SearchAssociationsResponse {
+  searchAssociations: {
+    associations: Array<{
+      id: string;
+      name: string;
+      avatarUrl?: string | null;
+      description?: string | null;
+    }>;
+  };
+}
+
+const PER_TYPE_LIMIT = 5;
+
+function logMentionSearchFailure(scope: string, error: unknown): void {
+  const message = error instanceof Error ? error.message : String(error);
+  console.warn(`[mentionSearch] ${scope} lookup failed: ${message}`);
+}
+
+async function searchUserCandidates(query: string): Promise<MentionCandidate[]> {
+  try {
+    const data = await getGraphQLClient().request<SearchUsersResponse>(SEARCH_USERS, {
+      input: { query, limit: PER_TYPE_LIMIT },
+    });
+    return data.searchUsers.profiles.map((p) => {
+      const name = [p.firstName, p.lastName].filter(Boolean).join(" ").trim();
+      return {
+        entityId: p.userId ?? p.id,
+        entityType: "USER" as const,
+        displayName: name || "Unnamed user",
+        avatarUrl: p.avatarUrl,
+        subtitle: p.headline ?? null,
+      };
+    });
+  } catch (error) {
+    logMentionSearchFailure("users", error);
+    return [];
+  }
+}
+
+async function searchCommunityCandidates(query: string): Promise<MentionCandidate[]> {
+  try {
+    const data = await getGraphQLClient().request<ListCommunitiesResponse>(LIST_COMMUNITIES, {
+      searchTerm: query,
+      limit: PER_TYPE_LIMIT,
+    });
+    return data.listCommunities.communities.map((c) => ({
+      entityId: c.id,
+      entityType: "COMMUNITY" as const,
+      displayName: c.name,
+      avatarUrl: c.avatarUrl,
+      subtitle: c.description ?? null,
+    }));
+  } catch (error) {
+    logMentionSearchFailure("communities", error);
+    return [];
+  }
+}
+
+async function searchAssociationCandidates(query: string): Promise<MentionCandidate[]> {
+  try {
+    const data = await getGraphQLClient().request<SearchAssociationsResponse>(
+      SEARCH_ASSOCIATIONS,
+      { input: { query, limit: PER_TYPE_LIMIT, page: 1 } },
+    );
+    return data.searchAssociations.associations.map((a) => ({
+      entityId: a.id,
+      entityType: "ASSOCIATION" as const,
+      displayName: a.name,
+      avatarUrl: a.avatarUrl,
+      subtitle: a.description ?? null,
+    }));
+  } catch (error) {
+    logMentionSearchFailure("associations", error);
+    return [];
+  }
+}
+
+export async function searchMentionCandidates(query: string): Promise<MentionCandidate[]> {
+  const trimmed = query.trim();
+  if (trimmed.length === 0) return [];
+
+  const [users, communities, associations] = await Promise.all([
+    searchUserCandidates(trimmed),
+    searchCommunityCandidates(trimmed),
+    searchAssociationCandidates(trimmed),
+  ]);
+
+  return [...users, ...communities, ...associations];
+}

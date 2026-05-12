@@ -7,7 +7,9 @@ import { useAssociationAdminStore } from "@/stores/associationAdminStore";
 type JwtRole = "ASSOCIATION_ADMIN";
 type JwtScopeType = "ASSOCIATION";
 
-interface DecodedAdminJwt {
+export interface DecodedAdminJwt {
+  sub?: string;
+  userId?: string;
   role?: JwtRole;
   scopeType?: JwtScopeType;
   scopeId?: string;
@@ -29,7 +31,7 @@ function decodeJwtPayload(token: string): Record<string, unknown> | null {
   }
 }
 
-function decodeAdminJwt(token: string | null): DecodedAdminJwt | null {
+export function decodeAdminJwt(token: string | null): DecodedAdminJwt | null {
   if (!token) return null;
   const payload = decodeJwtPayload(token);
   if (!payload) return null;
@@ -39,6 +41,8 @@ function decodeAdminJwt(token: string | null): DecodedAdminJwt | null {
     scopeType: typeof payload.scopeType === "string" ? (payload.scopeType as JwtScopeType) : undefined,
     scopeId: typeof payload.scopeId === "string" ? payload.scopeId : undefined,
     exp: typeof payload.exp === "number" ? payload.exp : undefined,
+    sub: typeof payload.sub === "string" ? payload.sub : undefined,
+    userId: typeof payload.userId === "string" ? payload.userId : undefined,
   };
 }
 

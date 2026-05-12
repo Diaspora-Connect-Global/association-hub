@@ -1,0 +1,325 @@
+import { getGraphQLClient } from "@/core/graphql-client";
+import type {
+  Post,
+  PostListResponse,
+  AssociationFeedResponse,
+  PostEngagementCounts,
+  Comment,
+  TrendingHashtag,
+  GetFeedInput,
+  GetTrendingHashtagsInput,
+  PostAuthorType,
+} from "./types";
+
+export async function getPostDetails(postId: string): Promise<Post> {
+  const query = `
+    query GetPostDetails($input: PostIdInput!) {
+      getPostDetails(input: $input) {
+        id
+        authorType
+        authorId
+        text
+        visibility
+        status
+        attachments {
+          id
+          type
+          objectKey
+          mimeType
+          url
+        }
+        engagementCounts {
+          likes
+          shares
+          saves
+          comments
+        }
+        createdAt
+        updatedAt
+      }
+    }
+  `;
+  const data = await getGraphQLClient().request<{ getPostDetails: Post }>(query, {
+    input: { postId },
+  });
+  return data.getPostDetails;
+}
+
+export async function post(id: string): Promise<Post> {
+  const query = `
+    query Post($id: String!) {
+      post(id: $id) {
+        id
+        authorType
+        authorId
+        text
+        visibility
+        status
+        attachments {
+          id
+          type
+          url
+          mimeType
+        }
+        engagementCounts {
+          likes
+          shares
+          saves
+          comments
+        }
+        mentions {
+          entityId
+          entityType
+          handle
+          displayName
+        }
+        hashtags {
+          id
+          tag
+          usageCount
+        }
+        createdAt
+        updatedAt
+      }
+    }
+  `;
+  const data = await getGraphQLClient().request<{ post: Post }>(query, { id });
+  return data.post;
+}
+
+/** Association admin feed: fetches association-authored posts via userPosts */
+export async function getAssociationFeed(
+  associationId: string,
+  limit: number,
+  offset: number,
+): Promise<AssociationFeedResponse> {
+  const query = `
+    query AssociationFeed($authorType: String!, $authorId: String, $limit: Int, $offset: Int) {
+      userPosts(
+        authorType: $authorType
+        authorId: $authorId
+        limit: $limit
+        offset: $offset
+      ) {
+        id
+        authorType
+        authorId
+        text
+        visibility
+        status
+        createdAt
+        updatedAt
+        attachments {
+          id
+          type
+          url
+          mimeType
+        }
+        engagementCounts {
+          likes
+          shares
+          saves
+          comments
+        }
+      }
+    }
+  `;
+
+  const data = await getGraphQLClient().request<{ userPosts: Post[] }>(query, {
+    authorType: "ASSOCIATION",
+    authorId: associationId,
+    limit,
+    offset,
+  });
+
+  const posts = data.userPosts ?? [];
+  return {
+    posts,
+    total: posts.length,
+    limit,
+    offset,
+    hasMore: posts.length === limit,
+    nextCursor: null,
+  };
+}
+
+export async function getPostEngagementCounts(
+  postId: string,
+): Promise<PostEngagementCounts> {
+  const query = `
+    query GetPostEngagementCounts($input: PostIdInput!) {
+      getPostEngagementCounts(input: $input) {
+        likes
+        shares
+        saves
+        comments
+      }
+    }
+  `;
+  const data = await getGraphQLClient().request<{
+    getPostEngagementCounts: PostEngagementCounts;
+  }>(query, { input: { postId } });
+  return data.getPostEngagementCounts;
+}
+
+export async function getFeed(input: GetFeedInput): Promise<PostListResponse> {
+  const query = `
+    query GetFeed($input: GetFeedInput!) {
+      feed(input: $input) {
+        posts {
+          id
+          authorType
+          authorId
+          text
+          visibility
+          status
+          createdAt
+          updatedAt
+          attachments {
+            id
+            type
+            url
+            mimeType
+          }
+          engagementCounts {
+            likes
+            comments
+            shares
+            saves
+          }
+        }
+        total
+        limit
+        offset
+        hasMore
+        nextCursor
+      }
+    }
+  `;
+  const data = await getGraphQLClient().request<{ feed: PostListResponse }>(query, { input });
+  return data.feed;
+}
+
+export async function getUserPosts(
+  authorType: PostAuthorType = "ASSOCIATION",
+  authorId?: string,
+  limit = 20,
+  offset = 0,
+): Promise<Post[]> {
+  const query = `
+    query UserPosts($authorType: String!, $authorId: String, $limit: Int, $offset: Int) {
+      userPosts(
+        authorType: $authorType
+        authorId: $authorId
+        limit: $limit
+        offset: $offset
+      ) {
+        id
+        authorType
+        authorId
+        text
+        visibility
+        status
+        createdAt
+        engagementCounts {
+          likes
+          comments
+          shares
+          saves
+        }
+      }
+    }
+  `;
+  const data = await getGraphQLClient().request<{ userPosts: Post[] }>(query, {
+    authorType,
+    authorId,
+    limit,
+    offset,
+  });
+  return data.userPosts;
+}
+
+export async function getPostComments(
+  postId: string,
+  limit = 20,
+  offset = 0,
+  parentId?: string,
+): Promise<Comment[]> {
+  const query = `
+    query PostComments($postId: String!, $limit: Int, $offset: Int, $parentId: String) {
+      postComments(postId: $postId, limit: $limit, offset: $offset, parentId: $parentId) {
+        id
+        postId
+        authorId
+        authorType
+        text
+        parentId
+        authorDisplayName
+        authorHandle
+        replyCount
+        likeCount
+        hasLiked
+        createdAt
+      }
+    }
+  `;
+  const data = await getGraphQLClient().request<{ postComments: Comment[] }>(query, {
+    postId,
+    limit,
+    offset,
+    parentId,
+  });
+  return data.postComments;
+}
+
+export async function postComments(
+  postId: string,
+  limit = 20,
+  offset = 0,
+  parentId?: string,
+): Promise<Comment[]> {
+  return getPostComments(postId, limit, offset, parentId);
+}
+
+export async function searchPosts(
+  searchTerm: string,
+  limit = 20,
+  offset = 0,
+): Promise<Post[]> {
+  const query = `
+    query SearchPosts($searchTerm: String!, $limit: Int, $offset: Int) {
+      searchPosts(searchTerm: $searchTerm, limit: $limit, offset: $offset) {
+        id
+        text
+        authorId
+        authorType
+        status
+        createdAt
+      }
+    }
+  `;
+  const data = await getGraphQLClient().request<{ searchPosts: Post[] }>(query, {
+    searchTerm,
+    limit,
+    offset,
+  });
+  return data.searchPosts;
+}
+
+export async function getTrendingHashtags(
+  input?: GetTrendingHashtagsInput,
+): Promise<TrendingHashtag[]> {
+  const query = `
+    query TrendingHashtags($input: GetTrendingHashtagsInput) {
+      trendingHashtags(input: $input) {
+        hashtag
+        count
+      }
+    }
+  `;
+  const data = await getGraphQLClient().request<{ trendingHashtags: TrendingHashtag[] }>(
+    query,
+    { input },
+  );
+  return data.trendingHashtags;
+}
