@@ -54,6 +54,7 @@ import type {
   AttachmentType,
   MentionInput,
   Post as ApiPost,
+  PostAttachment,
   PostVisibility,
 } from "@/services/graphql/posts";
 
@@ -105,8 +106,9 @@ function mapApiStatusToUi(status: ApiPost["status"] | string | undefined): UiPos
 function mapApiToUi(p: ApiPost): UiPost {
   const text = p.text ?? "";
   const firstLine = text.split("\n").find((line) => line.trim().length > 0) ?? "Untitled post";
-  const hasMedia = (p.attachments?.length ?? 0) > 0;
-  const firstAttachmentType = p.attachments?.[0]?.type;
+  const attachments = p.attachments ?? [];
+  const hasMedia = attachments.length > 0;
+  const firstAttachmentType = attachments[0]?.type;
   const media: UiPost["media"] =
     firstAttachmentType === "IMAGE"
       ? "image"
@@ -136,7 +138,25 @@ function mapApiToUi(p: ApiPost): UiPost {
     publishedAt: formatBackendDate(p.createdAt),
     createdAt: formatBackendDate(p.createdAt),
     updatedAt: p.updatedAt ? formatBackendDate(p.updatedAt) : formatBackendDate(p.createdAt),
+    attachments,
   };
+}
+
+function attachmentFileName(att: PostAttachment): string {
+  if (att.objectKey) {
+    const parts = att.objectKey.split("/");
+    return parts[parts.length - 1] || att.objectKey;
+  }
+  if (att.url) {
+    try {
+      const u = new URL(att.url);
+      const parts = u.pathname.split("/");
+      return parts[parts.length - 1] || att.url;
+    } catch {
+      return att.url;
+    }
+  }
+  return att.id;
 }
 
 function resolveAttachmentType(file: File): AttachmentType {
@@ -249,7 +269,30 @@ export default function Posts() {
     setLoading(true);
     try {
       const feed = await associationPostService.getAssociationFeed(associationId, 50, 0);
-      setPosts(feed.posts.map(mapApiToUi));
+      const mapped = feed.posts.map(mapApiToUi);
+      setPosts(mapped);
+
+      // The backend feed's engagementCounts.comments has historically been
+      // unreliable (often 0 even when comments exist). The post-feed-service
+      // was fixed to return real counts, but we keep this belt-and-suspenders
+      // fan-out so admins always see an accurate number.
+      const counts = await Promise.all(
+        mapped.map((p) =>
+          associationPostService
+            .postComments(p.id, 100, 0)
+            .then((cs) => cs.reduce((sum, c) => sum + 1 + (c.replyCount ?? 0), 0))
+            .catch(() => null),
+        ),
+      );
+      setPosts((prev) =>
+        prev.map((p) => {
+          const i = mapped.findIndex((m) => m.id === p.id);
+          const derived = i >= 0 ? counts[i] : null;
+          return derived != null && derived > p.comments
+            ? { ...p, comments: derived }
+            : p;
+        }),
+      );
     } catch (err) {
       const message = err instanceof Error ? err.message : "Failed to load posts.";
       toast({ title: "Error loading posts", description: message, variant: "destructive" });
@@ -443,9 +486,22 @@ export default function Posts() {
     );
   };
 
-  const handleOpenDrawer = (post: UiPost) => {
+  const handleOpenDrawer = async (post: UiPost) => {
     setViewPost(post);
     setViewModalOpen(true);
+    try {
+      const [fresh, topLevel] = await Promise.all([
+        associationPostService.post(post.id),
+        associationPostService.postComments(post.id, 100, 0).catch(() => []),
+      ]);
+      const mapped = mapApiToUi(fresh);
+      const derived = topLevel.reduce((sum, c) => sum + 1 + (c.replyCount ?? 0), 0);
+      mapped.comments = Math.max(mapped.comments, derived);
+      setViewPost(mapped);
+      setPosts((prev) => prev.map((p) => (p.id === mapped.id ? mapped : p)));
+    } catch {
+      // keep stale snapshot if refresh fails
+    }
   };
 
   const handleTogglePublish = async (post: UiPost) => {
@@ -793,6 +849,67 @@ export default function Posts() {
             <div className="prose prose-sm max-w-none">
               <p className="text-foreground whitespace-pre-wrap">{viewPost?.body}</p>
             </div>
+            {viewPost && (viewPost.attachments?.length ?? 0) > 0 && (
+              <div className="space-y-2 pt-2 border-t border-border">
+                <h3 className="text-sm font-semibold text-foreground">
+                  Attachments ({viewPost.attachments?.length ?? 0})
+                </h3>
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                  {(viewPost.attachments ?? []).map((att) => {
+                    const name = attachmentFileName(att);
+                    if (att.type === "IMAGE" && att.url) {
+                      return (
+                        <a
+                          key={att.id}
+                          href={att.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="block overflow-hidden rounded-md border border-border bg-muted/30"
+                        >
+                          <img
+                            src={att.url}
+                            alt={name}
+                            className="aspect-square w-full object-cover"
+                          />
+                        </a>
+                      );
+                    }
+                    if (att.type === "VIDEO" && att.url) {
+                      return (
+                        <video
+                          key={att.id}
+                          src={att.url}
+                          controls
+                          className="aspect-square w-full rounded-md border border-border bg-black object-cover"
+                        />
+                      );
+                    }
+                    if (att.type === "AUDIO" && att.url) {
+                      return (
+                        <audio
+                          key={att.id}
+                          src={att.url}
+                          controls
+                          className="col-span-2 w-full sm:col-span-3"
+                        />
+                      );
+                    }
+                    return (
+                      <a
+                        key={att.id}
+                        href={att.url ?? "#"}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="flex aspect-square flex-col items-center justify-center gap-2 rounded-md border border-border bg-muted/30 p-3 text-center text-xs text-muted-foreground hover:bg-muted/50"
+                      >
+                        <FileText className="h-6 w-6" />
+                        <span className="line-clamp-3 break-all">{name}</span>
+                      </a>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
             {viewPost && (
               <div className="space-y-2 pt-2 border-t border-border">
                 <h3 className="text-sm font-semibold text-foreground">Comments</h3>

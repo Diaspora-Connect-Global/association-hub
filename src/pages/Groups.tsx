@@ -54,7 +54,7 @@ import {
 import { toast } from "@/hooks/use-toast";
 import { useT } from "@/hooks/useT";
 import { getAdminAssociationId } from "@/stores/adminAuthStore";
-import { discoverGroups } from "@/services/graphql/groups/queries";
+import { getEntityGroups } from "@/services/graphql/groups/queries";
 import { createGroup, deleteGroup } from "@/services/graphql/groups/mutations";
 import type { Group, GroupPrivacy } from "@/services/graphql/groups/types";
 
@@ -113,7 +113,7 @@ export default function Groups() {
       setLoading(true);
       setError(null);
       try {
-        const result = await discoverGroups({
+        const result = await getEntityGroups({
           entityId: associationId,
           entityType: "ASSOCIATION",
           search: search?.trim() || undefined,

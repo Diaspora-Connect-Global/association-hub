@@ -1,3 +1,5 @@
+import type { PostAttachment } from "@/services/graphql/posts";
+
 export interface Post {
   id: string;
   title: string;
@@ -21,6 +23,7 @@ export interface Post {
   updatedAt: string;
   tags?: string[];
   contentWarning?: "none" | "sensitive" | "age_restricted";
+  attachments?: PostAttachment[];
 }
 
 export interface Comment {

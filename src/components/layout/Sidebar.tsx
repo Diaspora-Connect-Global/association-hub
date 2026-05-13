@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import {
   Home,
   FileText,
@@ -28,6 +29,7 @@ import { cn } from "@/lib/utils";
 import { useT } from "@/hooks/useT";
 import { clearAdminSession, useAdminAuthStore } from "@/stores/adminAuthStore";
 import { useAssociationAdminStore } from "@/stores/associationAdminStore";
+import { getAssociation } from "@/services/graphql/association";
 import diaspoPlugLogo from "@/assets/diaspo-plug-logo.svg";
 import {
   Collapsible,
@@ -65,6 +67,18 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
     pendingReportsCount: state.pendingReportsCount,
     association: state.association,
   }));
+
+  // Fetch the association name directly so the sidebar always shows the entity
+  // name (not the UUID) even before the dashboard/profile pages have mounted.
+  const associationId = admin?.scopeType === "ASSOCIATION" ? admin.scopeId ?? null : null;
+  const { data: associationQuery } = useQuery({
+    queryKey: ["association", associationId],
+    queryFn: () => getAssociation(associationId!),
+    enabled: !!associationId && !association,
+    staleTime: 5 * 60_000,
+  });
+  const associationName = association?.name ?? associationQuery?.name ?? "Admin Portal";
+  const associationAvatarUrl = association?.avatarUrl ?? associationQuery?.avatarUrl ?? null;
 
   // Check if any vendor path is active
   const vendorPaths = ["/marketplace", "/orders", "/vendor-escrow-settings"];
@@ -299,23 +313,23 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
             "flex items-center gap-3",
             collapsed ? "justify-center" : "px-2"
           )}>
-            {association?.avatarUrl ? (
+            {associationAvatarUrl ? (
               <img
-                src={association.avatarUrl}
-                alt={association.name}
+                src={associationAvatarUrl}
+                alt={associationName}
                 className="h-10 w-10 rounded-full object-cover flex-shrink-0"
               />
             ) : (
-              <img 
-                src={diaspoPlugLogo} 
-                alt="DiaspoPlug" 
+              <img
+                src={diaspoPlugLogo}
+                alt="DiaspoPlug"
                 className="h-10 w-10 object-contain flex-shrink-0"
               />
             )}
             {!collapsed && (
               <div>
                 <h1 className="label-small font-bold text-sidebar-foreground">DiaspoPlug</h1>
-                <p className="caption-small text-muted-foreground">{association?.name ?? "Admin Portal"}</p>
+                <p className="caption-small text-muted-foreground">{associationName}</p>
               </div>
             )}
           </div>

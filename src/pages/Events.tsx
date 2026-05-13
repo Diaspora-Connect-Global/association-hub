@@ -31,6 +31,34 @@ import {
   updateEvent,
   type EventType as BackendEvent,
 } from "@/services/graphql/events/operations";
+import { uploadEventCoverImage } from "@/services/graphql/events/uploads";
+
+/**
+ * Resolve the value that should be sent as `coverImageUrl` on createEvent /
+ * updateEvent.
+ *
+ * - If the form carries a freshly-picked `File` (the user just dropped/selected
+ *   an image), upload it via the signed-URL flow and return the resulting
+ *   public URL.
+ * - Otherwise return undefined. We explicitly drop `data:` URLs to defensively
+ *   guard against any caller that might still be sending base64 inline (which
+ *   was the original bug: the GraphQL request body grew to multiple MB and
+ *   timed out at the gateway / nginx body limit).
+ */
+async function resolveCoverImageUrl(
+  bannerImage: unknown,
+): Promise<string | undefined> {
+  if (bannerImage instanceof File) {
+    return uploadEventCoverImage(bannerImage);
+  }
+  if (typeof bannerImage === "string") {
+    const trimmed = bannerImage.trim();
+    if (!trimmed) return undefined;
+    if (trimmed.startsWith("data:")) return undefined;
+    return trimmed;
+  }
+  return undefined;
+}
 
 // -------------------------------------------------------------------------
 // Helpers: map backend EventType → UI Event type
@@ -261,6 +289,12 @@ export default function Events() {
   const handleCreateSubmit = async (data: EventFormData) => {
     if (!associationId) return;
     try {
+      // Resolve the cover image URL BEFORE issuing the create/update mutation.
+      // If the user picked a file, this performs the signed-URL upload and
+      // returns the resulting https URL, so the GraphQL request body stays
+      // small (just a URL string) instead of a multi-MB base64 data URL.
+      const coverImageUrl = await resolveCoverImageUrl(data.bannerImage);
+
       if (editingEvent) {
         // Update existing
         const input: Parameters<typeof updateEvent>[1] = {
@@ -272,6 +306,7 @@ export default function Events() {
           ticketPrice: data.ticketPrice,
           currency: data.currency,
           maxParticipants: data.hasParticipantLimit ? data.maxParticipants : undefined,
+          coverImageUrl,
         };
         if (data.date) {
           const [hours, minutes] = (data.startTime || "00:00").split(":").map(Number);
@@ -310,6 +345,7 @@ export default function Events() {
           ticketPrice: data.ticketPrice,
           currency: data.currency,
           maxParticipants: data.hasParticipantLimit ? data.maxParticipants : undefined,
+          coverImageUrl,
           ownerType: "ASSOCIATION",
           ownerId: associationId,
         });
