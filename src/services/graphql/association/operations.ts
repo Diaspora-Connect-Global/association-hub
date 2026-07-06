@@ -17,6 +17,7 @@ import type {
   ResolveReportInput,
   SuspendMemberInput,
   UpdateAssociationInput,
+  UpdateAssociationServicesInput,
   UpdateMemberRoleInput,
 } from "./types";
 
@@ -31,6 +32,7 @@ const GET_ASSOCIATION = /* GraphQL */ `
       memberCount
       avatarUrl
       defaultGroupId
+      enabledServices
       createdAt
     }
   }
@@ -57,7 +59,17 @@ const UPDATE_ASSOCIATION = /* GraphQL */ `
       memberCount
       avatarUrl
       defaultGroupId
+      enabledServices
       createdAt
+    }
+  }
+`;
+
+const UPDATE_ASSOCIATION_SERVICES = /* GraphQL */ `
+  mutation UpdateAssociationServices($input: UpdateAssociationServicesInput!) {
+    updateAssociationServices(input: $input) {
+      id
+      enabledServices
     }
   }
 `;
@@ -250,6 +262,17 @@ export async function updateAssociation(input: UpdateAssociationInput): Promise<
     { input }
   );
   return data.updateAssociation;
+}
+
+export async function updateAssociationServices(
+  input: UpdateAssociationServicesInput
+): Promise<AssociationType> {
+  const client = getGraphQLClient();
+  const data = await client.request<
+    { updateAssociationServices: AssociationType },
+    { input: UpdateAssociationServicesInput }
+  >(UPDATE_ASSOCIATION_SERVICES, { input });
+  return data.updateAssociationServices;
 }
 
 export async function getAssociationAvatarUploadUrl(

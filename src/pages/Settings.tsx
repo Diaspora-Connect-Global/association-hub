@@ -14,16 +14,20 @@ import {
 } from "@/components/ui/select";
 import { Loader2, Save, UploadCloud } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { useT } from "@/hooks/useT";
 import { getAdminAssociationId } from "@/stores/adminAuthStore";
 import { useAssociationAdminStore } from "@/stores/associationAdminStore";
 import {
   getAssociation,
   getAssociationAvatarUploadUrl,
   updateAssociation,
+  updateAssociationServices,
   uploadAssociationAvatar,
   type AssociationVisibility,
   type JoinPolicy,
 } from "@/services/graphql/association";
+import { ServiceCheckboxGrid } from "@/components/services/ServiceCheckboxGrid";
+import { resolveEnabledServices, sortServiceKeys } from "@/constants/communityServices";
 
 const joinPolicyLabels: Record<JoinPolicy, string> = {
   OPEN: "Public — Anyone can join",
@@ -32,6 +36,7 @@ const joinPolicyLabels: Record<JoinPolicy, string> = {
 };
 
 export default function Settings() {
+  const t = useT();
   const associationId = useMemo(() => getAdminAssociationId(), []);
   const setAssociation = useAssociationAdminStore((state) => state.setAssociation);
   const association = useAssociationAdminStore((state) => state.association);
@@ -42,6 +47,8 @@ export default function Settings() {
   const [description, setDescription] = useState("");
   const [joinPolicy, setJoinPolicy] = useState<JoinPolicy>("REQUEST");
   const [visibility, setVisibility] = useState<AssociationVisibility>("PUBLIC");
+  const [selectedServices, setSelectedServices] = useState<string[]>([]);
+  const [isSavingServices, setIsSavingServices] = useState(false);
 
   const loadSettings = useCallback(async () => {
     if (!associationId) return;
@@ -52,6 +59,7 @@ export default function Settings() {
       setDescription(data.description ?? "");
       setJoinPolicy(data.joinPolicy);
       setVisibility(data.visibility);
+      setSelectedServices(resolveEnabledServices(data.enabledServices));
     } catch (err) {
       toast({
         title: "Settings load failed",
@@ -64,6 +72,36 @@ export default function Settings() {
   useEffect(() => {
     void loadSettings();
   }, [loadSettings]);
+
+  // Re-sync the local selection whenever the loaded association changes.
+  useEffect(() => {
+    if (association) {
+      setSelectedServices(resolveEnabledServices(association.enabledServices));
+    }
+  }, [association]);
+
+  const handleSaveServices = async () => {
+    if (!associationId) return;
+    setIsSavingServices(true);
+    try {
+      const result = await updateAssociationServices({
+        associationId,
+        services: sortServiceKeys(selectedServices),
+      });
+      if (association) {
+        setAssociation({ ...association, enabledServices: result.enabledServices });
+      }
+      toast({ title: t.servicesSaved, description: t.servicesSavedDesc });
+    } catch (err) {
+      toast({
+        title: t.servicesSaveFailed,
+        description: err instanceof Error ? err.message : t.servicesSaveFailed,
+        variant: "destructive",
+      });
+    } finally {
+      setIsSavingServices(false);
+    }
+  };
 
   const handleSave = async () => {
     if (!associationId) return;
@@ -223,6 +261,32 @@ export default function Settings() {
           </CardContent>
         </Card>
 
+
+        <Card>
+          <CardHeader>
+            <CardTitle>{t.servicesTitle}</CardTitle>
+            <CardDescription>{t.servicesDescription}</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <ServiceCheckboxGrid
+              value={selectedServices}
+              onChange={setSelectedServices}
+              disabled={isSavingServices}
+            />
+
+            <Button
+              onClick={() => void handleSaveServices()}
+              disabled={isSavingServices || !associationId}
+            >
+              {isSavingServices ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Save className="mr-2 h-4 w-4" />
+              )}
+              {isSavingServices ? t.servicesSaving : t.servicesSave}
+            </Button>
+          </CardContent>
+        </Card>
 
         {associationId && (
           <JoinMembershipSection

@@ -862,6 +862,16 @@ type TranslationKeys = {
   manualRateNote: string;
   secureTransactions: string;
   milestoneBasedPayments: string;
+  // Services panel
+  servicesTitle: string;
+  servicesDescription: string;
+  servicesSelectAll: string;
+  servicesClearAll: string;
+  servicesSave: string;
+  servicesSaving: string;
+  servicesSaved: string;
+  servicesSavedDesc: string;
+  servicesSaveFailed: string;
 };
 
 const translations: Record<Language, TranslationKeys> = {
@@ -1731,6 +1741,17 @@ const translations: Record<Language, TranslationKeys> = {
     manualRateNote: "Manually edited rates will not update when refreshing. Use this for custom rates or when API rates are unavailable.",
     secureTransactions: "Secure your transactions with milestone-based payments",
     milestoneBasedPayments: "Milestone-based payments",
+    // Services panel
+    servicesTitle: "Services",
+    servicesDescription:
+      "Choose which member-facing modules are enabled for your association. All services are enabled by default — uncheck the ones you don't want.",
+    servicesSelectAll: "Select all",
+    servicesClearAll: "Clear all",
+    servicesSave: "Save services",
+    servicesSaving: "Saving...",
+    servicesSaved: "Services updated",
+    servicesSavedDesc: "Your enabled services were saved successfully.",
+    servicesSaveFailed: "Unable to save services.",
   },
   fr: {
     // Navigation
@@ -2598,6 +2619,17 @@ const translations: Record<Language, TranslationKeys> = {
     manualRateNote: "Les taux modifiés manuellement ne seront pas mis à jour lors de l'actualisation.",
     secureTransactions: "Sécurisez vos transactions avec des paiements par jalons",
     milestoneBasedPayments: "Paiements par jalons",
+    // Services panel
+    servicesTitle: "Services",
+    servicesDescription:
+      "Choisissez les modules destinés aux membres qui sont activés pour votre association. Tous les services sont activés par défaut — décochez ceux que vous ne souhaitez pas.",
+    servicesSelectAll: "Tout sélectionner",
+    servicesClearAll: "Tout effacer",
+    servicesSave: "Enregistrer les services",
+    servicesSaving: "Enregistrement...",
+    servicesSaved: "Services mis à jour",
+    servicesSavedDesc: "Vos services activés ont été enregistrés avec succès.",
+    servicesSaveFailed: "Impossible d'enregistrer les services.",
   },
   de: {
     // Navigation
@@ -3465,6 +3497,17 @@ const translations: Record<Language, TranslationKeys> = {
     manualRateNote: "Manuell bearbeitete Kurse werden beim Aktualisieren nicht geändert.",
     secureTransactions: "Sichern Sie Ihre Transaktionen mit Meilenstein-Zahlungen",
     milestoneBasedPayments: "Meilenstein-basierte Zahlungen",
+    // Services panel
+    servicesTitle: "Dienste",
+    servicesDescription:
+      "Wählen Sie, welche für Mitglieder sichtbaren Module für Ihre Vereinigung aktiviert sind. Alle Dienste sind standardmäßig aktiviert — deaktivieren Sie die, die Sie nicht möchten.",
+    servicesSelectAll: "Alle auswählen",
+    servicesClearAll: "Alle abwählen",
+    servicesSave: "Dienste speichern",
+    servicesSaving: "Wird gespeichert...",
+    servicesSaved: "Dienste aktualisiert",
+    servicesSavedDesc: "Ihre aktivierten Dienste wurden erfolgreich gespeichert.",
+    servicesSaveFailed: "Dienste konnten nicht gespeichert werden.",
   },
   es: {
     // Navigation
@@ -4320,6 +4363,17 @@ const translations: Record<Language, TranslationKeys> = {
     manualRateNote: "Las tasas editadas manualmente no se actualizarán al refrescar.",
     secureTransactions: "Asegure sus transacciones con pagos por hitos",
     milestoneBasedPayments: "Pagos basados en hitos",
+    // Services panel
+    servicesTitle: "Servicios",
+    servicesDescription:
+      "Elige qué módulos para miembros están activados en tu asociación. Todos los servicios están activados por defecto — desmarca los que no quieras.",
+    servicesSelectAll: "Seleccionar todo",
+    servicesClearAll: "Borrar todo",
+    servicesSave: "Guardar servicios",
+    servicesSaving: "Guardando...",
+    servicesSaved: "Servicios actualizados",
+    servicesSavedDesc: "Tus servicios activados se guardaron correctamente.",
+    servicesSaveFailed: "No se pudieron guardar los servicios.",
   },
   it: {
     // Navigation
@@ -5185,6 +5239,17 @@ const translations: Record<Language, TranslationKeys> = {
     manualRateNote: "I tassi modificati manualmente non si aggiorneranno durante l'aggiornamento.",
     secureTransactions: "Proteggi le tue transazioni con pagamenti a milestone",
     milestoneBasedPayments: "Pagamenti basati su milestone",
+    // Services panel
+    servicesTitle: "Servizi",
+    servicesDescription:
+      "Scegli quali moduli rivolti ai membri sono attivi per la tua associazione. Tutti i servizi sono attivi per impostazione predefinita — deseleziona quelli che non desideri.",
+    servicesSelectAll: "Seleziona tutto",
+    servicesClearAll: "Cancella tutto",
+    servicesSave: "Salva servizi",
+    servicesSaving: "Salvataggio...",
+    servicesSaved: "Servizi aggiornati",
+    servicesSavedDesc: "I tuoi servizi attivi sono stati salvati con successo.",
+    servicesSaveFailed: "Impossibile salvare i servizi.",
   },
 };
 

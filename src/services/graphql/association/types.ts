@@ -14,6 +14,7 @@ export interface AssociationType {
   memberCount: number;
   avatarUrl: string | null;
   defaultGroupId: string | null;
+  enabledServices: string[] | null;
   createdAt: string;
 }
 
@@ -42,6 +43,11 @@ export interface UpdateAssociationInput {
   paymentAmount?: number;
   subscriptionPeriod?: string;
   paymentCurrency?: string;
+}
+
+export interface UpdateAssociationServicesInput {
+  associationId: string;
+  services: string[];
 }
 
 export interface AssociationAnalyticsDataPoint {
