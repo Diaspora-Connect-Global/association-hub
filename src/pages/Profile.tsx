@@ -56,6 +56,7 @@ import {
   getAssociation,
   updateAssociation,
   getAssociationAvatarUploadUrl,
+  getAssociationCoverUploadUrl,
   uploadAssociationAvatar,
 } from "@/services/graphql/association/operations";
 import type { JoinPolicy, AssociationVisibility } from "@/services/graphql/association/types";
@@ -272,14 +273,13 @@ export default function Profile() {
     }
   };
 
-  // ── Banner upload handler (TODO: add getAssociationCoverUploadUrl when available) ─
+  // ── Banner (cover) upload handler ─────────────────────────────────────────
   const handleBannerChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !associationId) return;
     setBannerUploading(true);
     try {
-      // TODO: replace with getAssociationCoverUploadUrl once backend exposes it
-      const { uploadUrl } = await getAssociationAvatarUploadUrl(associationId);
+      const { uploadUrl } = await getAssociationCoverUploadUrl(associationId);
       await uploadAssociationAvatar(uploadUrl, file);
       toast({ title: "Success", description: "Banner uploaded successfully." });
       e.target.value = "";

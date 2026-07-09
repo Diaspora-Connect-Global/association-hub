@@ -65,6 +65,38 @@ export interface UpdateEventInput {
   maxParticipants?: number;
 }
 
+export interface EventRegistrationUser {
+  id: string;
+  firstName: string | null;
+  lastName: string | null;
+  email: string | null;
+  avatarUrl: string | null;
+}
+
+export interface EventRegistrationRow {
+  id: string;
+  eventId: string;
+  userId: string;
+  user: EventRegistrationUser | null;
+  ticketId: string | null;
+  quantity: number;
+  status: string;
+  totalAmount: string | null;
+  currency: string | null;
+  registeredAt: string | null;
+  confirmedAt: string | null;
+  cancelledAt: string | null;
+  createdAt: string | null;
+}
+
+export interface EventRegistrationListResponse {
+  registrations: EventRegistrationRow[];
+  total: number;
+  page: number | null;
+  limit: number | null;
+  hasMore: boolean | null;
+}
+
 // -------------------------------------------------------------------------
 // GraphQL Documents
 // -------------------------------------------------------------------------
@@ -148,6 +180,66 @@ const CANCEL_EVENT = /* GraphQL */ `
 const DELETE_EVENT = /* GraphQL */ `
   mutation DeleteEvent($eventId: ID!) {
     deleteEvent(eventId: $eventId) {
+      success
+      message
+    }
+  }
+`;
+
+const ADMIN_GET_EVENT_REGISTRATIONS = /* GraphQL */ `
+  query AdminGetEventRegistrations(
+    $eventId: ID!
+    $page: Int
+    $limit: Int
+    $status: String
+  ) {
+    adminGetEventRegistrations(
+      eventId: $eventId
+      page: $page
+      limit: $limit
+      status: $status
+    ) {
+      registrations {
+        id
+        eventId
+        userId
+        user {
+          id
+          firstName
+          lastName
+          email
+          avatarUrl
+        }
+        ticketId
+        quantity
+        status
+        totalAmount
+        currency
+        registeredAt
+        confirmedAt
+        cancelledAt
+        createdAt
+      }
+      total
+      page
+      limit
+      hasMore
+    }
+  }
+`;
+
+const MARK_REGISTRATION_CHECKED_IN = /* GraphQL */ `
+  mutation MarkRegistrationCheckedIn($registrationId: ID!) {
+    markRegistrationCheckedIn(registrationId: $registrationId) {
+      id
+      status
+    }
+  }
+`;
+
+const REMOVE_EVENT_REGISTRATION = /* GraphQL */ `
+  mutation RemoveEventRegistration($registrationId: ID!) {
+    removeEventRegistration(registrationId: $registrationId) {
       success
       message
     }
@@ -248,5 +340,61 @@ export async function deleteEvent(
     return data.deleteEvent;
   } catch (error) {
     throw error instanceof Error ? error : new Error("Failed to delete event");
+  }
+}
+
+export async function adminGetEventRegistrations(
+  eventId: string,
+  page = 1,
+  limit = 50,
+  status?: string,
+): Promise<EventRegistrationListResponse> {
+  const client = getGraphQLClient();
+  try {
+    const data = await client.request<{
+      adminGetEventRegistrations: EventRegistrationListResponse;
+    }>(ADMIN_GET_EVENT_REGISTRATIONS, {
+      eventId,
+      page,
+      limit,
+      status: status ?? null,
+    });
+    return data.adminGetEventRegistrations;
+  } catch (error) {
+    throw error instanceof Error
+      ? error
+      : new Error("Failed to fetch registrations");
+  }
+}
+
+export async function markRegistrationCheckedIn(
+  registrationId: string,
+): Promise<{ id: string; status: string }> {
+  const client = getGraphQLClient();
+  try {
+    const data = await client.request<{
+      markRegistrationCheckedIn: { id: string; status: string };
+    }>(MARK_REGISTRATION_CHECKED_IN, { registrationId });
+    return data.markRegistrationCheckedIn;
+  } catch (error) {
+    throw error instanceof Error
+      ? error
+      : new Error("Failed to check in registration");
+  }
+}
+
+export async function removeEventRegistration(
+  registrationId: string,
+): Promise<{ success: boolean; message?: string }> {
+  const client = getGraphQLClient();
+  try {
+    const data = await client.request<{
+      removeEventRegistration: { success: boolean; message?: string };
+    }>(REMOVE_EVENT_REGISTRATION, { registrationId });
+    return data.removeEventRegistration;
+  } catch (error) {
+    throw error instanceof Error
+      ? error
+      : new Error("Failed to remove registration");
   }
 }

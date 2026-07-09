@@ -83,6 +83,15 @@ const GET_ASSOCIATION_AVATAR_UPLOAD_URL = /* GraphQL */ `
   }
 `;
 
+const GET_ASSOCIATION_COVER_UPLOAD_URL = /* GraphQL */ `
+  mutation GetAssociationCoverUploadUrl($associationId: ID!) {
+    getAssociationCoverUploadUrl(associationId: $associationId) {
+      uploadUrl
+      fileKey
+    }
+  }
+`;
+
 const GET_ASSOCIATION_MEMBERS = /* GraphQL */ `
   query GetAssociationMembers($associationId: ID!, $page: Int!, $limit: Int!, $status: MembershipStatus) {
     getAssociationMembers(associationId: $associationId, page: $page, limit: $limit, status: $status) {
@@ -284,6 +293,17 @@ export async function getAssociationAvatarUploadUrl(
     { associationId: string }
   >(GET_ASSOCIATION_AVATAR_UPLOAD_URL, { associationId });
   return data.getAssociationAvatarUploadUrl;
+}
+
+export async function getAssociationCoverUploadUrl(
+  associationId: string
+): Promise<AssociationAvatarUploadType> {
+  const client = getGraphQLClient();
+  const data = await client.request<
+    { getAssociationCoverUploadUrl: AssociationAvatarUploadType },
+    { associationId: string }
+  >(GET_ASSOCIATION_COVER_UPLOAD_URL, { associationId });
+  return data.getAssociationCoverUploadUrl;
 }
 
 export async function uploadAssociationAvatar(uploadUrl: string, file: File): Promise<void> {

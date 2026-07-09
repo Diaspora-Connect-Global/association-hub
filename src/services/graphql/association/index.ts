@@ -4,6 +4,7 @@ export {
   updateAssociation,
   updateAssociationServices,
   getAssociationAvatarUploadUrl,
+  getAssociationCoverUploadUrl,
   uploadAssociationAvatar,
   getAssociationMembers,
   getPendingMembershipRequests,
