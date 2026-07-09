@@ -22,12 +22,14 @@ import {
   ChevronDown,
   ChevronRight,
   Shield,
+  ShieldCheck,
   PanelLeftClose,
   PanelLeft,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useT } from "@/hooks/useT";
-import { clearAdminSession, useAdminAuthStore } from "@/stores/adminAuthStore";
+import { clearAdminSession, decodeAdminJwt, useAdminAuthStore } from "@/stores/adminAuthStore";
+import { getAdminPermissions, hasPermission, MANAGE_ROLES_PERMISSION } from "@/lib/adminAccess";
 import { useAssociationAdminStore } from "@/stores/associationAdminStore";
 import { getAssociation } from "@/services/graphql/association";
 import diaspoPlugLogo from "@/assets/diaspo-plug-logo.svg";
@@ -62,6 +64,11 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
   const navigate = useNavigate();
   const t = useT();
   const admin = useAdminAuthStore((state) => state.admin);
+  const accessToken = useAdminAuthStore((state) => state.accessToken);
+  const canManageRoles = hasPermission(
+    getAdminPermissions(admin, decodeAdminJwt(accessToken)),
+    MANAGE_ROLES_PERMISSION
+  );
   const { pendingRequestsCount, pendingReportsCount, association } = useAssociationAdminStore((state) => ({
     pendingRequestsCount: state.pendingRequestsCount,
     pendingReportsCount: state.pendingReportsCount,
@@ -130,6 +137,9 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
     },
     { id: "analytics", label: t.analytics, icon: BarChart2, path: "/analytics" },
     { id: "audit", label: t.auditLogs, icon: FileText, path: "/audit-logs" },
+    ...(canManageRoles
+      ? [{ id: "roles-admins", label: t.rolesAdminsNav, icon: ShieldCheck, path: "/roles-admins" }]
+      : []),
     { id: "settings", label: t.settings, icon: Settings, path: "/settings" },
   ];
 

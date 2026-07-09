@@ -18,6 +18,7 @@ import Opportunities from "./pages/Opportunities";
 import Tickets from "./pages/Tickets";
 import AuditLogs from "./pages/AuditLogs";
 import Settings from "./pages/Settings";
+import RolesAdmins from "./pages/RolesAdmins";
 import Analytics from "./pages/Analytics";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
@@ -57,6 +58,7 @@ const App = () => (
               <Route path="/tickets" element={<Tickets />} />
               <Route path="/audit-logs" element={<AuditLogs />} />
               <Route path="/settings" element={<Settings />} />
+              <Route path="/roles-admins" element={<RolesAdmins />} />
               <Route path="/vendor-escrow-settings" element={<VendorEscrowSettings />} />
               <Route path="/analytics" element={<Analytics />} />
             </Route>

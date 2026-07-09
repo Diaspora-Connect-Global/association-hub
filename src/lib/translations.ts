@@ -872,6 +872,71 @@ type TranslationKeys = {
   servicesSaved: string;
   servicesSavedDesc: string;
   servicesSaveFailed: string;
+
+  // Roles & Admins
+  rolesAdminsNav: string;
+  rolesAdminsTitle: string;
+  rolesAdminsSubtitle: string;
+  rolesAdminsNoAccessTitle: string;
+  rolesAdminsNoAccessDesc: string;
+  rolesTabRoles: string;
+  rolesTabAdmins: string;
+  rolesDescription: string;
+  rolesCreate: string;
+  rolesEmpty: string;
+  rolesSystem: string;
+  rolesNoPermissions: string;
+  rolesErrorLoad: string;
+  rolesErrorCreate: string;
+  rolesFormTitle: string;
+  rolesFormSubtitle: string;
+  rolesFormName: string;
+  rolesFormNamePlaceholder: string;
+  rolesFormDescriptionLabel: string;
+  rolesFormDescriptionPlaceholder: string;
+  rolesFormPermissions: string;
+  rolesFormNameRequired: string;
+  rolesFormPermissionsRequired: string;
+  rolesFormSubmit: string;
+  rolesFormCreated: string;
+  adminsDescription: string;
+  adminsCreate: string;
+  adminsLookup: string;
+  adminsLookupPlaceholder: string;
+  adminsEmpty: string;
+  adminsColAdmin: string;
+  adminsColType: string;
+  adminsColRoles: string;
+  adminsColStatus: string;
+  adminsNoRoles: string;
+  adminsRevoke: string;
+  adminsAssignRole: string;
+  adminsActivate: string;
+  adminsDeactivate: string;
+  adminsRoleAssigned: string;
+  adminsRoleRevoked: string;
+  adminsStatusUpdated: string;
+  adminsErrorLoad: string;
+  adminsErrorLookup: string;
+  adminsErrorRevoke: string;
+  adminsErrorStatus: string;
+  adminsErrorCreate: string;
+  adminsErrorAssign: string;
+  adminsFormTitle: string;
+  adminsFormSubtitle: string;
+  adminsFormEmail: string;
+  adminsFormPassword: string;
+  adminsFormPasswordHint: string;
+  adminsFormType: string;
+  adminsFormSubmit: string;
+  adminsFormCreated: string;
+  adminsFormEmailRequired: string;
+  adminsFormPasswordRequired: string;
+  adminsFormTypeRequired: string;
+  adminsAssignFormTitle: string;
+  adminsAssignFormSubtitle: string;
+  adminsAssignFormRole: string;
+  adminsAssignFormSubmit: string;
 };
 
 const translations: Record<Language, TranslationKeys> = {
@@ -1752,6 +1817,74 @@ const translations: Record<Language, TranslationKeys> = {
     servicesSaved: "Services updated",
     servicesSavedDesc: "Your enabled services were saved successfully.",
     servicesSaveFailed: "Unable to save services.",
+
+    // Roles & Admins
+    rolesAdminsNav: "Roles & Admins",
+    rolesAdminsTitle: "Roles & Admins",
+    rolesAdminsSubtitle: "Manage roles and admin accounts for your association",
+    rolesAdminsNoAccessTitle: "Access restricted",
+    rolesAdminsNoAccessDesc:
+      "You don't have permission to manage roles and admins for this association.",
+    rolesTabRoles: "Roles",
+    rolesTabAdmins: "Admins",
+    rolesDescription:
+      "Define custom roles and the permissions they grant within your association.",
+    rolesCreate: "Create role",
+    rolesEmpty: "No roles yet. Create your first role to get started.",
+    rolesSystem: "System",
+    rolesNoPermissions: "No permissions",
+    rolesErrorLoad: "Unable to load roles.",
+    rolesErrorCreate: "Unable to create role.",
+    rolesFormTitle: "Create a role",
+    rolesFormSubtitle: "Name the role and choose which permissions it grants.",
+    rolesFormName: "Role name",
+    rolesFormNamePlaceholder: "e.g. Content Moderator",
+    rolesFormDescriptionLabel: "Description (optional)",
+    rolesFormDescriptionPlaceholder: "What is this role for?",
+    rolesFormPermissions: "Permissions",
+    rolesFormNameRequired: "Please enter a role name.",
+    rolesFormPermissionsRequired: "Select at least one permission.",
+    rolesFormSubmit: "Create role",
+    rolesFormCreated: "Role created",
+    adminsDescription:
+      "Manage admin accounts and their role assignments within your association.",
+    adminsCreate: "Add admin",
+    adminsLookup: "Look up",
+    adminsLookupPlaceholder: "Look up an admin by ID",
+    adminsEmpty: "No admins to show yet. Add an admin or look one up by ID.",
+    adminsColAdmin: "Admin",
+    adminsColType: "Type",
+    adminsColRoles: "Roles",
+    adminsColStatus: "Status",
+    adminsNoRoles: "No roles",
+    adminsRevoke: "Revoke role",
+    adminsAssignRole: "Assign role",
+    adminsActivate: "Activate",
+    adminsDeactivate: "Deactivate",
+    adminsRoleAssigned: "Role assigned",
+    adminsRoleRevoked: "Role revoked",
+    adminsStatusUpdated: "Status updated",
+    adminsErrorLoad: "Unable to load admins.",
+    adminsErrorLookup: "Admin not found.",
+    adminsErrorRevoke: "Unable to revoke role.",
+    adminsErrorStatus: "Unable to update status.",
+    adminsErrorCreate: "Unable to create admin.",
+    adminsErrorAssign: "Unable to assign role.",
+    adminsFormTitle: "Add an admin",
+    adminsFormSubtitle: "Create an admin account scoped to your association.",
+    adminsFormEmail: "Email",
+    adminsFormPassword: "Password",
+    adminsFormPasswordHint: "At least 8 characters.",
+    adminsFormType: "Admin type",
+    adminsFormSubmit: "Create admin",
+    adminsFormCreated: "Admin created",
+    adminsFormEmailRequired: "Please enter an email address.",
+    adminsFormPasswordRequired: "Password must be at least 8 characters.",
+    adminsFormTypeRequired: "Please choose an admin type.",
+    adminsAssignFormTitle: "Assign a role",
+    adminsAssignFormSubtitle: "Assign a role to",
+    adminsAssignFormRole: "Role",
+    adminsAssignFormSubmit: "Assign role",
   },
   fr: {
     // Navigation
@@ -2630,6 +2763,75 @@ const translations: Record<Language, TranslationKeys> = {
     servicesSaved: "Services mis à jour",
     servicesSavedDesc: "Vos services activés ont été enregistrés avec succès.",
     servicesSaveFailed: "Impossible d'enregistrer les services.",
+
+    // Roles & Admins
+    rolesAdminsNav: "Rôles et admins",
+    rolesAdminsTitle: "Rôles et admins",
+    rolesAdminsSubtitle: "Gérez les rôles et les comptes admin de votre association",
+    rolesAdminsNoAccessTitle: "Accès restreint",
+    rolesAdminsNoAccessDesc:
+      "Vous n'avez pas l'autorisation de gérer les rôles et les admins de cette association.",
+    rolesTabRoles: "Rôles",
+    rolesTabAdmins: "Admins",
+    rolesDescription:
+      "Définissez des rôles personnalisés et les autorisations qu'ils accordent au sein de votre association.",
+    rolesCreate: "Créer un rôle",
+    rolesEmpty: "Aucun rôle pour l'instant. Créez votre premier rôle pour commencer.",
+    rolesSystem: "Système",
+    rolesNoPermissions: "Aucune autorisation",
+    rolesErrorLoad: "Impossible de charger les rôles.",
+    rolesErrorCreate: "Impossible de créer le rôle.",
+    rolesFormTitle: "Créer un rôle",
+    rolesFormSubtitle: "Nommez le rôle et choisissez les autorisations qu'il accorde.",
+    rolesFormName: "Nom du rôle",
+    rolesFormNamePlaceholder: "ex. Modérateur de contenu",
+    rolesFormDescriptionLabel: "Description (facultatif)",
+    rolesFormDescriptionPlaceholder: "À quoi sert ce rôle ?",
+    rolesFormPermissions: "Autorisations",
+    rolesFormNameRequired: "Veuillez saisir un nom de rôle.",
+    rolesFormPermissionsRequired: "Sélectionnez au moins une autorisation.",
+    rolesFormSubmit: "Créer le rôle",
+    rolesFormCreated: "Rôle créé",
+    adminsDescription:
+      "Gérez les comptes admin et leurs attributions de rôles au sein de votre association.",
+    adminsCreate: "Ajouter un admin",
+    adminsLookup: "Rechercher",
+    adminsLookupPlaceholder: "Rechercher un admin par ID",
+    adminsEmpty:
+      "Aucun admin à afficher pour l'instant. Ajoutez un admin ou recherchez-en un par ID.",
+    adminsColAdmin: "Admin",
+    adminsColType: "Type",
+    adminsColRoles: "Rôles",
+    adminsColStatus: "Statut",
+    adminsNoRoles: "Aucun rôle",
+    adminsRevoke: "Révoquer le rôle",
+    adminsAssignRole: "Attribuer un rôle",
+    adminsActivate: "Activer",
+    adminsDeactivate: "Désactiver",
+    adminsRoleAssigned: "Rôle attribué",
+    adminsRoleRevoked: "Rôle révoqué",
+    adminsStatusUpdated: "Statut mis à jour",
+    adminsErrorLoad: "Impossible de charger les admins.",
+    adminsErrorLookup: "Admin introuvable.",
+    adminsErrorRevoke: "Impossible de révoquer le rôle.",
+    adminsErrorStatus: "Impossible de mettre à jour le statut.",
+    adminsErrorCreate: "Impossible de créer l'admin.",
+    adminsErrorAssign: "Impossible d'attribuer le rôle.",
+    adminsFormTitle: "Ajouter un admin",
+    adminsFormSubtitle: "Créez un compte admin rattaché à votre association.",
+    adminsFormEmail: "E-mail",
+    adminsFormPassword: "Mot de passe",
+    adminsFormPasswordHint: "Au moins 8 caractères.",
+    adminsFormType: "Type d'admin",
+    adminsFormSubmit: "Créer l'admin",
+    adminsFormCreated: "Admin créé",
+    adminsFormEmailRequired: "Veuillez saisir une adresse e-mail.",
+    adminsFormPasswordRequired: "Le mot de passe doit comporter au moins 8 caractères.",
+    adminsFormTypeRequired: "Veuillez choisir un type d'admin.",
+    adminsAssignFormTitle: "Attribuer un rôle",
+    adminsAssignFormSubtitle: "Attribuer un rôle à",
+    adminsAssignFormRole: "Rôle",
+    adminsAssignFormSubmit: "Attribuer le rôle",
   },
   de: {
     // Navigation
@@ -3508,6 +3710,75 @@ const translations: Record<Language, TranslationKeys> = {
     servicesSaved: "Dienste aktualisiert",
     servicesSavedDesc: "Ihre aktivierten Dienste wurden erfolgreich gespeichert.",
     servicesSaveFailed: "Dienste konnten nicht gespeichert werden.",
+
+    // Roles & Admins
+    rolesAdminsNav: "Rollen & Admins",
+    rolesAdminsTitle: "Rollen & Admins",
+    rolesAdminsSubtitle: "Verwalten Sie Rollen und Admin-Konten für Ihren Verband",
+    rolesAdminsNoAccessTitle: "Zugriff eingeschränkt",
+    rolesAdminsNoAccessDesc:
+      "Sie haben keine Berechtigung, Rollen und Admins für diesen Verband zu verwalten.",
+    rolesTabRoles: "Rollen",
+    rolesTabAdmins: "Admins",
+    rolesDescription:
+      "Definieren Sie benutzerdefinierte Rollen und die Berechtigungen, die sie innerhalb Ihres Verbands gewähren.",
+    rolesCreate: "Rolle erstellen",
+    rolesEmpty: "Noch keine Rollen. Erstellen Sie Ihre erste Rolle, um zu beginnen.",
+    rolesSystem: "System",
+    rolesNoPermissions: "Keine Berechtigungen",
+    rolesErrorLoad: "Rollen konnten nicht geladen werden.",
+    rolesErrorCreate: "Rolle konnte nicht erstellt werden.",
+    rolesFormTitle: "Rolle erstellen",
+    rolesFormSubtitle: "Benennen Sie die Rolle und wählen Sie die Berechtigungen, die sie gewährt.",
+    rolesFormName: "Rollenname",
+    rolesFormNamePlaceholder: "z. B. Inhaltsmoderator",
+    rolesFormDescriptionLabel: "Beschreibung (optional)",
+    rolesFormDescriptionPlaceholder: "Wofür ist diese Rolle gedacht?",
+    rolesFormPermissions: "Berechtigungen",
+    rolesFormNameRequired: "Bitte geben Sie einen Rollennamen ein.",
+    rolesFormPermissionsRequired: "Wählen Sie mindestens eine Berechtigung aus.",
+    rolesFormSubmit: "Rolle erstellen",
+    rolesFormCreated: "Rolle erstellt",
+    adminsDescription:
+      "Verwalten Sie Admin-Konten und deren Rollenzuweisungen innerhalb Ihres Verbands.",
+    adminsCreate: "Admin hinzufügen",
+    adminsLookup: "Suchen",
+    adminsLookupPlaceholder: "Admin nach ID suchen",
+    adminsEmpty:
+      "Noch keine Admins vorhanden. Fügen Sie einen Admin hinzu oder suchen Sie nach ID.",
+    adminsColAdmin: "Admin",
+    adminsColType: "Typ",
+    adminsColRoles: "Rollen",
+    adminsColStatus: "Status",
+    adminsNoRoles: "Keine Rollen",
+    adminsRevoke: "Rolle entziehen",
+    adminsAssignRole: "Rolle zuweisen",
+    adminsActivate: "Aktivieren",
+    adminsDeactivate: "Deaktivieren",
+    adminsRoleAssigned: "Rolle zugewiesen",
+    adminsRoleRevoked: "Rolle entzogen",
+    adminsStatusUpdated: "Status aktualisiert",
+    adminsErrorLoad: "Admins konnten nicht geladen werden.",
+    adminsErrorLookup: "Admin nicht gefunden.",
+    adminsErrorRevoke: "Rolle konnte nicht entzogen werden.",
+    adminsErrorStatus: "Status konnte nicht aktualisiert werden.",
+    adminsErrorCreate: "Admin konnte nicht erstellt werden.",
+    adminsErrorAssign: "Rolle konnte nicht zugewiesen werden.",
+    adminsFormTitle: "Admin hinzufügen",
+    adminsFormSubtitle: "Erstellen Sie ein Admin-Konto, das Ihrem Verband zugeordnet ist.",
+    adminsFormEmail: "E-Mail",
+    adminsFormPassword: "Passwort",
+    adminsFormPasswordHint: "Mindestens 8 Zeichen.",
+    adminsFormType: "Admin-Typ",
+    adminsFormSubmit: "Admin erstellen",
+    adminsFormCreated: "Admin erstellt",
+    adminsFormEmailRequired: "Bitte geben Sie eine E-Mail-Adresse ein.",
+    adminsFormPasswordRequired: "Das Passwort muss mindestens 8 Zeichen lang sein.",
+    adminsFormTypeRequired: "Bitte wählen Sie einen Admin-Typ.",
+    adminsAssignFormTitle: "Rolle zuweisen",
+    adminsAssignFormSubtitle: "Rolle zuweisen an",
+    adminsAssignFormRole: "Rolle",
+    adminsAssignFormSubmit: "Rolle zuweisen",
   },
   es: {
     // Navigation
@@ -4374,6 +4645,74 @@ const translations: Record<Language, TranslationKeys> = {
     servicesSaved: "Servicios actualizados",
     servicesSavedDesc: "Tus servicios activados se guardaron correctamente.",
     servicesSaveFailed: "No se pudieron guardar los servicios.",
+
+    // Roles & Admins
+    rolesAdminsNav: "Roles y admins",
+    rolesAdminsTitle: "Roles y admins",
+    rolesAdminsSubtitle: "Gestiona los roles y las cuentas de admin de tu asociación",
+    rolesAdminsNoAccessTitle: "Acceso restringido",
+    rolesAdminsNoAccessDesc:
+      "No tienes permiso para gestionar los roles y admins de esta asociación.",
+    rolesTabRoles: "Roles",
+    rolesTabAdmins: "Admins",
+    rolesDescription:
+      "Define roles personalizados y los permisos que otorgan dentro de tu asociación.",
+    rolesCreate: "Crear rol",
+    rolesEmpty: "Aún no hay roles. Crea tu primer rol para empezar.",
+    rolesSystem: "Sistema",
+    rolesNoPermissions: "Sin permisos",
+    rolesErrorLoad: "No se pudieron cargar los roles.",
+    rolesErrorCreate: "No se pudo crear el rol.",
+    rolesFormTitle: "Crear un rol",
+    rolesFormSubtitle: "Nombra el rol y elige los permisos que otorga.",
+    rolesFormName: "Nombre del rol",
+    rolesFormNamePlaceholder: "p. ej. Moderador de contenido",
+    rolesFormDescriptionLabel: "Descripción (opcional)",
+    rolesFormDescriptionPlaceholder: "¿Para qué sirve este rol?",
+    rolesFormPermissions: "Permisos",
+    rolesFormNameRequired: "Introduce un nombre de rol.",
+    rolesFormPermissionsRequired: "Selecciona al menos un permiso.",
+    rolesFormSubmit: "Crear rol",
+    rolesFormCreated: "Rol creado",
+    adminsDescription:
+      "Gestiona las cuentas de admin y sus asignaciones de roles dentro de tu asociación.",
+    adminsCreate: "Añadir admin",
+    adminsLookup: "Buscar",
+    adminsLookupPlaceholder: "Buscar un admin por ID",
+    adminsEmpty: "Aún no hay admins que mostrar. Añade un admin o busca uno por ID.",
+    adminsColAdmin: "Admin",
+    adminsColType: "Tipo",
+    adminsColRoles: "Roles",
+    adminsColStatus: "Estado",
+    adminsNoRoles: "Sin roles",
+    adminsRevoke: "Revocar rol",
+    adminsAssignRole: "Asignar rol",
+    adminsActivate: "Activar",
+    adminsDeactivate: "Desactivar",
+    adminsRoleAssigned: "Rol asignado",
+    adminsRoleRevoked: "Rol revocado",
+    adminsStatusUpdated: "Estado actualizado",
+    adminsErrorLoad: "No se pudieron cargar los admins.",
+    adminsErrorLookup: "Admin no encontrado.",
+    adminsErrorRevoke: "No se pudo revocar el rol.",
+    adminsErrorStatus: "No se pudo actualizar el estado.",
+    adminsErrorCreate: "No se pudo crear el admin.",
+    adminsErrorAssign: "No se pudo asignar el rol.",
+    adminsFormTitle: "Añadir un admin",
+    adminsFormSubtitle: "Crea una cuenta de admin asociada a tu asociación.",
+    adminsFormEmail: "Correo electrónico",
+    adminsFormPassword: "Contraseña",
+    adminsFormPasswordHint: "Al menos 8 caracteres.",
+    adminsFormType: "Tipo de admin",
+    adminsFormSubmit: "Crear admin",
+    adminsFormCreated: "Admin creado",
+    adminsFormEmailRequired: "Introduce una dirección de correo electrónico.",
+    adminsFormPasswordRequired: "La contraseña debe tener al menos 8 caracteres.",
+    adminsFormTypeRequired: "Elige un tipo de admin.",
+    adminsAssignFormTitle: "Asignar un rol",
+    adminsAssignFormSubtitle: "Asignar un rol a",
+    adminsAssignFormRole: "Rol",
+    adminsAssignFormSubmit: "Asignar rol",
   },
   it: {
     // Navigation
@@ -5250,6 +5589,74 @@ const translations: Record<Language, TranslationKeys> = {
     servicesSaved: "Servizi aggiornati",
     servicesSavedDesc: "I tuoi servizi attivi sono stati salvati con successo.",
     servicesSaveFailed: "Impossibile salvare i servizi.",
+
+    // Roles & Admins
+    rolesAdminsNav: "Ruoli e admin",
+    rolesAdminsTitle: "Ruoli e admin",
+    rolesAdminsSubtitle: "Gestisci i ruoli e gli account admin della tua associazione",
+    rolesAdminsNoAccessTitle: "Accesso limitato",
+    rolesAdminsNoAccessDesc:
+      "Non hai l'autorizzazione per gestire i ruoli e gli admin di questa associazione.",
+    rolesTabRoles: "Ruoli",
+    rolesTabAdmins: "Admin",
+    rolesDescription:
+      "Definisci ruoli personalizzati e le autorizzazioni che concedono all'interno della tua associazione.",
+    rolesCreate: "Crea ruolo",
+    rolesEmpty: "Ancora nessun ruolo. Crea il tuo primo ruolo per iniziare.",
+    rolesSystem: "Sistema",
+    rolesNoPermissions: "Nessuna autorizzazione",
+    rolesErrorLoad: "Impossibile caricare i ruoli.",
+    rolesErrorCreate: "Impossibile creare il ruolo.",
+    rolesFormTitle: "Crea un ruolo",
+    rolesFormSubtitle: "Assegna un nome al ruolo e scegli le autorizzazioni che concede.",
+    rolesFormName: "Nome del ruolo",
+    rolesFormNamePlaceholder: "es. Moderatore dei contenuti",
+    rolesFormDescriptionLabel: "Descrizione (facoltativa)",
+    rolesFormDescriptionPlaceholder: "A cosa serve questo ruolo?",
+    rolesFormPermissions: "Autorizzazioni",
+    rolesFormNameRequired: "Inserisci un nome per il ruolo.",
+    rolesFormPermissionsRequired: "Seleziona almeno un'autorizzazione.",
+    rolesFormSubmit: "Crea ruolo",
+    rolesFormCreated: "Ruolo creato",
+    adminsDescription:
+      "Gestisci gli account admin e le loro assegnazioni di ruoli all'interno della tua associazione.",
+    adminsCreate: "Aggiungi admin",
+    adminsLookup: "Cerca",
+    adminsLookupPlaceholder: "Cerca un admin per ID",
+    adminsEmpty: "Ancora nessun admin da mostrare. Aggiungi un admin o cercane uno per ID.",
+    adminsColAdmin: "Admin",
+    adminsColType: "Tipo",
+    adminsColRoles: "Ruoli",
+    adminsColStatus: "Stato",
+    adminsNoRoles: "Nessun ruolo",
+    adminsRevoke: "Revoca ruolo",
+    adminsAssignRole: "Assegna ruolo",
+    adminsActivate: "Attiva",
+    adminsDeactivate: "Disattiva",
+    adminsRoleAssigned: "Ruolo assegnato",
+    adminsRoleRevoked: "Ruolo revocato",
+    adminsStatusUpdated: "Stato aggiornato",
+    adminsErrorLoad: "Impossibile caricare gli admin.",
+    adminsErrorLookup: "Admin non trovato.",
+    adminsErrorRevoke: "Impossibile revocare il ruolo.",
+    adminsErrorStatus: "Impossibile aggiornare lo stato.",
+    adminsErrorCreate: "Impossibile creare l'admin.",
+    adminsErrorAssign: "Impossibile assegnare il ruolo.",
+    adminsFormTitle: "Aggiungi un admin",
+    adminsFormSubtitle: "Crea un account admin associato alla tua associazione.",
+    adminsFormEmail: "E-mail",
+    adminsFormPassword: "Password",
+    adminsFormPasswordHint: "Almeno 8 caratteri.",
+    adminsFormType: "Tipo di admin",
+    adminsFormSubmit: "Crea admin",
+    adminsFormCreated: "Admin creato",
+    adminsFormEmailRequired: "Inserisci un indirizzo e-mail.",
+    adminsFormPasswordRequired: "La password deve contenere almeno 8 caratteri.",
+    adminsFormTypeRequired: "Scegli un tipo di admin.",
+    adminsAssignFormTitle: "Assegna un ruolo",
+    adminsAssignFormSubtitle: "Assegna un ruolo a",
+    adminsAssignFormRole: "Ruolo",
+    adminsAssignFormSubmit: "Assegna ruolo",
   },
 };
 
