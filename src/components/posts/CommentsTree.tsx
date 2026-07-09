@@ -1,7 +1,19 @@
 import { useEffect, useState } from "react";
-import { ChevronDown, ChevronRight, Loader2, MessageSquare } from "lucide-react";
+import { ChevronDown, ChevronRight, Loader2, MessageSquare, Trash2 } from "lucide-react";
 import { associationPostService } from "@/services/associationPostService";
 import type { Comment } from "@/services/graphql/posts";
+import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { toast } from "@/hooks/use-toast";
 
 interface CommentsTreeProps {
   postId: string;
@@ -16,16 +28,21 @@ function formatRelative(iso: string): string {
 interface CommentNodeProps {
   comment: Comment;
   postId: string;
+  /** Called after this node is successfully deleted so the parent can remove it. */
+  onDeleted: (commentId: string) => void;
 }
 
-function CommentNode({ comment, postId }: CommentNodeProps) {
+function CommentNode({ comment, postId, onDeleted }: CommentNodeProps) {
   const [expanded, setExpanded] = useState(false);
   const [replies, setReplies] = useState<Comment[]>([]);
+  const [replyCount, setReplyCount] = useState(comment.replyCount);
   const [loadingReplies, setLoadingReplies] = useState(false);
   const [loadedOnce, setLoadedOnce] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
-  const hasReplies = comment.replyCount > 0;
+  const hasReplies = replyCount > 0;
 
   const loadReplies = async () => {
     if (loadedOnce || loadingReplies) return;
@@ -48,6 +65,29 @@ function CommentNode({ comment, postId }: CommentNodeProps) {
     if (next) void loadReplies();
   };
 
+  const handleReplyDeleted = (replyId: string) => {
+    setReplies((prev) => prev.filter((r) => r.id !== replyId));
+    setReplyCount((prev) => Math.max(0, prev - 1));
+  };
+
+  const handleDelete = async () => {
+    setDeleting(true);
+    try {
+      const res = await associationPostService.deleteComment(comment.id);
+      if (!res.success) {
+        throw new Error(res.message || "Failed to delete comment");
+      }
+      setConfirmOpen(false);
+      onDeleted(comment.id);
+      toast({ title: "Comment deleted" });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to delete comment";
+      toast({ title: "Delete failed", description: message, variant: "destructive" });
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   return (
     <div className="space-y-2">
       <div className="rounded-md border border-border bg-card px-3 py-2">
@@ -55,7 +95,19 @@ function CommentNode({ comment, postId }: CommentNodeProps) {
           <p className="text-sm font-medium text-foreground">
             {comment.authorDisplayName || comment.authorHandle || "Unknown"}
           </p>
-          <p className="text-xs text-muted-foreground">{formatRelative(comment.createdAt)}</p>
+          <div className="flex items-center gap-2">
+            <p className="text-xs text-muted-foreground">{formatRelative(comment.createdAt)}</p>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="h-6 w-6 text-muted-foreground hover:text-destructive"
+              onClick={() => setConfirmOpen(true)}
+              aria-label="Delete comment"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+            </Button>
+          </div>
         </div>
         <p className="mt-1 whitespace-pre-wrap text-sm text-foreground">{comment.text}</p>
         {hasReplies && (
@@ -69,8 +121,8 @@ function CommentNode({ comment, postId }: CommentNodeProps) {
             ) : (
               <ChevronRight className="h-3.5 w-3.5" />
             )}
-            {expanded ? "Hide" : "View"} {comment.replyCount}{" "}
-            {comment.replyCount === 1 ? "reply" : "replies"}
+            {expanded ? "Hide" : "View"} {replyCount}{" "}
+            {replyCount === 1 ? "reply" : "replies"}
           </button>
         )}
       </div>
@@ -87,10 +139,45 @@ function CommentNode({ comment, postId }: CommentNodeProps) {
             <p className="text-xs text-muted-foreground">No replies.</p>
           )}
           {replies.map((reply) => (
-            <CommentNode key={reply.id} comment={reply} postId={postId} />
+            <CommentNode
+              key={reply.id}
+              comment={reply}
+              postId={postId}
+              onDeleted={handleReplyDeleted}
+            />
           ))}
         </div>
       )}
+
+      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete this comment?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This removes it and its replies. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(event) => {
+                event.preventDefault();
+                void handleDelete();
+              }}
+              disabled={deleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deleting ? (
+                <span className="inline-flex items-center gap-1">
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" /> Deleting…
+                </span>
+              ) : (
+                "Delete"
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
@@ -122,6 +209,10 @@ export function CommentsTree({ postId }: CommentsTreeProps) {
     };
   }, [postId]);
 
+  const handleCommentDeleted = (commentId: string) => {
+    setComments((prev) => prev.filter((c) => c.id !== commentId));
+  };
+
   if (loading) {
     return (
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -145,7 +236,12 @@ export function CommentsTree({ postId }: CommentsTreeProps) {
   return (
     <div className="space-y-3">
       {comments.map((comment) => (
-        <CommentNode key={comment.id} comment={comment} postId={postId} />
+        <CommentNode
+          key={comment.id}
+          comment={comment}
+          postId={postId}
+          onDeleted={handleCommentDeleted}
+        />
       ))}
     </div>
   );

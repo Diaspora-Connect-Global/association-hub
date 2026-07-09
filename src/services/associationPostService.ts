@@ -8,6 +8,7 @@ import {
   post,
   postComments,
   createComment,
+  deleteComment as deleteCommentMutation,
   addEngagement,
   removeEngagement,
   reportPost,
@@ -21,6 +22,7 @@ import {
   type CreateCommentInput,
   type AddEngagementInput,
   type ReportPostInput,
+  type PostCommonResponse,
   type AttachmentType,
   type UploadUrlResponse,
   type EditPostInput,
@@ -115,6 +117,10 @@ export class AssociationPostService {
 
   async createComment(input: CreateCommentInput): Promise<CreatedComment> {
     return createComment(input);
+  }
+
+  async deleteComment(commentId: string): Promise<PostCommonResponse> {
+    return deleteCommentMutation(commentId);
   }
 
   async addEngagement(input: AddEngagementInput): Promise<boolean> {
