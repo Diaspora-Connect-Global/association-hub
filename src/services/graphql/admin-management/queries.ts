@@ -20,6 +20,7 @@ const GET_ADMIN_BY_ID = /* GraphQL */ `
           roleType
           scopeType
           scopeId
+          roleDefinitionId
         }
         permissions
       }
@@ -70,6 +71,7 @@ const LIST_ADMINS = /* GraphQL */ `
           roleType
           scopeType
           scopeId
+          roleDefinitionId
         }
         permissions
       }

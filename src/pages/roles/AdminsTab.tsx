@@ -17,7 +17,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -56,14 +58,33 @@ import {
   listAdmins,
   createAdmin,
   getAdminById,
+  getRoleDefinitions,
   assignAdminRole,
   revokeAdminRole,
   updateAdminStatus,
   type AdminAccount,
+  type AdminRoleAssignment,
+  type RoleDefinition,
 } from "@/services/graphql/admin-management";
 
 interface AdminsTabProps {
   associationId: string;
+}
+
+/**
+ * Human-readable name for a single role assignment. Custom-role assignments
+ * carry a `roleDefinitionId`; resolve it against the loaded role definitions and
+ * show the custom role's name instead of the raw "CUSTOM" role type.
+ */
+function assignmentRoleName(
+  r: AdminRoleAssignment,
+  roleDefs: RoleDefinition[],
+): string {
+  if (r.roleDefinitionId) {
+    const def = roleDefs.find((d) => d.id === r.roleDefinitionId);
+    if (def) return def.name;
+  }
+  return roleTypeLabel(r.roleType);
 }
 
 /** True when the admin has at least one role scoped to this association. */
@@ -106,6 +127,10 @@ export function AdminsTab({ associationId }: AdminsTabProps) {
   const [createOpen, setCreateOpen] = useState(false);
   const [assignTarget, setAssignTarget] = useState<AdminAccount | null>(null);
 
+  // Role definitions for this association. Used to (a) offer custom roles in the
+  // assign dialog and (b) resolve custom-role names when displaying assignments.
+  const [roleDefs, setRoleDefs] = useState<RoleDefinition[]>([]);
+
   const fetchAdmins = async () => {
     if (!associationId) {
       setLoading(false);
@@ -131,6 +156,28 @@ export function AdminsTab({ associationId }: AdminsTabProps) {
   useEffect(() => {
     void fetchAdmins();
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [associationId]);
+
+  useEffect(() => {
+    if (!associationId) return;
+    let active = true;
+    void (async () => {
+      try {
+        const res = await getRoleDefinitions("ASSOCIATION", associationId);
+        if (!active) return;
+        // Strict scope isolation: only surface roles belonging to THIS association.
+        setRoleDefs(
+          (res.roles ?? []).filter(
+            (r) => r.scopeType === "ASSOCIATION" && r.scopeId === associationId,
+          ),
+        );
+      } catch {
+        /* best-effort: custom roles simply won't be offered */
+      }
+    })();
+    return () => {
+      active = false;
+    };
   }, [associationId]);
 
   const refreshAdmin = async (adminId: string) => {
@@ -310,7 +357,7 @@ export function AdminsTab({ associationId }: AdminsTabProps) {
                               variant="outline"
                               className="font-normal gap-1"
                             >
-                              {roleTypeLabel(r.roleType)}
+                              {assignmentRoleName(r, roleDefs)}
                               <button
                                 type="button"
                                 aria-label={t.adminsRevoke}
@@ -384,6 +431,7 @@ export function AdminsTab({ associationId }: AdminsTabProps) {
         admin={assignTarget}
         associationId={associationId}
         roleTypes={assignableRoleTypes}
+        customRoles={roleDefs.filter((r) => !r.isSystem)}
         onOpenChange={(open) => {
           if (!open) setAssignTarget(null);
         }}
@@ -544,35 +592,53 @@ interface AssignRoleDialogProps {
   admin: AdminAccount | null;
   associationId: string;
   roleTypes: AdminRoleTypeOption[];
+  customRoles: RoleDefinition[];
   onOpenChange: (open: boolean) => void;
   onAssigned: (adminId: string) => void;
 }
+
+// The role picker encodes each choice as "builtin:<roleType>" or
+// "custom:<roleDefinitionId>" so a single <Select> can offer both kinds while
+// keeping them unambiguous on submit.
+const BUILTIN_PREFIX = "builtin:";
+const CUSTOM_PREFIX = "custom:";
 
 function AssignRoleDialog({
   admin,
   associationId,
   roleTypes,
+  customRoles,
   onOpenChange,
   onAssigned,
 }: AssignRoleDialogProps) {
   const t = useT();
-  const [roleType, setRoleType] = useState(roleTypes[0]?.value ?? "");
+  const defaultValue = roleTypes[0]
+    ? `${BUILTIN_PREFIX}${roleTypes[0].value}`
+    : customRoles[0]
+      ? `${CUSTOM_PREFIX}${customRoles[0].id}`
+      : "";
+  const [selection, setSelection] = useState(defaultValue);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    if (admin) setRoleType(roleTypes[0]?.value ?? "");
-  }, [admin, roleTypes]);
+    if (admin) setSelection(defaultValue);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [admin, roleTypes, customRoles]);
 
   const handleSubmit = async () => {
-    if (!admin || !roleType) return;
+    if (!admin || !selection) return;
     setSaving(true);
     try {
-      const res = await assignAdminRole({
+      // Send EITHER a built-in roleType OR a custom roleDefinitionId — never both.
+      const base = {
         adminId: admin.id,
-        roleType,
         scopeType: "ASSOCIATION",
         scopeId: associationId,
-      });
+      };
+      const input = selection.startsWith(CUSTOM_PREFIX)
+        ? { ...base, roleDefinitionId: selection.slice(CUSTOM_PREFIX.length) }
+        : { ...base, roleType: selection.slice(BUILTIN_PREFIX.length) };
+      const res = await assignAdminRole(input);
       if (res.success) {
         toast({ title: res.message ?? t.adminsRoleAssigned });
         onAssigned(admin.id);
@@ -590,6 +656,8 @@ function AssignRoleDialog({
     }
   };
 
+  const hasRoles = roleTypes.length > 0 || customRoles.length > 0;
+
   return (
     <Dialog open={!!admin} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
@@ -604,16 +672,37 @@ function AssignRoleDialog({
 
         <div className="space-y-1.5 py-2">
           <Label>{t.adminsAssignFormRole}</Label>
-          <Select value={roleType} onValueChange={setRoleType}>
+          <Select value={selection} onValueChange={setSelection}>
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {roleTypes.map((r) => (
-                <SelectItem key={r.value} value={r.value}>
-                  {r.label}
-                </SelectItem>
-              ))}
+              {roleTypes.length > 0 && (
+                <SelectGroup>
+                  <SelectLabel>Built-in roles</SelectLabel>
+                  {roleTypes.map((r) => (
+                    <SelectItem
+                      key={`${BUILTIN_PREFIX}${r.value}`}
+                      value={`${BUILTIN_PREFIX}${r.value}`}
+                    >
+                      {r.label}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              )}
+              {customRoles.length > 0 && (
+                <SelectGroup>
+                  <SelectLabel>Custom roles</SelectLabel>
+                  {customRoles.map((r) => (
+                    <SelectItem
+                      key={`${CUSTOM_PREFIX}${r.id}`}
+                      value={`${CUSTOM_PREFIX}${r.id}`}
+                    >
+                      {r.name}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              )}
             </SelectContent>
           </Select>
         </div>
@@ -630,7 +719,7 @@ function AssignRoleDialog({
           <Button
             type="button"
             onClick={handleSubmit}
-            disabled={saving || roleTypes.length === 0}
+            disabled={saving || !hasRoles}
           >
             {saving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
             {t.adminsAssignFormSubmit}

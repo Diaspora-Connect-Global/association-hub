@@ -24,6 +24,7 @@ const CREATE_ADMIN = /* GraphQL */ `
           roleType
           scopeType
           scopeId
+          roleDefinitionId
         }
         permissions
       }
@@ -50,6 +51,7 @@ const ASSIGN_ADMIN_ROLE = /* GraphQL */ `
         roleType
         scopeType
         scopeId
+        roleDefinitionId
       }
     }
   }
