@@ -99,6 +99,9 @@ export interface PendingMembershipRequestType {
   userId: string;
   requestedAt: string;
   message: string | null;
+  fullName?: string | null;
+  displayName?: string | null;
+  email?: string | null;
 }
 
 export interface PendingMembershipRequestListType {

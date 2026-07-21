@@ -121,6 +121,9 @@ const GET_PENDING_MEMBERSHIP_REQUESTS = /* GraphQL */ `
         userId
         requestedAt
         message
+        fullName
+        displayName
+        email
       }
       total
     }
@@ -362,7 +365,9 @@ export function approveMembership(input: MemberActionInput): Promise<MutationRes
   return runMemberMutation(APPROVE_MEMBERSHIP, input);
 }
 
-export function rejectMembership(input: MemberActionInput): Promise<MutationResultType> {
+export function rejectMembership(
+  input: MemberActionInput & { reason?: string }
+): Promise<MutationResultType> {
   return runMemberMutation(REJECT_MEMBERSHIP, input);
 }
 

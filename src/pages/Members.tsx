@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { RefreshCw, ShieldMinus, ShieldPlus, UserMinus, UserPlus } from "lucide-react";
 import { AdminLayout } from "@/components/layout/AdminLayout";
+import { JoinPolicyBanner } from "@/components/JoinPolicyBanner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -20,6 +21,7 @@ import { useAssociationAdminStore } from "@/stores/associationAdminStore";
 import {
   approveMembership,
   blockMember,
+  getAssociation,
   getAssociationMembers,
   getPendingMembershipRequests,
   inviteMember,
@@ -62,6 +64,10 @@ function getInitials(
   return initials.toUpperCase();
 }
 
+function getPendingDisplayName(request: PendingMembershipRequestType): string {
+  return request.displayName?.trim() || request.fullName?.trim() || request.userId;
+}
+
 export default function Members() {
   const t = useT();
   const associationId = useMemo(() => getAdminAssociationId(), []);
@@ -74,6 +80,8 @@ export default function Members() {
   const [inviteUserId, setInviteUserId] = useState("");
   const [busyUserId, setBusyUserId] = useState<string | null>(null);
   const setPendingRequestsCount = useAssociationAdminStore((state) => state.setPendingRequestsCount);
+  const association = useAssociationAdminStore((state) => state.association);
+  const setAssociation = useAssociationAdminStore((state) => state.setAssociation);
 
   const loadMembers = useCallback(async () => {
     if (!associationId) return;
@@ -102,6 +110,15 @@ export default function Members() {
   useEffect(() => {
     void loadMembers();
   }, [loadMembers]);
+
+  useEffect(() => {
+    if (!associationId || association) return;
+    void getAssociation(associationId)
+      .then((data) => setAssociation(data))
+      .catch(() => {
+        /* banner is best-effort context; ignore load errors */
+      });
+  }, [associationId, association, setAssociation]);
 
   const runMemberAction = useCallback(
     async (userId: string, action: () => Promise<{ success: boolean; message: string | null }>, successMessage: string) => {
@@ -184,7 +201,7 @@ export default function Members() {
     if (!associationId) return;
     void runMemberAction(
       userId,
-      () => rejectMembership({ entityId: associationId, entityType: "ASSOCIATION", userId }),
+      () => rejectMembership({ entityId: associationId, entityType: "ASSOCIATION", userId, reason: "Declined by admin" }),
       "Request rejected"
     );
   };
@@ -343,6 +360,10 @@ export default function Members() {
           </CardContent>
         </Card>
 
+        {association && (
+          <JoinPolicyBanner joinPolicy={association.joinPolicy} entityLabel="association" />
+        )}
+
         <div className="flex gap-2">
           {(["ACTIVE", "PENDING", "SUSPENDED"] as MembersTab[]).map((value) => (
             <Button
@@ -363,7 +384,7 @@ export default function Members() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>User ID</TableHead>
+                    <TableHead>Member</TableHead>
                     <TableHead>Requested at</TableHead>
                     <TableHead>Message</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
@@ -377,9 +398,48 @@ export default function Members() {
                       </TableCell>
                     </TableRow>
                   ) : (
-                    pendingRequests.map((request) => (
+                    pendingRequests.map((request) => {
+                      const displayName = getPendingDisplayName(request);
+                      const hasName = displayName !== request.userId;
+                      return (
                       <TableRow key={request.userId}>
-                        <TableCell className="font-medium">{request.userId}</TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-3 min-w-0">
+                            <Avatar className="h-9 w-9 shrink-0">
+                              <AvatarFallback className="bg-primary/10 text-primary text-xs font-medium">
+                                {getInitials({
+                                  userId: request.userId,
+                                  fullName: hasName ? displayName : null,
+                                  displayName: null,
+                                  firstName: null,
+                                  lastName: null,
+                                })}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="min-w-0 flex flex-col">
+                              {hasName ? (
+                                <>
+                                  <span className="text-sm font-medium text-foreground truncate">
+                                    {displayName}
+                                  </span>
+                                  {request.email ? (
+                                    <span className="text-xs text-muted-foreground truncate">
+                                      {request.email}
+                                    </span>
+                                  ) : (
+                                    <span className="font-mono text-[11px] text-muted-foreground truncate">
+                                      {request.userId}
+                                    </span>
+                                  )}
+                                </>
+                              ) : (
+                                <span className="font-mono text-xs text-muted-foreground truncate">
+                                  {request.userId}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </TableCell>
                         <TableCell>{new Date(request.requestedAt).toLocaleString()}</TableCell>
                         <TableCell>{request.message || "—"}</TableCell>
                         <TableCell className="text-right">
@@ -402,7 +462,8 @@ export default function Members() {
                           </div>
                         </TableCell>
                       </TableRow>
-                    ))
+                      );
+                    })
                   )}
                 </TableBody>
               </Table>
