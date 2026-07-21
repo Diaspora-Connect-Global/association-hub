@@ -187,9 +187,14 @@ export default function Profile() {
   const paymentType = watch("paymentType");
   const countriesServed = watch("countriesServed");
 
+  // The raw policy as loaded. This 2-option form can only express OPEN vs APPROVAL;
+  // if the association is INVITE_ONLY or PAID we preserve it instead of downgrading.
+  const loadedJoinPolicyRef = useRef<JoinPolicy | null>(null);
+
   useEffect(() => {
     if (!associationId) return;
     void getAssociation(associationId).then((assoc) => {
+      loadedJoinPolicyRef.current = (assoc.joinPolicy as JoinPolicy) ?? null;
       reset((prev) => ({
         ...prev,
         associationName: assoc.name,
@@ -209,7 +214,13 @@ export default function Profile() {
         name: values.associationName,
         description: values.description || undefined,
         visibility: (values.privacyType === "Public" ? "PUBLIC" : "PRIVATE") as AssociationVisibility,
-        joinPolicy: (values.joinPolicy === "Open (Anyone Can Join)" ? "OPEN" : "REQUEST") as JoinPolicy,
+        // This form offers only Open vs Approval. If the association is INVITE_ONLY
+        // or PAID, don't overwrite it (would downgrade); otherwise map to the real
+        // backend enum — APPROVAL, not the old "REQUEST" which the backend rejects.
+        joinPolicy:
+          loadedJoinPolicyRef.current === "INVITE_ONLY" || loadedJoinPolicyRef.current === "PAID"
+            ? undefined
+            : ((values.joinPolicy === "Open (Anyone Can Join)" ? "OPEN" : "APPROVAL") as JoinPolicy),
         // Contact tab
         contactEmail: values.contactEmail || undefined,
         contactPhone: values.contactPhone || undefined,

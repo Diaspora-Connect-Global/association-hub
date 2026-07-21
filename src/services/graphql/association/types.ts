@@ -1,4 +1,7 @@
-export type JoinPolicy = "OPEN" | "REQUEST" | "INVITE_ONLY";
+// Matches the backend JoinPolicy enum. "PAID" is included so a paid association
+// round-trips without being downgraded; it isn't offered as a selectable option
+// in these self-service forms (they have no price fields).
+export type JoinPolicy = "OPEN" | "APPROVAL" | "INVITE_ONLY" | "PAID";
 export type AssociationVisibility = "PUBLIC" | "PRIVATE";
 export type MembershipStatus = "ACTIVE" | "SUSPENDED";
 export type MemberRole = "MEMBER" | "MODERATOR";

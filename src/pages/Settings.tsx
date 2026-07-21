@@ -29,11 +29,20 @@ import {
 import { ServiceCheckboxGrid } from "@/components/services/ServiceCheckboxGrid";
 import { resolveEnabledServices, sortServiceKeys } from "@/constants/communityServices";
 
-const joinPolicyLabels: Record<JoinPolicy, string> = {
+// Selectable access policies (PAID is managed where a price can be set, not here).
+const joinPolicyLabels: Record<Exclude<JoinPolicy, "PAID">, string> = {
   OPEN: "Public — Anyone can join",
-  REQUEST: "Request to Join",
+  APPROVAL: "Request to Join",
   INVITE_ONLY: "Invite Only",
 };
+
+// Backend now returns APPROVAL; older data / other UIs may send REQUEST.
+function normalizeJoinPolicy(value?: string): JoinPolicy {
+  const v = (value ?? "OPEN").toUpperCase();
+  if (v === "APPROVAL" || v === "INVITE_ONLY" || v === "OPEN" || v === "PAID") return v as JoinPolicy;
+  if (v === "REQUEST" || v === "APPROVAL_REQUIRED") return "APPROVAL";
+  return "OPEN";
+}
 
 export default function Settings() {
   const t = useT();
@@ -45,7 +54,7 @@ export default function Settings() {
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [joinPolicy, setJoinPolicy] = useState<JoinPolicy>("REQUEST");
+  const [joinPolicy, setJoinPolicy] = useState<JoinPolicy>("OPEN");
   const [visibility, setVisibility] = useState<AssociationVisibility>("PUBLIC");
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
   const [isSavingServices, setIsSavingServices] = useState(false);
@@ -57,7 +66,7 @@ export default function Settings() {
       setAssociation(data);
       setName(data.name);
       setDescription(data.description ?? "");
-      setJoinPolicy(data.joinPolicy);
+      setJoinPolicy(normalizeJoinPolicy(data.joinPolicy));
       setVisibility(data.visibility);
       setSelectedServices(resolveEnabledServices(data.enabledServices));
     } catch (err) {
@@ -112,7 +121,9 @@ export default function Settings() {
         id: associationId,
         name,
         description,
-        joinPolicy,
+        // Don't overwrite a paid association's policy here — there's no price field,
+        // so it would silently drop paid status. PAID isn't selectable anyway.
+        joinPolicy: joinPolicy === "PAID" ? undefined : joinPolicy,
         visibility,
       });
       setAssociation(updated);
@@ -188,11 +199,15 @@ export default function Settings() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {(Object.keys(joinPolicyLabels) as JoinPolicy[]).map((policy) => (
+                    {(Object.keys(joinPolicyLabels) as Array<Exclude<JoinPolicy, "PAID">>).map((policy) => (
                       <SelectItem key={policy} value={policy}>
                         {joinPolicyLabels[policy]}
                       </SelectItem>
                     ))}
+                    {/* Shown only for an already-paid association; price is managed elsewhere. */}
+                    {joinPolicy === "PAID" && (
+                      <SelectItem value="PAID" disabled>Paid (managed elsewhere)</SelectItem>
+                    )}
                   </SelectContent>
                 </Select>
               </div>
