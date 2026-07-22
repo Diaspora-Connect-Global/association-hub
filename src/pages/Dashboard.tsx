@@ -47,7 +47,7 @@ export default function Dashboard() {
       const [associationData, statsData, pendingRequests, pendingReports] = await Promise.all([
         getAssociation(associationId),
         getAssociationStats(associationId),
-        getPendingMembershipRequests({ entityId: associationId, entityType: "ASSOCIATION", page: 1, limit: 1 }),
+        getPendingMembershipRequests({ entityId: associationId, entityType: "ASSOCIATION", offset: 0, limit: 1 }),
         getMemberReports({ entityId: associationId, entityType: "ASSOCIATION", page: 1, limit: 1, status: "PENDING" }),
       ]);
 

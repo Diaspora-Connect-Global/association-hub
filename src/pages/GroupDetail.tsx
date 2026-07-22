@@ -16,6 +16,10 @@ import BlockedTab from "@/components/groups/BlockedTab";
 import SettingsTab from "@/components/groups/SettingsTab";
 import ChatTab from "@/components/groups/ChatTab";
 
+// Rows fetched per member page. The gateway hard-caps a group member page at
+// 200; keep this under that so `hasMore` reliably drives the "Load more" control.
+const MEMBERS_PAGE_SIZE = 50;
+
 function PrivacyBadge({ privacy }: { privacy: Group["privacy"] }) {
   const Icon =
     privacy === "PUBLIC" ? Globe : privacy === "SECRET" ? ShieldAlert : Lock;
@@ -35,6 +39,9 @@ export default function GroupDetail() {
 
   const [group, setGroup] = useState<Group | null>(null);
   const [members, setMembers] = useState<GroupMember[]>([]);
+  const [membersTotal, setMembersTotal] = useState(0);
+  const [membersHasMore, setMembersHasMore] = useState(false);
+  const [loadingMoreMembers, setLoadingMoreMembers] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [tab, setTab] = useState("overview");
@@ -46,16 +53,37 @@ export default function GroupDetail() {
     try {
       const [g, m] = await Promise.all([
         getGroup(groupId),
-        getGroupMembers(groupId, 100, 0),
+        getGroupMembers(groupId, MEMBERS_PAGE_SIZE, 0),
       ]);
       setGroup(g);
       setMembers(m.members);
+      setMembersTotal(m.total ?? m.members.length);
+      setMembersHasMore(m.hasMore ?? false);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load group");
     } finally {
       setLoading(false);
     }
   }, [groupId]);
+
+  const loadMoreMembers = useCallback(async () => {
+    if (!groupId) return;
+    setLoadingMoreMembers(true);
+    try {
+      const m = await getGroupMembers(groupId, MEMBERS_PAGE_SIZE, members.length);
+      setMembers((prev) => [...prev, ...m.members]);
+      setMembersTotal(m.total ?? members.length + m.members.length);
+      setMembersHasMore(m.hasMore ?? false);
+    } catch (err) {
+      toast({
+        title: "Load more failed",
+        description: err instanceof Error ? err.message : String(err),
+        variant: "destructive",
+      });
+    } finally {
+      setLoadingMoreMembers(false);
+    }
+  }, [groupId, members.length, toast]);
 
   useEffect(() => {
     void reload();
@@ -134,6 +162,10 @@ export default function GroupDetail() {
               <MembersTab
                 groupId={group.id}
                 members={members}
+                total={membersTotal}
+                hasMore={membersHasMore}
+                loadingMore={loadingMoreMembers}
+                onLoadMore={loadMoreMembers}
                 onChanged={reload}
               />
             </TabsContent>

@@ -93,6 +93,9 @@ export interface AssociationMemberListType {
   members: AssociationMemberType[];
   total: number;
   page: number;
+  // True when more rows exist beyond this page (offset + returned < total).
+  // Backend caps each page at 200; page the roster with limit/offset.
+  hasMore?: boolean;
 }
 
 export interface PendingMembershipRequestType {
@@ -107,6 +110,8 @@ export interface PendingMembershipRequestType {
 export interface PendingMembershipRequestListType {
   requests: PendingMembershipRequestType[];
   total: number;
+  // True when more pending requests exist beyond this page.
+  hasMore?: boolean;
 }
 
 export interface MemberActionInput {

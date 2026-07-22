@@ -93,8 +93,8 @@ const GET_ASSOCIATION_COVER_UPLOAD_URL = /* GraphQL */ `
 `;
 
 const GET_ASSOCIATION_MEMBERS = /* GraphQL */ `
-  query GetAssociationMembers($associationId: ID!, $page: Int!, $limit: Int!, $status: MembershipStatus) {
-    getAssociationMembers(associationId: $associationId, page: $page, limit: $limit, status: $status) {
+  query GetAssociationMembers($associationId: ID!, $limit: Int, $offset: Int, $status: MembershipStatus) {
+    getAssociationMembers(associationId: $associationId, limit: $limit, offset: $offset, status: $status) {
       members {
         userId
         role
@@ -110,13 +110,14 @@ const GET_ASSOCIATION_MEMBERS = /* GraphQL */ `
       }
       total
       page
+      hasMore
     }
   }
 `;
 
 const GET_PENDING_MEMBERSHIP_REQUESTS = /* GraphQL */ `
-  query GetPendingMembershipRequests($entityId: ID!, $entityType: GroupEntityType!, $page: Int!, $limit: Int!) {
-    getPendingMembershipRequests(entityId: $entityId, entityType: $entityType, page: $page, limit: $limit) {
+  query GetPendingMembershipRequests($entityId: ID!, $entityType: GroupEntityType!, $limit: Int, $offset: Int) {
+    getPendingMembershipRequests(entityId: $entityId, entityType: $entityType, limit: $limit, offset: $offset) {
       requests {
         userId
         requestedAt
@@ -126,6 +127,7 @@ const GET_PENDING_MEMBERSHIP_REQUESTS = /* GraphQL */ `
         email
       }
       total
+      hasMore
     }
   }
 `;
@@ -325,14 +327,14 @@ export async function uploadAssociationAvatar(uploadUrl: string, file: File): Pr
 
 export async function getAssociationMembers(input: {
   associationId: string;
-  page: number;
   limit: number;
+  offset: number;
   status?: MembershipStatus;
 }): Promise<AssociationMemberListType> {
   const client = getGraphQLClient();
   const data = await client.request<
     { getAssociationMembers: AssociationMemberListType },
-    { associationId: string; page: number; limit: number; status?: MembershipStatus }
+    { associationId: string; limit: number; offset: number; status?: MembershipStatus }
   >(GET_ASSOCIATION_MEMBERS, input);
   return data.getAssociationMembers;
 }
@@ -340,13 +342,13 @@ export async function getAssociationMembers(input: {
 export async function getPendingMembershipRequests(input: {
   entityId: string;
   entityType: "ASSOCIATION";
-  page: number;
   limit: number;
+  offset: number;
 }): Promise<PendingMembershipRequestListType> {
   const client = getGraphQLClient();
   const data = await client.request<
     { getPendingMembershipRequests: PendingMembershipRequestListType },
-    { entityId: string; entityType: "ASSOCIATION"; page: number; limit: number }
+    { entityId: string; entityType: "ASSOCIATION"; limit: number; offset: number }
   >(GET_PENDING_MEMBERSHIP_REQUESTS, input);
   return data.getPendingMembershipRequests;
 }
