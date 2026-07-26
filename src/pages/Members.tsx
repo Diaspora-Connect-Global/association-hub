@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { RefreshCw, ShieldMinus, ShieldPlus, UserMinus, UserPlus } from "lucide-react";
+import { Loader2, RefreshCw, ShieldMinus, ShieldPlus, UserMinus, UserPlus } from "lucide-react";
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import { JoinPolicyBanner } from "@/components/JoinPolicyBanner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -38,6 +38,10 @@ import {
 
 type MembersTab = "ACTIVE" | "PENDING" | "SUSPENDED";
 
+// Rows fetched per page. The gateway hard-caps a member/pending page at 200;
+// keep this under that so `hasMore` reliably drives the "Load more" control.
+const PAGE_SIZE = 50;
+
 function getMemberDisplayName(
   member: Pick<AssociationMemberType, "fullName" | "displayName" | "firstName" | "lastName" | "userId">
 ): string {
@@ -73,10 +77,16 @@ export default function Members() {
   const associationId = useMemo(() => getAdminAssociationId(), []);
   const [tab, setTab] = useState<MembersTab>("ACTIVE");
   const [loading, setLoading] = useState(false);
+  const [loadingMore, setLoadingMore] = useState<MembersTab | null>(null);
   const [activeMembers, setActiveMembers] = useState<AssociationMemberType[]>([]);
+  const [activeTotal, setActiveTotal] = useState(0);
+  const [activeHasMore, setActiveHasMore] = useState(false);
   const [suspendedMembers, setSuspendedMembers] = useState<AssociationMemberType[]>([]);
+  const [suspendedTotal, setSuspendedTotal] = useState(0);
+  const [suspendedHasMore, setSuspendedHasMore] = useState(false);
   const [pendingRequests, setPendingRequests] = useState<PendingMembershipRequestType[]>([]);
   const [pendingTotal, setPendingTotal] = useState(0);
+  const [pendingHasMore, setPendingHasMore] = useState(false);
   const [inviteUserId, setInviteUserId] = useState("");
   const [busyUserId, setBusyUserId] = useState<string | null>(null);
   const setPendingRequestsCount = useAssociationAdminStore((state) => state.setPendingRequestsCount);
@@ -89,15 +99,20 @@ export default function Members() {
     setLoading(true);
     try {
       const [active, suspended, pending] = await Promise.all([
-        getAssociationMembers({ associationId, page: 1, limit: 50, status: "ACTIVE" }),
-        getAssociationMembers({ associationId, page: 1, limit: 50, status: "SUSPENDED" }),
-        getPendingMembershipRequests({ entityId: associationId, entityType: "ASSOCIATION", page: 1, limit: 50 }),
+        getAssociationMembers({ associationId, offset: 0, limit: PAGE_SIZE, status: "ACTIVE" }),
+        getAssociationMembers({ associationId, offset: 0, limit: PAGE_SIZE, status: "SUSPENDED" }),
+        getPendingMembershipRequests({ entityId: associationId, entityType: "ASSOCIATION", offset: 0, limit: PAGE_SIZE }),
       ]);
 
       setActiveMembers(active.members);
+      setActiveTotal(active.total ?? active.members.length);
+      setActiveHasMore(active.hasMore ?? false);
       setSuspendedMembers(suspended.members);
+      setSuspendedTotal(suspended.total ?? suspended.members.length);
+      setSuspendedHasMore(suspended.hasMore ?? false);
       setPendingRequests(pending.requests);
       setPendingTotal(pending.total ?? 0);
+      setPendingHasMore(pending.hasMore ?? false);
       setPendingRequestsCount(pending.total ?? 0);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Failed to load members.";
@@ -106,6 +121,52 @@ export default function Members() {
       setLoading(false);
     }
   }, [associationId, setPendingRequestsCount]);
+
+  const loadMore = useCallback(
+    async (which: MembersTab) => {
+      if (!associationId) return;
+      setLoadingMore(which);
+      try {
+        if (which === "ACTIVE") {
+          const res = await getAssociationMembers({
+            associationId,
+            offset: activeMembers.length,
+            limit: PAGE_SIZE,
+            status: "ACTIVE",
+          });
+          setActiveMembers((prev) => [...prev, ...res.members]);
+          setActiveTotal(res.total ?? activeMembers.length + res.members.length);
+          setActiveHasMore(res.hasMore ?? false);
+        } else if (which === "SUSPENDED") {
+          const res = await getAssociationMembers({
+            associationId,
+            offset: suspendedMembers.length,
+            limit: PAGE_SIZE,
+            status: "SUSPENDED",
+          });
+          setSuspendedMembers((prev) => [...prev, ...res.members]);
+          setSuspendedTotal(res.total ?? suspendedMembers.length + res.members.length);
+          setSuspendedHasMore(res.hasMore ?? false);
+        } else {
+          const res = await getPendingMembershipRequests({
+            entityId: associationId,
+            entityType: "ASSOCIATION",
+            offset: pendingRequests.length,
+            limit: PAGE_SIZE,
+          });
+          setPendingRequests((prev) => [...prev, ...res.requests]);
+          setPendingTotal(res.total ?? pendingRequests.length + res.requests.length);
+          setPendingHasMore(res.hasMore ?? false);
+        }
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "Failed to load more.";
+        toast({ title: "Load more failed", description: message, variant: "destructive" });
+      } finally {
+        setLoadingMore(null);
+      }
+    },
+    [associationId, activeMembers.length, suspendedMembers.length, pendingRequests.length]
+  );
 
   useEffect(() => {
     void loadMembers();
@@ -336,6 +397,41 @@ export default function Members() {
     </Table>
   );
 
+  const renderPagination = (
+    loaded: number,
+    total: number,
+    hasMore: boolean,
+    which: MembersTab,
+    unit: "members" | "requests"
+  ) => {
+    if (loaded === 0) return null;
+    const template = unit === "members" ? t.showingXOfYMembers : t.showingXOfYRequests;
+    return (
+      <div className="flex items-center justify-between gap-3 pt-4">
+        <span className="text-xs text-muted-foreground">
+          {template.replace("{loaded}", loaded.toString()).replace("{total}", total.toString())}
+        </span>
+        {hasMore && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => void loadMore(which)}
+            disabled={loadingMore !== null}
+          >
+            {loadingMore === which ? (
+              <>
+                <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+                {t.loadingMore}
+              </>
+            ) : (
+              t.loadMore
+            )}
+          </Button>
+        )}
+      </div>
+    );
+  };
+
   return (
     <AdminLayout title={t.membersTitle} subtitle={`Pending requests: ${pendingTotal}`}>
       <div className="space-y-6">
@@ -378,9 +474,20 @@ export default function Members() {
 
         <Card>
           <CardContent className="pt-6">
-            {tab === "ACTIVE" && renderMemberRows(activeMembers)}
-            {tab === "SUSPENDED" && renderMemberRows(suspendedMembers)}
+            {tab === "ACTIVE" && (
+              <>
+                {renderMemberRows(activeMembers)}
+                {renderPagination(activeMembers.length, activeTotal, activeHasMore, "ACTIVE", "members")}
+              </>
+            )}
+            {tab === "SUSPENDED" && (
+              <>
+                {renderMemberRows(suspendedMembers)}
+                {renderPagination(suspendedMembers.length, suspendedTotal, suspendedHasMore, "SUSPENDED", "members")}
+              </>
+            )}
             {tab === "PENDING" && (
+              <>
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -467,6 +574,8 @@ export default function Members() {
                   )}
                 </TableBody>
               </Table>
+              {renderPagination(pendingRequests.length, pendingTotal, pendingHasMore, "PENDING", "requests")}
+              </>
             )}
           </CardContent>
         </Card>

@@ -11,12 +11,17 @@ import {
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
+import { useT } from "@/hooks/useT";
 import type { JoinRequest } from "@/services/graphql/groups/types";
 import { getPendingJoinRequestsForGroup } from "@/services/graphql/groups/queries";
 import {
   approveJoinRequest,
   rejectJoinRequest,
 } from "@/services/graphql/groups/mutations";
+
+// The join-request list wrapper (GroupJoinRequestListResponse) exposes only
+// `total` — no `hasMore` — so paging is driven by (loaded < total).
+const PAGE_SIZE = 50;
 
 interface Props {
   groupId: string;
@@ -41,8 +46,11 @@ function initials(name: string): string {
 
 export default function JoinRequestsTab({ groupId, onChanged }: Props) {
   const { toast } = useToast();
+  const t = useT();
   const [requests, setRequests] = useState<JoinRequest[]>([]);
+  const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
 
@@ -50,14 +58,32 @@ export default function JoinRequestsTab({ groupId, onChanged }: Props) {
     setLoading(true);
     setError(null);
     try {
-      const res = await getPendingJoinRequestsForGroup(groupId, 100, 0);
+      const res = await getPendingJoinRequestsForGroup(groupId, PAGE_SIZE, 0);
       setRequests(res.requests);
+      setTotal(res.total ?? res.requests.length);
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
     } finally {
       setLoading(false);
     }
   }, [groupId]);
+
+  const loadMore = useCallback(async () => {
+    setLoadingMore(true);
+    try {
+      const res = await getPendingJoinRequestsForGroup(groupId, PAGE_SIZE, requests.length);
+      setRequests((prev) => [...prev, ...res.requests]);
+      setTotal(res.total ?? requests.length + res.requests.length);
+    } catch (err) {
+      toast({
+        title: "Load more failed",
+        description: err instanceof Error ? err.message : String(err),
+        variant: "destructive",
+      });
+    } finally {
+      setLoadingMore(false);
+    }
+  }, [groupId, requests.length, toast]);
 
   useEffect(() => {
     void load();
@@ -68,6 +94,7 @@ export default function JoinRequestsTab({ groupId, onChanged }: Props) {
     try {
       await approveJoinRequest({ groupId, userId: req.userId });
       setRequests((prev) => prev.filter((r) => r.id !== req.id));
+      setTotal((prev) => Math.max(0, prev - 1));
       toast({ title: "Request approved", description: requesterName(req) });
       await onChanged();
     } catch (err) {
@@ -87,6 +114,7 @@ export default function JoinRequestsTab({ groupId, onChanged }: Props) {
       const res = await rejectJoinRequest({ groupId, userId: req.userId });
       if (!res.success) throw new Error(res.message ?? "Failed");
       setRequests((prev) => prev.filter((r) => r.id !== req.id));
+      setTotal((prev) => Math.max(0, prev - 1));
       toast({ title: "Request rejected", description: requesterName(req) });
       await onChanged();
     } catch (err) {
@@ -202,6 +230,33 @@ export default function JoinRequestsTab({ groupId, onChanged }: Props) {
           </TableBody>
         </Table>
       </div>
+
+      {!loading && !error && requests.length > 0 && (
+        <div className="flex items-center justify-between gap-3">
+          <span className="text-xs text-muted-foreground">
+            {t.showingXOfYRequests
+              .replace("{loaded}", requests.length.toString())
+              .replace("{total}", total.toString())}
+          </span>
+          {requests.length < total && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => void loadMore()}
+              disabled={loadingMore}
+            >
+              {loadingMore ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  {t.loadingMore}
+                </>
+              ) : (
+                t.loadMore
+              )}
+            </Button>
+          )}
+        </div>
+      )}
     </div>
   );
 }

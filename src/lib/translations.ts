@@ -765,6 +765,10 @@ type TranslationKeys = {
   totalOpportunities: string;
   showingXOfYPosts: string;
   showingXOfYOpportunities: string;
+  loadMore: string;
+  loadingMore: string;
+  showingXOfYMembers: string;
+  showingXOfYRequests: string;
   revenueAllTime: string;
   listings: string;
   
@@ -1709,6 +1713,10 @@ const translations: Record<Language, TranslationKeys> = {
     totalOpportunities: "Total Opportunities",
     showingXOfYPosts: "Showing {filtered} of {total} posts",
     showingXOfYOpportunities: "Showing {filtered} of {total} opportunities",
+    loadMore: "Load more",
+    loadingMore: "Loading more…",
+    showingXOfYMembers: "Showing {loaded} of {total} members",
+    showingXOfYRequests: "Showing {loaded} of {total} requests",
     revenueAllTime: "Revenue (All Time)",
     listings: "Listings",
     
@@ -2655,6 +2663,10 @@ const translations: Record<Language, TranslationKeys> = {
     totalOpportunities: "Total des opportunités",
     showingXOfYPosts: "Affichage de {filtered} sur {total} publications",
     showingXOfYOpportunities: "Affichage de {filtered} sur {total} opportunités",
+    loadMore: "Afficher plus",
+    loadingMore: "Chargement…",
+    showingXOfYMembers: "Affichage de {loaded} sur {total} membres",
+    showingXOfYRequests: "Affichage de {loaded} sur {total} demandes",
     revenueAllTime: "Revenu (Tout temps)",
     listings: "Annonces",
     
@@ -3602,6 +3614,10 @@ const translations: Record<Language, TranslationKeys> = {
     totalOpportunities: "Gesamtzahl Möglichkeiten",
     showingXOfYPosts: "Zeige {filtered} von {total} Beiträgen",
     showingXOfYOpportunities: "Zeige {filtered} von {total} Möglichkeiten",
+    loadMore: "Mehr laden",
+    loadingMore: "Wird geladen…",
+    showingXOfYMembers: "Zeige {loaded} von {total} Mitgliedern",
+    showingXOfYRequests: "Zeige {loaded} von {total} Anfragen",
     revenueAllTime: "Umsatz (Gesamt)",
     listings: "Angebote",
     
@@ -4537,6 +4553,10 @@ const translations: Record<Language, TranslationKeys> = {
     totalOpportunities: "Total de oportunidades",
     showingXOfYPosts: "Mostrando {filtered} de {total} publicaciones",
     showingXOfYOpportunities: "Mostrando {filtered} de {total} oportunidades",
+    loadMore: "Cargar más",
+    loadingMore: "Cargando…",
+    showingXOfYMembers: "Mostrando {loaded} de {total} miembros",
+    showingXOfYRequests: "Mostrando {loaded} de {total} solicitudes",
     revenueAllTime: "Ingresos (Histórico)",
     listings: "Anuncios",
     
@@ -5481,6 +5501,10 @@ const translations: Record<Language, TranslationKeys> = {
     totalOpportunities: "Opportunità totali",
     showingXOfYPosts: "Mostrando {x} di {y} post",
     showingXOfYOpportunities: "Mostrando {x} di {y} opportunità",
+    loadMore: "Carica altri",
+    loadingMore: "Caricamento…",
+    showingXOfYMembers: "Mostrando {loaded} di {total} membri",
+    showingXOfYRequests: "Mostrando {loaded} di {total} richieste",
     revenueAllTime: "Ricavi (totali)",
     listings: "Annunci",
 

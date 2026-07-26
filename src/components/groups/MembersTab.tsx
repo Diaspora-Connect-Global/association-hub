@@ -37,6 +37,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { useT } from "@/hooks/useT";
 import type {
   GroupMember,
   MemberRole,
@@ -78,10 +79,27 @@ interface Props {
   groupId: string;
   members: GroupMember[];
   onChanged: () => Promise<void> | void;
+  /** Total members across all pages (for the "Showing X of Y" caption). */
+  total?: number;
+  /** True when more member pages exist beyond what's loaded. */
+  hasMore?: boolean;
+  /** True while the next page is being fetched. */
+  loadingMore?: boolean;
+  /** Fetch and append the next member page. */
+  onLoadMore?: () => void | Promise<void>;
 }
 
-export default function MembersTab({ groupId, members, onChanged }: Props) {
+export default function MembersTab({
+  groupId,
+  members,
+  onChanged,
+  total,
+  hasMore,
+  loadingMore,
+  onLoadMore,
+}: Props) {
   const { toast } = useToast();
+  const t = useT();
   const [search, setSearch] = useState("");
   const [busy, setBusy] = useState<string | null>(null);
 
@@ -316,6 +334,33 @@ export default function MembersTab({ groupId, members, onChanged }: Props) {
           </TableBody>
         </Table>
       </div>
+
+      {members.length > 0 && (
+        <div className="flex items-center justify-between gap-3">
+          <span className="text-xs text-muted-foreground">
+            {t.showingXOfYMembers
+              .replace("{loaded}", members.length.toString())
+              .replace("{total}", (total ?? members.length).toString())}
+          </span>
+          {hasMore && onLoadMore && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => void onLoadMore()}
+              disabled={!!loadingMore}
+            >
+              {loadingMore ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  {t.loadingMore}
+                </>
+              ) : (
+                t.loadMore
+              )}
+            </Button>
+          )}
+        </div>
+      )}
 
       <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
         <DialogContent>

@@ -61,6 +61,9 @@ export interface GroupMember {
 export interface GroupMemberListResponse {
   members: GroupMember[];
   total: number;
+  // True when more members exist beyond this page (offset + returned < total).
+  // Backend caps each page at 200; page with limit/offset.
+  hasMore?: boolean;
 }
 
 export interface JoinRequestRequesterProfile {
