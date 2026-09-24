@@ -25,6 +25,8 @@ import {
 } from "@/services/graphql/groups/queries";
 import { cancelGroupInvitation } from "@/services/graphql/groups/mutations";
 import type { InvitationStatus } from "@/services/graphql/groups/types";
+import { userLabel } from "@/lib/userLabel";
+import { useT } from "@/hooks/useT";
 
 interface Props {
   groupId: string;
@@ -42,11 +44,11 @@ const STATUS_FILTERS: { label: string; value: StatusFilter }[] = [
   { label: "Cancelled", value: "CANCELLED" },
 ];
 
-function inviteeName(row: GroupInvitationRow): string {
+function inviteeName(row: GroupInvitationRow, unknown: string): string {
   const p = row.inviteeProfile;
   const full = `${p?.firstName ?? ""} ${p?.lastName ?? ""}`.trim();
-  if (full) return full;
-  return `User ${row.invitation.invitedUserId.slice(0, 8)}`;
+  // User ids are never displayed.
+  return userLabel({ name: full }, unknown);
 }
 
 function initials(name: string): string {
@@ -65,6 +67,7 @@ function formatDate(value?: string): string {
 }
 
 export default function InvitationsTab({ groupId }: Props) {
+  const unknownUser = useT().unknownUser;
   const { toast } = useToast();
   const [rows, setRows] = useState<GroupInvitationRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -100,7 +103,7 @@ export default function InvitationsTab({ groupId }: Props) {
     setBusy(row.invitation.id);
     try {
       await cancelGroupInvitation({ invitationId: row.invitation.id });
-      toast({ title: "Invitation cancelled", description: inviteeName(row) });
+      toast({ title: "Invitation cancelled", description: inviteeName(row, unknownUser) });
       await load();
     } catch (err) {
       toast({
@@ -162,7 +165,7 @@ export default function InvitationsTab({ groupId }: Props) {
               </TableRow>
             ) : (
               rows.map((row) => {
-                const name = inviteeName(row);
+                const name = inviteeName(row, unknownUser);
                 const isBusyRow = busy === row.invitation.id;
                 const canCancel = row.invitation.status === "PENDING";
                 return (
@@ -177,9 +180,6 @@ export default function InvitationsTab({ groupId }: Props) {
                         </Avatar>
                         <div>
                           <div className="text-sm font-medium text-foreground">{name}</div>
-                          <div className="font-mono text-xs text-muted-foreground">
-                            {row.invitation.invitedUserId.slice(0, 8)}
-                          </div>
                         </div>
                       </div>
                     </TableCell>

@@ -29,6 +29,7 @@ import {
   type ReportResolution,
   type ReportStatus,
 } from "@/services/graphql/association";
+import { useMemberLabels } from "@/hooks/useMemberLabels";
 
 const resolutionOptions: ReportResolution[] = ["WARNING_ISSUED", "MEMBER_REMOVED", "NO_ACTION"];
 
@@ -40,6 +41,13 @@ export default function Tickets() {
   const [statusFilter, setStatusFilter] = useState<ReportStatus>("PENDING");
   const [loading, setLoading] = useState(false);
   const [reports, setReports] = useState<MemberReportType[]>([]);
+  // Reported users / reporters arrive as user ids — resolve to a name/email;
+  // ids are never displayed.
+  const people = useMemberLabels([
+    ...reports.map((r) => r.reportedUserId),
+    ...reports.map((r) => r.reportedBy),
+  ]);
+  const personOf = (userId?: string | null) => (userId && people.get(userId)) || t.unknownUser;
   const [total, setTotal] = useState(0);
   const [busyReportId, setBusyReportId] = useState<string | null>(null);
 
@@ -137,8 +145,8 @@ export default function Tickets() {
                   reports.map((report) => (
                     <TableRow key={report.id}>
                       <TableCell className="font-medium">{report.id}</TableCell>
-                      <TableCell>{report.reportedUserId}</TableCell>
-                      <TableCell>{report.reportedBy}</TableCell>
+                      <TableCell>{personOf(report.reportedUserId)}</TableCell>
+                      <TableCell>{personOf(report.reportedBy)}</TableCell>
                       <TableCell>
                         <div className="max-w-[240px]">
                           <p>{report.reason}</p>

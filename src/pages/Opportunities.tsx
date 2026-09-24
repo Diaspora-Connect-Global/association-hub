@@ -50,6 +50,7 @@ import {
 } from "@/services/graphql/opportunities";
 import { toast } from "@/hooks/use-toast";
 import { LayoutGrid, LayoutList, Loader2, Plus, RefreshCw, Search } from "lucide-react";
+import { useMemberLabels } from "@/hooks/useMemberLabels";
 
 function parseCsvList(value: string): string[] | undefined {
   const items = value
@@ -159,6 +160,16 @@ export default function Opportunities() {
   const [applications, setApplications] = useState<ApplicationType[]>([]);
   const [applicationModalOpen, setApplicationModalOpen] = useState(false);
   const [selectedApplication, setSelectedApplication] = useState<ApplicationDetailType | null>(null);
+  // Applicants / reviewers arrive as user ids. Ids are never displayed or
+  // exported — resolve to a name/email, else "Unknown user".
+  const peopleLabels = useMemberLabels([
+    ...applications.map((a) => a.applicantId),
+    ...applications.map((a) => a.reviewedBy),
+    selectedApplication?.applicantId,
+    selectedApplication?.reviewedBy,
+  ]);
+  const personLabel = (userId?: string | null) =>
+    (userId && peopleLabels.get(userId)) || t.unknownUser;
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [deleteOpportunityTarget, setDeleteOpportunityTarget] = useState<OpportunityListItemType | null>(null);
   const [rejectModalOpen, setRejectModalOpen] = useState(false);
@@ -428,10 +439,10 @@ export default function Opportunities() {
     }
 
     const rows = [
-      ["applicationId", "applicantId", "status", "createdAt", "reviewedAt"],
+      ["applicationId", "applicant", "status", "createdAt", "reviewedAt"],
       ...applications.map((application) => [
         application.id,
-        application.applicantId,
+        personLabel(application.applicantId),
         application.status,
         application.createdAt,
         application.reviewedAt ?? "",
@@ -679,6 +690,7 @@ export default function Opportunities() {
         onOpenChange={setApplicantsDrawerOpen}
         opportunity={applicationsOpportunity}
         applications={applications}
+        personLabel={personLabel}
         loading={applicationsLoading}
         onRefresh={() => {
           if (!applicationsOpportunity) return;
@@ -698,6 +710,7 @@ export default function Opportunities() {
         open={applicationModalOpen}
         onOpenChange={setApplicationModalOpen}
         application={selectedApplication}
+        personLabel={personLabel}
         onReview={(notes) => {
           if (!selectedApplication) return;
           void handleReviewApplication(selectedApplication, notes);
@@ -727,6 +740,7 @@ export default function Opportunities() {
         open={rejectModalOpen}
         onOpenChange={setRejectModalOpen}
         applicant={rejectApplicationTarget}
+        personLabel={personLabel}
         onConfirm={(reason) => void handleRejectApplication(reason)}
       />
 

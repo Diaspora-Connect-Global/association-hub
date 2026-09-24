@@ -103,7 +103,11 @@ function mapApiStatusToUi(status: ApiPost["status"] | string | undefined): UiPos
   return "draft";
 }
 
-function mapApiToUi(p: ApiPost): UiPost {
+/** `unknown` is the translated "Unknown user" — a user author's id is never displayed. */
+function mapApiToUi(p: ApiPost, unknown: string): UiPost {
+  // USER / admin authors carry a user id; an ASSOCIATION/COMMUNITY author's id
+  // is the entity's own id.
+  const personAuthor = !["ASSOCIATION", "COMMUNITY"].includes(String(p.authorType ?? "").toUpperCase());
   const text = p.text ?? "";
   const firstLine = text.split("\n").find((line) => line.trim().length > 0) ?? "Untitled post";
   const attachments = p.attachments ?? [];
@@ -123,8 +127,8 @@ function mapApiToUi(p: ApiPost): UiPost {
     title: firstLine.slice(0, 80),
     excerpt: text.length > 160 ? `${text.slice(0, 160)}...` : text,
     body: text,
-    author: p.authorId ?? "",
-    authorAvatar: (p.authorId ?? "").slice(0, 2).toUpperCase() || "AS",
+    author: personAuthor ? unknown : p.authorId ?? "",
+    authorAvatar: personAuthor ? "?" : (p.authorId ?? "").slice(0, 2).toUpperCase() || "AS",
     media,
     comments: p.engagementCounts?.comments ?? 0,
     reactions: p.engagementCounts?.likes ?? 0,
@@ -269,7 +273,7 @@ export default function Posts() {
     setLoading(true);
     try {
       const feed = await associationPostService.getAssociationFeed(associationId, 50, 0);
-      const mapped = feed.posts.map(mapApiToUi);
+      const mapped = feed.posts.map((p) => mapApiToUi(p, t.unknownUser));
       setPosts(mapped);
 
       // The backend feed's engagementCounts.comments has historically been
@@ -299,7 +303,7 @@ export default function Posts() {
     } finally {
       setLoading(false);
     }
-  }, [associationId]);
+  }, [associationId, t.unknownUser]);
 
   useEffect(() => {
     void loadPosts();
@@ -388,7 +392,7 @@ export default function Posts() {
         });
         const updated = await associationPostService.post(editingPostId);
         setPosts((prev) =>
-          prev.map((p) => (p.id === editingPostId ? mapApiToUi(updated) : p)),
+          prev.map((p) => (p.id === editingPostId ? mapApiToUi(updated, t.unknownUser) : p)),
         );
         setCreateModalOpen(false);
         resetComposer();
@@ -436,7 +440,7 @@ export default function Posts() {
       });
 
       const created = await associationPostService.post(result.id);
-      setPosts((prev) => [mapApiToUi(created), ...prev]);
+      setPosts((prev) => [mapApiToUi(created, t.unknownUser), ...prev]);
       setCreateModalOpen(false);
       resetComposer();
       toast({ title: "Post published", description: "Your post is now live." });
@@ -494,7 +498,7 @@ export default function Posts() {
         associationPostService.post(post.id),
         associationPostService.postComments(post.id, 100, 0).catch(() => []),
       ]);
-      const mapped = mapApiToUi(fresh);
+      const mapped = mapApiToUi(fresh, t.unknownUser);
       const derived = topLevel.reduce((sum, c) => sum + 1 + (c.replyCount ?? 0), 0);
       mapped.comments = Math.max(mapped.comments, derived);
       setViewPost(mapped);
@@ -516,7 +520,7 @@ export default function Posts() {
         toast({ title: "Post published", description: "The post is now visible." });
       }
       const refreshed = await associationPostService.post(post.id);
-      setPosts((prev) => prev.map((p) => (p.id === post.id ? mapApiToUi(refreshed) : p)));
+      setPosts((prev) => prev.map((p) => (p.id === post.id ? mapApiToUi(refreshed, t.unknownUser) : p)));
     } catch (error) {
       const message = error instanceof Error ? error.message : "Action failed";
       toast({ title: "Could not update post", description: message, variant: "destructive" });

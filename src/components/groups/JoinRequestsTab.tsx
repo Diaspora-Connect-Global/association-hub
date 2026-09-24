@@ -18,6 +18,7 @@ import {
   approveJoinRequest,
   rejectJoinRequest,
 } from "@/services/graphql/groups/mutations";
+import { userLabel } from "@/lib/userLabel";
 
 // The join-request list wrapper (GroupJoinRequestListResponse) exposes only
 // `total` — no `hasMore` — so paging is driven by (loaded < total).
@@ -28,10 +29,11 @@ interface Props {
   onChanged: () => void | Promise<void>;
 }
 
-function requesterName(r: JoinRequest): string {
-  return (
-    `${r.requesterProfile?.firstName ?? ""} ${r.requesterProfile?.lastName ?? ""}`.trim() ||
-    r.userId
+/** Requester's name, else `unknown` — user ids are never displayed. */
+function requesterName(r: JoinRequest, unknown: string): string {
+  return userLabel(
+    { name: `${r.requesterProfile?.firstName ?? ""} ${r.requesterProfile?.lastName ?? ""}`.trim() },
+    unknown,
   );
 }
 
@@ -47,6 +49,7 @@ function initials(name: string): string {
 export default function JoinRequestsTab({ groupId, onChanged }: Props) {
   const { toast } = useToast();
   const t = useT();
+  const unknownUser = t.unknownUser;
   const [requests, setRequests] = useState<JoinRequest[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -95,7 +98,7 @@ export default function JoinRequestsTab({ groupId, onChanged }: Props) {
       await approveJoinRequest({ groupId, userId: req.userId });
       setRequests((prev) => prev.filter((r) => r.id !== req.id));
       setTotal((prev) => Math.max(0, prev - 1));
-      toast({ title: "Request approved", description: requesterName(req) });
+      toast({ title: "Request approved", description: requesterName(req, unknownUser) });
       await onChanged();
     } catch (err) {
       toast({
@@ -115,7 +118,7 @@ export default function JoinRequestsTab({ groupId, onChanged }: Props) {
       if (!res.success) throw new Error(res.message ?? "Failed");
       setRequests((prev) => prev.filter((r) => r.id !== req.id));
       setTotal((prev) => Math.max(0, prev - 1));
-      toast({ title: "Request rejected", description: requesterName(req) });
+      toast({ title: "Request rejected", description: requesterName(req, unknownUser) });
       await onChanged();
     } catch (err) {
       toast({
@@ -164,7 +167,7 @@ export default function JoinRequestsTab({ groupId, onChanged }: Props) {
               </TableRow>
             ) : (
               requests.map((r) => {
-                const name = requesterName(r);
+                const name = requesterName(r, unknownUser);
                 const isBusyRow = busyId === r.id;
                 return (
                   <TableRow key={r.id}>
@@ -178,9 +181,6 @@ export default function JoinRequestsTab({ groupId, onChanged }: Props) {
                         </Avatar>
                         <div>
                           <div className="text-sm font-medium text-foreground">{name}</div>
-                          <div className="font-mono text-xs text-muted-foreground">
-                            {r.userId.slice(0, 8)}
-                          </div>
                         </div>
                       </div>
                     </TableCell>

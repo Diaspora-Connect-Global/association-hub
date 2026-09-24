@@ -32,6 +32,8 @@ import {
   transferGroupOwnership,
   deleteGroup,
 } from "@/services/graphql/groups/mutations";
+import { userLabel } from "@/lib/userLabel";
+import { useT } from "@/hooks/useT";
 
 interface Props {
   group: Group;
@@ -40,11 +42,13 @@ interface Props {
   onDeleted: () => void;
 }
 
-function memberName(m: GroupMember): string {
-  return `${m.profile?.firstName ?? ""} ${m.profile?.lastName ?? ""}`.trim() || m.userId;
+function memberName(m: GroupMember, unknown: string): string {
+  // User ids are never displayed.
+  return userLabel({ name: `${m.profile?.firstName ?? ""} ${m.profile?.lastName ?? ""}`.trim() }, unknown);
 }
 
 export default function SettingsTab({ group, members, onUpdated, onDeleted }: Props) {
+  const unknownUser = useT().unknownUser;
   const { toast } = useToast();
 
   const [name, setName] = useState(group.name);
@@ -254,7 +258,7 @@ export default function SettingsTab({ group, members, onUpdated, onDeleted }: Pr
             <SelectContent>
               {transferCandidates.map((m) => (
                 <SelectItem key={m.id} value={m.userId}>
-                  {memberName(m)} · {m.userId.slice(-6)}
+                  {memberName(m, unknownUser)}
                 </SelectItem>
               ))}
             </SelectContent>

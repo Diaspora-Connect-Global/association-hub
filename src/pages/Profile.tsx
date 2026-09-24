@@ -69,6 +69,7 @@ import {
   useAssignAssociationAdmin,
   useRemoveAssociationAdmin,
 } from "@/hooks/adminProfile";
+import { userLabel } from "@/lib/userLabel";
 
 // ── Constants ────────────────────────────────────────────────────────────────
 
@@ -960,7 +961,8 @@ export default function Profile() {
                     </tr>
                   ) : (
                     admins.map((admin) => {
-                      const displayName = admin.displayName ?? admin.email ?? admin.userId;
+                      // User ids are never displayed.
+                      const displayName = userLabel({ name: admin.displayName, email: admin.email }, t.unknownUser);
                       const initials = displayName
                         .split(" ")
                         .map((n) => n[0])

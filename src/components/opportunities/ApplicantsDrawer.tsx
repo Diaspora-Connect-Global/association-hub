@@ -52,6 +52,8 @@ interface ApplicantsDrawerProps {
   onOpenChange: (open: boolean) => void;
   opportunity: OpportunityType | null;
   applications: ApplicationType[];
+  /** Name/email for a user id — user ids are never displayed. */
+  personLabel: (userId?: string | null) => string;
   loading?: boolean;
   onRefresh: () => void;
   onViewApplication: (application: ApplicationType) => void;
@@ -87,6 +89,7 @@ export function ApplicantsDrawer({
   onOpenChange,
   opportunity,
   applications,
+  personLabel,
   loading = false,
   onRefresh,
   onViewApplication,
@@ -102,7 +105,7 @@ export function ApplicantsDrawer({
   const filteredApplicants = applications.filter((application) => {
     if (
       searchQuery &&
-      !application.applicantId.toLowerCase().includes(searchQuery.toLowerCase()) &&
+      !personLabel(application.applicantId).toLowerCase().includes(searchQuery.toLowerCase()) &&
       !application.id.toLowerCase().includes(searchQuery.toLowerCase())
     ) {
       return false;
@@ -210,7 +213,7 @@ export function ApplicantsDrawer({
                     </TableCell>
                     <TableCell>
                       <div>
-                        <p className="font-medium">{application.applicantId}</p>
+                        <p className="font-medium">{personLabel(application.applicantId)}</p>
                         <p className="text-xs text-muted-foreground">Application ID: {application.id}</p>
                       </div>
                     </TableCell>

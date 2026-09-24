@@ -92,7 +92,8 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
   const isVendorActive = vendorPaths.some((path) => location.pathname === path);
   
   const [vendorOpen, setVendorOpen] = useState(isVendorActive);
-  const adminName = admin?.userId || "Association Admin";
+  // The admin's user id is never displayed — the session carries no name.
+  const adminName = "Association Admin";
   const adminRole = admin?.role?.name || "Admin";
   const adminInitials = adminName
     .split(" ")

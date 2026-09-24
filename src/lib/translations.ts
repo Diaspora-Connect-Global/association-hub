@@ -941,6 +941,9 @@ type TranslationKeys = {
   adminsAssignFormSubtitle: string;
   adminsAssignFormRole: string;
   adminsAssignFormSubmit: string;
+
+  // People — shown instead of a user id, which is never displayed
+  unknownUser: string;
 };
 
 const translations: Record<Language, TranslationKeys> = {
@@ -1893,6 +1896,7 @@ const translations: Record<Language, TranslationKeys> = {
     adminsAssignFormSubtitle: "Assign a role to",
     adminsAssignFormRole: "Role",
     adminsAssignFormSubmit: "Assign role",
+    unknownUser: "Unknown user",
   },
   fr: {
     // Navigation
@@ -2844,6 +2848,7 @@ const translations: Record<Language, TranslationKeys> = {
     adminsAssignFormSubtitle: "Attribuer un rôle à",
     adminsAssignFormRole: "Rôle",
     adminsAssignFormSubmit: "Attribuer le rôle",
+    unknownUser: "Utilisateur inconnu",
   },
   de: {
     // Navigation
@@ -3795,6 +3800,7 @@ const translations: Record<Language, TranslationKeys> = {
     adminsAssignFormSubtitle: "Rolle zuweisen an",
     adminsAssignFormRole: "Rolle",
     adminsAssignFormSubmit: "Rolle zuweisen",
+    unknownUser: "Unbekannter Nutzer",
   },
   es: {
     // Navigation
@@ -4733,6 +4739,7 @@ const translations: Record<Language, TranslationKeys> = {
     adminsAssignFormSubtitle: "Asignar un rol a",
     adminsAssignFormRole: "Rol",
     adminsAssignFormSubmit: "Asignar rol",
+    unknownUser: "Usuario desconocido",
   },
   it: {
     // Navigation
@@ -5681,6 +5688,7 @@ const translations: Record<Language, TranslationKeys> = {
     adminsAssignFormSubtitle: "Assegna un ruolo a",
     adminsAssignFormRole: "Ruolo",
     adminsAssignFormSubmit: "Assegna ruolo",
+    unknownUser: "Utente sconosciuto",
   },
 };
 

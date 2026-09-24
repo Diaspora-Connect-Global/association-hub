@@ -48,6 +48,7 @@ import { toast } from "@/hooks/use-toast";
 import { useT } from "@/hooks/useT";
 import { vendorService } from "@/services/graphql/vendor/operations";
 import type { VendorOrderDTO } from "@/types/vendor-service";
+import { useMemberLabels } from "@/hooks/useMemberLabels";
 
 function mapVendorOrderToOrder(o: VendorOrderDTO): Order {
   const statusMap: Record<string, Order["fulfillmentStatus"]> = {
@@ -65,7 +66,8 @@ function mapVendorOrderToOrder(o: VendorOrderDTO): Order {
     listingId: "",
     listingTitle: "",
     userId: o.buyerId,
-    userName: o.buyerId,
+    // Resolved to a name/email in the page — user ids are never displayed.
+    userName: "",
     userEmail: "",
     quantity: 1,
     totalAmount: o.totalAmount,
@@ -108,8 +110,15 @@ export default function Orders() {
   const [cancelModalOpen, setCancelModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
+  // Buyers arrive as user ids — resolve to a name/email, else "Unknown user".
+  const buyerLabels = useMemberLabels(orders.map((o) => o.userId));
+  const labelledOrders = orders.map((o) => ({
+    ...o,
+    userName: buyerLabels.get(o.userId) ?? t.unknownUser,
+  }));
+
   // Filter orders
-  const filteredOrders = orders.filter((order) => {
+  const filteredOrders = labelledOrders.filter((order) => {
     const matchesSearch = 
       order.userName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       order.userEmail.toLowerCase().includes(searchQuery.toLowerCase()) ||

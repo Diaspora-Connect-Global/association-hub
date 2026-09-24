@@ -39,6 +39,7 @@ import {
   type RealtimeMessage,
 } from "@/services/websocket/messageSocket";
 import type { GroupMember } from "@/services/graphql/groups/types";
+import { useT } from "@/hooks/useT";
 
 interface Props {
   groupId: string;
@@ -80,6 +81,7 @@ function memberDisplayName(
   members: GroupMember[],
   senderId: string,
   selfId: string | null,
+  unknown: string,
 ): string {
   if (selfId && senderId === selfId) return "You";
   const m = members.find((mem) => mem.userId === senderId);
@@ -87,7 +89,8 @@ function memberDisplayName(
     const name = `${m.profile?.firstName ?? ""} ${m.profile?.lastName ?? ""}`.trim();
     if (name) return name;
   }
-  return senderId ? senderId.slice(0, 8) : "Unknown";
+  // User ids (or fragments) are never displayed.
+  return unknown;
 }
 
 function memberAvatarUrl(
@@ -333,6 +336,7 @@ function rankStatus(s: DeliveryStatus | undefined): number {
 
 export default function ChatTab({ groupId, members }: Props) {
   const { toast } = useToast();
+  const unknownUser = useT().unknownUser;
   const admin = useAuthStore((s) => s.admin);
 
   const myUserId = useMemo<string | null>(() => {
@@ -785,7 +789,7 @@ export default function ChatTab({ groupId, members }: Props) {
 
   const typingNames = typingUserIds
     .filter((u) => u !== myUserId)
-    .map((u) => memberDisplayName(members, u, myUserId));
+    .map((u) => memberDisplayName(members, u, myUserId, unknownUser));
   const typingLabel =
     typingNames.length === 0
       ? ""
@@ -850,7 +854,7 @@ export default function ChatTab({ groupId, members }: Props) {
                   m={m}
                   isMine={isMine}
                   showHeader={showHeader}
-                  name={memberDisplayName(members, m.senderId, myUserId)}
+                  name={memberDisplayName(members, m.senderId, myUserId, unknownUser)}
                   avatar={memberAvatarUrl(members, m.senderId)}
                   isOnline={!isMine && onlineUserIds.has(m.senderId)}
                   onRetry={(msg) => void retrySend(msg)}

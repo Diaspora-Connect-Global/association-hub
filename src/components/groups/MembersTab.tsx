@@ -49,6 +49,7 @@ import {
   updateMemberRole,
   blockMember,
 } from "@/services/graphql/groups/mutations";
+import { userLabel } from "@/lib/userLabel";
 
 const ROLE_ORDER: Record<MemberRole, number> = {
   OWNER: 0,
@@ -59,11 +60,10 @@ const ROLE_ORDER: Record<MemberRole, number> = {
 
 const ROLE_OPTIONS: MemberRole[] = ["MODERATOR", "ADMIN", "MEMBER"];
 
-function memberName(m: GroupMember): string {
+function memberName(m: GroupMember, unknown: string): string {
   const full = `${m.profile?.firstName ?? ""} ${m.profile?.lastName ?? ""}`.trim();
-  if (full) return full;
-  // Defensive fallback: prefer a short, recognisable placeholder over a raw UUID.
-  return `User ${m.userId.slice(0, 8)}`;
+  // User ids (or fragments) are never displayed.
+  return userLabel({ name: full }, unknown);
 }
 
 function initials(name: string): string {
@@ -117,10 +117,9 @@ export default function MembersTab({
     if (!q) return list;
     return list.filter(
       (m) =>
-        memberName(m).toLowerCase().includes(q) ||
-        m.userId.toLowerCase().includes(q),
+        memberName(m, t.unknownUser).toLowerCase().includes(q),
     );
-  }, [members, search]);
+  }, [members, search, t.unknownUser]);
 
   const doInvite = async () => {
     const userId = inviteUserId.trim();
@@ -150,7 +149,7 @@ export default function MembersTab({
     setBusy(member.userId);
     try {
       await updateMemberRole({ groupId, userId: member.userId, role });
-      toast({ title: "Role updated", description: `${memberName(member)} → ${role}` });
+      toast({ title: "Role updated", description: `${memberName(member, t.unknownUser)} → ${role}` });
       await onChanged();
     } catch (err) {
       toast({
@@ -168,7 +167,7 @@ export default function MembersTab({
     try {
       const res = await removeGroupMember({ groupId, userId: member.userId });
       if (!res.success) throw new Error(res.message ?? "Failed");
-      toast({ title: "Member removed", description: memberName(member) });
+      toast({ title: "Member removed", description: memberName(member, t.unknownUser) });
       await onChanged();
     } catch (err) {
       toast({
@@ -196,7 +195,7 @@ export default function MembersTab({
         userId: blockTarget.userId,
         reason: blockReason,
       });
-      toast({ title: "Member blocked", description: memberName(blockTarget) });
+      toast({ title: "Member blocked", description: memberName(blockTarget, t.unknownUser) });
       setBlockOpen(false);
       setBlockTarget(null);
       await onChanged();
@@ -246,7 +245,7 @@ export default function MembersTab({
               </TableRow>
             ) : (
               filtered.map((m) => {
-                const name = memberName(m);
+                const name = memberName(m, t.unknownUser);
                 const isOwner = m.role === "OWNER";
                 const isBusyRow = busy === m.userId;
                 return (
@@ -261,9 +260,6 @@ export default function MembersTab({
                         </Avatar>
                         <div>
                           <div className="text-sm font-medium text-foreground">{name}</div>
-                          <div className="font-mono text-xs text-muted-foreground">
-                            {m.userId.slice(0, 8)}
-                          </div>
                         </div>
                       </div>
                     </TableCell>
@@ -396,7 +392,7 @@ export default function MembersTab({
           <DialogHeader>
             <DialogTitle>Block member</DialogTitle>
             <DialogDescription>
-              {blockTarget ? memberName(blockTarget) : ""} will no longer be able to participate
+              {blockTarget ? memberName(blockTarget, t.unknownUser) : ""} will no longer be able to participate
               in this group. You can unblock from the Blocked tab.
             </DialogDescription>
           </DialogHeader>

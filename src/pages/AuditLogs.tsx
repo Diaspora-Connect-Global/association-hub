@@ -43,8 +43,11 @@ import { AuditLogsAnalyticsWidget } from "@/components/auditLogs/AuditLogsAnalyt
 import { useT } from "@/hooks/useT";
 import { getAuditLogs } from "@/services/graphql/adminAudit/operations";
 import type { AdminAuditLogItem } from "@/services/graphql/adminAudit/operations";
+import { isPersonResourceType, userLabel } from "@/lib/userLabel";
 
-function mapApiLog(item: AdminAuditLogItem): AuditLog {
+/** `unknown` is the translated "Unknown user" — user ids are never displayed. */
+function mapApiLog(item: AdminAuditLogItem, unknown: string): AuditLog {
+  const personResource = isPersonResourceType(item.resourceType);
   const actionMap: Record<string, AuditLog["actionType"]> = {
     CREATE: "create", UPDATE: "update", DELETE: "delete", LOGIN: "login",
     LOGOUT: "logout", APPROVE: "approve", REJECT: "reject",
@@ -60,12 +63,14 @@ function mapApiLog(item: AdminAuditLogItem): AuditLog {
     id: item.id,
     timestamp: new Date(item.createdAt).toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit" }),
     userId: item.actorId,
-    userName: item.actorId.slice(0, 8) + "...",
+    userName: userLabel({ name: item.actorLabel, email: item.actorEmail }, unknown),
     userRole: "association_admin",
     actionType: Object.entries(actionMap).find(([k]) => upperAction.includes(k))?.[1] ?? "update",
     module: moduleMap[upperResource] ?? "settings",
-    objectAffected: `${item.resourceType} ${item.resourceId.slice(0, 8)}`,
-    objectId: item.resourceId,
+    objectAffected:
+      userLabel({ name: item.resourceLabel }, "") ||
+      (personResource ? unknown : `${item.resourceType} ${item.resourceId.slice(0, 8)}`),
+    objectId: personResource ? "" : item.resourceId,
     detailsSummary: `${item.action} on ${item.resourceType}`,
     ipAddress: item.ipAddress ?? "—",
     device: "—",
@@ -107,13 +112,13 @@ export default function AuditLogs() {
     setLogsLoading(true);
     try {
       const result = await getAuditLogs({ limit: 100, offset: 0 });
-      setLogs((result.items ?? []).map(mapApiLog));
+      setLogs((result.items ?? []).map((item) => mapApiLog(item, t.unknownUser)));
     } catch {
       setLogs([]);
     } finally {
       setLogsLoading(false);
     }
-  }, []);
+  }, [t.unknownUser]);
 
   useEffect(() => {
     void fetchLogs();

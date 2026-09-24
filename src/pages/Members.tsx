@@ -35,6 +35,7 @@ import {
   type MembershipStatus,
   type MemberRole,
 } from "@/services/graphql/association";
+import { userLabel } from "@/lib/userLabel";
 
 type MembersTab = "ACTIVE" | "PENDING" | "SUSPENDED";
 
@@ -42,26 +43,26 @@ type MembersTab = "ACTIVE" | "PENDING" | "SUSPENDED";
 // keep this under that so `hasMore` reliably drives the "Load more" control.
 const PAGE_SIZE = 50;
 
-function getMemberDisplayName(
-  member: Pick<AssociationMemberType, "fullName" | "displayName" | "firstName" | "lastName" | "userId">
-): string {
-  const full = member.fullName?.trim();
-  if (full) return full;
-  const display = member.displayName?.trim();
-  if (display) return display;
+type MemberNameFields = Pick<AssociationMemberType, "fullName" | "displayName" | "firstName" | "lastName" | "userId"> & {
+  email?: string | null;
+};
+
+/**
+ * The member's human name, or "" when none is known. Never the user id — user
+ * ids must not be displayed to anyone (product rule); callers fall back to the
+ * email, then the translated "Unknown user".
+ */
+function getMemberDisplayName(member: MemberNameFields): string {
   const combined = [member.firstName, member.lastName].filter(Boolean).join(" ").trim();
-  if (combined) return combined;
-  return member.userId;
+  return userLabel({ name: member.fullName?.trim() || member.displayName?.trim() || combined }, "");
 }
 
-function getInitials(
-  input: string | Pick<AssociationMemberType, "fullName" | "displayName" | "firstName" | "lastName" | "userId">
-): string {
+function getInitials(input: string | MemberNameFields): string {
   if (typeof input === "string") {
     return input.slice(0, 2).toUpperCase();
   }
   const name = getMemberDisplayName(input);
-  if (name === input.userId) return input.userId.slice(0, 2).toUpperCase();
+  if (!name) return input.email?.trim() ? input.email.trim().slice(0, 2).toUpperCase() : "?";
   const parts = name.split(/\s+/).filter(Boolean);
   const initials =
     parts.length >= 2 ? parts[0][0] + parts[parts.length - 1][0] : parts[0]?.slice(0, 2) ?? "";
@@ -69,7 +70,7 @@ function getInitials(
 }
 
 function getPendingDisplayName(request: PendingMembershipRequestType): string {
-  return request.displayName?.trim() || request.fullName?.trim() || request.userId;
+  return userLabel({ name: request.displayName?.trim() || request.fullName?.trim() }, "");
 }
 
 export default function Members() {
@@ -189,7 +190,7 @@ export default function Members() {
         if (!result.success) {
           throw new Error(result.message ?? "Action failed");
         }
-        toast({ title: successMessage, description: result.message ?? userId });
+        toast({ title: successMessage, description: result.message ?? undefined });
         await loadMembers();
       } catch (err) {
         toast({
@@ -296,40 +297,29 @@ export default function Members() {
         ) : (
           members.map((member) => {
             const displayName = getMemberDisplayName(member);
-            const hasName = displayName !== member.userId;
+            const hasName = displayName !== "";
             return (
             <TableRow key={member.userId}>
               <TableCell>
                 <div className="flex items-center gap-3 min-w-0">
                   <Avatar className="h-9 w-9 shrink-0">
                     {member.avatarUrl ? (
-                      <AvatarImage src={member.avatarUrl} alt={displayName} />
+                      <AvatarImage src={member.avatarUrl} alt={displayName || member.email || ""} />
                     ) : null}
                     <AvatarFallback className="bg-primary/10 text-primary text-xs font-medium">
                       {getInitials(member)}
                     </AvatarFallback>
                   </Avatar>
                   <div className="min-w-0 flex flex-col">
-                    {hasName ? (
-                      <>
-                        <span className="text-sm font-medium text-foreground truncate">
-                          {displayName}
-                        </span>
-                        {member.email ? (
-                          <span className="text-xs text-muted-foreground truncate">
-                            {member.email}
-                          </span>
-                        ) : (
-                          <span className="font-mono text-[11px] text-muted-foreground truncate">
-                            {member.userId}
-                          </span>
-                        )}
-                      </>
-                    ) : (
-                      <span className="font-mono text-xs text-muted-foreground truncate">
-                        {member.userId}
+                    {/* User ids are never displayed: name + email, else email, else "Unknown user". */}
+                    <span className="text-sm font-medium text-foreground truncate">
+                      {displayName || member.email || t.unknownUser}
+                    </span>
+                    {hasName && member.email ? (
+                      <span className="text-xs text-muted-foreground truncate">
+                        {member.email}
                       </span>
-                    )}
+                    ) : null}
                   </div>
                 </div>
               </TableCell>
@@ -507,7 +497,7 @@ export default function Members() {
                   ) : (
                     pendingRequests.map((request) => {
                       const displayName = getPendingDisplayName(request);
-                      const hasName = displayName !== request.userId;
+                      const hasName = displayName !== "";
                       return (
                       <TableRow key={request.userId}>
                         <TableCell>
@@ -520,30 +510,20 @@ export default function Members() {
                                   displayName: null,
                                   firstName: null,
                                   lastName: null,
+                                  email: request.email,
                                 })}
                               </AvatarFallback>
                             </Avatar>
                             <div className="min-w-0 flex flex-col">
-                              {hasName ? (
-                                <>
-                                  <span className="text-sm font-medium text-foreground truncate">
-                                    {displayName}
-                                  </span>
-                                  {request.email ? (
-                                    <span className="text-xs text-muted-foreground truncate">
-                                      {request.email}
-                                    </span>
-                                  ) : (
-                                    <span className="font-mono text-[11px] text-muted-foreground truncate">
-                                      {request.userId}
-                                    </span>
-                                  )}
-                                </>
-                              ) : (
-                                <span className="font-mono text-xs text-muted-foreground truncate">
-                                  {request.userId}
+                              {/* User ids are never displayed. */}
+                              <span className="text-sm font-medium text-foreground truncate">
+                                {displayName || request.email || t.unknownUser}
+                              </span>
+                              {hasName && request.email ? (
+                                <span className="text-xs text-muted-foreground truncate">
+                                  {request.email}
                                 </span>
-                              )}
+                              ) : null}
                             </div>
                           </div>
                         </TableCell>

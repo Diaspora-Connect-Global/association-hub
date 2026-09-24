@@ -19,6 +19,8 @@ interface RejectApplicantModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   applicant: ApplicationType | null;
+  /** Name/email for a user id — user ids are never displayed. */
+  personLabel: (userId?: string | null) => string;
   onConfirm: (reason: string, sendEmail: boolean) => void;
 }
 
@@ -26,6 +28,7 @@ export function RejectApplicantModal({
   open,
   onOpenChange,
   applicant,
+  personLabel,
   onConfirm,
 }: RejectApplicantModalProps) {
   const [reason, setReason] = useState("");
@@ -51,7 +54,7 @@ export function RejectApplicantModal({
             <AlertDialogTitle>Reject Applicant</AlertDialogTitle>
           </div>
           <AlertDialogDescription className="pt-2">
-            Are you sure you want to reject <strong>{applicant.applicantId}</strong>? This action will update their application status.
+            Are you sure you want to reject <strong>{personLabel(applicant.applicantId)}</strong>? This action will update their application status.
           </AlertDialogDescription>
         </AlertDialogHeader>
 

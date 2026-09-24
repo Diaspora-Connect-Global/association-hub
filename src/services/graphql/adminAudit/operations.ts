@@ -3,9 +3,13 @@ import { getGraphQLClient } from "@/core/graphql-client";
 export interface AdminAuditLogItem {
   id: string;
   actorId: string;
+  /** Human labels resolved by the gateway — shown instead of ids. */
+  actorEmail?: string | null;
+  actorLabel?: string | null;
   action: string;
   resourceType: string;
   resourceId: string;
+  resourceLabel?: string | null;
   createdAt: string;
   ipAddress: string | null;
 }
@@ -46,9 +50,12 @@ const GET_AUDIT_LOGS = /* GraphQL */ `
       items {
         id
         actorId
+        actorEmail
+        actorLabel
         action
         resourceType
         resourceId
+        resourceLabel
         createdAt
         ipAddress
       }

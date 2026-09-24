@@ -47,6 +47,7 @@ import {
   removeEventRegistration,
   type EventRegistrationRow,
 } from "@/services/graphql/events/operations";
+import { userLabel } from "@/lib/userLabel";
 
 interface RegistrationsDrawerProps {
   open: boolean;
@@ -74,11 +75,11 @@ function formatDate(value: string | null): string {
     : d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 }
 
-function displayName(reg: EventRegistrationRow): string {
+/** Attendee's name, else email, else `unknown` — user ids are never displayed. */
+function displayName(reg: EventRegistrationRow, unknown: string): string {
   const first = reg.user?.firstName ?? "";
   const last = reg.user?.lastName ?? "";
-  const name = `${first} ${last}`.trim();
-  return name || reg.userId;
+  return userLabel({ name: `${first} ${last}`.trim(), email: reg.user?.email }, unknown);
 }
 
 export function RegistrationsDrawer({
@@ -150,7 +151,7 @@ export function RegistrationsDrawer({
   if (!event) return null;
 
   const filteredRegistrations = registrations.filter((reg) => {
-    const name = displayName(reg).toLowerCase();
+    const name = displayName(reg, t.unknownUser).toLowerCase();
     const email = (reg.user?.email ?? "").toLowerCase();
     const matchesSearch =
       name.includes(searchQuery.toLowerCase()) ||
@@ -237,7 +238,7 @@ export function RegistrationsDrawer({
                 </TableHeader>
                 <TableBody>
                   {filteredRegistrations.map((registration) => {
-                    const name = displayName(registration);
+                    const name = displayName(registration, t.unknownUser);
                     const checkedIn = isCheckedIn(registration.status);
                     const cancelled = isCancelled(registration.status);
                     return (

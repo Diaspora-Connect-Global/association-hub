@@ -18,6 +18,8 @@ import type {
 } from "@/services/graphql/groups/types";
 import { getBlockedMembers } from "@/services/graphql/groups/queries";
 import { unblockMember } from "@/services/graphql/groups/mutations";
+import { userLabel } from "@/lib/userLabel";
+import { useT } from "@/hooks/useT";
 
 interface Props {
   groupId: string;
@@ -31,10 +33,11 @@ const REASON_LABEL: Record<GroupBlockReason, string> = {
   OTHER: "Other",
 };
 
-function blockedName(b: BlockedMember): string {
+function blockedName(b: BlockedMember, unknown: string): string {
   const first = b.blockedUserProfile?.firstName ?? "";
   const last = b.blockedUserProfile?.lastName ?? "";
-  return `${first} ${last}`.trim() || b.userId;
+  // User ids are never displayed.
+  return userLabel({ name: `${first} ${last}`.trim() }, unknown);
 }
 
 function initials(name: string): string {
@@ -53,6 +56,7 @@ function formatDate(iso?: string): string {
 }
 
 export default function BlockedTab({ groupId }: Props) {
+  const unknownUser = useT().unknownUser;
   const { toast } = useToast();
   const [blocks, setBlocks] = useState<BlockedMember[]>([]);
   const [loading, setLoading] = useState(true);
@@ -82,7 +86,7 @@ export default function BlockedTab({ groupId }: Props) {
       const res = await unblockMember({ groupId, userId: block.userId });
       if (!res.success) throw new Error(res.message ?? "Failed");
       setBlocks((prev) => prev.filter((b) => b.id !== block.id));
-      toast({ title: "Member unblocked", description: blockedName(block) });
+      toast({ title: "Member unblocked", description: blockedName(block, unknownUser) });
     } catch (err) {
       toast({
         title: "Unblock failed",
@@ -137,7 +141,7 @@ export default function BlockedTab({ groupId }: Props) {
               </TableRow>
             ) : (
               blocks.map((b) => {
-                const name = blockedName(b);
+                const name = blockedName(b, unknownUser);
                 const isBusyRow = busy === b.id;
                 return (
                   <TableRow key={b.id}>
@@ -151,9 +155,6 @@ export default function BlockedTab({ groupId }: Props) {
                         </Avatar>
                         <div>
                           <div className="text-sm font-medium text-foreground">{name}</div>
-                          <div className="font-mono text-xs text-muted-foreground">
-                            {b.userId.slice(0, 8)}
-                          </div>
                         </div>
                       </div>
                     </TableCell>

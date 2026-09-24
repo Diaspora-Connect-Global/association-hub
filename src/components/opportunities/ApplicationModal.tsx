@@ -26,6 +26,8 @@ interface ApplicationModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   application: ApplicationDetailType | null;
+  /** Name/email for a user id — user ids are never displayed. */
+  personLabel: (userId?: string | null) => string;
   onReview: (notes: string) => void;
   onAccept: (notes: string) => void;
   onReject: () => void;
@@ -57,6 +59,7 @@ export function ApplicationModal({
   open,
   onOpenChange,
   application,
+  personLabel,
   onReview,
   onAccept,
   onReject,
@@ -71,7 +74,7 @@ export function ApplicationModal({
         <DialogHeader className="px-6 pt-6 pb-4">
           <div className="flex items-start justify-between">
             <div>
-              <DialogTitle className="text-xl">{application.applicantId}</DialogTitle>
+              <DialogTitle className="text-xl">{personLabel(application.applicantId)}</DialogTitle>
               <Badge variant={statusColors[application.status] as any} className="mt-2 capitalize">
                 {formatEnumLabel(application.status)}
               </Badge>
@@ -85,7 +88,7 @@ export function ApplicationModal({
             <div className="grid grid-cols-2 gap-4">
               <div className="flex items-center gap-2 text-sm">
                 <User className="h-4 w-4 text-muted-foreground" />
-                <span>{application.applicantId}</span>
+                <span>{personLabel(application.applicantId)}</span>
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <Search className="h-4 w-4 text-muted-foreground" />
@@ -166,7 +169,7 @@ export function ApplicationModal({
                 <p className="font-medium text-foreground">Latest note</p>
                 <p className="mt-1 whitespace-pre-wrap">{application.reviewNotes}</p>
                 <p className="mt-2 text-xs">
-                  Reviewed by {application.reviewedBy ?? "unknown"} on {formatDate(application.reviewedAt)}
+                  Reviewed by {personLabel(application.reviewedBy)} on {formatDate(application.reviewedAt)}
                 </p>
               </div>
             )}
