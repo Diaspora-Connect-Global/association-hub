@@ -22,6 +22,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useT } from "@/hooks/useT";
+import { useSettings } from "@/contexts/SettingsContext";
+import { formatMinorUnits } from "@/lib/money";
 
 interface EventCardProps {
   event: Event;
@@ -50,6 +52,7 @@ export function EventCard({
   onDelete,
 }: EventCardProps) {
   const t = useT();
+  const { settings } = useSettings();
   const capacityPercentage = event.hasParticipantLimit && event.maxParticipants 
     ? (event.registeredCount / event.maxParticipants) * 100 
     : 0;
@@ -142,7 +145,7 @@ export function EventCard({
           <div>
             {event.isPaid && event.ticketPrice ? (
               <span className="text-lg font-bold text-foreground">
-                {event.currency || "$"}{event.ticketPrice}
+                {formatMinorUnits(event.ticketPrice, event.currency, settings.language)}
               </span>
             ) : (
               <span className="text-sm font-medium text-primary">{t.free}</span>

@@ -8,6 +8,14 @@
 export const PLATFORM_BASE_CURRENCY = "GHS";
 
 /**
+ * Major → minor units for a value typed into a form (25 → 2500, 12.5 → 1250),
+ * rounded to the nearest minor unit. Call it once, where the form is submitted.
+ */
+export function toMinorUnits(amountMajor: number): number {
+  return Math.round(amountMajor * 100);
+}
+
+/**
  * Format an amount in integer minor units, e.g. 12550 GHS → "GH₵125.50".
  * Intl picks the symbol and its placement for the locale; nothing is hard-coded.
  * A missing currency means the backend's fallback (GHS), never USD.

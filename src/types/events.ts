@@ -16,6 +16,7 @@ export interface Event {
   location?: string;
   virtualLink?: string;
   isPaid: boolean;
+  /** Integer minor units (from the event's General Admission ticket) — ÷100 only at display. */
   ticketPrice?: number;
   currency?: string;
   hasParticipantLimit: boolean;
@@ -25,7 +26,8 @@ export interface Event {
   publishNow: boolean;
   notifyMembers: boolean;
   allowComments: boolean;
-  views: number;
+  /** null: the API has no view count for events. */
+  views: number | null;
   ticketsSold: number;
   /** Integer minor units; null when there is no source for it (shown as "Not available"). */
   revenue: number | null;
@@ -69,6 +71,7 @@ export interface EventFormData {
   location: string;
   virtualLink: string;
   isPaid: boolean;
+  /** MAJOR units, as typed — converted to minor units once, on submit. */
   ticketPrice: number;
   currency: string;
   hasParticipantLimit: boolean;

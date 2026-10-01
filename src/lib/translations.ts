@@ -56,22 +56,18 @@ type TranslationKeys = {
   save: string;
   search: string;
   filter: string;
-  export: string;
   create: string;
   edit: string;
   delete: string;
   view: string;
-  close: string;
   confirm: string;
   loading: string;
-  noResults: string;
   refresh: string;
   viewAll: string;
   saveChanges: string;
   actions: string;
   status: string;
   type: string;
-  date: string;
   time: string;
   name: string;
   role: string;
@@ -495,11 +491,6 @@ type TranslationKeys = {
   service: string;
 
   // Orders page
-  ordersTitle: string;
-  ordersSubtitle: string;
-  pendingOrders: string;
-  completedOrders: string;
-  totalRevenueAllTime: string;
 
   // Groups page
   groupsTitle: string;
@@ -570,23 +561,9 @@ type TranslationKeys = {
   switchAssociation: string;
 
   // Orders page translations
-  orderId: string;
-  customer: string;
-  productService: string;
-  qty: string;
-  total: string;
-  orderDate: string;
-  markFulfilled: string;
-  refund: string;
-  cancelOrder: string;
   refundedStatus: string;
   fulfilledStatus: string;
   cancelledStatus: string;
-  avgOrderValue: string;
-  selected: string;
-  notify: string;
-  clear: string;
-  noOrdersYet: string;
 
   // Tickets page translations
   ticketId: string;
@@ -674,20 +651,6 @@ type TranslationKeys = {
   deleteListingTitle: string;
   deleteListingConfirm: string;
   ordersWillRemain: string;
-  orderDetails: string;
-  customerInformation: string;
-  orderInformation: string;
-  unitPrice: string;
-  totalAmount: string;
-  orderStatus: string;
-  notes: string;
-  sendToCustomer: string;
-  saveNotes: string;
-  addNotesPlaceholder: string;
-  cancelOrderTitle: string;
-  cancelOrderConfirm: string;
-  refundsSeparate: string;
-  customerNotified: string;
 
   // Ticket modals
   createSupportTicket: string;
@@ -895,25 +858,8 @@ type TranslationKeys = {
   escrowFeeInfo: string;
   escrowFeeDescription: string;
   inEscrow: string;
-  heldAmount: string;
-  releasedAmount: string;
   escrowStatus: string;
-  releasePayment: string;
   releaseMilestone: string;
-  confirmRelease: string;
-  disputeOrder: string;
-  raiseDispute: string;
-  disputeReason: string;
-  held: string;
-  partiallyReleased: string;
-  fullyReleased: string;
-  disputed: string;
-  refunded: string;
-  pendingMilestone: string;
-  inProgressMilestone: string;
-  completedMilestone: string;
-  releasedMilestone: string;
-  disputedMilestone: string;
   currencyRates: string;
   exchangeRates: string;
   refreshRates: string;
@@ -1019,6 +965,8 @@ type TranslationKeys = {
   ordersUnavailableDesc: string;
   yourAssociation: string;
   unknownOrganisation: string;
+  analyticsUnavailableTitle: string;
+  analyticsUnavailableDesc: string;
 };
 
 const translations: Record<Language, TranslationKeys> = {
@@ -1078,15 +1026,12 @@ const translations: Record<Language, TranslationKeys> = {
     save: "Save",
     search: "Search",
     filter: "Filter",
-    export: "Export",
     create: "Create",
     edit: "Edit",
     delete: "Delete",
     view: "View",
-    close: "Close",
     confirm: "Confirm",
     loading: "Loading...",
-    noResults: "No results found",
     refresh: "Refresh",
     viewAll: "View all",
     saveChanges: "Save Changes",
@@ -1209,11 +1154,6 @@ const translations: Record<Language, TranslationKeys> = {
     service: "Service",
 
     // Orders
-    ordersTitle: "Orders",
-    ordersSubtitle: "Manage marketplace orders",
-    pendingOrders: "Pending Orders",
-    completedOrders: "Completed Orders",
-    totalRevenueAllTime: "Revenue (All Time)",
 
     // Groups
     groupsTitle: "Groups",
@@ -1287,7 +1227,6 @@ const translations: Record<Language, TranslationKeys> = {
     actions: "Actions",
     status: "Status",
     type: "Type",
-    date: "Date",
     time: "Time",
     name: "Name",
     role: "Role",
@@ -1596,23 +1535,9 @@ const translations: Record<Language, TranslationKeys> = {
     removing: "Removing...",
 
     // Orders page translations
-    orderId: "Order ID",
-    customer: "Customer",
-    productService: "Product/Service",
-    qty: "Qty",
-    total: "Total",
-    orderDate: "Date",
-    markFulfilled: "Mark Fulfilled",
-    refund: "Refund",
-    cancelOrder: "Cancel Order",
     refundedStatus: "Refunded",
     fulfilledStatus: "Fulfilled",
     cancelledStatus: "Cancelled",
-    avgOrderValue: "Avg. Order Value",
-    selected: "selected",
-    notify: "Notify",
-    clear: "Clear",
-    noOrdersYet: "Orders will appear here when customers make purchases.",
 
     // Tickets page translations
     ticketId: "Ticket ID",
@@ -1700,20 +1625,6 @@ const translations: Record<Language, TranslationKeys> = {
     deleteListingTitle: "Delete Listing",
     deleteListingConfirm: "Are you sure you want to delete",
     ordersWillRemain: "All orders for this listing will remain, but listing will not be visible to users.",
-    orderDetails: "Order Details",
-    customerInformation: "Customer Information",
-    orderInformation: "Order Information",
-    unitPrice: "Unit Price",
-    totalAmount: "Total Amount",
-    orderStatus: "Order Status",
-    notes: "Notes / Comments",
-    sendToCustomer: "Send to customer",
-    saveNotes: "Save Notes",
-    addNotesPlaceholder: "Add notes for internal reference or notify customer...",
-    cancelOrderTitle: "Cancel Order",
-    cancelOrderConfirm: "Are you sure you want to cancel order",
-    refundsSeparate: "Refunds may need to be processed separately.",
-    customerNotified: "Customer will be notified of cancellation.",
 
     // Ticket modals
     createSupportTicket: "Create Support Ticket",
@@ -1921,25 +1832,8 @@ const translations: Record<Language, TranslationKeys> = {
     escrowFeeInfo: "Escrow Fee Information",
     escrowFeeDescription: "A fee is applied to each transaction to cover payment processing and dispute resolution services.",
     inEscrow: "In Escrow",
-    heldAmount: "Held Amount",
-    releasedAmount: "Released Amount",
     escrowStatus: "Escrow Status",
-    releasePayment: "Release Payment",
     releaseMilestone: "Release Milestone",
-    confirmRelease: "Confirm Release",
-    disputeOrder: "Dispute Order",
-    raiseDispute: "Raise Dispute",
-    disputeReason: "Dispute Reason",
-    held: "Held",
-    partiallyReleased: "Partially Released",
-    fullyReleased: "Fully Released",
-    disputed: "Disputed",
-    refunded: "Refunded",
-    pendingMilestone: "Pending",
-    inProgressMilestone: "In Progress",
-    completedMilestone: "Completed",
-    releasedMilestone: "Released",
-    disputedMilestone: "Disputed",
     currencyRates: "Currency & Exchange Rates",
     exchangeRates: "Exchange Rates",
     refreshRates: "Refresh Rates",
@@ -2047,6 +1941,8 @@ const translations: Record<Language, TranslationKeys> = {
     ordersUnavailableDesc: "Orders placed for your association's listings can't be shown here yet.",
     yourAssociation: "Your association",
     unknownOrganisation: "Unknown organisation",
+    analyticsUnavailableTitle: "Analytics aren't available yet",
+    analyticsUnavailableDesc: "There's no data source for these charts yet, so none are shown.",
   },
   fr: {
     // Navigation
@@ -2104,15 +2000,12 @@ const translations: Record<Language, TranslationKeys> = {
     save: "Enregistrer",
     search: "Rechercher",
     filter: "Filtrer",
-    export: "Exporter",
     create: "Créer",
     edit: "Modifier",
     delete: "Supprimer",
     view: "Voir",
-    close: "Fermer",
     confirm: "Confirmer",
     loading: "Chargement...",
-    noResults: "Aucun résultat trouvé",
     refresh: "Actualiser",
     viewAll: "Voir tout",
     saveChanges: "Enregistrer les modifications",
@@ -2235,11 +2128,6 @@ const translations: Record<Language, TranslationKeys> = {
     service: "Service",
 
     // Orders
-    ordersTitle: "Commandes",
-    ordersSubtitle: "Gérer les commandes du marché",
-    pendingOrders: "Commandes en attente",
-    completedOrders: "Commandes terminées",
-    totalRevenueAllTime: "Revenus (Tout temps)",
 
     // Groups
     groupsTitle: "Groupes",
@@ -2313,7 +2201,6 @@ const translations: Record<Language, TranslationKeys> = {
     actions: "Actions",
     status: "Statut",
     type: "Type",
-    date: "Date",
     time: "Heure",
     name: "Nom",
     role: "Rôle",
@@ -2622,23 +2509,9 @@ const translations: Record<Language, TranslationKeys> = {
     removing: "Suppression...",
 
     // Orders page translations
-    orderId: "ID de commande",
-    customer: "Client",
-    productService: "Produit/Service",
-    qty: "Qté",
-    total: "Total",
-    orderDate: "Date",
-    markFulfilled: "Marquer comme expédié",
-    refund: "Rembourser",
-    cancelOrder: "Annuler la commande",
     refundedStatus: "Remboursé",
     fulfilledStatus: "Expédié",
     cancelledStatus: "Annulé",
-    avgOrderValue: "Valeur moyenne commande",
-    selected: "sélectionné(s)",
-    notify: "Notifier",
-    clear: "Effacer",
-    noOrdersYet: "Les commandes apparaîtront ici lorsque des clients feront des achats.",
 
     // Tickets page translations
     ticketId: "ID du ticket",
@@ -2726,20 +2599,6 @@ const translations: Record<Language, TranslationKeys> = {
     deleteListingTitle: "Supprimer l'annonce",
     deleteListingConfirm: "Êtes-vous sûr de vouloir supprimer",
     ordersWillRemain: "Toutes les commandes resteront, mais l'annonce ne sera plus visible.",
-    orderDetails: "Détails de la commande",
-    customerInformation: "Informations client",
-    orderInformation: "Informations de commande",
-    unitPrice: "Prix unitaire",
-    totalAmount: "Montant total",
-    orderStatus: "Statut de commande",
-    notes: "Notes / Commentaires",
-    sendToCustomer: "Envoyer au client",
-    saveNotes: "Enregistrer les notes",
-    addNotesPlaceholder: "Ajouter des notes internes ou notifier le client...",
-    cancelOrderTitle: "Annuler la commande",
-    cancelOrderConfirm: "Êtes-vous sûr de vouloir annuler la commande",
-    refundsSeparate: "Les remboursements peuvent être traités séparément.",
-    customerNotified: "Le client sera notifié de l'annulation.",
 
     // Ticket modals
     createSupportTicket: "Créer un ticket de support",
@@ -2947,25 +2806,8 @@ const translations: Record<Language, TranslationKeys> = {
     escrowFeeInfo: "Information sur les frais de séquestre",
     escrowFeeDescription: "Des frais sont appliqués à chaque transaction pour couvrir le traitement et la résolution des litiges.",
     inEscrow: "En séquestre",
-    heldAmount: "Montant retenu",
-    releasedAmount: "Montant libéré",
     escrowStatus: "Statut du séquestre",
-    releasePayment: "Libérer le paiement",
     releaseMilestone: "Libérer le jalon",
-    confirmRelease: "Confirmer la libération",
-    disputeOrder: "Contester la commande",
-    raiseDispute: "Ouvrir un litige",
-    disputeReason: "Raison du litige",
-    held: "Retenu",
-    partiallyReleased: "Partiellement libéré",
-    fullyReleased: "Entièrement libéré",
-    disputed: "Contesté",
-    refunded: "Remboursé",
-    pendingMilestone: "En attente",
-    inProgressMilestone: "En cours",
-    completedMilestone: "Terminé",
-    releasedMilestone: "Libéré",
-    disputedMilestone: "Contesté",
     currencyRates: "Devises et taux de change",
     exchangeRates: "Taux de change",
     refreshRates: "Actualiser les taux",
@@ -3074,6 +2916,8 @@ const translations: Record<Language, TranslationKeys> = {
     ordersUnavailableDesc: "Les commandes passées pour les annonces de votre association ne peuvent pas encore être affichées ici.",
     yourAssociation: "Votre association",
     unknownOrganisation: "Organisation inconnue",
+    analyticsUnavailableTitle: "Les statistiques ne sont pas encore disponibles",
+    analyticsUnavailableDesc: "Ces graphiques n’ont pas encore de source de données ; rien n’est donc affiché.",
   },
   de: {
     // Navigation
@@ -3131,15 +2975,12 @@ const translations: Record<Language, TranslationKeys> = {
     save: "Speichern",
     search: "Suchen",
     filter: "Filter",
-    export: "Exportieren",
     create: "Erstellen",
     edit: "Bearbeiten",
     delete: "Löschen",
     view: "Ansehen",
-    close: "Schließen",
     confirm: "Bestätigen",
     loading: "Laden...",
-    noResults: "Keine Ergebnisse gefunden",
     refresh: "Aktualisieren",
     viewAll: "Alle anzeigen",
     saveChanges: "Änderungen speichern",
@@ -3262,11 +3103,6 @@ const translations: Record<Language, TranslationKeys> = {
     service: "Dienstleistung",
 
     // Orders
-    ordersTitle: "Bestellungen",
-    ordersSubtitle: "Marktplatzbestellungen verwalten",
-    pendingOrders: "Ausstehende Bestellungen",
-    completedOrders: "Abgeschlossene Bestellungen",
-    totalRevenueAllTime: "Umsatz (Gesamt)",
 
     // Groups
     groupsTitle: "Gruppen",
@@ -3340,7 +3176,6 @@ const translations: Record<Language, TranslationKeys> = {
     actions: "Aktionen",
     status: "Status",
     type: "Typ",
-    date: "Datum",
     time: "Zeit",
     name: "Name",
     role: "Rolle",
@@ -3649,23 +3484,9 @@ const translations: Record<Language, TranslationKeys> = {
     removing: "Wird entfernt...",
 
     // Orders page translations
-    orderId: "Bestellnummer",
-    customer: "Kunde",
-    productService: "Produkt/Dienstleistung",
-    qty: "Menge",
-    total: "Gesamt",
-    orderDate: "Datum",
-    markFulfilled: "Als erfüllt markieren",
-    refund: "Rückerstattung",
-    cancelOrder: "Bestellung stornieren",
     refundedStatus: "Erstattet",
     fulfilledStatus: "Erfüllt",
     cancelledStatus: "Storniert",
-    avgOrderValue: "Durchschn. Bestellwert",
-    selected: "ausgewählt",
-    notify: "Benachrichtigen",
-    clear: "Löschen",
-    noOrdersYet: "Bestellungen erscheinen hier, wenn Kunden Käufe tätigen.",
 
     // Tickets page translations
     ticketId: "Ticket-ID",
@@ -3753,20 +3574,6 @@ const translations: Record<Language, TranslationKeys> = {
     deleteListingTitle: "Angebot löschen",
     deleteListingConfirm: "Sind Sie sicher, dass Sie löschen möchten",
     ordersWillRemain: "Alle Bestellungen bleiben erhalten, aber das Angebot wird nicht mehr sichtbar sein.",
-    orderDetails: "Bestelldetails",
-    customerInformation: "Kundeninformationen",
-    orderInformation: "Bestellinformationen",
-    unitPrice: "Stückpreis",
-    totalAmount: "Gesamtbetrag",
-    orderStatus: "Bestellstatus",
-    notes: "Notizen / Kommentare",
-    sendToCustomer: "An Kunden senden",
-    saveNotes: "Notizen speichern",
-    addNotesPlaceholder: "Notizen für interne Referenz hinzufügen oder Kunden benachrichtigen...",
-    cancelOrderTitle: "Bestellung stornieren",
-    cancelOrderConfirm: "Sind Sie sicher, dass Sie die Bestellung stornieren möchten",
-    refundsSeparate: "Rückerstattungen müssen möglicherweise separat bearbeitet werden.",
-    customerNotified: "Der Kunde wird über die Stornierung benachrichtigt.",
 
     // Ticket modals
     createSupportTicket: "Support-Ticket erstellen",
@@ -3974,25 +3781,8 @@ const translations: Record<Language, TranslationKeys> = {
     escrowFeeInfo: "Treuhandgebühr-Information",
     escrowFeeDescription: "Eine Gebühr wird auf jede Transaktion erhoben für Zahlungsabwicklung und Streitbeilegung.",
     inEscrow: "In Treuhand",
-    heldAmount: "Einbehaltener Betrag",
-    releasedAmount: "Freigegebener Betrag",
     escrowStatus: "Treuhand-Status",
-    releasePayment: "Zahlung freigeben",
     releaseMilestone: "Meilenstein freigeben",
-    confirmRelease: "Freigabe bestätigen",
-    disputeOrder: "Bestellung anfechten",
-    raiseDispute: "Streitfall eröffnen",
-    disputeReason: "Streitgrund",
-    held: "Einbehalten",
-    partiallyReleased: "Teilweise freigegeben",
-    fullyReleased: "Vollständig freigegeben",
-    disputed: "Angefochten",
-    refunded: "Erstattet",
-    pendingMilestone: "Ausstehend",
-    inProgressMilestone: "In Bearbeitung",
-    completedMilestone: "Abgeschlossen",
-    releasedMilestone: "Freigegeben",
-    disputedMilestone: "Angefochten",
     currencyRates: "Währung & Wechselkurse",
     exchangeRates: "Wechselkurse",
     refreshRates: "Kurse aktualisieren",
@@ -4101,6 +3891,8 @@ const translations: Record<Language, TranslationKeys> = {
     ordersUnavailableDesc: "Bestellungen für die Angebote Ihres Vereins können hier noch nicht angezeigt werden.",
     yourAssociation: "Ihr Verein",
     unknownOrganisation: "Unbekannte Organisation",
+    analyticsUnavailableTitle: "Analysen sind noch nicht verfügbar",
+    analyticsUnavailableDesc: "Für diese Diagramme gibt es noch keine Datenquelle, daher wird nichts angezeigt.",
   },
   es: {
     // Navigation
@@ -4158,15 +3950,12 @@ const translations: Record<Language, TranslationKeys> = {
     save: "Guardar",
     search: "Buscar",
     filter: "Filtrar",
-    export: "Exportar",
     create: "Crear",
     edit: "Editar",
     delete: "Eliminar",
     view: "Ver",
-    close: "Cerrar",
     confirm: "Confirmar",
     loading: "Cargando...",
-    noResults: "No se encontraron resultados",
     refresh: "Actualizar",
     viewAll: "Ver todo",
     saveChanges: "Guardar cambios",
@@ -4289,11 +4078,6 @@ const translations: Record<Language, TranslationKeys> = {
     service: "Servicio",
 
     // Orders
-    ordersTitle: "Pedidos",
-    ordersSubtitle: "Gestionar pedidos del mercado",
-    pendingOrders: "Pedidos pendientes",
-    completedOrders: "Pedidos completados",
-    totalRevenueAllTime: "Ingresos (total)",
 
     // Groups
     groupsTitle: "Grupos",
@@ -4367,7 +4151,6 @@ const translations: Record<Language, TranslationKeys> = {
     actions: "Acciones",
     status: "Estado",
     type: "Tipo",
-    date: "Fecha",
     time: "Hora",
     name: "Nombre",
     role: "Rol",
@@ -4664,23 +4447,9 @@ const translations: Record<Language, TranslationKeys> = {
     removing: "Eliminando...",
 
     // Orders page translations
-    orderId: "ID de pedido",
-    customer: "Cliente",
-    productService: "Producto/Servicio",
-    qty: "Cant.",
-    total: "Total",
-    orderDate: "Fecha",
-    markFulfilled: "Marcar como enviado",
-    refund: "Reembolsar",
-    cancelOrder: "Cancelar pedido",
     refundedStatus: "Reembolsado",
     fulfilledStatus: "Enviado",
     cancelledStatus: "Cancelado",
-    avgOrderValue: "Valor promedio pedido",
-    selected: "seleccionado(s)",
-    notify: "Notificar",
-    clear: "Limpiar",
-    noOrdersYet: "Los pedidos aparecerán aquí cuando los clientes realicen compras.",
 
     // Tickets page translations
     ticketId: "ID de ticket",
@@ -4768,20 +4537,6 @@ const translations: Record<Language, TranslationKeys> = {
     deleteListingTitle: "Eliminar anuncio",
     deleteListingConfirm: "¿Estás seguro de que deseas eliminar",
     ordersWillRemain: "Todos los pedidos permanecerán, pero el anuncio no será visible.",
-    orderDetails: "Detalles del pedido",
-    customerInformation: "Información del cliente",
-    orderInformation: "Información del pedido",
-    unitPrice: "Precio unitario",
-    totalAmount: "Monto total",
-    orderStatus: "Estado del pedido",
-    notes: "Notas / Comentarios",
-    sendToCustomer: "Enviar al cliente",
-    saveNotes: "Guardar notas",
-    addNotesPlaceholder: "Agregar notas internas o notificar al cliente...",
-    cancelOrderTitle: "Cancelar pedido",
-    cancelOrderConfirm: "¿Estás seguro de que deseas cancelar el pedido",
-    refundsSeparate: "Los reembolsos pueden procesarse por separado.",
-    customerNotified: "El cliente será notificado de la cancelación.",
 
     // Ticket modals
     createSupportTicket: "Crear ticket de soporte",
@@ -4989,25 +4744,8 @@ const translations: Record<Language, TranslationKeys> = {
     escrowFeeInfo: "Información de tarifa de fideicomiso",
     escrowFeeDescription: "Se aplica una tarifa a cada transacción para cubrir el procesamiento y resolución de disputas.",
     inEscrow: "En Fideicomiso",
-    heldAmount: "Monto retenido",
-    releasedAmount: "Monto liberado",
     escrowStatus: "Estado del fideicomiso",
-    releasePayment: "Liberar pago",
     releaseMilestone: "Liberar hito",
-    confirmRelease: "Confirmar liberación",
-    disputeOrder: "Disputar pedido",
-    raiseDispute: "Abrir disputa",
-    disputeReason: "Razón de la disputa",
-    held: "Retenido",
-    partiallyReleased: "Parcialmente liberado",
-    fullyReleased: "Completamente liberado",
-    disputed: "Disputado",
-    refunded: "Reembolsado",
-    pendingMilestone: "Pendiente",
-    inProgressMilestone: "En progreso",
-    completedMilestone: "Completado",
-    releasedMilestone: "Liberado",
-    disputedMilestone: "Disputado",
     currencyRates: "Moneda y tipos de cambio",
     exchangeRates: "Tipos de cambio",
     refreshRates: "Actualizar tasas",
@@ -5115,6 +4853,8 @@ const translations: Record<Language, TranslationKeys> = {
     ordersUnavailableDesc: "Los pedidos de los anuncios de tu asociación aún no se pueden mostrar aquí.",
     yourAssociation: "Tu asociación",
     unknownOrganisation: "Organización desconocida",
+    analyticsUnavailableTitle: "Las estadísticas aún no están disponibles",
+    analyticsUnavailableDesc: "Estos gráficos aún no tienen fuente de datos, así que no se muestra ninguno.",
   },
   it: {
     // Navigation
@@ -5172,22 +4912,18 @@ const translations: Record<Language, TranslationKeys> = {
     save: "Salva",
     search: "Cerca",
     filter: "Filtra",
-    export: "Esporta",
     create: "Crea",
     edit: "Modifica",
     delete: "Elimina",
     view: "Visualizza",
-    close: "Chiudi",
     confirm: "Conferma",
     loading: "Caricamento...",
-    noResults: "Nessun risultato trovato",
     refresh: "Aggiorna",
     viewAll: "Vedi tutto",
     saveChanges: "Salva modifiche",
     actions: "Azioni",
     status: "Stato",
     type: "Tipo",
-    date: "Data",
     time: "Ora",
     name: "Nome",
     role: "Ruolo",
@@ -5613,11 +5349,6 @@ const translations: Record<Language, TranslationKeys> = {
     service: "Servizio",
 
     // Orders
-    ordersTitle: "Ordini",
-    ordersSubtitle: "Gestisci gli ordini del mercato",
-    pendingOrders: "Ordini in attesa",
-    completedOrders: "Ordini completati",
-    totalRevenueAllTime: "Ricavi (totali)",
 
     // Groups
     groupsTitle: "Gruppi",
@@ -5688,23 +5419,9 @@ const translations: Record<Language, TranslationKeys> = {
     switchAssociation: "Cambia associazione",
 
     // Orders page
-    orderId: "ID Ordine",
-    customer: "Cliente",
-    productService: "Prodotto/Servizio",
-    qty: "Qtà",
-    total: "Totale",
-    orderDate: "Data ordine",
-    markFulfilled: "Segna come evaso",
-    refund: "Rimborso",
-    cancelOrder: "Annulla ordine",
     refundedStatus: "Rimborsato",
     fulfilledStatus: "Evaso",
     cancelledStatus: "Annullato",
-    avgOrderValue: "Valore ordine medio",
-    selected: "Selezionati",
-    notify: "Notifica",
-    clear: "Pulisci",
-    noOrdersYet: "Nessun ordine ancora",
 
     // Tickets page
     ticketId: "ID Ticket",
@@ -5792,20 +5509,6 @@ const translations: Record<Language, TranslationKeys> = {
     deleteListingTitle: "Elimina annuncio",
     deleteListingConfirm: "Sei sicuro di voler eliminare questo annuncio?",
     ordersWillRemain: "Gli ordini esistenti rimarranno nel sistema",
-    orderDetails: "Dettagli ordine",
-    customerInformation: "Informazioni cliente",
-    orderInformation: "Informazioni ordine",
-    unitPrice: "Prezzo unitario",
-    totalAmount: "Importo totale",
-    orderStatus: "Stato ordine",
-    notes: "Note",
-    sendToCustomer: "Invia al cliente",
-    saveNotes: "Salva note",
-    addNotesPlaceholder: "Aggiungi note sull'ordine...",
-    cancelOrderTitle: "Annulla ordine",
-    cancelOrderConfirm: "Sei sicuro di voler annullare questo ordine?",
-    refundsSeparate: "I rimborsi devono essere elaborati separatamente",
-    customerNotified: "Il cliente sarà notificato",
 
     // Ticket modals
     createSupportTicket: "Crea ticket di supporto",
@@ -6013,25 +5716,8 @@ const translations: Record<Language, TranslationKeys> = {
     escrowFeeInfo: "Info commissione deposito",
     escrowFeeDescription: "Una commissione viene applicata a ogni transazione per coprire elaborazione e risoluzione contestazioni.",
     inEscrow: "In deposito",
-    heldAmount: "Importo trattenuto",
-    releasedAmount: "Importo rilasciato",
     escrowStatus: "Stato deposito",
-    releasePayment: "Rilascia pagamento",
     releaseMilestone: "Rilascia milestone",
-    confirmRelease: "Conferma rilascio",
-    disputeOrder: "Contesta ordine",
-    raiseDispute: "Apri contestazione",
-    disputeReason: "Motivo contestazione",
-    held: "Trattenuto",
-    partiallyReleased: "Parzialmente rilasciato",
-    fullyReleased: "Completamente rilasciato",
-    disputed: "Contestato",
-    refunded: "Rimborsato",
-    pendingMilestone: "In attesa",
-    inProgressMilestone: "In corso",
-    completedMilestone: "Completato",
-    releasedMilestone: "Rilasciato",
-    disputedMilestone: "Contestato",
     currencyRates: "Valuta e tassi di cambio",
     exchangeRates: "Tassi di cambio",
     refreshRates: "Aggiorna tassi",
@@ -6139,6 +5825,8 @@ const translations: Record<Language, TranslationKeys> = {
     ordersUnavailableDesc: "Gli ordini per gli annunci della tua associazione non possono ancora essere mostrati qui.",
     yourAssociation: "La tua associazione",
     unknownOrganisation: "Organizzazione sconosciuta",
+    analyticsUnavailableTitle: "Le statistiche non sono ancora disponibili",
+    analyticsUnavailableDesc: "Questi grafici non hanno ancora una fonte di dati, quindi non ne viene mostrato nessuno.",
   },
 };
 

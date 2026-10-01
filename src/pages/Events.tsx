@@ -29,8 +29,11 @@ import {
   deleteEvent,
   createEvent,
   updateEvent,
+  getEventTickets,
   type EventType as BackendEvent,
+  type EventLocationInput,
 } from "@/services/graphql/events/operations";
+import { toMinorUnits } from "@/lib/money";
 import { uploadEventCoverImage } from "@/services/graphql/events/uploads";
 import { graphqlErrorMessage } from "@/lib/graphqlErrors";
 
@@ -106,6 +109,19 @@ function mapBackendStatus(
   }
 }
 
+/** The form's location as the gateway's CreateEventLocationInput. */
+function toLocationInput(data: EventFormData): EventLocationInput {
+  return data.eventType === "in-person"
+    ? { type: "physical", venue: data.location || undefined }
+    : { type: "virtual", virtualLink: data.virtualLink || undefined };
+}
+
+/**
+ * The event category is required by the API; this console has no category
+ * field, so new events are filed under a neutral one.
+ */
+const DEFAULT_EVENT_CATEGORY = "General";
+
 function mapBackendToUiEvent(e: BackendEvent): Event {
   return {
     id: e.id,
@@ -116,16 +132,18 @@ function mapBackendToUiEvent(e: BackendEvent): Event {
     startTime: formatBackendTime(e.startAt),
     endTime: formatBackendTime(e.endAt),
     eventType: e.locationType?.toLowerCase() === "physical" ? "in-person" : "virtual",
-    location: e.locationDetails ?? undefined,
-    virtualLink: e.locationType?.toLowerCase() !== "physical" ? (e.locationDetails ?? undefined) : undefined,
+    location: e.locationDetails?.venueName ?? e.locationDetails?.address ?? undefined,
+    virtualLink: e.locationDetails?.virtualLink ?? undefined,
     isPaid: e.isPaid,
+    currency: e.currency ?? undefined,
     hasParticipantLimit: false,
     registeredCount: e.registrationCount ?? 0,
     status: mapBackendStatus(e.status),
     publishNow: e.status === "PUBLISHED",
     notifyMembers: true,
     allowComments: true,
-    views: e.viewCount ?? 0,
+    // The API has no view count for events; it is not invented as 0.
+    views: null,
     ticketsSold: e.registrationCount ?? 0,
     // The event list carries no revenue; it is not invented as 0.
     revenue: null,
@@ -240,8 +258,21 @@ export default function Events() {
     setDetailsDrawerOpen(true);
   };
 
-  const handleEdit = (event: Event) => {
-    setEditingEvent(event);
+  const handleEdit = async (event: Event) => {
+    // The list carries no price: a paid event's lives on its General Admission
+    // ticket (integer minor units). Load it so the form shows what is saved.
+    let ticketPrice = event.ticketPrice;
+    if (event.isPaid) {
+      try {
+        const tickets = await getEventTickets(event.id);
+        const general =
+          tickets.find((tk) => tk.name === "General Admission" || tk.ticketType === "general") ?? tickets[0];
+        if (general) ticketPrice = general.priceInCents;
+      } catch {
+        // Non-fatal: the form still opens; the price field starts empty.
+      }
+    }
+    setEditingEvent({ ...event, ticketPrice });
     setCreateModalOpen(true);
   };
 
@@ -301,12 +332,13 @@ export default function Events() {
         const input: Parameters<typeof updateEvent>[1] = {
           title: data.title,
           description: data.description,
-          locationType: data.eventType === "in-person" ? "PHYSICAL" : "VIRTUAL",
-          locationDetails: data.eventType === "in-person" ? data.location : data.virtualLink,
+          locationType: data.eventType === "in-person" ? "physical" : "virtual",
+          locationDetails: toLocationInput(data),
           isPaid: data.isPaid,
-          ticketPrice: data.ticketPrice,
+          // The form holds major units; the API takes integer minor units.
+          ticketPrice: toMinorUnits(data.ticketPrice),
           currency: data.currency,
-          maxParticipants: data.hasParticipantLimit ? data.maxParticipants : undefined,
+          capacity: data.hasParticipantLimit ? data.maxParticipants : undefined,
           coverImageUrl,
         };
         if (data.date) {
@@ -340,13 +372,15 @@ export default function Events() {
           description: data.description,
           startAt: startDate.toISOString(),
           endAt: endDate.toISOString(),
-          locationType: data.eventType === "in-person" ? "PHYSICAL" : "VIRTUAL",
-          locationDetails: data.eventType === "in-person" ? data.location : data.virtualLink,
+          locationType: data.eventType === "in-person" ? "physical" : "virtual",
+          locationDetails: toLocationInput(data),
           isPaid: data.isPaid,
-          ticketPrice: data.ticketPrice,
+          // The form holds major units; the API takes integer minor units.
+          ticketPrice: toMinorUnits(data.ticketPrice),
           currency: data.currency,
-          maxParticipants: data.hasParticipantLimit ? data.maxParticipants : undefined,
+          capacity: data.hasParticipantLimit ? data.maxParticipants : undefined,
           coverImageUrl,
+          eventCategory: DEFAULT_EVENT_CATEGORY,
           ownerType: "ASSOCIATION",
           ownerId: associationId,
         });
@@ -501,6 +535,8 @@ export default function Events() {
 
       {/* Modals & Drawers */}
       <CreateEditEventModal
+        // Re-initialise the form for each event being edited (its state is set once, on mount).
+        key={editingEvent?.id ?? "new"}
         open={createModalOpen}
         onOpenChange={(open) => {
           setCreateModalOpen(open);

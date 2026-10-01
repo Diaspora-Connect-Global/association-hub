@@ -19,50 +19,77 @@ export interface EventType {
   startAt: string;
   endAt: string;
   locationType: string;
-  locationDetails: string | null;
+  locationDetails: EventLocation | null;
   coverImageUrl: string | null;
   registrationCount: number;
-  viewCount: number;
   isPaid: boolean;
+  /** The event's currency; null when unset (the server then uses GHS for its tickets). */
+  currency: string | null;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface EventLocation {
+  type: string;
+  venueName: string | null;
+  address: string | null;
+  city: string | null;
+  country: string | null;
+  virtualLink: string | null;
+  platform: string | null;
+}
+
+/** What the gateway's CreateEventLocationInput accepts. */
+export interface EventLocationInput {
+  type: "physical" | "virtual" | "hybrid";
+  venue?: string;
+  address?: string;
+  virtualLink?: string;
+  platform?: string;
 }
 
 export interface EventListResponse {
   events: EventType[];
   total: number;
-  page: number;
-  limit: number;
 }
 
+/**
+ * Mirrors the gateway's CreateEventInput. The previous shape (a string
+ * `locationDetails`, `maxParticipants`, no `eventCategory`) failed validation
+ * on every call.
+ */
 export interface CreateEventInput {
-  title: string;
-  description: string;
-  startAt: string;
-  endAt: string;
-  locationType: string;
-  locationDetails?: string;
-  coverImageUrl?: string;
-  isPaid?: boolean;
-  ticketPrice?: number;
-  currency?: string;
-  maxParticipants?: number;
   ownerType: string;
   ownerId: string;
+  title: string;
+  description: string;
+  eventCategory: string;
+  locationType: "physical" | "virtual" | "hybrid";
+  locationDetails?: EventLocationInput;
+  startAt: string;
+  endAt: string;
+  coverImageUrl?: string;
+  isPaid?: boolean;
+  /** Integer minor units (pesewas, cents) — the gateway field is an Int. */
+  ticketPrice?: number;
+  currency?: string;
+  capacity?: number;
 }
 
+/** Mirrors the gateway's UpdateEventInput. */
 export interface UpdateEventInput {
   title?: string;
   description?: string;
   startAt?: string;
   endAt?: string;
-  locationType?: string;
-  locationDetails?: string;
+  locationType?: "physical" | "virtual" | "hybrid";
+  locationDetails?: EventLocationInput;
   coverImageUrl?: string;
   isPaid?: boolean;
+  /** Integer minor units. */
   ticketPrice?: number;
   currency?: string;
-  maxParticipants?: number;
+  capacity?: number;
 }
 
 export interface EventRegistrationUser {
@@ -109,11 +136,19 @@ const EVENT_FIELDS = /* GraphQL */ `
   startAt
   endAt
   locationType
-  locationDetails
+  locationDetails {
+    type
+    venueName
+    address
+    city
+    country
+    virtualLink
+    platform
+  }
   coverImageUrl
   registrationCount
-  viewCount
   isPaid
+  currency
   createdAt
   updatedAt
 `;
@@ -122,23 +157,21 @@ const GET_EVENTS_BY_OWNER = /* GraphQL */ `
   query GetEventsByOwner(
     $ownerType: String!
     $ownerId: ID!
-    $page: Int
     $limit: Int
+    $offset: Int
     $status: String
   ) {
     getEventsByOwner(
       ownerType: $ownerType
       ownerId: $ownerId
-      page: $page
       limit: $limit
+      offset: $offset
       status: $status
     ) {
       events {
         ${EVENT_FIELDS}
       }
       total
-      page
-      limit
     }
   }
 `;
@@ -152,34 +185,34 @@ const CREATE_EVENT = /* GraphQL */ `
 `;
 
 const UPDATE_EVENT = /* GraphQL */ `
-  mutation UpdateEvent($eventId: ID!, $input: UpdateEventInput!) {
-    updateEvent(eventId: $eventId, input: $input) {
+  mutation UpdateEvent($id: ID!, $input: UpdateEventInput!) {
+    updateEvent(id: $id, input: $input) {
       ${EVENT_FIELDS}
     }
   }
 `;
 
 const PUBLISH_EVENT = /* GraphQL */ `
-  mutation PublishEvent($eventId: ID!) {
-    publishEvent(eventId: $eventId) {
-      success
-      message
+  mutation PublishEvent($id: ID!) {
+    publishEvent(id: $id) {
+      id
+      status
     }
   }
 `;
 
 const CANCEL_EVENT = /* GraphQL */ `
-  mutation CancelEvent($eventId: ID!, $reason: String) {
-    cancelEvent(eventId: $eventId, reason: $reason) {
-      success
-      message
+  mutation CancelEvent($id: ID!, $reason: String!) {
+    cancelEvent(id: $id, reason: $reason) {
+      id
+      status
     }
   }
 `;
 
 const DELETE_EVENT = /* GraphQL */ `
-  mutation DeleteEvent($eventId: ID!) {
-    deleteEvent(eventId: $eventId) {
+  mutation DeleteEvent($id: ID!) {
+    deleteEvent(id: $id) {
       success
       message
     }
@@ -261,12 +294,47 @@ export async function getEventsByOwner(
   try {
     const data = await client.request<{ getEventsByOwner: EventListResponse }>(
       GET_EVENTS_BY_OWNER,
-      { ownerType, ownerId, page, limit, status: status ?? null },
+      // The gateway pages by offset; callers keep their 1-based page.
+      { ownerType, ownerId, limit, offset: Math.max(page - 1, 0) * limit, status: status ?? null },
     );
     return data.getEventsByOwner;
   } catch (error) {
     throw error instanceof Error ? error : new Error("Failed to fetch events");
   }
+}
+
+const GET_EVENT_TICKETS = /* GraphQL */ `
+  query GetEventTickets($eventId: ID!) {
+    getEventTickets(eventId: $eventId) {
+      tickets {
+        id
+        name
+        priceInCents
+        ticketType
+      }
+    }
+  }
+`;
+
+export interface EventTicketSummary {
+  id: string;
+  name: string;
+  /** Integer minor units. */
+  priceInCents: number;
+  ticketType: string | null;
+}
+
+/**
+ * The event's tickets. A paid event created from this console carries its
+ * price on an auto-created "General Admission" ticket, not on the event.
+ */
+export async function getEventTickets(eventId: string): Promise<EventTicketSummary[]> {
+  const client = getGraphQLClient();
+  const data = await client.request<{ getEventTickets: { tickets: EventTicketSummary[] | null } | null }>(
+    GET_EVENT_TICKETS,
+    { eventId },
+  );
+  return data.getEventTickets?.tickets ?? [];
 }
 
 export async function createEvent(
@@ -292,7 +360,7 @@ export async function updateEvent(
   try {
     const data = await client.request<{ updateEvent: EventType }>(
       UPDATE_EVENT,
-      { eventId, input },
+      { id: eventId, input },
     );
     return data.updateEvent;
   } catch (error) {
@@ -305,10 +373,10 @@ export async function publishEvent(
 ): Promise<{ success: boolean; message?: string }> {
   const client = getGraphQLClient();
   try {
-    const data = await client.request<{
-      publishEvent: { success: boolean; message?: string };
-    }>(PUBLISH_EVENT, { eventId });
-    return data.publishEvent;
+    const data = await client.request<{ publishEvent: { id: string; status: string } | null }>(PUBLISH_EVENT, {
+      id: eventId,
+    });
+    return { success: Boolean(data.publishEvent?.id) };
   } catch (error) {
     throw error instanceof Error ? error : new Error("Failed to publish event");
   }
@@ -320,10 +388,12 @@ export async function cancelEvent(
 ): Promise<{ success: boolean; message?: string }> {
   const client = getGraphQLClient();
   try {
-    const data = await client.request<{
-      cancelEvent: { success: boolean; message?: string };
-    }>(CANCEL_EVENT, { eventId, reason: reason ?? null });
-    return data.cancelEvent;
+    const data = await client.request<{ cancelEvent: { id: string; status: string } | null }>(CANCEL_EVENT, {
+      id: eventId,
+      // The gateway requires a reason; attendees may see it.
+      reason: reason?.trim() || "Cancelled by the organiser",
+    });
+    return { success: Boolean(data.cancelEvent?.id) };
   } catch (error) {
     throw error instanceof Error ? error : new Error("Failed to cancel event");
   }
@@ -336,7 +406,7 @@ export async function deleteEvent(
   try {
     const data = await client.request<{
       deleteEvent: { success: boolean; message?: string };
-    }>(DELETE_EVENT, { eventId });
+    }>(DELETE_EVENT, { id: eventId });
     return data.deleteEvent;
   } catch (error) {
     throw error instanceof Error ? error : new Error("Failed to delete event");

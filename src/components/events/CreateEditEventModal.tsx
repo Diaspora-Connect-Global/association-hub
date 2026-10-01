@@ -24,6 +24,7 @@ import { format } from "date-fns";
 import { CalendarIcon, ChevronLeft, ChevronRight, Upload, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useT } from "@/hooks/useT";
+import { PLATFORM_BASE_CURRENCY } from "@/lib/money";
 
 interface CreateEditEventModalProps {
   open: boolean;
@@ -51,8 +52,10 @@ export function CreateEditEventModal({
     location: event?.location || "",
     virtualLink: event?.virtualLink || "",
     isPaid: event?.isPaid || false,
-    ticketPrice: event?.ticketPrice || 0,
-    currency: event?.currency || "USD",
+    // Saved prices are integer minor units; the form edits major units. Divide,
+    // never round — rounding here would become a write on the next save.
+    ticketPrice: event?.ticketPrice != null ? event.ticketPrice / 100 : 0,
+    currency: event?.currency || PLATFORM_BASE_CURRENCY,
     hasParticipantLimit: event?.hasParticipantLimit || false,
     maxParticipants: event?.maxParticipants || 100,
     publishNow: false,

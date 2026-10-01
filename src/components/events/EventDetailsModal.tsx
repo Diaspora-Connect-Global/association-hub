@@ -114,7 +114,7 @@ export function EventDetailsModal({
               <div className="flex items-center gap-2">
                 {event.isPaid && event.ticketPrice ? (
                   <span className="text-lg font-bold text-foreground">
-                    {event.currency || "$"}{event.ticketPrice}
+                    {formatMinorUnits(event.ticketPrice, event.currency, settings.language)}
                   </span>
                 ) : (
                   <span className="text-sm font-medium text-primary">Free Event</span>
@@ -178,7 +178,9 @@ export function EventDetailsModal({
                         <Eye className="h-4 w-4" />
                         <span className="text-xs">Total Views</span>
                       </div>
-                      <p className="text-lg font-semibold text-foreground">{event.views}</p>
+                      <p className="text-lg font-semibold text-foreground">
+                        {typeof event.views === "number" ? event.views : t.analyticsNotAvailable}
+                      </p>
                     </div>
                     <div className="p-3 rounded-lg border border-border bg-card">
                       <div className="flex items-center gap-2 text-muted-foreground mb-1">

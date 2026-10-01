@@ -40,6 +40,8 @@ import {
   Loader2,
 } from "lucide-react";
 import { useT } from "@/hooks/useT";
+import { useSettings } from "@/contexts/SettingsContext";
+import { formatMinorUnits } from "@/lib/money";
 import { toast } from "@/hooks/use-toast";
 import {
   adminGetEventRegistrations,
@@ -95,6 +97,7 @@ export function RegistrationsDrawer({
   const [loading, setLoading] = useState(false);
   const [busyId, setBusyId] = useState<string | null>(null);
   const t = useT();
+  const { settings } = useSettings();
 
   const fetchRegistrations = useCallback(async () => {
     if (!event) return;
@@ -268,7 +271,10 @@ export function RegistrationsDrawer({
                               {cancelled
                                 ? t.refundedPayment
                                 : registration.totalAmount
-                                ? `${registration.currency ?? ""} ${registration.totalAmount}`.trim()
+                                ? // Integer minor units (a string), in the registration's currency, else the event's.
+                                  Number.isFinite(Number(registration.totalAmount))
+                                  ? formatMinorUnits(Number(registration.totalAmount), registration.currency ?? event.currency, settings.language)
+                                  : t.pending
                                 : t.pending}
                             </StatusBadge>
                           </TableCell>
