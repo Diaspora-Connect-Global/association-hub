@@ -48,6 +48,7 @@ import {
   type EventRegistrationRow,
 } from "@/services/graphql/events/operations";
 import { userLabel } from "@/lib/userLabel";
+import { graphqlErrorMessage } from "@/lib/graphqlErrors";
 
 interface RegistrationsDrawerProps {
   open: boolean;
@@ -123,7 +124,7 @@ export function RegistrationsDrawer({
     } catch (err) {
       toast({
         title: "Error",
-        description: err instanceof Error ? err.message : "Failed to check in attendee.",
+        description: graphqlErrorMessage(err, "Failed to check in attendee."),
         variant: "destructive",
       });
     } finally {
@@ -140,7 +141,7 @@ export function RegistrationsDrawer({
     } catch (err) {
       toast({
         title: "Error",
-        description: err instanceof Error ? err.message : "Failed to remove attendee.",
+        description: graphqlErrorMessage(err, "Failed to remove attendee."),
         variant: "destructive",
       });
     } finally {

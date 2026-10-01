@@ -66,6 +66,7 @@ import {
   type AdminRoleAssignment,
   type RoleDefinition,
 } from "@/services/graphql/admin-management";
+import { graphqlErrorMessage } from "@/lib/graphqlErrors";
 
 interface AdminsTabProps {
   associationId: string;
@@ -147,7 +148,7 @@ export function AdminsTab({ associationId }: AdminsTabProps) {
     } catch (err) {
       // listAdmins may be unavailable to association admins — degrade gracefully
       // to the manual "look up by ID" + session-created flow rather than blocking.
-      setError((err as Error).message ?? t.adminsErrorLoad);
+      setError(graphqlErrorMessage(err, t.adminsErrorLoad));
     } finally {
       setLoading(false);
     }
@@ -205,7 +206,7 @@ export function AdminsTab({ associationId }: AdminsTabProps) {
       }
     } catch (err) {
       toast({
-        title: (err as Error).message ?? t.adminsErrorLookup,
+        title: graphqlErrorMessage(err, t.adminsErrorLookup),
         variant: "destructive",
       });
     } finally {
@@ -225,7 +226,7 @@ export function AdminsTab({ associationId }: AdminsTabProps) {
       }
     } catch (err) {
       toast({
-        title: (err as Error).message ?? t.adminsErrorRevoke,
+        title: graphqlErrorMessage(err, t.adminsErrorRevoke),
         variant: "destructive",
       });
     } finally {
@@ -246,7 +247,7 @@ export function AdminsTab({ associationId }: AdminsTabProps) {
       }
     } catch (err) {
       toast({
-        title: (err as Error).message ?? t.adminsErrorStatus,
+        title: graphqlErrorMessage(err, t.adminsErrorStatus),
         variant: "destructive",
       });
     } finally {
@@ -504,7 +505,7 @@ function CreateAdminDialog({
       }
     } catch (err) {
       toast({
-        title: (err as Error).message ?? t.adminsErrorCreate,
+        title: graphqlErrorMessage(err, t.adminsErrorCreate),
         variant: "destructive",
       });
     } finally {
@@ -646,7 +647,7 @@ function AssignRoleDialog({
       }
     } catch (err) {
       toast({
-        title: (err as Error).message ?? t.adminsErrorAssign,
+        title: graphqlErrorMessage(err, t.adminsErrorAssign),
         variant: "destructive",
       });
     } finally {

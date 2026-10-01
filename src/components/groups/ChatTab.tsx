@@ -40,6 +40,7 @@ import {
 } from "@/services/websocket/messageSocket";
 import type { GroupMember } from "@/services/graphql/groups/types";
 import { useT } from "@/hooks/useT";
+import { graphqlErrorMessage } from "@/lib/graphqlErrors";
 
 interface Props {
   groupId: string;
@@ -336,7 +337,8 @@ function rankStatus(s: DeliveryStatus | undefined): number {
 
 export default function ChatTab({ groupId, members }: Props) {
   const { toast } = useToast();
-  const unknownUser = useT().unknownUser;
+  const t = useT();
+  const unknownUser = t.unknownUser;
   const admin = useAuthStore((s) => s.admin);
 
   const myUserId = useMemo<string | null>(() => {
@@ -438,11 +440,11 @@ export default function ChatTab({ groupId, members }: Props) {
       }
       requestAnimationFrame(() => scrollToBottom("auto"));
     } catch (err) {
-      setInitError(err instanceof Error ? err.message : String(err));
+      setInitError(graphqlErrorMessage(err, t.errorTryAgain));
     } finally {
       setInitLoading(false);
     }
-  }, [groupId, token, scrollToBottom, emitBulkRead, memberIds]);
+  }, [groupId, token, scrollToBottom, emitBulkRead, memberIds, t]);
 
   useEffect(() => {
     void initialize();
@@ -699,7 +701,7 @@ export default function ChatTab({ groupId, members }: Props) {
       );
       toast({
         title: "Send failed",
-        description: err instanceof Error ? err.message : String(err),
+        description: graphqlErrorMessage(err, t.errorTryAgain),
         variant: "destructive",
       });
     } finally {
@@ -715,6 +717,7 @@ export default function ChatTab({ groupId, members }: Props) {
     refreshLatest,
     sendTypingStop,
     toast,
+    t,
   ]);
 
   const retrySend = useCallback(
@@ -751,12 +754,12 @@ export default function ChatTab({ groupId, members }: Props) {
         );
         toast({
           title: "Retry failed",
-          description: err instanceof Error ? err.message : String(err),
+          description: graphqlErrorMessage(err, t.errorTryAgain),
           variant: "destructive",
         });
       }
     },
-    [conversationId, refreshLatest, toast],
+    [conversationId, refreshLatest, toast, t],
   );
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {

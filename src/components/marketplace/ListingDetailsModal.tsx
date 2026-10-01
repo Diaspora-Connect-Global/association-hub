@@ -29,7 +29,6 @@ interface ListingDetailsModalProps {
   listing: Listing | null;
   onEdit: (listing: Listing) => void;
   onTogglePublish: (listing: Listing) => void;
-  onViewOrders: (listing: Listing) => void;
   onDelete: (listing: Listing) => void;
 }
 
@@ -45,12 +44,12 @@ export function ListingDetailsModal({
   listing,
   onEdit,
   onTogglePublish,
-  onViewOrders,
   onDelete,
 }: ListingDetailsModalProps) {
+  // Hooks before the early return (rules of hooks).
+  const t = useT();
   if (!listing) return null;
 
-  const t = useT();
   const currencySymbol = listing.currency === "USD" ? "$" : listing.currency === "EUR" ? "€" : "₵";
 
   return (
@@ -123,10 +122,6 @@ export function ListingDetailsModal({
                 <ToggleLeft className="h-4 w-4 mr-1.5" />
                 {listing.status === "published" ? t.unpublishListing : t.publishListing}
               </Button>
-              <Button variant="outline" size="sm" onClick={() => onViewOrders(listing)}>
-                <ShoppingCart className="h-4 w-4 mr-1.5" />
-                {t.orders}
-              </Button>
               <Button 
                 variant="outline" 
                 size="sm" 
@@ -197,8 +192,11 @@ export function ListingDetailsModal({
 
               <TabsContent value="orders" className="mt-4">
                 <div className="text-center py-8 text-muted-foreground">
-                  <ShoppingCart className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                  <p className="text-sm">{t.clickOrdersToView}</p>
+                  {/* No order query an association console can call exists yet, so
+                      say so rather than offer a view of orders that cannot load. */}
+                  <ShoppingCart className="h-12 w-12 mx-auto mb-3 opacity-50" aria-hidden="true" />
+                  <p className="text-sm font-medium text-foreground">{t.ordersUnavailableTitle}</p>
+                  <p className="text-sm mt-1">{t.ordersUnavailableDesc}</p>
                 </div>
               </TabsContent>
 

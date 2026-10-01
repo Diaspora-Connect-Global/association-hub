@@ -23,11 +23,17 @@ import {
   assignAssociationAdmin,
   removeAssociationAdmin,
 } from "@/services/graphql/association/operations";
-import { graphqlErrorMessage, isPermissionRefusal } from "@/lib/graphqlErrors";
+import {
+  graphqlErrorMessage,
+  graphqlErrorText,
+  isPermissionRefusal,
+  safeServerMessage,
+} from "@/lib/graphqlErrors";
 import { useT } from "@/hooks/useT";
 
 export const useGetCurrentAdmin = () => {
   const { toast } = useToast();
+  const t = useT();
   const query = useQuery({
     queryKey: ["currentAdmin"],
     queryFn: getCurrentAdmin,
@@ -35,22 +41,22 @@ export const useGetCurrentAdmin = () => {
 
   useEffect(() => {
     if (query.error) {
-      const message =
-        query.error instanceof Error ? query.error.message : "Failed to fetch profile";
-      toast({ title: "Error", description: message, variant: "destructive" });
+      const message = graphqlErrorMessage(query.error, t.profileLoadFailed);
+      toast({ title: t.error, description: message, variant: "destructive" });
     }
-  }, [query.error, toast]);
+  }, [query.error, toast, t]);
 
   return {
     profile: query.data ?? null,
     loading: query.isLoading,
-    error: query.error instanceof Error ? query.error.message : null,
+    error: graphqlErrorText(query.error, t.profileLoadFailed),
     fetchProfile: query.refetch,
   };
 };
 
 export const useUpdateAdminProfile = () => {
   const { toast } = useToast();
+  const t = useT();
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: (input: UpdateAdminProfileInput) => updateAdminProfile(input),
@@ -58,17 +64,24 @@ export const useUpdateAdminProfile = () => {
       if (result.success) {
         toast({ title: "Success", description: result.message || "Profile updated" });
         void queryClient.invalidateQueries({ queryKey: ["currentAdmin"] });
+      } else {
+        // A refusal resolves with success: false — it must not pass silently.
+        toast({
+          title: t.error,
+          description: safeServerMessage(result.message, t.profileUpdateFailed),
+          variant: "destructive",
+        });
       }
     },
     onError: (err) => {
-      const message = err instanceof Error ? err.message : "Failed to update profile";
-      toast({ title: "Error", description: message, variant: "destructive" });
+      const message = graphqlErrorMessage(err, t.profileUpdateFailed);
+      toast({ title: t.error, description: message, variant: "destructive" });
     },
   });
 
   return {
     loading: mutation.isPending,
-    error: mutation.error instanceof Error ? mutation.error.message : null,
+    error: graphqlErrorText(mutation.error, t.profileUpdateFailed),
     saveProfile: mutation.mutateAsync,
   };
 };
@@ -83,7 +96,7 @@ export const useGetLinkedCommunities = (associationId: string | null) => {
   return {
     communities: query.data ?? [],
     loading: query.isLoading,
-    error: query.error instanceof Error ? query.error.message : null,
+    error: graphqlErrorText(query.error, "Failed to load linked communities"),
   };
 };
 
@@ -97,24 +110,25 @@ export const useGetAssociationAdmins = (associationId: string | null) => {
   return {
     admins: query.data?.admins ?? [],
     loading: query.isLoading,
-    error: query.error instanceof Error ? query.error.message : null,
+    error: graphqlErrorText(query.error, "Failed to load admins"),
   };
 };
 
 export const useGetAssociationAvatarUploadUrl = () => {
   const { toast } = useToast();
+  const t = useT();
   const mutation = useMutation({
     mutationFn: (associationId: string) => getAssociationAvatarUploadUrl(associationId),
     onError: (err) => {
-      const message = err instanceof Error ? err.message : "Failed to get upload URL";
-      toast({ title: "Error", description: message, variant: "destructive" });
+      const message = graphqlErrorMessage(err, t.uploadStartFailed);
+      toast({ title: t.error, description: message, variant: "destructive" });
     },
   });
 
   return {
     mutate: mutation.mutateAsync,
     isPending: mutation.isPending,
-    error: mutation.error instanceof Error ? mutation.error.message : null,
+    error: graphqlErrorText(mutation.error, t.uploadStartFailed),
   };
 };
 
@@ -164,7 +178,7 @@ export const useLinkCommunity = (associationId: string | null) => {
   return {
     mutate: mutation.mutate,
     isPending: mutation.isPending,
-    error: mutation.error instanceof Error ? mutation.error.message : null,
+    error: graphqlErrorText(mutation.error, "Failed to link community"),
   };
 };
 
@@ -186,7 +200,7 @@ export const useUnlinkCommunity = (associationId: string | null) => {
   return {
     mutate: mutation.mutate,
     isPending: mutation.isPending,
-    error: mutation.error instanceof Error ? mutation.error.message : null,
+    error: graphqlErrorText(mutation.error, "Failed to unlink community"),
   };
 };
 
@@ -214,7 +228,7 @@ export const useAssignAssociationAdmin = (associationId: string | null) => {
   return {
     mutate: mutation.mutate,
     isPending: mutation.isPending,
-    error: mutation.error instanceof Error ? mutation.error.message : null,
+    error: graphqlErrorText(mutation.error, t.assignAdminFailed),
   };
 };
 
@@ -240,7 +254,7 @@ export const useRemoveAssociationAdmin = (associationId: string | null) => {
   return {
     mutate: mutation.mutate,
     isPending: mutation.isPending,
-    error: mutation.error instanceof Error ? mutation.error.message : null,
+    error: graphqlErrorText(mutation.error, t.removeAdminFailed),
   };
 };
 
@@ -248,6 +262,7 @@ export const useRemoveAssociationAdmin = (associationId: string | null) => {
 
 export const useUpdateAdminPassword = () => {
   const { toast } = useToast();
+  const t = useT();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -260,21 +275,22 @@ export const useUpdateAdminPassword = () => {
         if (result.success) {
           toast({ title: "Success", description: result.message || "Password updated successfully" });
         } else {
-          const msg = result.message || "Failed to update password";
+          const msg = safeServerMessage(result.message, t.passwordUpdateFailed);
           setError(msg);
-          toast({ title: "Error", description: msg, variant: "destructive" });
+          toast({ title: t.error, description: msg, variant: "destructive" });
         }
         return result;
       } catch (err) {
-        const msg = err instanceof Error ? err.message : "Failed to update password";
+        // ClientError.message would echo the request — both passwords included.
+        const msg = graphqlErrorMessage(err, t.passwordUpdateFailed);
         setError(msg);
-        toast({ title: "Error", description: msg, variant: "destructive" });
+        toast({ title: t.error, description: msg, variant: "destructive" });
         throw err;
       } finally {
         setLoading(false);
       }
     },
-    [toast],
+    [toast, t],
   );
 
   return { changePassword, loading, error };
@@ -282,6 +298,7 @@ export const useUpdateAdminPassword = () => {
 
 export const useAdminAvatarUpload = () => {
   const { toast } = useToast();
+  const t = useT();
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -297,19 +314,19 @@ export const useAdminAvatarUpload = () => {
           headers: { "Content-Type": file.type },
         });
         if (!res.ok) {
-          throw new Error(`Upload failed: ${res.statusText}`);
+          throw new Error(t.avatarUploadFailed);
         }
         return readUrl;
       } catch (err) {
-        const msg = err instanceof Error ? err.message : "Avatar upload failed";
+        const msg = graphqlErrorMessage(err, t.avatarUploadFailed);
         setError(msg);
-        toast({ title: "Error", description: msg, variant: "destructive" });
+        toast({ title: t.error, description: msg, variant: "destructive" });
         throw err;
       } finally {
         setUploading(false);
       }
     },
-    [toast],
+    [toast, t],
   );
 
   return { uploadAvatar, uploading, error };
@@ -317,6 +334,7 @@ export const useAdminAvatarUpload = () => {
 
 export const useEnableTwoFactor = () => {
   const { toast } = useToast();
+  const t = useT();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -327,21 +345,21 @@ export const useEnableTwoFactor = () => {
       try {
         const result = await enableTwoFactor(method);
         if (!result.success) {
-          const msg = result.message || "Failed to initiate 2FA";
+          const msg = safeServerMessage(result.message, t.twoFactorEnableFailed);
           setError(msg);
-          toast({ title: "Error", description: msg, variant: "destructive" });
+          toast({ title: t.error, description: msg, variant: "destructive" });
         }
         return result;
       } catch (err) {
-        const msg = err instanceof Error ? err.message : "Failed to initiate 2FA";
+        const msg = graphqlErrorMessage(err, t.twoFactorEnableFailed);
         setError(msg);
-        toast({ title: "Error", description: msg, variant: "destructive" });
+        toast({ title: t.error, description: msg, variant: "destructive" });
         throw err;
       } finally {
         setLoading(false);
       }
     },
-    [toast],
+    [toast, t],
   );
 
   return { initEnable, loading, error };
@@ -349,6 +367,7 @@ export const useEnableTwoFactor = () => {
 
 export const useVerifyTwoFactor = () => {
   const { toast } = useToast();
+  const t = useT();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -361,21 +380,21 @@ export const useVerifyTwoFactor = () => {
         if (result.success) {
           toast({ title: "Success", description: result.message || "2FA verified successfully" });
         } else {
-          const msg = result.message || "Invalid verification code";
+          const msg = safeServerMessage(result.message, t.twoFactorVerifyFailed);
           setError(msg);
-          toast({ title: "Error", description: msg, variant: "destructive" });
+          toast({ title: t.error, description: msg, variant: "destructive" });
         }
         return result;
       } catch (err) {
-        const msg = err instanceof Error ? err.message : "Verification failed";
+        const msg = graphqlErrorMessage(err, t.twoFactorVerifyFailed);
         setError(msg);
-        toast({ title: "Error", description: msg, variant: "destructive" });
+        toast({ title: t.error, description: msg, variant: "destructive" });
         throw err;
       } finally {
         setLoading(false);
       }
     },
-    [toast],
+    [toast, t],
   );
 
   return { verifyCode, loading, error };
@@ -386,6 +405,7 @@ export const useGetAssociationAnalytics = (
   period?: string
 ) => {
   const { toast } = useToast();
+  const t = useT();
   const query = useQuery({
     queryKey: ["associationAnalytics", associationId, period],
     queryFn: () => getAssociationAnalytics(associationId!, period),
@@ -395,21 +415,22 @@ export const useGetAssociationAnalytics = (
   useEffect(() => {
     if (query.error) {
       // Never ClientError.message: it embeds the request (the association id included).
-      const message = graphqlErrorMessage(query.error, "Failed to fetch analytics");
-      toast({ title: "Error", description: message, variant: "destructive" });
+      const message = graphqlErrorMessage(query.error, t.analyticsLoadFailed);
+      toast({ title: t.error, description: message, variant: "destructive" });
     }
-  }, [query.error, toast]);
+  }, [query.error, toast, t]);
 
   return {
     analytics: query.data ?? null,
     loading: query.isLoading,
-    error: query.error instanceof Error ? query.error.message : null,
+    error: graphqlErrorText(query.error, t.analyticsLoadFailed),
     refetch: query.refetch,
   };
 };
 
 export const useDisableTwoFactor = () => {
   const { toast } = useToast();
+  const t = useT();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -421,20 +442,20 @@ export const useDisableTwoFactor = () => {
       if (result.success) {
         toast({ title: "Success", description: result.message || "2FA has been disabled" });
       } else {
-        const msg = result.message || "Failed to disable 2FA";
+        const msg = safeServerMessage(result.message, t.twoFactorDisableFailed);
         setError(msg);
-        toast({ title: "Error", description: msg, variant: "destructive" });
+        toast({ title: t.error, description: msg, variant: "destructive" });
       }
       return result;
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Failed to disable 2FA";
+      const msg = graphqlErrorMessage(err, t.twoFactorDisableFailed);
       setError(msg);
-      toast({ title: "Error", description: msg, variant: "destructive" });
+      toast({ title: t.error, description: msg, variant: "destructive" });
       throw err;
     } finally {
       setLoading(false);
     }
-  }, [toast]);
+  }, [toast, t]);
 
   return { doDisable, loading, error };
 };

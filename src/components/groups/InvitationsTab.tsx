@@ -27,6 +27,7 @@ import { cancelGroupInvitation } from "@/services/graphql/groups/mutations";
 import type { InvitationStatus } from "@/services/graphql/groups/types";
 import { userLabel } from "@/lib/userLabel";
 import { useT } from "@/hooks/useT";
+import { graphqlErrorMessage } from "@/lib/graphqlErrors";
 
 interface Props {
   groupId: string;
@@ -67,7 +68,8 @@ function formatDate(value?: string): string {
 }
 
 export default function InvitationsTab({ groupId }: Props) {
-  const unknownUser = useT().unknownUser;
+  const t = useT();
+  const unknownUser = t.unknownUser;
   const { toast } = useToast();
   const [rows, setRows] = useState<GroupInvitationRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -87,13 +89,13 @@ export default function InvitationsTab({ groupId }: Props) {
     } catch (err) {
       toast({
         title: "Failed to load invitations",
-        description: err instanceof Error ? err.message : String(err),
+        description: graphqlErrorMessage(err, t.errorTryAgain),
         variant: "destructive",
       });
     } finally {
       setLoading(false);
     }
-  }, [groupId, statusFilter, toast]);
+  }, [groupId, statusFilter, toast, t]);
 
   useEffect(() => {
     void load();
@@ -108,7 +110,7 @@ export default function InvitationsTab({ groupId }: Props) {
     } catch (err) {
       toast({
         title: "Cancel failed",
-        description: err instanceof Error ? err.message : String(err),
+        description: graphqlErrorMessage(err, t.errorTryAgain),
         variant: "destructive",
       });
     } finally {

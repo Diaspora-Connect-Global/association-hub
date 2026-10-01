@@ -77,6 +77,7 @@ import { CommunityPicker } from "@/components/pickers/CommunityPicker";
 import { PersonPicker } from "@/components/pickers/PersonPicker";
 import type { PersonSearchResult } from "@/services/graphql/association/peopleSearch";
 import type { LinkableCommunity } from "@/services/graphql/association/communitySearch";
+import { graphqlErrorMessage } from "@/lib/graphqlErrors";
 
 // ── Constants ────────────────────────────────────────────────────────────────
 
@@ -272,7 +273,7 @@ export default function Profile() {
     } catch (err) {
       toast({
         title: "Save failed",
-        description: err instanceof Error ? err.message : "Could not save changes.",
+        description: graphqlErrorMessage(err, "Could not save changes."),
         variant: "destructive",
       });
     }
@@ -304,7 +305,7 @@ export default function Profile() {
     } catch (err) {
       toast({
         title: "Upload failed",
-        description: err instanceof Error ? err.message : "Could not upload logo.",
+        description: graphqlErrorMessage(err, "Could not upload logo."),
         variant: "destructive",
       });
     } finally {
@@ -325,7 +326,7 @@ export default function Profile() {
     } catch (err) {
       toast({
         title: "Upload failed",
-        description: err instanceof Error ? err.message : "Could not upload banner.",
+        description: graphqlErrorMessage(err, "Could not upload banner."),
         variant: "destructive",
       });
     } finally {

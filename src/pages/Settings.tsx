@@ -28,6 +28,7 @@ import {
 } from "@/services/graphql/association";
 import { ServiceCheckboxGrid } from "@/components/services/ServiceCheckboxGrid";
 import { resolveEnabledServices, sortServiceKeys } from "@/constants/communityServices";
+import { graphqlErrorMessage } from "@/lib/graphqlErrors";
 
 // Selectable access policies (PAID is managed where a price can be set, not here).
 const joinPolicyLabels: Record<Exclude<JoinPolicy, "PAID">, string> = {
@@ -72,7 +73,7 @@ export default function Settings() {
     } catch (err) {
       toast({
         title: "Settings load failed",
-        description: err instanceof Error ? err.message : "Unable to load association settings.",
+        description: graphqlErrorMessage(err, "Unable to load association settings."),
         variant: "destructive",
       });
     }
@@ -104,7 +105,7 @@ export default function Settings() {
     } catch (err) {
       toast({
         title: t.servicesSaveFailed,
-        description: err instanceof Error ? err.message : t.servicesSaveFailed,
+        description: graphqlErrorMessage(err, t.servicesSaveFailed),
         variant: "destructive",
       });
     } finally {
@@ -131,7 +132,7 @@ export default function Settings() {
     } catch (err) {
       toast({
         title: "Save failed",
-        description: err instanceof Error ? err.message : "Unable to save association settings.",
+        description: graphqlErrorMessage(err, "Unable to save association settings."),
         variant: "destructive",
       });
     } finally {
@@ -157,7 +158,7 @@ export default function Settings() {
     } catch (err) {
       toast({
         title: "Avatar upload failed",
-        description: err instanceof Error ? err.message : "Unable to upload avatar.",
+        description: graphqlErrorMessage(err, "Unable to upload avatar."),
         variant: "destructive",
       });
     } finally {

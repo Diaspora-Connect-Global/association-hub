@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
+import { graphqlErrorMessage, graphqlErrorText } from "@/lib/graphqlErrors";
 import { vendorService } from "@/services/graphql/vendor/operations";
 import type {
   CreateVendorInput,
@@ -27,7 +28,7 @@ export const useGetMyVendor = () => {
   useEffect(() => {
     if (query.error) {
       const message =
-        query.error instanceof Error ? query.error.message : "Failed to fetch vendor";
+        graphqlErrorMessage(query.error, "Failed to fetch vendor");
       toast({ title: "Error", description: message, variant: "destructive" });
     }
   }, [query.error, toast]);
@@ -35,7 +36,7 @@ export const useGetMyVendor = () => {
   return {
     vendor: query.data ?? null,
     loading: query.isLoading,
-    error: query.error instanceof Error ? query.error.message : null,
+    error: graphqlErrorText(query.error, "Failed to fetch vendor"),
     fetchMyVendor: query.refetch,
   };
 };
@@ -51,7 +52,7 @@ export const useGetVendor = (vendorId: string) => {
   useEffect(() => {
     if (query.error) {
       const message =
-        query.error instanceof Error ? query.error.message : "Failed to fetch vendor";
+        graphqlErrorMessage(query.error, "Failed to fetch vendor");
       toast({ title: "Error", description: message, variant: "destructive" });
     }
   }, [query.error, toast]);
@@ -59,7 +60,7 @@ export const useGetVendor = (vendorId: string) => {
   return {
     vendor: query.data ?? null,
     loading: query.isLoading,
-    error: query.error instanceof Error ? query.error.message : null,
+    error: graphqlErrorText(query.error, "Failed to fetch vendor"),
     fetchVendor: query.refetch,
   };
 };
@@ -74,7 +75,7 @@ export const useGetVendorDashboard = (vendorId?: string) => {
   useEffect(() => {
     if (query.error) {
       const message =
-        query.error instanceof Error ? query.error.message : "Failed to fetch dashboard";
+        graphqlErrorMessage(query.error, "Failed to fetch dashboard");
       toast({ title: "Error", description: message, variant: "destructive" });
     }
   }, [query.error, toast]);
@@ -82,7 +83,7 @@ export const useGetVendorDashboard = (vendorId?: string) => {
   return {
     dashboard: query.data ?? null,
     loading: query.isLoading,
-    error: query.error instanceof Error ? query.error.message : null,
+    error: graphqlErrorText(query.error, "Failed to fetch dashboard"),
     fetchDashboard: query.refetch,
   };
 };
@@ -97,7 +98,7 @@ export const useGetVendorEligibility = (vendorId?: string) => {
   useEffect(() => {
     if (query.error) {
       const message =
-        query.error instanceof Error ? query.error.message : "Failed to fetch eligibility";
+        graphqlErrorMessage(query.error, "Failed to fetch eligibility");
       toast({ title: "Error", description: message, variant: "destructive" });
     }
   }, [query.error, toast]);
@@ -105,7 +106,7 @@ export const useGetVendorEligibility = (vendorId?: string) => {
   return {
     eligibility: query.data ?? null,
     loading: query.isLoading,
-    error: query.error instanceof Error ? query.error.message : null,
+    error: graphqlErrorText(query.error, "Failed to fetch eligibility"),
     fetchEligibility: query.refetch,
   };
 };
@@ -124,7 +125,7 @@ export const useListVendorProducts = (
   useEffect(() => {
     if (query.error) {
       const message =
-        query.error instanceof Error ? query.error.message : "Failed to fetch products";
+        graphqlErrorMessage(query.error, "Failed to fetch products");
       toast({ title: "Error", description: message, variant: "destructive" });
     }
   }, [query.error, toast]);
@@ -132,7 +133,7 @@ export const useListVendorProducts = (
   return {
     products: query.data ?? null,
     loading: query.isLoading,
-    error: query.error instanceof Error ? query.error.message : null,
+    error: graphqlErrorText(query.error, "Failed to fetch products"),
     fetchProducts: query.refetch,
   };
 };
@@ -151,7 +152,7 @@ export const useListVendorServicePackages = (
   useEffect(() => {
     if (query.error) {
       const message =
-        query.error instanceof Error ? query.error.message : "Failed to fetch packages";
+        graphqlErrorMessage(query.error, "Failed to fetch packages");
       toast({ title: "Error", description: message, variant: "destructive" });
     }
   }, [query.error, toast]);
@@ -159,7 +160,7 @@ export const useListVendorServicePackages = (
   return {
     packages: query.data ?? null,
     loading: query.isLoading,
-    error: query.error instanceof Error ? query.error.message : null,
+    error: graphqlErrorText(query.error, "Failed to fetch packages"),
     fetchPackages: query.refetch,
   };
 };
@@ -178,7 +179,7 @@ export const useListVendorOrders = (
   useEffect(() => {
     if (query.error) {
       const message =
-        query.error instanceof Error ? query.error.message : "Failed to fetch orders";
+        graphqlErrorMessage(query.error, "Failed to fetch orders");
       toast({ title: "Error", description: message, variant: "destructive" });
     }
   }, [query.error, toast]);
@@ -186,7 +187,7 @@ export const useListVendorOrders = (
   return {
     orders: query.data ?? null,
     loading: query.isLoading,
-    error: query.error instanceof Error ? query.error.message : null,
+    error: graphqlErrorText(query.error, "Failed to fetch orders"),
     fetchOrders: query.refetch,
   };
 };
@@ -202,7 +203,7 @@ export const useGetVendorEscrowSettings = (vendorId: string | null) => {
   useEffect(() => {
     if (query.error) {
       const message =
-        query.error instanceof Error ? query.error.message : "Failed to fetch escrow settings";
+        graphqlErrorMessage(query.error, "Failed to fetch escrow settings");
       toast({ title: "Error", description: message, variant: "destructive" });
     }
   }, [query.error, toast]);
@@ -210,7 +211,7 @@ export const useGetVendorEscrowSettings = (vendorId: string | null) => {
   return {
     settings: query.data ?? null,
     loading: query.isLoading,
-    error: query.error instanceof Error ? query.error.message : null,
+    error: graphqlErrorText(query.error, "Failed to fetch escrow settings"),
     fetchSettings: query.refetch,
   };
 };
@@ -225,14 +226,14 @@ export const useCreateVendor = () => {
       toast({ title: "Success", description: "Vendor profile created successfully" });
     },
     onError: (err) => {
-      const message = err instanceof Error ? err.message : "Failed to create vendor";
+      const message = graphqlErrorMessage(err, "Failed to create vendor");
       toast({ title: "Error", description: message, variant: "destructive" });
     },
   });
 
   return {
     loading: mutation.isPending,
-    error: mutation.error instanceof Error ? mutation.error.message : null,
+    error: graphqlErrorText(mutation.error, "Failed to create vendor"),
     createVendor: mutation.mutateAsync,
   };
 };
@@ -243,14 +244,14 @@ export const useRequestVendorUploadUrl = () => {
     mutationFn: (input: RequestVendorUploadUrlInput) =>
       vendorService.requestVendorUploadUrl(input),
     onError: (err) => {
-      const message = err instanceof Error ? err.message : "Failed to request upload URL";
+      const message = graphqlErrorMessage(err, "Failed to request upload URL");
       toast({ title: "Error", description: message, variant: "destructive" });
     },
   });
 
   return {
     loading: mutation.isPending,
-    error: mutation.error instanceof Error ? mutation.error.message : null,
+    error: graphqlErrorText(mutation.error, "Failed to request upload URL"),
     requestUploadUrl: mutation.mutateAsync,
   };
 };
@@ -266,7 +267,7 @@ export const useUploadFileToGCS = () => {
       return true;
     },
     onError: (err) => {
-      const message = err instanceof Error ? err.message : "Failed to upload file";
+      const message = graphqlErrorMessage(err, "Failed to upload file");
       toast({ title: "Error", description: message, variant: "destructive" });
     },
   });
@@ -276,7 +277,7 @@ export const useUploadFileToGCS = () => {
 
   return {
     loading: mutation.isPending,
-    error: mutation.error instanceof Error ? mutation.error.message : null,
+    error: graphqlErrorText(mutation.error, "Failed to upload file"),
     progress,
     uploadFile,
   };
@@ -293,14 +294,14 @@ export const useCreateProduct = () => {
       });
     },
     onError: (err) => {
-      const message = err instanceof Error ? err.message : "Failed to create product";
+      const message = graphqlErrorMessage(err, "Failed to create product");
       toast({ title: "Error", description: message, variant: "destructive" });
     },
   });
 
   return {
     loading: mutation.isPending,
-    error: mutation.error instanceof Error ? mutation.error.message : null,
+    error: graphqlErrorText(mutation.error, "Failed to create product"),
     createProduct: mutation.mutateAsync,
   };
 };
@@ -315,14 +316,14 @@ export const useUpdateProduct = () => {
       }
     },
     onError: (err) => {
-      const message = err instanceof Error ? err.message : "Failed to update product";
+      const message = graphqlErrorMessage(err, "Failed to update product");
       toast({ title: "Error", description: message, variant: "destructive" });
     },
   });
 
   return {
     loading: mutation.isPending,
-    error: mutation.error instanceof Error ? mutation.error.message : null,
+    error: graphqlErrorText(mutation.error, "Failed to update product"),
     updateProduct: mutation.mutateAsync,
   };
 };
@@ -337,14 +338,14 @@ export const usePublishProduct = () => {
       }
     },
     onError: (err) => {
-      const message = err instanceof Error ? err.message : "Failed to publish product";
+      const message = graphqlErrorMessage(err, "Failed to publish product");
       toast({ title: "Error", description: message, variant: "destructive" });
     },
   });
 
   return {
     loading: mutation.isPending,
-    error: mutation.error instanceof Error ? mutation.error.message : null,
+    error: graphqlErrorText(mutation.error, "Failed to publish product"),
     publishProduct: mutation.mutateAsync,
   };
 };
@@ -359,14 +360,14 @@ export const useDeleteProduct = () => {
       }
     },
     onError: (err) => {
-      const message = err instanceof Error ? err.message : "Failed to delete product";
+      const message = graphqlErrorMessage(err, "Failed to delete product");
       toast({ title: "Error", description: message, variant: "destructive" });
     },
   });
 
   return {
     loading: mutation.isPending,
-    error: mutation.error instanceof Error ? mutation.error.message : null,
+    error: graphqlErrorText(mutation.error, "Failed to delete product"),
     deleteProduct: mutation.mutateAsync,
   };
 };
@@ -380,14 +381,14 @@ export const useCreateServicePackage = () => {
       toast({ title: "Success", description: "Service package created successfully" });
     },
     onError: (err) => {
-      const message = err instanceof Error ? err.message : "Failed to create service package";
+      const message = graphqlErrorMessage(err, "Failed to create service package");
       toast({ title: "Error", description: message, variant: "destructive" });
     },
   });
 
   return {
     loading: mutation.isPending,
-    error: mutation.error instanceof Error ? mutation.error.message : null,
+    error: graphqlErrorText(mutation.error, "Failed to create service package"),
     createServicePackage: mutation.mutateAsync,
   };
 };
@@ -400,14 +401,14 @@ export const useAddMilestone = () => {
       toast({ title: "Success", description: "Milestone added successfully" });
     },
     onError: (err) => {
-      const message = err instanceof Error ? err.message : "Failed to add milestone";
+      const message = graphqlErrorMessage(err, "Failed to add milestone");
       toast({ title: "Error", description: message, variant: "destructive" });
     },
   });
 
   return {
     loading: mutation.isPending,
-    error: mutation.error instanceof Error ? mutation.error.message : null,
+    error: graphqlErrorText(mutation.error, "Failed to add milestone"),
     addMilestone: mutation.mutateAsync,
   };
 };
@@ -423,14 +424,14 @@ export const usePublishServicePackage = () => {
     },
     onError: (err) => {
       const message =
-        err instanceof Error ? err.message : "Failed to publish service package";
+        graphqlErrorMessage(err, "Failed to publish service package");
       toast({ title: "Error", description: message, variant: "destructive" });
     },
   });
 
   return {
     loading: mutation.isPending,
-    error: mutation.error instanceof Error ? mutation.error.message : null,
+    error: graphqlErrorText(mutation.error, "Failed to publish service package"),
     publishServicePackage: mutation.mutateAsync,
   };
 };
@@ -443,14 +444,14 @@ export const useRequestPayout = () => {
       toast({ title: "Success", description: "Payout request submitted successfully" });
     },
     onError: (err) => {
-      const message = err instanceof Error ? err.message : "Failed to request payout";
+      const message = graphqlErrorMessage(err, "Failed to request payout");
       toast({ title: "Error", description: message, variant: "destructive" });
     },
   });
 
   return {
     loading: mutation.isPending,
-    error: mutation.error instanceof Error ? mutation.error.message : null,
+    error: graphqlErrorText(mutation.error, "Failed to request payout"),
     requestPayout: mutation.mutateAsync,
   };
 };
@@ -465,14 +466,14 @@ export const useSuspendVendor = () => {
       }
     },
     onError: (err) => {
-      const message = err instanceof Error ? err.message : "Failed to suspend vendor";
+      const message = graphqlErrorMessage(err, "Failed to suspend vendor");
       toast({ title: "Error", description: message, variant: "destructive" });
     },
   });
 
   return {
     loading: mutation.isPending,
-    error: mutation.error instanceof Error ? mutation.error.message : null,
+    error: graphqlErrorText(mutation.error, "Failed to suspend vendor"),
     suspendVendor: mutation.mutateAsync,
   };
 };
@@ -487,14 +488,14 @@ export const useReinstateVendor = () => {
       }
     },
     onError: (err) => {
-      const message = err instanceof Error ? err.message : "Failed to reinstate vendor";
+      const message = graphqlErrorMessage(err, "Failed to reinstate vendor");
       toast({ title: "Error", description: message, variant: "destructive" });
     },
   });
 
   return {
     loading: mutation.isPending,
-    error: mutation.error instanceof Error ? mutation.error.message : null,
+    error: graphqlErrorText(mutation.error, "Failed to reinstate vendor"),
     reinstateVendor: mutation.mutateAsync,
   };
 };
@@ -512,14 +513,14 @@ export const useUpdateVendorEscrowSettings = () => {
       });
     },
     onError: (err) => {
-      const message = err instanceof Error ? err.message : "Failed to save escrow settings";
+      const message = graphqlErrorMessage(err, "Failed to save escrow settings");
       toast({ title: "Error", description: message, variant: "destructive" });
     },
   });
 
   return {
     loading: mutation.isPending,
-    error: mutation.error instanceof Error ? mutation.error.message : null,
+    error: graphqlErrorText(mutation.error, "Failed to save escrow settings"),
     updateEscrowSettings: mutation.mutateAsync,
   };
 };

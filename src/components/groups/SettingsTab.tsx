@@ -34,6 +34,7 @@ import {
 } from "@/services/graphql/groups/mutations";
 import { userLabel } from "@/lib/userLabel";
 import { useT } from "@/hooks/useT";
+import { graphqlErrorMessage } from "@/lib/graphqlErrors";
 
 interface Props {
   group: Group;
@@ -48,7 +49,8 @@ function memberName(m: GroupMember, unknown: string): string {
 }
 
 export default function SettingsTab({ group, members, onUpdated, onDeleted }: Props) {
-  const unknownUser = useT().unknownUser;
+  const t = useT();
+  const unknownUser = t.unknownUser;
   const { toast } = useToast();
 
   const [name, setName] = useState(group.name);
@@ -101,7 +103,7 @@ export default function SettingsTab({ group, members, onUpdated, onDeleted }: Pr
     } catch (err) {
       toast({
         title: "Update failed",
-        description: err instanceof Error ? err.message : String(err),
+        description: graphqlErrorMessage(err, t.errorTryAgain),
         variant: "destructive",
       });
     } finally {
@@ -125,7 +127,7 @@ export default function SettingsTab({ group, members, onUpdated, onDeleted }: Pr
     } catch (err) {
       toast({
         title: "Transfer failed",
-        description: err instanceof Error ? err.message : String(err),
+        description: graphqlErrorMessage(err, t.errorTryAgain),
         variant: "destructive",
       });
     } finally {
@@ -145,7 +147,7 @@ export default function SettingsTab({ group, members, onUpdated, onDeleted }: Pr
     } catch (err) {
       toast({
         title: "Delete failed",
-        description: err instanceof Error ? err.message : String(err),
+        description: graphqlErrorMessage(err, t.errorTryAgain),
         variant: "destructive",
       });
     } finally {

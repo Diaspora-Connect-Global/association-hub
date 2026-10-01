@@ -27,6 +27,7 @@ import {
   createRoleDefinition,
   type RoleDefinition,
 } from "@/services/graphql/admin-management";
+import { graphqlErrorMessage } from "@/lib/graphqlErrors";
 
 interface RolesTabProps {
   associationId: string;
@@ -61,7 +62,7 @@ export function RolesTab({ associationId }: RolesTabProps) {
         setError(res.message ?? t.rolesErrorLoad);
       }
     } catch (err) {
-      setError((err as Error).message ?? t.rolesErrorLoad);
+      setError(graphqlErrorMessage(err, t.rolesErrorLoad));
     } finally {
       setLoading(false);
     }
@@ -220,7 +221,7 @@ function CreateRoleDialog({
       }
     } catch (err) {
       toast({
-        title: (err as Error).message ?? t.rolesErrorCreate,
+        title: graphqlErrorMessage(err, t.rolesErrorCreate),
         variant: "destructive",
       });
     } finally {

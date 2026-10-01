@@ -32,6 +32,7 @@ import {
   type EventType as BackendEvent,
 } from "@/services/graphql/events/operations";
 import { uploadEventCoverImage } from "@/services/graphql/events/uploads";
+import { graphqlErrorMessage } from "@/lib/graphqlErrors";
 
 /**
  * Resolve the value that should be sent as `coverImageUrl` on createEvent /
@@ -168,7 +169,7 @@ export default function Events() {
       const response = await getEventsByOwner("ASSOCIATION", associationId, 1, 100);
       setEvents((response.events ?? []).map(mapBackendToUiEvent));
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Failed to load events.";
+      const message = graphqlErrorMessage(err, "Failed to load events.");
       toast({ title: "Error loading events", description: message, variant: "destructive" });
     } finally {
       setLoading(false);
@@ -262,7 +263,7 @@ export default function Events() {
       }
       await loadEvents();
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Action failed.";
+      const message = graphqlErrorMessage(err, "Action failed.");
       toast({ title: "Error", description: message, variant: "destructive" });
     }
   };
@@ -281,7 +282,7 @@ export default function Events() {
       setEventToDelete(null);
       await loadEvents();
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Delete failed.";
+      const message = graphqlErrorMessage(err, "Delete failed.");
       toast({ title: "Error deleting event", description: message, variant: "destructive" });
     }
   };
@@ -362,7 +363,7 @@ export default function Events() {
       setEditingEvent(null);
       await loadEvents();
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Failed to save event.";
+      const message = graphqlErrorMessage(err, "Failed to save event.");
       toast({ title: "Error saving event", description: message, variant: "destructive" });
     }
   };

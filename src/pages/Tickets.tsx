@@ -30,6 +30,7 @@ import {
   type ReportStatus,
 } from "@/services/graphql/association";
 import { useMemberLabels } from "@/hooks/useMemberLabels";
+import { graphqlErrorMessage } from "@/lib/graphqlErrors";
 
 const resolutionOptions: ReportResolution[] = ["WARNING_ISSUED", "MEMBER_REMOVED", "NO_ACTION"];
 
@@ -65,7 +66,7 @@ export default function Tickets() {
     } catch (err) {
       toast({
         title: "Reports load failed",
-        description: err instanceof Error ? err.message : "Unable to load reports.",
+        description: graphqlErrorMessage(err, "Unable to load reports."),
         variant: "destructive",
       });
     } finally {
@@ -89,7 +90,7 @@ export default function Tickets() {
     } catch (err) {
       toast({
         title: "Resolution failed",
-        description: err instanceof Error ? err.message : "Unable to resolve report.",
+        description: graphqlErrorMessage(err, "Unable to resolve report."),
         variant: "destructive",
       });
     } finally {

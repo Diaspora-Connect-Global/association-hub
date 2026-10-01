@@ -15,7 +15,6 @@ import {
   ToggleLeft, 
   Trash2, 
   ShoppingCart,
-  Package,
   Star
 } from "lucide-react";
 import { useT } from "@/hooks/useT";
@@ -26,7 +25,6 @@ interface ListingCardProps {
   onEdit: (listing: Listing) => void;
   onTogglePublish: (listing: Listing) => void;
   onDelete: (listing: Listing) => void;
-  onViewOrders: (listing: Listing) => void;
 }
 
 const statusVariants: Record<string, "active" | "inactive" | "pending"> = {
@@ -41,7 +39,6 @@ export function ListingCard({
   onEdit,
   onTogglePublish,
   onDelete,
-  onViewOrders,
 }: ListingCardProps) {
   const t = useT();
   
@@ -152,10 +149,6 @@ export function ListingCard({
               <DropdownMenuItem onClick={() => onTogglePublish(listing)}>
                 <ToggleLeft className="mr-2 h-4 w-4" />
                 {listing.status === "published" ? t.unpublishListing : t.publishListing}
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onViewOrders(listing)}>
-                <Package className="mr-2 h-4 w-4" />
-                {t.viewOrders}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem 

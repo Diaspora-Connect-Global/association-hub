@@ -19,6 +19,7 @@ import {
   rejectJoinRequest,
 } from "@/services/graphql/groups/mutations";
 import { userLabel } from "@/lib/userLabel";
+import { graphqlErrorMessage } from "@/lib/graphqlErrors";
 
 // The join-request list wrapper (GroupJoinRequestListResponse) exposes only
 // `total` — no `hasMore` — so paging is driven by (loaded < total).
@@ -65,11 +66,11 @@ export default function JoinRequestsTab({ groupId, onChanged }: Props) {
       setRequests(res.requests);
       setTotal(res.total ?? res.requests.length);
     } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
+      setError(graphqlErrorMessage(err, t.errorTryAgain));
     } finally {
       setLoading(false);
     }
-  }, [groupId]);
+  }, [groupId, t]);
 
   const loadMore = useCallback(async () => {
     setLoadingMore(true);
@@ -80,13 +81,13 @@ export default function JoinRequestsTab({ groupId, onChanged }: Props) {
     } catch (err) {
       toast({
         title: "Load more failed",
-        description: err instanceof Error ? err.message : String(err),
+        description: graphqlErrorMessage(err, t.errorTryAgain),
         variant: "destructive",
       });
     } finally {
       setLoadingMore(false);
     }
-  }, [groupId, requests.length, toast]);
+  }, [groupId, requests.length, toast, t]);
 
   useEffect(() => {
     void load();
@@ -103,7 +104,7 @@ export default function JoinRequestsTab({ groupId, onChanged }: Props) {
     } catch (err) {
       toast({
         title: "Approve failed",
-        description: err instanceof Error ? err.message : String(err),
+        description: graphqlErrorMessage(err, t.errorTryAgain),
         variant: "destructive",
       });
     } finally {
@@ -123,7 +124,7 @@ export default function JoinRequestsTab({ groupId, onChanged }: Props) {
     } catch (err) {
       toast({
         title: "Reject failed",
-        description: err instanceof Error ? err.message : String(err),
+        description: graphqlErrorMessage(err, t.errorTryAgain),
         variant: "destructive",
       });
     } finally {

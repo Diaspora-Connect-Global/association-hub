@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
+import { useT } from "@/hooks/useT";
 import { getGroup, getGroupMembers } from "@/services/graphql/groups/queries";
 import type { Group, GroupMember } from "@/services/graphql/groups/types";
 import OverviewTab from "@/components/groups/OverviewTab";
@@ -15,6 +16,7 @@ import JoinRequestsTab from "@/components/groups/JoinRequestsTab";
 import BlockedTab from "@/components/groups/BlockedTab";
 import SettingsTab from "@/components/groups/SettingsTab";
 import ChatTab from "@/components/groups/ChatTab";
+import { graphqlErrorMessage } from "@/lib/graphqlErrors";
 
 // Rows fetched per member page. The gateway hard-caps a group member page at
 // 200; keep this under that so `hasMore` reliably drives the "Load more" control.
@@ -36,6 +38,7 @@ export default function GroupDetail() {
   const { groupId } = useParams<{ groupId: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const t = useT();
 
   const [group, setGroup] = useState<Group | null>(null);
   const [members, setMembers] = useState<GroupMember[]>([]);
@@ -60,7 +63,7 @@ export default function GroupDetail() {
       setMembersTotal(m.total ?? m.members.length);
       setMembersHasMore(m.hasMore ?? false);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load group");
+      setError(graphqlErrorMessage(err, "Failed to load group"));
     } finally {
       setLoading(false);
     }
@@ -77,13 +80,13 @@ export default function GroupDetail() {
     } catch (err) {
       toast({
         title: "Load more failed",
-        description: err instanceof Error ? err.message : String(err),
+        description: graphqlErrorMessage(err, t.errorTryAgain),
         variant: "destructive",
       });
     } finally {
       setLoadingMoreMembers(false);
     }
-  }, [groupId, members.length, toast]);
+  }, [groupId, members.length, toast, t]);
 
   useEffect(() => {
     void reload();

@@ -57,6 +57,7 @@ import { getAdminAssociationId } from "@/stores/adminAuthStore";
 import { getEntityGroups } from "@/services/graphql/groups/queries";
 import { createGroup, deleteGroup } from "@/services/graphql/groups/mutations";
 import type { Group, GroupPrivacy } from "@/services/graphql/groups/types";
+import { graphqlErrorMessage } from "@/lib/graphqlErrors";
 
 interface CreateForm {
   name: string;
@@ -122,7 +123,7 @@ export default function Groups() {
         });
         setGroups(result.groups);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to load groups");
+        setError(graphqlErrorMessage(err, "Failed to load groups"));
       } finally {
         setLoading(false);
       }
@@ -166,7 +167,7 @@ export default function Groups() {
     } catch (err) {
       toast({
         title: "Delete failed",
-        description: err instanceof Error ? err.message : "Failed to delete group",
+        description: graphqlErrorMessage(err, "Failed to delete group"),
         variant: "destructive",
       });
     } finally {
@@ -212,7 +213,7 @@ export default function Groups() {
     } catch (err) {
       toast({
         title: "Create failed",
-        description: err instanceof Error ? err.message : "Failed to create group",
+        description: graphqlErrorMessage(err, "Failed to create group"),
         variant: "destructive",
       });
     } finally {

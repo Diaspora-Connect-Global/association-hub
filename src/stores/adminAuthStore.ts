@@ -3,6 +3,7 @@ import { persist } from "zustand/middleware";
 import { adminLogin as adminLoginApi } from "@/services/graphql/adminAuth";
 import type { AdminUserInfo } from "@/services/graphql/adminAuth";
 import { useAssociationAdminStore } from "@/stores/associationAdminStore";
+import { graphqlErrorMessage } from "@/lib/graphqlErrors";
 
 type JwtRole = "ASSOCIATION_ADMIN";
 type JwtScopeType = "ASSOCIATION";
@@ -139,7 +140,7 @@ export const useAdminAuthStore = create<AdminAuthState>()(
           });
           return { success: false, error: fallbackError };
         } catch (err) {
-          const message = err instanceof Error ? err.message : "Network error";
+          const message = graphqlErrorMessage(err, "Network error");
           set({ isLoading: false, error: message });
           return { success: false, error: message };
         }

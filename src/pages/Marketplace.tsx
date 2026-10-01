@@ -17,7 +17,6 @@ import { Listing, ListingFormData } from "@/types/marketplace";
 import { ListingCard } from "@/components/marketplace/ListingCard";
 import { CreateEditListingModal } from "@/components/marketplace/CreateEditListingModal";
 import { ListingDetailsModal } from "@/components/marketplace/ListingDetailsModal";
-import { OrdersDrawer } from "@/components/marketplace/OrdersDrawer";
 import { DeleteListingModal } from "@/components/marketplace/DeleteListingModal";
 import { MarketplaceAnalyticsWidget } from "@/components/marketplace/MarketplaceAnalyticsWidget";
 import { toast } from "@/hooks/use-toast";
@@ -120,7 +119,6 @@ export default function Marketplace() {
   const [editingListing, setEditingListing] = useState<Listing | null>(null);
   const [selectedListing, setSelectedListing] = useState<Listing | null>(null);
   const [detailsDrawerOpen, setDetailsDrawerOpen] = useState(false);
-  const [ordersDrawerOpen, setOrdersDrawerOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [listingToDelete, setListingToDelete] = useState<Listing | null>(null);
 
@@ -173,11 +171,6 @@ export default function Marketplace() {
         ? "Your listing is now hidden from users." 
         : "Your listing is now live in the marketplace.",
     });
-  };
-
-  const handleViewOrders = (listing: Listing) => {
-    setSelectedListing(listing);
-    setOrdersDrawerOpen(true);
   };
 
   const handleDelete = (listing: Listing) => {
@@ -312,7 +305,6 @@ export default function Marketplace() {
                     onEdit={handleEdit}
                     onTogglePublish={handleTogglePublish}
                     onDelete={handleDelete}
-                    onViewOrders={handleViewOrders}
                   />
                 </div>
               ))}
@@ -354,14 +346,7 @@ export default function Marketplace() {
         listing={selectedListing}
         onEdit={handleEdit}
         onTogglePublish={handleTogglePublish}
-        onViewOrders={handleViewOrders}
         onDelete={handleDelete}
-      />
-
-      <OrdersDrawer
-        open={ordersDrawerOpen}
-        onOpenChange={setOrdersDrawerOpen}
-        listing={selectedListing}
       />
 
       <DeleteListingModal

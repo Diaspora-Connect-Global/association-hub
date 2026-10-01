@@ -51,6 +51,7 @@ import {
 import { toast } from "@/hooks/use-toast";
 import { LayoutGrid, LayoutList, Loader2, Plus, RefreshCw, Search } from "lucide-react";
 import { useMemberLabels } from "@/hooks/useMemberLabels";
+import { graphqlErrorMessage, isPermissionRefusal } from "@/lib/graphqlErrors";
 
 function parseCsvList(value: string): string[] | undefined {
   const items = value
@@ -62,14 +63,12 @@ function parseCsvList(value: string): string[] | undefined {
 }
 
 function getErrorMessage(error: unknown): string {
-  if (error instanceof Error) {
-    if (/403|forbidden/i.test(error.message)) {
-      return "Forbidden: this admin can only manage opportunities owned by their association.";
-    }
-    return error.message;
+  // Never the raw ClientError.message: it embeds the whole request, ids included.
+  const message = graphqlErrorMessage(error, "Something went wrong.");
+  if (isPermissionRefusal(error) || /403|forbidden/i.test(message)) {
+    return "Forbidden: this admin can only manage opportunities owned by their association.";
   }
-
-  return "Something went wrong.";
+  return message;
 }
 
 function buildCreateInput(values: OpportunityFormValues, associationId: string): CreateOpportunityInput {

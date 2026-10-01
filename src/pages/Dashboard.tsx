@@ -19,6 +19,7 @@ import {
   getMemberReports,
   getPendingMembershipRequests,
 } from "@/services/graphql/association";
+import { graphqlErrorMessage } from "@/lib/graphqlErrors";
 
 export default function Dashboard() {
   const t = useT();
@@ -64,7 +65,7 @@ export default function Dashboard() {
       setPendingRequestsCount(pendingRequests.total ?? statsData.pendingRequests ?? 0);
       setPendingReportsCount(pendingReports.total ?? 0);
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Failed to load association dashboard.";
+      const message = graphqlErrorMessage(err, "Failed to load association dashboard.");
       setError(message);
       toast({ title: "Dashboard load failed", description: message, variant: "destructive" });
     } finally {

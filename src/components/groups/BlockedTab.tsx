@@ -20,6 +20,7 @@ import { getBlockedMembers } from "@/services/graphql/groups/queries";
 import { unblockMember } from "@/services/graphql/groups/mutations";
 import { userLabel } from "@/lib/userLabel";
 import { useT } from "@/hooks/useT";
+import { graphqlErrorMessage } from "@/lib/graphqlErrors";
 
 interface Props {
   groupId: string;
@@ -56,7 +57,8 @@ function formatDate(iso?: string): string {
 }
 
 export default function BlockedTab({ groupId }: Props) {
-  const unknownUser = useT().unknownUser;
+  const t = useT();
+  const unknownUser = t.unknownUser;
   const { toast } = useToast();
   const [blocks, setBlocks] = useState<BlockedMember[]>([]);
   const [loading, setLoading] = useState(true);
@@ -70,11 +72,11 @@ export default function BlockedTab({ groupId }: Props) {
       const res = await getBlockedMembers(groupId);
       setBlocks(res.blocks);
     } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
+      setError(graphqlErrorMessage(err, t.errorTryAgain));
     } finally {
       setLoading(false);
     }
-  }, [groupId]);
+  }, [groupId, t]);
 
   useEffect(() => {
     void load();
@@ -90,7 +92,7 @@ export default function BlockedTab({ groupId }: Props) {
     } catch (err) {
       toast({
         title: "Unblock failed",
-        description: err instanceof Error ? err.message : String(err),
+        description: graphqlErrorMessage(err, t.errorTryAgain),
         variant: "destructive",
       });
     } finally {

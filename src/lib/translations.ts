@@ -216,7 +216,6 @@ type TranslationKeys = {
   roleChangeRefusedDesc: string;
   removeAdminFailed: string;
   applicantsSearchPlaceholder: string;
-  ordersSearchPlaceholder: string;
   analyticsNotAvailable: string;
   analyticsThisPeriod: string;
   trendMembers: string;
@@ -634,7 +633,6 @@ type TranslationKeys = {
   unlimited: string;
   outOfStock: string;
   inStock: string;
-  viewOrders: string;
   editListing: string;
   deleteListing: string;
   unpublishListing: string;
@@ -671,7 +669,6 @@ type TranslationKeys = {
   views: string;
   noReviewsYet: string;
   reviewsDisabled: string;
-  clickOrdersToView: string;
 
   // Order/Marketplace modals
   deleteListingTitle: string;
@@ -1008,6 +1005,18 @@ type TranslationKeys = {
 
   // People — shown instead of a user id, which is never displayed
   unknownUser: string;
+  errorTryAgain: string;
+  profileLoadFailed: string;
+  profileUpdateFailed: string;
+  uploadStartFailed: string;
+  passwordUpdateFailed: string;
+  avatarUploadFailed: string;
+  twoFactorEnableFailed: string;
+  twoFactorVerifyFailed: string;
+  twoFactorDisableFailed: string;
+  analyticsLoadFailed: string;
+  ordersUnavailableTitle: string;
+  ordersUnavailableDesc: string;
 };
 
 const translations: Record<Language, TranslationKeys> = {
@@ -1365,7 +1374,6 @@ const translations: Record<Language, TranslationKeys> = {
     roleChangeRefusedDesc: "The server doesn't yet accept role changes from this console. Nothing was changed. Ask a platform admin to make this change for now.",
     removeAdminFailed: "Couldn't remove the admin",
     applicantsSearchPlaceholder: "Search applicants by name",
-    ordersSearchPlaceholder: "Search orders by buyer name or email",
     analyticsNotAvailable: "Not available",
     analyticsThisPeriod: "+{count} this period",
     trendMembers: "Members",
@@ -1649,7 +1657,6 @@ const translations: Record<Language, TranslationKeys> = {
     unlimited: "Unlimited",
     outOfStock: "Out of stock",
     inStock: "in stock",
-    viewOrders: "View Orders",
     editListing: "Edit Listing",
     deleteListing: "Delete Listing",
     unpublishListing: "Unpublish",
@@ -1686,7 +1693,6 @@ const translations: Record<Language, TranslationKeys> = {
     views: "Views",
     noReviewsYet: "No reviews yet",
     reviewsDisabled: "Reviews are disabled for this listing",
-    clickOrdersToView: "Click \"Orders\" button above to view all orders",
 
     // Order/Marketplace modals
     deleteListingTitle: "Delete Listing",
@@ -2025,6 +2031,18 @@ const translations: Record<Language, TranslationKeys> = {
     adminsAssignFormRole: "Role",
     adminsAssignFormSubmit: "Assign role",
     unknownUser: "Unknown user",
+    errorTryAgain: "Something went wrong. Please try again.",
+    profileLoadFailed: "Couldn't load your profile.",
+    profileUpdateFailed: "Couldn't save your profile.",
+    uploadStartFailed: "Couldn't start the upload.",
+    passwordUpdateFailed: "Couldn't update your password.",
+    avatarUploadFailed: "Couldn't upload the photo.",
+    twoFactorEnableFailed: "Couldn't start two-factor setup.",
+    twoFactorVerifyFailed: "Couldn't verify the code.",
+    twoFactorDisableFailed: "Couldn't turn off two-factor authentication.",
+    analyticsLoadFailed: "Couldn't load analytics.",
+    ordersUnavailableTitle: "Orders aren't available for associations yet",
+    ordersUnavailableDesc: "Orders placed for your association's listings can't be shown here yet.",
   },
   fr: {
     // Navigation
@@ -2380,7 +2398,6 @@ const translations: Record<Language, TranslationKeys> = {
     roleChangeRefusedDesc: "Le serveur n’accepte pas encore les changements de rôle depuis cette console. Rien n’a été modifié. Demandez à un administrateur de la plateforme d’effectuer ce changement pour l’instant.",
     removeAdminFailed: "Impossible de retirer l’administrateur",
     applicantsSearchPlaceholder: "Rechercher des candidats par nom",
-    ordersSearchPlaceholder: "Rechercher des commandes par nom ou e-mail de l’acheteur",
     analyticsNotAvailable: "Non disponible",
     analyticsThisPeriod: "+{count} sur la période",
     trendMembers: "Membres",
@@ -2664,7 +2681,6 @@ const translations: Record<Language, TranslationKeys> = {
     unlimited: "Illimité",
     outOfStock: "Rupture de stock",
     inStock: "en stock",
-    viewOrders: "Voir les commandes",
     editListing: "Modifier l'annonce",
     deleteListing: "Supprimer l'annonce",
     unpublishListing: "Dépublier",
@@ -2701,7 +2717,6 @@ const translations: Record<Language, TranslationKeys> = {
     views: "Vues",
     noReviewsYet: "Pas encore d'avis",
     reviewsDisabled: "Les avis sont désactivés pour cette annonce",
-    clickOrdersToView: "Cliquez sur \"Commandes\" ci-dessus pour voir toutes les commandes",
 
     // Order/Marketplace modals
     deleteListingTitle: "Supprimer l'annonce",
@@ -3041,6 +3056,18 @@ const translations: Record<Language, TranslationKeys> = {
     adminsAssignFormRole: "Rôle",
     adminsAssignFormSubmit: "Attribuer le rôle",
     unknownUser: "Utilisateur inconnu",
+    errorTryAgain: "Une erreur s’est produite. Veuillez réessayer.",
+    profileLoadFailed: "Impossible de charger votre profil.",
+    profileUpdateFailed: "Impossible d’enregistrer votre profil.",
+    uploadStartFailed: "Impossible de démarrer l’envoi.",
+    passwordUpdateFailed: "Impossible de mettre à jour votre mot de passe.",
+    avatarUploadFailed: "Impossible d’envoyer la photo.",
+    twoFactorEnableFailed: "Impossible de lancer la configuration de la double authentification.",
+    twoFactorVerifyFailed: "Impossible de vérifier le code.",
+    twoFactorDisableFailed: "Impossible de désactiver la double authentification.",
+    analyticsLoadFailed: "Impossible de charger les statistiques.",
+    ordersUnavailableTitle: "Les commandes ne sont pas encore disponibles pour les associations",
+    ordersUnavailableDesc: "Les commandes passées pour les annonces de votre association ne peuvent pas encore être affichées ici.",
   },
   de: {
     // Navigation
@@ -3396,7 +3423,6 @@ const translations: Record<Language, TranslationKeys> = {
     roleChangeRefusedDesc: "Der Server akzeptiert noch keine Rollenänderungen aus dieser Konsole. Es wurde nichts geändert. Bitten Sie vorerst einen Plattform-Admin, die Änderung vorzunehmen.",
     removeAdminFailed: "Der Admin konnte nicht entfernt werden",
     applicantsSearchPlaceholder: "Bewerber nach Namen suchen",
-    ordersSearchPlaceholder: "Bestellungen nach Name oder E-Mail des Käufers suchen",
     analyticsNotAvailable: "Nicht verfügbar",
     analyticsThisPeriod: "+{count} in diesem Zeitraum",
     trendMembers: "Mitglieder",
@@ -3680,7 +3706,6 @@ const translations: Record<Language, TranslationKeys> = {
     unlimited: "Unbegrenzt",
     outOfStock: "Nicht vorrätig",
     inStock: "auf Lager",
-    viewOrders: "Bestellungen ansehen",
     editListing: "Angebot bearbeiten",
     deleteListing: "Angebot löschen",
     unpublishListing: "Veröffentlichung aufheben",
@@ -3717,7 +3742,6 @@ const translations: Record<Language, TranslationKeys> = {
     views: "Aufrufe",
     noReviewsYet: "Noch keine Bewertungen",
     reviewsDisabled: "Bewertungen sind für dieses Angebot deaktiviert",
-    clickOrdersToView: "Klicken Sie oben auf \"Bestellungen\" um alle Bestellungen anzuzeigen",
 
     // Order/Marketplace modals
     deleteListingTitle: "Angebot löschen",
@@ -4057,6 +4081,18 @@ const translations: Record<Language, TranslationKeys> = {
     adminsAssignFormRole: "Rolle",
     adminsAssignFormSubmit: "Rolle zuweisen",
     unknownUser: "Unbekannter Nutzer",
+    errorTryAgain: "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.",
+    profileLoadFailed: "Ihr Profil konnte nicht geladen werden.",
+    profileUpdateFailed: "Ihr Profil konnte nicht gespeichert werden.",
+    uploadStartFailed: "Der Upload konnte nicht gestartet werden.",
+    passwordUpdateFailed: "Ihr Passwort konnte nicht aktualisiert werden.",
+    avatarUploadFailed: "Das Foto konnte nicht hochgeladen werden.",
+    twoFactorEnableFailed: "Die Einrichtung der Zwei-Faktor-Authentifizierung konnte nicht gestartet werden.",
+    twoFactorVerifyFailed: "Der Code konnte nicht überprüft werden.",
+    twoFactorDisableFailed: "Die Zwei-Faktor-Authentifizierung konnte nicht deaktiviert werden.",
+    analyticsLoadFailed: "Die Analysen konnten nicht geladen werden.",
+    ordersUnavailableTitle: "Bestellungen sind für Vereine noch nicht verfügbar",
+    ordersUnavailableDesc: "Bestellungen für die Angebote Ihres Vereins können hier noch nicht angezeigt werden.",
   },
   es: {
     // Navigation
@@ -4412,7 +4448,6 @@ const translations: Record<Language, TranslationKeys> = {
     roleChangeRefusedDesc: "El servidor todavía no acepta cambios de rol desde esta consola. No se ha cambiado nada. Por ahora, pide a un administrador de la plataforma que haga el cambio.",
     removeAdminFailed: "No se pudo quitar al administrador",
     applicantsSearchPlaceholder: "Buscar candidatos por nombre",
-    ordersSearchPlaceholder: "Buscar pedidos por nombre o correo del comprador",
     analyticsNotAvailable: "No disponible",
     analyticsThisPeriod: "+{count} en este periodo",
     trendMembers: "Miembros",
@@ -4684,7 +4719,6 @@ const translations: Record<Language, TranslationKeys> = {
     unlimited: "Ilimitado",
     outOfStock: "Sin stock",
     inStock: "en stock",
-    viewOrders: "Ver pedidos",
     editListing: "Editar anuncio",
     deleteListing: "Eliminar anuncio",
     unpublishListing: "Despublicar",
@@ -4721,7 +4755,6 @@ const translations: Record<Language, TranslationKeys> = {
     views: "Vistas",
     noReviewsYet: "Aún no hay reseñas",
     reviewsDisabled: "Las reseñas están deshabilitadas para este anuncio",
-    clickOrdersToView: "Haga clic en \"Pedidos\" arriba para ver todos los pedidos",
 
     // Order/Marketplace modals
     deleteListingTitle: "Eliminar anuncio",
@@ -5060,6 +5093,18 @@ const translations: Record<Language, TranslationKeys> = {
     adminsAssignFormRole: "Rol",
     adminsAssignFormSubmit: "Asignar rol",
     unknownUser: "Usuario desconocido",
+    errorTryAgain: "Algo salió mal. Inténtalo de nuevo.",
+    profileLoadFailed: "No se pudo cargar tu perfil.",
+    profileUpdateFailed: "No se pudo guardar tu perfil.",
+    uploadStartFailed: "No se pudo iniciar la subida.",
+    passwordUpdateFailed: "No se pudo actualizar tu contraseña.",
+    avatarUploadFailed: "No se pudo subir la foto.",
+    twoFactorEnableFailed: "No se pudo iniciar la configuración de la verificación en dos pasos.",
+    twoFactorVerifyFailed: "No se pudo verificar el código.",
+    twoFactorDisableFailed: "No se pudo desactivar la verificación en dos pasos.",
+    analyticsLoadFailed: "No se pudieron cargar las estadísticas.",
+    ordersUnavailableTitle: "Los pedidos aún no están disponibles para las asociaciones",
+    ordersUnavailableDesc: "Los pedidos de los anuncios de tu asociación aún no se pueden mostrar aquí.",
   },
   it: {
     // Navigation
@@ -5277,7 +5322,6 @@ const translations: Record<Language, TranslationKeys> = {
     roleChangeRefusedDesc: "Il server non accetta ancora cambi di ruolo da questa console. Non è stato modificato nulla. Per ora chiedi a un amministratore della piattaforma di effettuare la modifica.",
     removeAdminFailed: "Impossibile rimuovere l’amministratore",
     applicantsSearchPlaceholder: "Cerca candidati per nome",
-    ordersSearchPlaceholder: "Cerca ordini per nome o email dell’acquirente",
     analyticsNotAvailable: "Non disponibile",
     analyticsThisPeriod: "+{count} in questo periodo",
     trendMembers: "Membri",
@@ -5697,7 +5741,6 @@ const translations: Record<Language, TranslationKeys> = {
     unlimited: "Illimitato",
     outOfStock: "Esaurito",
     inStock: "Disponibile",
-    viewOrders: "Vedi ordini",
     editListing: "Modifica annuncio",
     deleteListing: "Elimina annuncio",
     unpublishListing: "Annulla pubblicazione",
@@ -5734,7 +5777,6 @@ const translations: Record<Language, TranslationKeys> = {
     views: "Visualizzazioni",
     noReviewsYet: "Nessuna recensione ancora",
     reviewsDisabled: "Recensioni disabilitate",
-    clickOrdersToView: "Clicca ordini per visualizzare",
 
     // Order/Marketplace modals
     deleteListingTitle: "Elimina annuncio",
@@ -6073,6 +6115,18 @@ const translations: Record<Language, TranslationKeys> = {
     adminsAssignFormRole: "Ruolo",
     adminsAssignFormSubmit: "Assegna ruolo",
     unknownUser: "Utente sconosciuto",
+    errorTryAgain: "Si è verificato un errore. Riprova.",
+    profileLoadFailed: "Impossibile caricare il tuo profilo.",
+    profileUpdateFailed: "Impossibile salvare il tuo profilo.",
+    uploadStartFailed: "Impossibile avviare il caricamento.",
+    passwordUpdateFailed: "Impossibile aggiornare la password.",
+    avatarUploadFailed: "Impossibile caricare la foto.",
+    twoFactorEnableFailed: "Impossibile avviare la configurazione dell’autenticazione a due fattori.",
+    twoFactorVerifyFailed: "Impossibile verificare il codice.",
+    twoFactorDisableFailed: "Impossibile disattivare l’autenticazione a due fattori.",
+    analyticsLoadFailed: "Impossibile caricare le statistiche.",
+    ordersUnavailableTitle: "Gli ordini non sono ancora disponibili per le associazioni",
+    ordersUnavailableDesc: "Gli ordini per gli annunci della tua associazione non possono ancora essere mostrati qui.",
   },
 };
 

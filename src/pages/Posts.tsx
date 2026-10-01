@@ -57,6 +57,7 @@ import type {
   PostAttachment,
   PostVisibility,
 } from "@/services/graphql/posts";
+import { graphqlErrorMessage } from "@/lib/graphqlErrors";
 
 // -------------------------------------------------------------------------
 // Local visibility option for the composer: Public vs Association-only
@@ -298,7 +299,7 @@ export default function Posts() {
         }),
       );
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Failed to load posts.";
+      const message = graphqlErrorMessage(err, "Failed to load posts.");
       toast({ title: "Error loading posts", description: message, variant: "destructive" });
     } finally {
       setLoading(false);
@@ -398,7 +399,7 @@ export default function Posts() {
         resetComposer();
         toast({ title: "Post updated", description: "Your changes are saved." });
       } catch (err) {
-        const message = err instanceof Error ? err.message : "Failed to update post";
+        const message = graphqlErrorMessage(err, "Failed to update post");
         toast({ title: "Update failed", description: message, variant: "destructive" });
       } finally {
         setSubmitting(false);
@@ -445,7 +446,7 @@ export default function Posts() {
       resetComposer();
       toast({ title: "Post published", description: "Your post is now live." });
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Failed to publish post";
+      const message = graphqlErrorMessage(err, "Failed to publish post");
       toast({ title: "Publish failed", description: message, variant: "destructive" });
     } finally {
       setSubmitting(false);
@@ -467,7 +468,7 @@ export default function Posts() {
       setDeleteModalOpen(false);
       setDeletePostState(null);
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Delete failed.";
+      const message = graphqlErrorMessage(err, "Delete failed.");
       toast({ title: "Error deleting post", description: message, variant: "destructive" });
     } finally {
       setDeleting(false);
@@ -522,7 +523,7 @@ export default function Posts() {
       const refreshed = await associationPostService.post(post.id);
       setPosts((prev) => prev.map((p) => (p.id === post.id ? mapApiToUi(refreshed, t.unknownUser) : p)));
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Action failed";
+      const message = graphqlErrorMessage(error, "Action failed");
       toast({ title: "Could not update post", description: message, variant: "destructive" });
     }
   };

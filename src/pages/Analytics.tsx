@@ -50,6 +50,8 @@ import { toast } from "@/hooks/use-toast";
 import { useT } from "@/hooks/useT";
 import { getAdminAssociationId } from "@/stores/adminAuthStore";
 import { useGetAssociationAnalytics } from "@/hooks/adminProfile";
+import { useSettings } from "@/contexts/SettingsContext";
+import { formatMinorUnits, PLATFORM_BASE_CURRENCY } from "@/lib/money";
 
 // ── Period mapping ────────────────────────────────────────────────────────────
 
@@ -79,6 +81,7 @@ function MetricSkeleton() {
 
 export default function Analytics() {
   const t = useT();
+  const { settings } = useSettings();
   const associationId = useMemo(() => getAdminAssociationId(), []);
 
   const [period, setPeriod] = useState<string>("30d");
@@ -149,8 +152,10 @@ export default function Analytics() {
       title: "Total Revenue",
       icon: DollarSign,
       value: analytics?.totalRevenue,
-      format: (v: number) =>
-        v.toLocaleString(undefined, { style: "currency", currency: "USD", maximumFractionDigits: 0 }),
+      // Integer minor units, like every amount on the platform. The analytics
+      // type names no currency for it yet, so a value is shown in the backend's
+      // fallback currency (GHS) — never USD — until the API returns one.
+      format: (v: number) => formatMinorUnits(v, PLATFORM_BASE_CURRENCY, settings.language),
     },
     // No data source exists for these three; they used to show a hard-coded 0.
     { key: "products", title: t.productsServices, icon: ShoppingBag, value: null },
@@ -193,7 +198,8 @@ export default function Analytics() {
         {error && (
           <div className="flex items-center gap-2 rounded-lg border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">
             <AlertCircle className="h-4 w-4 shrink-0" />
-            <span>Could not load analytics: {error}</span>
+            {/* The hook's toast carries the server's reason; never the raw request error. */}
+            <span>{t.analyticsLoadFailed}</span>
           </div>
         )}
 
