@@ -12,6 +12,7 @@ import { toast } from "@/hooks/use-toast";
 import { getAdminAssociationId } from "@/stores/adminAuthStore";
 import { useShallow } from "zustand/react/shallow";
 import { useAssociationAdminStore } from "@/stores/associationAdminStore";
+import { useGetAssociationAnalytics } from "@/hooks/adminProfile";
 import {
   getAssociation,
   getAssociationStats,
@@ -38,6 +39,8 @@ export default function Dashboard() {
     );
 
   const associationId = useMemo(() => getAdminAssociationId(), []);
+  // Real member growth for the trend chart (same query + cache as the Analytics page).
+  const { analytics: trend, loading: trendLoading } = useGetAssociationAnalytics(associationId, "30d");
 
   const loadDashboard = useCallback(async () => {
     if (!associationId) {
@@ -114,7 +117,7 @@ export default function Dashboard() {
             <p><span className="font-medium text-foreground">Default group:</span> {association?.defaultGroupId ?? "—"}</p>
           </CardContent>
         </Card>
-        <EngagementChart />
+        <EngagementChart points={trend?.memberGrowthData} loading={trendLoading} />
       </div>
 
       {associationId && (

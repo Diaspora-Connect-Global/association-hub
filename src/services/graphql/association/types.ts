@@ -61,12 +61,14 @@ export interface AssociationAnalyticsDataPoint {
 export interface AssociationAnalyticsType {
   totalMembers: number;
   newMembersThisPeriod: number;
-  totalPosts: number;
-  newPostsThisPeriod: number;
-  totalEvents: number;
-  activeOpportunities: number;
-  totalRevenue: number;
+  /** Null: the server has no real source for these and no longer invents them. */
+  totalPosts: number | null;
+  newPostsThisPeriod: number | null;
+  totalEvents: number | null;
+  activeOpportunities: number | null;
+  totalRevenue: number | null;
   memberGrowthData: AssociationAnalyticsDataPoint[];
+  /** Empty: there is no real activity series. */
   activityData: AssociationAnalyticsDataPoint[];
 }
 

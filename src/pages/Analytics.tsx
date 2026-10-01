@@ -106,59 +106,56 @@ export default function Analytics() {
     });
   };
 
-  const metricsConfig = [
+  // A null value means the server has no real number for it (it stopped inventing
+  // them): show "Not available", never "null" or a made-up 0.
+  const thisPeriod = (n: number | null | undefined) =>
+    typeof n === "number" ? t.analyticsThisPeriod.replace("{count}", n.toLocaleString()) : undefined;
+  const metricsConfig: Array<{
+    key: string;
+    title: string;
+    icon: typeof Users;
+    value: number | null | undefined;
+    sub?: string;
+    format?: (v: number) => string;
+  }> = [
     {
       key: "users",
       title: t.totalUsersLabel,
       icon: Users,
-      value: analytics?.totalMembers ?? 0,
-      sub: analytics ? `+${analytics.newMembersThisPeriod} this period` : undefined,
+      value: analytics?.totalMembers,
+      sub: thisPeriod(analytics?.newMembersThisPeriod),
     },
     {
       key: "posts",
       title: t.activePostsLabel,
       icon: FileText,
-      value: analytics?.totalPosts ?? 0,
-      sub: analytics ? `+${analytics.newPostsThisPeriod} this period` : undefined,
+      value: analytics?.totalPosts,
+      sub: thisPeriod(analytics?.newPostsThisPeriod),
     },
     {
       key: "opportunities",
       title: t.opportunities,
       icon: Briefcase,
-      value: analytics?.activeOpportunities ?? 0,
+      value: analytics?.activeOpportunities,
     },
     {
       key: "events",
       title: t.eventsCreated,
       icon: CalendarLucide,
-      value: analytics?.totalEvents ?? 0,
+      value: analytics?.totalEvents,
     },
     {
       key: "revenue",
       title: "Total Revenue",
       icon: DollarSign,
-      value: analytics?.totalRevenue ?? 0,
+      value: analytics?.totalRevenue,
       format: (v: number) =>
         v.toLocaleString(undefined, { style: "currency", currency: "USD", maximumFractionDigits: 0 }),
     },
-    {
-      key: "products",
-      title: t.productsServices,
-      icon: ShoppingBag,
-      value: 0,
-    },
-    {
-      key: "orders",
-      title: t.ordersCompleted,
-      icon: ShoppingCart,
-      value: 0,
-    },
-    {
-      key: "tickets",
-      title: t.supportTicketsLabel,
-      icon: HelpCircle,
-      value: 0,
-    },
+    // No data source exists for these three; they used to show a hard-coded 0.
+    { key: "products", title: t.productsServices, icon: ShoppingBag, value: null },
+    { key: "orders", title: t.ordersCompleted, icon: ShoppingCart, value: null },
+    { key: "tickets", title: t.supportTicketsLabel, icon: HelpCircle, value: null },
   ];
 
   return (
@@ -213,11 +210,13 @@ export default function Analytics() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-2xl font-bold">
-                      {metric.format
-                        ? metric.format(metric.value)
-                        : metric.value.toLocaleString()}
-                    </p>
+                    {typeof metric.value === "number" ? (
+                      <p className="text-2xl font-bold">
+                        {metric.format ? metric.format(metric.value) : metric.value.toLocaleString()}
+                      </p>
+                    ) : (
+                      <p className="text-base font-medium text-muted-foreground">{t.analyticsNotAvailable}</p>
+                    )}
                     {metric.sub && (
                       <p className="text-xs text-muted-foreground mt-0.5">{metric.sub}</p>
                     )}

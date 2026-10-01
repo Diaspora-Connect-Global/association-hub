@@ -50,6 +50,8 @@ import {
   blockMember,
 } from "@/services/graphql/groups/mutations";
 import { userLabel } from "@/lib/userLabel";
+// ClientError.message embeds the whole request (ids included): show server messages only.
+import { graphqlErrorMessage } from "@/lib/graphqlErrors";
 import { PersonPicker } from "@/components/pickers/PersonPicker";
 import type { PersonSearchResult } from "@/services/graphql/association/peopleSearch";
 
@@ -140,7 +142,7 @@ export default function MembersTab({
     } catch (err) {
       toast({
         title: "Invite failed",
-        description: err instanceof Error ? err.message : String(err),
+        description: graphqlErrorMessage(err, "Please try again."),
         variant: "destructive",
       });
     } finally {
@@ -157,7 +159,7 @@ export default function MembersTab({
     } catch (err) {
       toast({
         title: "Update failed",
-        description: err instanceof Error ? err.message : String(err),
+        description: graphqlErrorMessage(err, "Please try again."),
         variant: "destructive",
       });
     } finally {
@@ -175,7 +177,7 @@ export default function MembersTab({
     } catch (err) {
       toast({
         title: "Remove failed",
-        description: err instanceof Error ? err.message : String(err),
+        description: graphqlErrorMessage(err, "Please try again."),
         variant: "destructive",
       });
     } finally {
@@ -205,7 +207,7 @@ export default function MembersTab({
     } catch (err) {
       toast({
         title: "Block failed",
-        description: err instanceof Error ? err.message : String(err),
+        description: graphqlErrorMessage(err, "Please try again."),
         variant: "destructive",
       });
     } finally {

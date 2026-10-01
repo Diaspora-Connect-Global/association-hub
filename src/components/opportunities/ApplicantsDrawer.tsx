@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useT } from "@/hooks/useT";
 import {
   Sheet,
   SheetContent,
@@ -63,7 +64,7 @@ interface ApplicantsDrawerProps {
   onExport: () => void;
 }
 
-const statusColors: Record<ApplicationStatusEnum, string> = {
+const statusColors: Record<ApplicationStatusEnum, "default" | "secondary" | "destructive" | "outline"> = {
   PENDING: "secondary",
   REVIEWING: "default",
   ACCEPTED: "default",
@@ -98,16 +99,16 @@ export function ApplicantsDrawer({
   onAccept,
   onExport,
 }: ApplicantsDrawerProps) {
+  const t = useT();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [selectedApplicants, setSelectedApplicants] = useState<string[]>([]);
 
+  // Search matches the applicant's NAME only. Ids are never searchable (or shown),
+  // so a typed id finds nothing rather than confirming a record exists.
   const filteredApplicants = applications.filter((application) => {
-    if (
-      searchQuery &&
-      !personLabel(application.applicantId).toLowerCase().includes(searchQuery.toLowerCase()) &&
-      !application.id.toLowerCase().includes(searchQuery.toLowerCase())
-    ) {
+    const term = searchQuery.trim().toLowerCase();
+    if (term && !personLabel(application.applicantId).toLowerCase().includes(term)) {
       return false;
     }
     if (statusFilter !== "all" && application.status !== statusFilter) return false;
@@ -144,7 +145,8 @@ export function ApplicantsDrawer({
             <div className="relative flex-1 min-w-[200px]">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
-                placeholder="Search by applicant ID or application ID"
+                placeholder={t.applicantsSearchPlaceholder}
+                aria-label={t.applicantsSearchPlaceholder}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-9"
@@ -214,12 +216,11 @@ export function ApplicantsDrawer({
                     <TableCell>
                       <div>
                         <p className="font-medium">{personLabel(application.applicantId)}</p>
-                        <p className="text-xs text-muted-foreground">Application ID: {application.id}</p>
                       </div>
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground">{formatDate(application.createdAt)}</TableCell>
                     <TableCell>
-                      <Badge variant={statusColors[application.status] as any} className="capitalize">
+                      <Badge variant={statusColors[application.status]} className="capitalize">
                         {formatEnumLabel(application.status)}
                       </Badge>
                     </TableCell>

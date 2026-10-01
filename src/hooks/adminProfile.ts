@@ -23,7 +23,8 @@ import {
   assignAssociationAdmin,
   removeAssociationAdmin,
 } from "@/services/graphql/association/operations";
-import { graphqlErrorMessage } from "@/lib/graphqlErrors";
+import { graphqlErrorMessage, isPermissionRefusal } from "@/lib/graphqlErrors";
+import { useT } from "@/hooks/useT";
 
 export const useGetCurrentAdmin = () => {
   const { toast } = useToast();
@@ -191,6 +192,7 @@ export const useUnlinkCommunity = (associationId: string | null) => {
 
 export const useAssignAssociationAdmin = (associationId: string | null) => {
   const { toast } = useToast();
+  const t = useT();
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: ({ userId, role }: { userId: string; role?: string }) =>
@@ -199,8 +201,13 @@ export const useAssignAssociationAdmin = (associationId: string | null) => {
       void queryClient.invalidateQueries({ queryKey: ["associationAdmins", associationId] });
     },
     onError: (err) => {
-      const message = err instanceof Error ? err.message : "Failed to assign admin";
-      toast({ title: "Error", description: message, variant: "destructive" });
+      // assignMemberRole is refused for console accounts until the gateway forwards
+      // the console's admin claim — say that plainly rather than echo the server.
+      if (isPermissionRefusal(err)) {
+        toast({ title: t.roleChangeRefusedTitle, description: t.roleChangeRefusedDesc, variant: "destructive" });
+        return;
+      }
+      toast({ title: "Error", description: graphqlErrorMessage(err, t.assignAdminFailed), variant: "destructive" });
     },
   });
 
@@ -213,15 +220,20 @@ export const useAssignAssociationAdmin = (associationId: string | null) => {
 
 export const useRemoveAssociationAdmin = (associationId: string | null) => {
   const { toast } = useToast();
+  const t = useT();
   const queryClient = useQueryClient();
   const mutation = useMutation({
-    mutationFn: (adminId: string) => removeAssociationAdmin(associationId!, adminId),
+    /** Demotes by USER id (assignMemberRole → MEMBER). */
+    mutationFn: (adminUserId: string) => removeAssociationAdmin(associationId!, adminUserId),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["associationAdmins", associationId] });
     },
     onError: (err) => {
-      const message = err instanceof Error ? err.message : "Failed to remove admin";
-      toast({ title: "Error", description: message, variant: "destructive" });
+      if (isPermissionRefusal(err)) {
+        toast({ title: t.roleChangeRefusedTitle, description: t.roleChangeRefusedDesc, variant: "destructive" });
+        return;
+      }
+      toast({ title: "Error", description: graphqlErrorMessage(err, t.removeAdminFailed), variant: "destructive" });
     },
   });
 
@@ -382,8 +394,8 @@ export const useGetAssociationAnalytics = (
 
   useEffect(() => {
     if (query.error) {
-      const message =
-        query.error instanceof Error ? query.error.message : "Failed to fetch analytics";
+      // Never ClientError.message: it embeds the request (the association id included).
+      const message = graphqlErrorMessage(query.error, "Failed to fetch analytics");
       toast({ title: "Error", description: message, variant: "destructive" });
     }
   }, [query.error, toast]);

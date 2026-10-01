@@ -178,7 +178,8 @@ export default function Profile() {
   const [assignAdminRole, setAssignAdminRole] = useState<"ADMIN" | "MODERATOR">("ADMIN");
 
   // ── Remove admin confirm state ────────────────────────────────────────────
-  const [removeAdminTarget, setRemoveAdminTarget] = useState<{ id: string; name: string } | null>(null);
+  // `id` identifies the admin row; `userId` is what the demote call needs. Neither is shown.
+  const [removeAdminTarget, setRemoveAdminTarget] = useState<{ id: string; userId: string; name: string } | null>(null);
 
   const {
     register,
@@ -384,8 +385,12 @@ export default function Profile() {
   // ── Remove admin handlers ─────────────────────────────────────────────────
   const handleRemoveAdminConfirm = () => {
     if (!removeAdminTarget) return;
-    removeAdmin.mutate(removeAdminTarget.id, {
-      onSuccess: () => {
+    removeAdmin.mutate(removeAdminTarget.userId, {
+      onSuccess: (result) => {
+        if (result?.success === false) {
+          toast({ title: "Error", description: result.message || t.removeAdminFailed, variant: "destructive" });
+          return;
+        }
         setRemoveAdminTarget(null);
         toast({ title: "Success", description: "Admin removed." });
       },
@@ -1054,10 +1059,11 @@ export default function Profile() {
                               variant="ghost"
                               size="sm"
                               className="gap-1 text-destructive hover:text-destructive"
-                              disabled={isPrimary || removeAdmin.isPending}
+                              disabled={isPrimary || removeAdmin.isPending || !admin.userId}
                               onClick={() =>
                                 !isPrimary &&
-                                setRemoveAdminTarget({ id: admin.id, name: displayName })
+                                admin.userId &&
+                                setRemoveAdminTarget({ id: admin.id, userId: admin.userId, name: displayName })
                               }
                             >
                               {removeAdmin.isPending && removeAdminTarget?.id === admin.id ? (

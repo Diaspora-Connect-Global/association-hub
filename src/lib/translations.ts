@@ -212,6 +212,17 @@ type TranslationKeys = {
   groupInviteDescription: string;
   assignAdminMemberHint: string;
   assignAdminFailed: string;
+  roleChangeRefusedTitle: string;
+  roleChangeRefusedDesc: string;
+  removeAdminFailed: string;
+  applicantsSearchPlaceholder: string;
+  ordersSearchPlaceholder: string;
+  analyticsNotAvailable: string;
+  analyticsThisPeriod: string;
+  trendMembers: string;
+  seriesNotAvailable: string;
+  memberTrendNoData: string;
+  chartLegend: string;
   primaryAdmin: string;
   admin: string;
   subscriptionPeriod: string;
@@ -1350,6 +1361,17 @@ const translations: Record<Language, TranslationKeys> = {
     groupInviteDescription: "Search for a person by name or @username. They'll appear under the Invitations tab until they accept.",
     assignAdminMemberHint: "Only existing members of this association can be made admins or moderators.",
     assignAdminFailed: "Couldn't assign the admin",
+    roleChangeRefusedTitle: "Role change not allowed yet",
+    roleChangeRefusedDesc: "The server doesn't yet accept role changes from this console. Nothing was changed. Ask a platform admin to make this change for now.",
+    removeAdminFailed: "Couldn't remove the admin",
+    applicantsSearchPlaceholder: "Search applicants by name",
+    ordersSearchPlaceholder: "Search orders by buyer name or email",
+    analyticsNotAvailable: "Not available",
+    analyticsThisPeriod: "+{count} this period",
+    trendMembers: "Members",
+    seriesNotAvailable: "{series}: not available",
+    memberTrendNoData: "Member growth isn't available right now.",
+    chartLegend: "Chart legend",
     primaryAdmin: "Primary Admin",
     admin: "Admin",
     subscriptionPeriod: "Subscription Period",
@@ -2354,6 +2376,17 @@ const translations: Record<Language, TranslationKeys> = {
     groupInviteDescription: "Recherchez une personne par nom ou @nom d’utilisateur. Elle apparaîtra dans l’onglet Invitations jusqu’à ce qu’elle accepte.",
     assignAdminMemberHint: "Seuls les membres existants de cette association peuvent devenir administrateurs ou modérateurs.",
     assignAdminFailed: "Impossible d’attribuer le rôle d’administrateur",
+    roleChangeRefusedTitle: "Changement de rôle pas encore autorisé",
+    roleChangeRefusedDesc: "Le serveur n’accepte pas encore les changements de rôle depuis cette console. Rien n’a été modifié. Demandez à un administrateur de la plateforme d’effectuer ce changement pour l’instant.",
+    removeAdminFailed: "Impossible de retirer l’administrateur",
+    applicantsSearchPlaceholder: "Rechercher des candidats par nom",
+    ordersSearchPlaceholder: "Rechercher des commandes par nom ou e-mail de l’acheteur",
+    analyticsNotAvailable: "Non disponible",
+    analyticsThisPeriod: "+{count} sur la période",
+    trendMembers: "Membres",
+    seriesNotAvailable: "{series} : non disponible",
+    memberTrendNoData: "La croissance des membres n’est pas disponible pour le moment.",
+    chartLegend: "Légende du graphique",
     primaryAdmin: "Admin principal",
     admin: "Admin",
     subscriptionPeriod: "Période d'abonnement",
@@ -3359,6 +3392,17 @@ const translations: Record<Language, TranslationKeys> = {
     groupInviteDescription: "Suchen Sie eine Person nach Name oder @Benutzername. Sie erscheint im Tab „Einladungen“, bis sie annimmt.",
     assignAdminMemberHint: "Nur bestehende Mitglieder dieser Vereinigung können Admins oder Moderatoren werden.",
     assignAdminFailed: "Der Admin konnte nicht zugewiesen werden",
+    roleChangeRefusedTitle: "Rollenänderung noch nicht erlaubt",
+    roleChangeRefusedDesc: "Der Server akzeptiert noch keine Rollenänderungen aus dieser Konsole. Es wurde nichts geändert. Bitten Sie vorerst einen Plattform-Admin, die Änderung vorzunehmen.",
+    removeAdminFailed: "Der Admin konnte nicht entfernt werden",
+    applicantsSearchPlaceholder: "Bewerber nach Namen suchen",
+    ordersSearchPlaceholder: "Bestellungen nach Name oder E-Mail des Käufers suchen",
+    analyticsNotAvailable: "Nicht verfügbar",
+    analyticsThisPeriod: "+{count} in diesem Zeitraum",
+    trendMembers: "Mitglieder",
+    seriesNotAvailable: "{series}: nicht verfügbar",
+    memberTrendNoData: "Das Mitgliederwachstum ist gerade nicht verfügbar.",
+    chartLegend: "Diagrammlegende",
     primaryAdmin: "Hauptadmin",
     admin: "Admin",
     subscriptionPeriod: "Abonnementzeitraum",
@@ -4364,6 +4408,17 @@ const translations: Record<Language, TranslationKeys> = {
     groupInviteDescription: "Busca a una persona por nombre o @usuario. Aparecerá en la pestaña Invitaciones hasta que acepte.",
     assignAdminMemberHint: "Solo los miembros actuales de esta asociación pueden ser administradores o moderadores.",
     assignAdminFailed: "No se pudo asignar el administrador",
+    roleChangeRefusedTitle: "Cambio de rol aún no permitido",
+    roleChangeRefusedDesc: "El servidor todavía no acepta cambios de rol desde esta consola. No se ha cambiado nada. Por ahora, pide a un administrador de la plataforma que haga el cambio.",
+    removeAdminFailed: "No se pudo quitar al administrador",
+    applicantsSearchPlaceholder: "Buscar candidatos por nombre",
+    ordersSearchPlaceholder: "Buscar pedidos por nombre o correo del comprador",
+    analyticsNotAvailable: "No disponible",
+    analyticsThisPeriod: "+{count} en este periodo",
+    trendMembers: "Miembros",
+    seriesNotAvailable: "{series}: no disponible",
+    memberTrendNoData: "El crecimiento de miembros no está disponible ahora mismo.",
+    chartLegend: "Leyenda del gráfico",
     primaryAdmin: "Admin principal",
     admin: "Admin",
     subscriptionPeriod: "Período de suscripción",
@@ -5218,6 +5273,17 @@ const translations: Record<Language, TranslationKeys> = {
     groupInviteDescription: "Cerca una persona per nome o @nomeutente. Apparirà nella scheda Inviti finché non accetta.",
     assignAdminMemberHint: "Solo i membri attuali di questa associazione possono diventare amministratori o moderatori.",
     assignAdminFailed: "Impossibile assegnare l’amministratore",
+    roleChangeRefusedTitle: "Cambio di ruolo non ancora consentito",
+    roleChangeRefusedDesc: "Il server non accetta ancora cambi di ruolo da questa console. Non è stato modificato nulla. Per ora chiedi a un amministratore della piattaforma di effettuare la modifica.",
+    removeAdminFailed: "Impossibile rimuovere l’amministratore",
+    applicantsSearchPlaceholder: "Cerca candidati per nome",
+    ordersSearchPlaceholder: "Cerca ordini per nome o email dell’acquirente",
+    analyticsNotAvailable: "Non disponibile",
+    analyticsThisPeriod: "+{count} in questo periodo",
+    trendMembers: "Membri",
+    seriesNotAvailable: "{series}: non disponibile",
+    memberTrendNoData: "La crescita dei membri non è disponibile al momento.",
+    chartLegend: "Legenda del grafico",
     primaryAdmin: "Admin principale",
     admin: "Admin",
     subscriptionPeriod: "Periodo abbonamento",

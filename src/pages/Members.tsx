@@ -36,6 +36,8 @@ import {
 } from "@/services/graphql/association";
 import { userLabel } from "@/lib/userLabel";
 import { inviteOutcome } from "@/lib/inviteOutcome";
+// ClientError.message embeds the whole request (ids included): show server messages only.
+import { graphqlErrorMessage, isPermissionRefusal } from "@/lib/graphqlErrors";
 import { PersonPicker } from "@/components/pickers/PersonPicker";
 import type { PersonSearchResult } from "@/services/graphql/association/peopleSearch";
 
@@ -119,7 +121,7 @@ export default function Members() {
       setPendingHasMore(pending.hasMore ?? false);
       setPendingRequestsCount(pending.total ?? 0);
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Failed to load members.";
+      const message = graphqlErrorMessage(err, "Failed to load members.");
       toast({ title: "Members load failed", description: message, variant: "destructive" });
     } finally {
       setLoading(false);
@@ -163,7 +165,7 @@ export default function Members() {
           setPendingHasMore(res.hasMore ?? false);
         }
       } catch (err) {
-        const message = err instanceof Error ? err.message : "Failed to load more.";
+        const message = graphqlErrorMessage(err, "Failed to load more.");
         toast({ title: "Load more failed", description: message, variant: "destructive" });
       } finally {
         setLoadingMore(null);
@@ -186,7 +188,13 @@ export default function Members() {
   }, [associationId, association, setAssociation]);
 
   const runMemberAction = useCallback(
-    async (userId: string, action: () => Promise<{ success: boolean; message: string | null }>, successMessage: string) => {
+    async (
+      userId: string,
+      action: () => Promise<{ success: boolean; message: string | null }>,
+      successMessage: string,
+      /** Shown instead of the raw server text when the server refuses for lack of permission. */
+      refusalMessage?: string,
+    ) => {
       setBusyUserId(userId);
       try {
         const result = await action();
@@ -196,16 +204,17 @@ export default function Members() {
         toast({ title: successMessage, description: result.message ?? undefined });
         await loadMembers();
       } catch (err) {
+        const refused = Boolean(refusalMessage) && isPermissionRefusal(err);
         toast({
-          title: "Action failed",
-          description: err instanceof Error ? err.message : "Please try again.",
+          title: refused ? t.roleChangeRefusedTitle : "Action failed",
+          description: refused ? refusalMessage : graphqlErrorMessage(err, "Please try again."),
           variant: "destructive",
         });
       } finally {
         setBusyUserId(null);
       }
     },
-    [loadMembers]
+    [loadMembers, t.roleChangeRefusedTitle]
   );
 
   const handleChangeRole = (userId: string, role: MemberRole) => {
@@ -213,7 +222,8 @@ export default function Members() {
     void runMemberAction(
       userId,
       () => updateMemberRole({ entityId: associationId, entityType: "ASSOCIATION", userId, role }),
-      "Role updated"
+      "Role updated",
+      t.roleChangeRefusedDesc
     );
   };
 
@@ -291,7 +301,7 @@ export default function Members() {
     } catch (err) {
       toast({
         title: t.inviteFailed,
-        description: err instanceof Error && err.message ? err.message : undefined,
+        description: graphqlErrorMessage(err, t.inviteFailed),
         variant: "destructive",
       });
     } finally {

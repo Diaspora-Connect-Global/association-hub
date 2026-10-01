@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useT } from "@/hooks/useT";
 import { Listing, Order } from "@/types/marketplace";
 import {
   Sheet,
@@ -112,17 +113,20 @@ export function OrdersDrawer({
   onOpenChange,
   listing,
 }: OrdersDrawerProps) {
+  const t = useT();
   const [searchQuery, setSearchQuery] = useState("");
   const [paymentFilter, setPaymentFilter] = useState<string>("all");
   const [fulfillmentFilter, setFulfillmentFilter] = useState<string>("all");
 
   if (!listing) return null;
 
+  // Search by buyer name or email only — never by a raw id.
+  const term = searchQuery.trim().toLowerCase();
   const filteredOrders = mockOrders.filter((order) => {
-    const matchesSearch = 
-      order.userName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      order.userEmail.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      order.id.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch =
+      !term ||
+      order.userName.toLowerCase().includes(term) ||
+      order.userEmail.toLowerCase().includes(term);
     
     const matchesPayment = paymentFilter === "all" || order.paymentStatus === paymentFilter;
     const matchesFulfillment = fulfillmentFilter === "all" || order.fulfillmentStatus === fulfillmentFilter;
@@ -146,7 +150,8 @@ export function OrdersDrawer({
             <div className="relative flex-1 min-w-[200px]">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search orders by user, email, or order ID"
+                placeholder={t.ordersSearchPlaceholder}
+                aria-label={t.ordersSearchPlaceholder}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-9"

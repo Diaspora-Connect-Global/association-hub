@@ -165,8 +165,18 @@ const INVITE_MEMBER = /* GraphQL */ `
   }
 `;
 
+// Member actions use the gateway's community/association operations (see
+// api-gateway community.resolver.ts). The previous documents named input types
+// that don't exist (RemoveMemberInput, SuspendMemberInput, UnsuspendMemberInput)
+// or called group-level mutations that need a groupId (blockMember,
+// updateMemberRole), so every one of them failed validation.
+//   remove    → removeMember(CommunityRemoveMemberInput { userId entityId entityType reason })
+//   suspend   → suspendMember(CommunityRemoveMemberInput) — the gateway reuses that input
+//   unsuspend → unsuspendMember(UnbanUserInput { userId entityId entityType })
+//   block     → banUser(BanUserInput { userId entityId entityType reason })
+//   role      → assignMemberRole(AssignMemberRoleInput { userId entityId entityType role })
 const REMOVE_MEMBER = /* GraphQL */ `
-  mutation RemoveMember($input: RemoveMemberInput!) {
+  mutation RemoveMember($input: CommunityRemoveMemberInput!) {
     removeMember(input: $input) {
       success
       message
@@ -175,7 +185,7 @@ const REMOVE_MEMBER = /* GraphQL */ `
 `;
 
 const SUSPEND_MEMBER = /* GraphQL */ `
-  mutation SuspendMember($input: SuspendMemberInput!) {
+  mutation SuspendMember($input: CommunityRemoveMemberInput!) {
     suspendMember(input: $input) {
       success
       message
@@ -184,7 +194,7 @@ const SUSPEND_MEMBER = /* GraphQL */ `
 `;
 
 const UNSUSPEND_MEMBER = /* GraphQL */ `
-  mutation UnsuspendMember($input: UnsuspendMemberInput!) {
+  mutation UnsuspendMember($input: UnbanUserInput!) {
     unsuspendMember(input: $input) {
       success
       message
@@ -192,18 +202,18 @@ const UNSUSPEND_MEMBER = /* GraphQL */ `
   }
 `;
 
-const BLOCK_MEMBER = /* GraphQL */ `
-  mutation BlockMember($input: BlockMemberInput!) {
-    blockMember(input: $input) {
+const BAN_MEMBER = /* GraphQL */ `
+  mutation BanMember($input: BanUserInput!) {
+    banUser(input: $input) {
       success
       message
     }
   }
 `;
 
-const UPDATE_MEMBER_ROLE = /* GraphQL */ `
-  mutation UpdateMemberRole($input: UpdateMemberRoleInput!) {
-    updateMemberRole(input: $input) {
+const ASSIGN_MEMBER_ROLE = /* GraphQL */ `
+  mutation AssignMemberRole($input: AssignMemberRoleInput!) {
+    assignMemberRole(input: $input) {
       success
       message
     }
@@ -406,15 +416,38 @@ export function suspendMember(input: SuspendMemberInput): Promise<MutationResult
 }
 
 export function unsuspendMember(input: MemberActionInput): Promise<MutationResultType> {
-  return runMemberMutation(UNSUSPEND_MEMBER, input);
+  // UnbanUserInput has no `reason`; send exactly its three fields.
+  return runMemberMutation(UNSUSPEND_MEMBER, {
+    userId: input.userId,
+    entityId: input.entityId,
+    entityType: input.entityType,
+  });
 }
 
-export function blockMember(input: MemberActionInput): Promise<MutationResultType> {
-  return runMemberMutation(BLOCK_MEMBER, input);
+/** "Block" from the association = an association-level ban (banUser). */
+export function blockMember(
+  input: MemberActionInput & { reason?: string }
+): Promise<MutationResultType> {
+  return runMemberMutation(BAN_MEMBER, {
+    userId: input.userId,
+    entityId: input.entityId,
+    entityType: input.entityType,
+    reason: input.reason ?? "Blocked by association admin",
+  });
 }
 
+/**
+ * Change a member's role in the association (assignMemberRole). From a console
+ * this is refused until the gateway forwards the console's entity-admin claim;
+ * callers should present that refusal clearly (see `isRoleChangeRefused`).
+ */
 export function updateMemberRole(input: UpdateMemberRoleInput): Promise<MutationResultType> {
-  return runMemberMutation(UPDATE_MEMBER_ROLE, input);
+  return runMemberMutation(ASSIGN_MEMBER_ROLE, {
+    userId: input.userId,
+    entityId: input.entityId,
+    entityType: input.entityType,
+    role: input.role,
+  });
 }
 
 export async function getMemberReports(input: {
@@ -530,14 +563,6 @@ const ASSIGN_ASSOCIATION_ADMIN = /* GraphQL */ `
   }
 `;
 
-const REMOVE_ASSOCIATION_ADMIN = /* GraphQL */ `
-  mutation RemoveAssociationAdmin($input: RemoveAssociationAdminInput!) {
-    removeAssociationAdmin(input: $input) {
-      success
-      message
-    }
-  }
-`;
 
 export async function linkCommunityToAssociation(
   associationId: string,
@@ -590,16 +615,17 @@ export async function assignAssociationAdmin(
   return data.assignMemberRole;
 }
 
+/**
+ * Remove someone's admin role. The gateway has no removeAssociationAdmin (the
+ * old document called a mutation that doesn't exist); an association admin is
+ * a membership with an admin role, so demoting is assignMemberRole → MEMBER.
+ * Takes the admin's USER id (not the admin-row id).
+ */
 export async function removeAssociationAdmin(
   associationId: string,
-  adminId: string
+  adminUserId: string
 ): Promise<AssociationAdminResult> {
-  const client = getGraphQLClient();
-  const data = await client.request<
-    { removeAssociationAdmin: AssociationAdminResult },
-    { input: { associationId: string; adminId: string } }
-  >(REMOVE_ASSOCIATION_ADMIN, { input: { associationId, adminId } });
-  return data.removeAssociationAdmin;
+  return assignAssociationAdmin(associationId, adminUserId, "MEMBER");
 }
 
 // ── Analytics ─────────────────────────────────────────────────────────────────
