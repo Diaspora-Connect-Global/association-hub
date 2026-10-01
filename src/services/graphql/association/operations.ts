@@ -442,17 +442,54 @@ export interface AssociationAdminResult {
   message?: string;
 }
 
+/** Link row status: PENDING while the community's admins decide. */
+export type AssociationLinkStatus = "PENDING" | "ACTIVE" | "REJECTED";
+
+export interface LinkAssociationResult extends AssociationAdminResult {
+  /** ACTIVE when linked immediately; PENDING when the community's admins must approve. */
+  status?: AssociationLinkStatus | string | null;
+}
+
+/** This association's request to be linked to a community. Names only — never user ids. */
+export interface AssociationLinkRequest {
+  communityId: string;
+  associationId: string;
+  status: AssociationLinkStatus | string;
+  requestedAt?: string | null;
+  decidedAt?: string | null;
+  communityName?: string | null;
+  communityAvatarUrl?: string | null;
+}
+
 const LINK_ASSOCIATION = /* GraphQL */ `
   mutation LinkAssociation($input: LinkAssociationInput!) {
     linkAssociation(input: $input) {
       success
       message
+      status
     }
   }
 `;
 
+const ASSOCIATION_LINK_REQUESTS = /* GraphQL */ `
+  query AssociationLinkRequests($associationId: ID!) {
+    associationLinkRequests(associationId: $associationId) {
+      communityId
+      associationId
+      status
+      requestedAt
+      decidedAt
+      communityName
+      communityAvatarUrl
+    }
+  }
+`;
+
+// The gateway's unlinkAssociation takes a LinkAssociationInput (there is no
+// UnlinkAssociationInput type in the schema, so that name failed validation).
+// It also withdraws a pending link request.
 const UNLINK_ASSOCIATION = /* GraphQL */ `
-  mutation UnlinkAssociation($input: UnlinkAssociationInput!) {
+  mutation UnlinkAssociation($input: LinkAssociationInput!) {
     unlinkAssociation(input: $input) {
       success
       message
@@ -481,13 +518,25 @@ const REMOVE_ASSOCIATION_ADMIN = /* GraphQL */ `
 export async function linkCommunityToAssociation(
   associationId: string,
   communityId: string
-): Promise<AssociationAdminResult> {
+): Promise<LinkAssociationResult> {
   const client = getGraphQLClient();
   const data = await client.request<
-    { linkAssociation: AssociationAdminResult },
+    { linkAssociation: LinkAssociationResult },
     { input: { associationId: string; communityId: string } }
   >(LINK_ASSOCIATION, { input: { associationId, communityId } });
   return data.linkAssociation;
+}
+
+/** Link requests this association has sent (PENDING / ACTIVE / REJECTED). */
+export async function getAssociationLinkRequests(
+  associationId: string
+): Promise<AssociationLinkRequest[]> {
+  const client = getGraphQLClient();
+  const data = await client.request<
+    { associationLinkRequests: AssociationLinkRequest[] },
+    { associationId: string }
+  >(ASSOCIATION_LINK_REQUESTS, { associationId });
+  return data.associationLinkRequests ?? [];
 }
 
 export async function unlinkCommunityFromAssociation(

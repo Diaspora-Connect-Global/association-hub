@@ -19,9 +19,11 @@ import {
   getAssociationAnalytics,
   linkCommunityToAssociation,
   unlinkCommunityFromAssociation,
+  getAssociationLinkRequests,
   assignAssociationAdmin,
   removeAssociationAdmin,
 } from "@/services/graphql/association/operations";
+import { graphqlErrorMessage } from "@/lib/graphqlErrors";
 
 export const useGetCurrentAdmin = () => {
   const { toast } = useToast();
@@ -115,6 +117,34 @@ export const useGetAssociationAvatarUploadUrl = () => {
   };
 };
 
+/**
+ * Link requests this association has sent (PENDING / ACTIVE / REJECTED).
+ * `enabled` lets the caller fetch only while the list is on screen.
+ */
+export const useAssociationLinkRequests = (associationId: string | null, enabled = true) => {
+  const query = useQuery({
+    queryKey: ["associationLinkRequests", associationId],
+    queryFn: () => getAssociationLinkRequests(associationId!),
+    enabled: enabled && !!associationId,
+  });
+
+  return {
+    requests: query.data ?? [],
+    loading: query.isLoading,
+    error: query.error ? graphqlErrorMessage(query.error, "Failed to load link requests") : null,
+    refetch: query.refetch,
+  };
+};
+
+/** A link or unlink changes both the linked list and the outgoing request list. */
+const invalidateLinkQueries = (
+  queryClient: ReturnType<typeof useQueryClient>,
+  associationId: string | null,
+) => {
+  void queryClient.invalidateQueries({ queryKey: ["linkedCommunities", associationId] });
+  void queryClient.invalidateQueries({ queryKey: ["associationLinkRequests", associationId] });
+};
+
 export const useLinkCommunity = (associationId: string | null) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -122,10 +152,10 @@ export const useLinkCommunity = (associationId: string | null) => {
     mutationFn: (communityId: string) =>
       linkCommunityToAssociation(associationId!, communityId),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ["linkedCommunities", associationId] });
+      invalidateLinkQueries(queryClient, associationId);
     },
     onError: (err) => {
-      const message = err instanceof Error ? err.message : "Failed to link community";
+      const message = graphqlErrorMessage(err, "Failed to link community");
       toast({ title: "Error", description: message, variant: "destructive" });
     },
   });
@@ -144,10 +174,10 @@ export const useUnlinkCommunity = (associationId: string | null) => {
     mutationFn: (communityId: string) =>
       unlinkCommunityFromAssociation(associationId!, communityId),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ["linkedCommunities", associationId] });
+      invalidateLinkQueries(queryClient, associationId);
     },
     onError: (err) => {
-      const message = err instanceof Error ? err.message : "Failed to unlink community";
+      const message = graphqlErrorMessage(err, "Failed to unlink community");
       toast({ title: "Error", description: message, variant: "destructive" });
     },
   });

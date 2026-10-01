@@ -70,6 +70,7 @@ import {
   useRemoveAssociationAdmin,
 } from "@/hooks/adminProfile";
 import { userLabel } from "@/lib/userLabel";
+import { OutgoingLinkRequests } from "@/components/profile/OutgoingLinkRequests";
 
 // ── Constants ────────────────────────────────────────────────────────────────
 
@@ -310,10 +311,21 @@ export default function Profile() {
   const handleLinkCommunityConfirm = () => {
     if (!linkCommunityId.trim()) return;
     linkCommunity.mutate(linkCommunityId.trim(), {
-      onSuccess: () => {
+      onSuccess: (result) => {
+        if (result?.success === false) {
+          toast({
+            title: t.linkFailed,
+            description: result.message || t.linkFailed,
+            variant: "destructive",
+          });
+          return;
+        }
         setLinkCommunityDialogOpen(false);
         setLinkCommunityId("");
-        toast({ title: "Success", description: "Community linked." });
+        // An association admin's link waits for the community's admins to approve it.
+        toast({
+          title: result?.status === "PENDING" ? t.linkRequestSent : t.linkRequestLinked,
+        });
       },
     });
   };
@@ -847,6 +859,8 @@ export default function Profile() {
                 </tbody>
               </table>
             </div>
+
+            <OutgoingLinkRequests associationId={associationId} />
           </div>
 
           {/* Link Community Dialog */}

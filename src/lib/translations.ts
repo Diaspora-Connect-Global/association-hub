@@ -159,6 +159,23 @@ type TranslationKeys = {
   linkCommunities: string;
   communityName: string;
   unlink: string;
+  linkRequestSent: string;
+  linkRequestLinked: string;
+  linkFailed: string;
+  outgoingLinkRequests: string;
+  outgoingLinkRequestsDesc: string;
+  noOutgoingLinkRequests: string;
+  linkRequestStatusPending: string;
+  linkRequestStatusApproved: string;
+  linkRequestStatusDeclined: string;
+  withdrawRequest: string;
+  withdrawRequestAria: string;
+  linkRequestWithdrawn: string;
+  withdrawFailed: string;
+  linkRequestsLoadError: string;
+  unknownCommunity: string;
+  requestedOn: string;
+  linkRequestsRetry: string;
   primaryAdmin: string;
   admin: string;
   subscriptionPeriod: string;
@@ -1244,6 +1261,23 @@ const translations: Record<Language, TranslationKeys> = {
     linkCommunities: "Link Communities",
     communityName: "Community Name",
     unlink: "Unlink",
+    linkRequestSent: "Request sent: waiting for the community's approval",
+    linkRequestLinked: "Linked",
+    linkFailed: "Couldn't link the community",
+    outgoingLinkRequests: "Outgoing link requests",
+    outgoingLinkRequestsDesc: "Requests this association has sent to be linked to a community.",
+    noOutgoingLinkRequests: "No link requests yet.",
+    linkRequestStatusPending: "Pending",
+    linkRequestStatusApproved: "Approved",
+    linkRequestStatusDeclined: "Declined",
+    withdrawRequest: "Withdraw request",
+    withdrawRequestAria: "Withdraw link request to {name}",
+    linkRequestWithdrawn: "Request withdrawn",
+    withdrawFailed: "Couldn't withdraw the request",
+    linkRequestsLoadError: "Couldn't load link requests.",
+    unknownCommunity: "Unknown community",
+    requestedOn: "Requested {date}",
+    linkRequestsRetry: "Try again",
     primaryAdmin: "Primary Admin",
     admin: "Admin",
     subscriptionPeriod: "Subscription Period",
@@ -2195,6 +2229,23 @@ const translations: Record<Language, TranslationKeys> = {
     linkCommunities: "Lier des communautés",
     communityName: "Nom de la communauté",
     unlink: "Délier",
+    linkRequestSent: "Demande envoyée : en attente de l'approbation de la communauté",
+    linkRequestLinked: "Liée",
+    linkFailed: "Impossible de lier la communauté",
+    outgoingLinkRequests: "Demandes de liaison envoyées",
+    outgoingLinkRequestsDesc: "Demandes envoyées par cette association pour être liée à une communauté.",
+    noOutgoingLinkRequests: "Aucune demande de liaison pour le moment.",
+    linkRequestStatusPending: "En attente",
+    linkRequestStatusApproved: "Approuvée",
+    linkRequestStatusDeclined: "Refusée",
+    withdrawRequest: "Retirer la demande",
+    withdrawRequestAria: "Retirer la demande de liaison à {name}",
+    linkRequestWithdrawn: "Demande retirée",
+    withdrawFailed: "Impossible de retirer la demande",
+    linkRequestsLoadError: "Impossible de charger les demandes de liaison.",
+    unknownCommunity: "Communauté inconnue",
+    requestedOn: "Demandé le {date}",
+    linkRequestsRetry: "Réessayer",
     primaryAdmin: "Admin principal",
     admin: "Admin",
     subscriptionPeriod: "Période d'abonnement",
@@ -3147,6 +3198,23 @@ const translations: Record<Language, TranslationKeys> = {
     linkCommunities: "Gemeinschaften verknüpfen",
     communityName: "Gemeinschaftsname",
     unlink: "Verknüpfung aufheben",
+    linkRequestSent: "Anfrage gesendet: Warten auf die Genehmigung der Gemeinschaft",
+    linkRequestLinked: "Verknüpft",
+    linkFailed: "Die Gemeinschaft konnte nicht verknüpft werden",
+    outgoingLinkRequests: "Gesendete Verknüpfungsanfragen",
+    outgoingLinkRequestsDesc: "Anfragen dieser Vereinigung, mit einer Gemeinschaft verknüpft zu werden.",
+    noOutgoingLinkRequests: "Noch keine Verknüpfungsanfragen.",
+    linkRequestStatusPending: "Ausstehend",
+    linkRequestStatusApproved: "Genehmigt",
+    linkRequestStatusDeclined: "Abgelehnt",
+    withdrawRequest: "Anfrage zurückziehen",
+    withdrawRequestAria: "Verknüpfungsanfrage an {name} zurückziehen",
+    linkRequestWithdrawn: "Anfrage zurückgezogen",
+    withdrawFailed: "Die Anfrage konnte nicht zurückgezogen werden",
+    linkRequestsLoadError: "Verknüpfungsanfragen konnten nicht geladen werden.",
+    unknownCommunity: "Unbekannte Gemeinschaft",
+    requestedOn: "Angefragt am {date}",
+    linkRequestsRetry: "Erneut versuchen",
     primaryAdmin: "Hauptadmin",
     admin: "Admin",
     subscriptionPeriod: "Abonnementzeitraum",
@@ -4099,6 +4167,23 @@ const translations: Record<Language, TranslationKeys> = {
     linkCommunities: "Vincular comunidades",
     communityName: "Nombre de la comunidad",
     unlink: "Desvincular",
+    linkRequestSent: "Solicitud enviada: esperando la aprobación de la comunidad",
+    linkRequestLinked: "Vinculada",
+    linkFailed: "No se pudo vincular la comunidad",
+    outgoingLinkRequests: "Solicitudes de vinculación enviadas",
+    outgoingLinkRequestsDesc: "Solicitudes que esta asociación ha enviado para vincularse a una comunidad.",
+    noOutgoingLinkRequests: "Todavía no hay solicitudes de vinculación.",
+    linkRequestStatusPending: "Pendiente",
+    linkRequestStatusApproved: "Aprobada",
+    linkRequestStatusDeclined: "Rechazada",
+    withdrawRequest: "Retirar solicitud",
+    withdrawRequestAria: "Retirar la solicitud de vinculación a {name}",
+    linkRequestWithdrawn: "Solicitud retirada",
+    withdrawFailed: "No se pudo retirar la solicitud",
+    linkRequestsLoadError: "No se pudieron cargar las solicitudes de vinculación.",
+    unknownCommunity: "Comunidad desconocida",
+    requestedOn: "Solicitado el {date}",
+    linkRequestsRetry: "Reintentar",
     primaryAdmin: "Admin principal",
     admin: "Admin",
     subscriptionPeriod: "Período de suscripción",
@@ -4900,6 +4985,23 @@ const translations: Record<Language, TranslationKeys> = {
     linkCommunities: "Collega comunità",
     communityName: "Nome comunità",
     unlink: "Scollega",
+    linkRequestSent: "Richiesta inviata: in attesa dell'approvazione della comunità",
+    linkRequestLinked: "Collegata",
+    linkFailed: "Impossibile collegare la comunità",
+    outgoingLinkRequests: "Richieste di collegamento inviate",
+    outgoingLinkRequestsDesc: "Richieste inviate da questa associazione per essere collegata a una comunità.",
+    noOutgoingLinkRequests: "Ancora nessuna richiesta di collegamento.",
+    linkRequestStatusPending: "In attesa",
+    linkRequestStatusApproved: "Approvata",
+    linkRequestStatusDeclined: "Rifiutata",
+    withdrawRequest: "Ritira richiesta",
+    withdrawRequestAria: "Ritira la richiesta di collegamento a {name}",
+    linkRequestWithdrawn: "Richiesta ritirata",
+    withdrawFailed: "Impossibile ritirare la richiesta",
+    linkRequestsLoadError: "Impossibile caricare le richieste di collegamento.",
+    unknownCommunity: "Comunità sconosciuta",
+    requestedOn: "Richiesto il {date}",
+    linkRequestsRetry: "Riprova",
     primaryAdmin: "Admin principale",
     admin: "Admin",
     subscriptionPeriod: "Periodo abbonamento",
