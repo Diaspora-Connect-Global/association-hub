@@ -44,9 +44,10 @@ function mapProductToListing(p: ProductDTO): Listing {
     isFeatured: false,
     mainImage: p.images?.[0],
     galleryImages: p.images?.slice(1) ?? [],
-    orders: 0,
-    revenue: 0,
-    views: 0,
+    // No per-listing order, revenue or view source exists for an association.
+    orders: null,
+    revenue: null,
+    views: null,
     reviewCount: 0,
     createdAt: new Date(p.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
     updatedAt: new Date(p.updatedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
@@ -72,9 +73,10 @@ function mapServiceToListing(s: ServicePackageDTO): Listing {
     allowReviews: false,
     isFeatured: false,
     galleryImages: [],
-    orders: 0,
-    revenue: 0,
-    views: 0,
+    // No per-listing order, revenue or view source exists for an association.
+    orders: null,
+    revenue: null,
+    views: null,
     reviewCount: 0,
     createdAt: new Date(s.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
     updatedAt: new Date(s.updatedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
@@ -147,8 +149,6 @@ export default function Marketplace() {
 
   // Stats
   const activeListings = listings.filter(l => l.status === "published").length;
-  const totalOrders = listings.reduce((sum, l) => sum + l.orders, 0);
-  const totalRevenue = listings.reduce((sum, l) => sum + l.revenue, 0);
   const lowStockItems = listings.filter(l => 
     l.type === "product" && !l.unlimitedInventory && (l.inventory || 0) < 20
   ).length;
@@ -260,11 +260,12 @@ export default function Marketplace() {
         </div>
         <div className="rounded-lg border border-border bg-card p-4">
           <p className="text-sm text-muted-foreground">{t.totalOrders}</p>
-          <p className="text-2xl font-bold text-primary">{totalOrders}</p>
+          {/* No order source exists for an association's listings (see the Orders tab). */}
+          <p className="text-base font-medium text-muted-foreground">{t.analyticsNotAvailable}</p>
         </div>
         <div className="rounded-lg border border-border bg-card p-4">
           <p className="text-sm text-muted-foreground">{t.revenueAllTime}</p>
-          <p className="text-2xl font-bold text-foreground">${totalRevenue.toLocaleString()}</p>
+          <p className="text-base font-medium text-muted-foreground">{t.analyticsNotAvailable}</p>
         </div>
         <div className="rounded-lg border border-border bg-card p-4">
           <p className="text-sm text-muted-foreground">{t.lowStockItems}</p>

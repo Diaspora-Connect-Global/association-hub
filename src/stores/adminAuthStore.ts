@@ -3,7 +3,7 @@ import { persist } from "zustand/middleware";
 import { adminLogin as adminLoginApi } from "@/services/graphql/adminAuth";
 import type { AdminUserInfo } from "@/services/graphql/adminAuth";
 import { useAssociationAdminStore } from "@/stores/associationAdminStore";
-import { graphqlErrorMessage } from "@/lib/graphqlErrors";
+import { graphqlErrorMessage, safeServerMessage } from "@/lib/graphqlErrors";
 
 type JwtRole = "ASSOCIATION_ADMIN";
 type JwtScopeType = "ASSOCIATION";
@@ -125,14 +125,14 @@ export const useAdminAuthStore = create<AdminAuthState>()(
             return { success: true };
           }
 
-          const fallbackError =
-            response.error ??
-            response.message ??
-            (response.admin?.scopeType && response.admin.scopeType !== "ASSOCIATION"
+          const localReason =
+            response.admin?.scopeType && response.admin.scopeType !== "ASSOCIATION"
               ? "This portal is restricted to association admin accounts."
               : !response.admin?.isActive
                 ? "Your account has been disabled. Contact the system administrator."
-              : "Login failed");
+              : "Login failed";
+          // The server's own reason, unless it names an id.
+          const fallbackError = safeServerMessage(response.error ?? response.message, localReason);
 
           set({
             isLoading: false,

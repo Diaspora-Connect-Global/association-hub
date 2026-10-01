@@ -62,7 +62,7 @@ export const useUpdateAdminProfile = () => {
     mutationFn: (input: UpdateAdminProfileInput) => updateAdminProfile(input),
     onSuccess: (result) => {
       if (result.success) {
-        toast({ title: "Success", description: result.message || "Profile updated" });
+        toast({ title: "Success", description: safeServerMessage(result.message, "Profile updated") });
         void queryClient.invalidateQueries({ queryKey: ["currentAdmin"] });
       } else {
         // A refusal resolves with success: false — it must not pass silently.
@@ -273,7 +273,7 @@ export const useUpdateAdminPassword = () => {
       try {
         const result = await updateAdminPassword(currentPassword, newPassword);
         if (result.success) {
-          toast({ title: "Success", description: result.message || "Password updated successfully" });
+          toast({ title: "Success", description: safeServerMessage(result.message, "Password updated successfully") });
         } else {
           const msg = safeServerMessage(result.message, t.passwordUpdateFailed);
           setError(msg);
@@ -378,7 +378,7 @@ export const useVerifyTwoFactor = () => {
       try {
         const result = await verifyTwoFactor(code);
         if (result.success) {
-          toast({ title: "Success", description: result.message || "2FA verified successfully" });
+          toast({ title: "Success", description: safeServerMessage(result.message, "2FA verified successfully") });
         } else {
           const msg = safeServerMessage(result.message, t.twoFactorVerifyFailed);
           setError(msg);
@@ -440,7 +440,7 @@ export const useDisableTwoFactor = () => {
     try {
       const result = await disableTwoFactor();
       if (result.success) {
-        toast({ title: "Success", description: result.message || "2FA has been disabled" });
+        toast({ title: "Success", description: safeServerMessage(result.message, "2FA has been disabled") });
       } else {
         const msg = safeServerMessage(result.message, t.twoFactorDisableFailed);
         setError(msg);

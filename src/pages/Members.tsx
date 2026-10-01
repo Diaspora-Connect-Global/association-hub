@@ -37,7 +37,7 @@ import {
 import { userLabel } from "@/lib/userLabel";
 import { inviteOutcome } from "@/lib/inviteOutcome";
 // ClientError.message embeds the whole request (ids included): show server messages only.
-import { graphqlErrorMessage, isPermissionRefusal } from "@/lib/graphqlErrors";
+import { graphqlErrorMessage, isPermissionRefusal, safeServerMessage } from "@/lib/graphqlErrors";
 import { PersonPicker } from "@/components/pickers/PersonPicker";
 import type { PersonSearchResult } from "@/services/graphql/association/peopleSearch";
 
@@ -201,7 +201,7 @@ export default function Members() {
         if (!result.success) {
           throw new Error(result.message ?? "Action failed");
         }
-        toast({ title: successMessage, description: result.message ?? undefined });
+        toast({ title: successMessage, description: (safeServerMessage(result.message, "") || undefined) });
         await loadMembers();
       } catch (err) {
         const refused = Boolean(refusalMessage) && isPermissionRefusal(err);

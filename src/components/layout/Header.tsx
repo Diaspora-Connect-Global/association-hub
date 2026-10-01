@@ -24,7 +24,8 @@ export function Header({ title, subtitle, sidebarCollapsed, onToggleSidebar }: H
   const admin = useAdminAuthStore((state) => state.admin);
   const association = useAssociationAdminStore((state) => state.association);
 
-  const associationLabel = association?.name || (admin?.scopeId ? `Association ${admin.scopeId}` : "Association scope");
+  // Neutral label until the association's name loads (or if it can't) — never its id.
+  const associationLabel = association?.name || t.yourAssociation;
   // Never fall back to the user id — ids are not displayed.
   const adminLabel = admin?.role?.name || "Association admin";
 

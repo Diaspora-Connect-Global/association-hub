@@ -33,7 +33,7 @@ interface ApplicationModalProps {
   onReject: () => void;
 }
 
-const statusColors: Record<ApplicationStatusEnum, string> = {
+const statusColors: Record<ApplicationStatusEnum, "default" | "secondary" | "destructive"> = {
   PENDING: "secondary",
   REVIEWING: "default",
   ACCEPTED: "default",
@@ -75,7 +75,7 @@ export function ApplicationModal({
           <div className="flex items-start justify-between">
             <div>
               <DialogTitle className="text-xl">{personLabel(application.applicantId)}</DialogTitle>
-              <Badge variant={statusColors[application.status] as any} className="mt-2 capitalize">
+              <Badge variant={statusColors[application.status]} className="mt-2 capitalize">
                 {formatEnumLabel(application.status)}
               </Badge>
             </div>
@@ -92,7 +92,7 @@ export function ApplicationModal({
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <Search className="h-4 w-4 text-muted-foreground" />
-                <span>{application.opportunity?.title ?? application.opportunityId}</span>
+                <span>{application.opportunity?.title ?? "—"}</span>
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <Clock className="h-4 w-4 text-muted-foreground" />

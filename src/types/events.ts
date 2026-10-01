@@ -27,7 +27,8 @@ export interface Event {
   allowComments: boolean;
   views: number;
   ticketsSold: number;
-  revenue: number;
+  /** Integer minor units; null when there is no source for it (shown as "Not available"). */
+  revenue: number | null;
   createdAt: string;
   updatedAt: string;
 }

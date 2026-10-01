@@ -49,6 +49,7 @@ import type { Post as UiPost } from "@/types/posts";
 import { toast } from "@/hooks/use-toast";
 import { getAdminAssociationId } from "@/stores/adminAuthStore";
 import { useAdminAuthStore } from "@/stores/adminAuthStore";
+import { useAssociationAdminStore } from "@/stores/associationAdminStore";
 import { associationPostService } from "@/services/associationPostService";
 import type {
   AttachmentType,
@@ -104,8 +105,24 @@ function mapApiStatusToUi(status: ApiPost["status"] | string | undefined): UiPos
   return "draft";
 }
 
-/** `unknown` is the translated "Unknown user" — a user author's id is never displayed. */
-function mapApiToUi(p: ApiPost, unknown: string): UiPost {
+/** Up to two initials for an avatar placeholder, from a display name. */
+function initialsOf(name: string): string {
+  return (
+    name
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part[0]?.toUpperCase() ?? "")
+      .join("") || "?"
+  );
+}
+
+/**
+ * `unknown` / `unknownOrg` are translated fallbacks — an author's id (a user's or
+ * an organisation's) is never displayed. A post by this association itself is
+ * flagged `authorIsSelf` and labelled with its name at render time.
+ */
+function mapApiToUi(p: ApiPost, unknown: string, unknownOrg: string, ownId: string | null): UiPost {
   // USER / admin authors carry a user id; an ASSOCIATION/COMMUNITY author's id
   // is the entity's own id.
   const personAuthor = !["ASSOCIATION", "COMMUNITY"].includes(String(p.authorType ?? "").toUpperCase());
@@ -128,8 +145,9 @@ function mapApiToUi(p: ApiPost, unknown: string): UiPost {
     title: firstLine.slice(0, 80),
     excerpt: text.length > 160 ? `${text.slice(0, 160)}...` : text,
     body: text,
-    author: personAuthor ? unknown : p.authorId ?? "",
-    authorAvatar: personAuthor ? "?" : (p.authorId ?? "").slice(0, 2).toUpperCase() || "AS",
+    author: personAuthor ? unknown : unknownOrg,
+    authorAvatar: personAuthor ? "?" : initialsOf(unknownOrg),
+    authorIsSelf: !personAuthor && Boolean(ownId) && p.authorId === ownId,
     media,
     comments: p.engagementCounts?.comments ?? 0,
     reactions: p.engagementCounts?.likes ?? 0,
@@ -189,6 +207,8 @@ export default function Posts() {
   const t = useT();
   const admin = useAdminAuthStore((state) => state.admin);
   const associationId = useMemo(() => getAdminAssociationId(), []);
+  const association = useAssociationAdminStore((state) => state.association);
+  const selfLabel = association?.name || t.yourAssociation;
   const canManagePosts = Boolean(
     associationId &&
       (admin?.scopeType === "ASSOCIATION" || admin === null /* fallback */),
@@ -274,7 +294,7 @@ export default function Posts() {
     setLoading(true);
     try {
       const feed = await associationPostService.getAssociationFeed(associationId, 50, 0);
-      const mapped = feed.posts.map((p) => mapApiToUi(p, t.unknownUser));
+      const mapped = feed.posts.map((p) => mapApiToUi(p, t.unknownUser, t.unknownOrganisation, associationId));
       setPosts(mapped);
 
       // The backend feed's engagementCounts.comments has historically been
@@ -304,7 +324,7 @@ export default function Posts() {
     } finally {
       setLoading(false);
     }
-  }, [associationId, t.unknownUser]);
+  }, [associationId, t.unknownUser, t.unknownOrganisation]);
 
   useEffect(() => {
     void loadPosts();
@@ -337,7 +357,9 @@ export default function Posts() {
     if (mediaFilter !== "all" && post.media !== mediaFilter) return false;
     if (visibilityFilter !== "all" && post.visibility !== visibilityFilter) return false;
     return true;
-  });
+  }).map((post) =>
+    post.authorIsSelf ? { ...post, author: selfLabel, authorAvatar: initialsOf(selfLabel) } : post,
+  );
 
   // ---------------------------------------------------------------------
   // Composer handlers
@@ -393,7 +415,7 @@ export default function Posts() {
         });
         const updated = await associationPostService.post(editingPostId);
         setPosts((prev) =>
-          prev.map((p) => (p.id === editingPostId ? mapApiToUi(updated, t.unknownUser) : p)),
+          prev.map((p) => (p.id === editingPostId ? mapApiToUi(updated, t.unknownUser, t.unknownOrganisation, associationId) : p)),
         );
         setCreateModalOpen(false);
         resetComposer();
@@ -441,7 +463,7 @@ export default function Posts() {
       });
 
       const created = await associationPostService.post(result.id);
-      setPosts((prev) => [mapApiToUi(created, t.unknownUser), ...prev]);
+      setPosts((prev) => [mapApiToUi(created, t.unknownUser, t.unknownOrganisation, associationId), ...prev]);
       setCreateModalOpen(false);
       resetComposer();
       toast({ title: "Post published", description: "Your post is now live." });
@@ -499,7 +521,7 @@ export default function Posts() {
         associationPostService.post(post.id),
         associationPostService.postComments(post.id, 100, 0).catch(() => []),
       ]);
-      const mapped = mapApiToUi(fresh, t.unknownUser);
+      const mapped = mapApiToUi(fresh, t.unknownUser, t.unknownOrganisation, associationId);
       const derived = topLevel.reduce((sum, c) => sum + 1 + (c.replyCount ?? 0), 0);
       mapped.comments = Math.max(mapped.comments, derived);
       setViewPost(mapped);
@@ -521,7 +543,7 @@ export default function Posts() {
         toast({ title: "Post published", description: "The post is now visible." });
       }
       const refreshed = await associationPostService.post(post.id);
-      setPosts((prev) => prev.map((p) => (p.id === post.id ? mapApiToUi(refreshed, t.unknownUser) : p)));
+      setPosts((prev) => prev.map((p) => (p.id === post.id ? mapApiToUi(refreshed, t.unknownUser, t.unknownOrganisation, associationId) : p)));
     } catch (error) {
       const message = graphqlErrorMessage(error, "Action failed");
       toast({ title: "Could not update post", description: message, variant: "destructive" });

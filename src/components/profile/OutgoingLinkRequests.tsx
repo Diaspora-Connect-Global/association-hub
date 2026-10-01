@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { useAssociationLinkRequests, useUnlinkCommunity } from "@/hooks/adminProfile";
 import type { AssociationLinkRequest } from "@/services/graphql/association/operations";
 import type { TranslationKeys } from "@/lib/translations";
+import { safeServerMessage } from "@/lib/graphqlErrors";
 
 interface OutgoingLinkRequestsProps {
   associationId: string | null;
@@ -49,7 +50,7 @@ export function OutgoingLinkRequests({ associationId }: OutgoingLinkRequestsProp
         if (result?.success === false) {
           toast({
             title: t.withdrawFailed,
-            description: result.message || t.withdrawFailed,
+            description: safeServerMessage(result.message, t.withdrawFailed),
             variant: "destructive",
           });
           return;

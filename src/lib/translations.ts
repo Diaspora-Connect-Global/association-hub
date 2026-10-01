@@ -1017,6 +1017,8 @@ type TranslationKeys = {
   analyticsLoadFailed: string;
   ordersUnavailableTitle: string;
   ordersUnavailableDesc: string;
+  yourAssociation: string;
+  unknownOrganisation: string;
 };
 
 const translations: Record<Language, TranslationKeys> = {
@@ -2043,6 +2045,8 @@ const translations: Record<Language, TranslationKeys> = {
     analyticsLoadFailed: "Couldn't load analytics.",
     ordersUnavailableTitle: "Orders aren't available for associations yet",
     ordersUnavailableDesc: "Orders placed for your association's listings can't be shown here yet.",
+    yourAssociation: "Your association",
+    unknownOrganisation: "Unknown organisation",
   },
   fr: {
     // Navigation
@@ -3068,6 +3072,8 @@ const translations: Record<Language, TranslationKeys> = {
     analyticsLoadFailed: "Impossible de charger les statistiques.",
     ordersUnavailableTitle: "Les commandes ne sont pas encore disponibles pour les associations",
     ordersUnavailableDesc: "Les commandes passées pour les annonces de votre association ne peuvent pas encore être affichées ici.",
+    yourAssociation: "Votre association",
+    unknownOrganisation: "Organisation inconnue",
   },
   de: {
     // Navigation
@@ -4093,6 +4099,8 @@ const translations: Record<Language, TranslationKeys> = {
     analyticsLoadFailed: "Die Analysen konnten nicht geladen werden.",
     ordersUnavailableTitle: "Bestellungen sind für Vereine noch nicht verfügbar",
     ordersUnavailableDesc: "Bestellungen für die Angebote Ihres Vereins können hier noch nicht angezeigt werden.",
+    yourAssociation: "Ihr Verein",
+    unknownOrganisation: "Unbekannte Organisation",
   },
   es: {
     // Navigation
@@ -5105,6 +5113,8 @@ const translations: Record<Language, TranslationKeys> = {
     analyticsLoadFailed: "No se pudieron cargar las estadísticas.",
     ordersUnavailableTitle: "Los pedidos aún no están disponibles para las asociaciones",
     ordersUnavailableDesc: "Los pedidos de los anuncios de tu asociación aún no se pueden mostrar aquí.",
+    yourAssociation: "Tu asociación",
+    unknownOrganisation: "Organización desconocida",
   },
   it: {
     // Navigation
@@ -6127,6 +6137,8 @@ const translations: Record<Language, TranslationKeys> = {
     analyticsLoadFailed: "Impossibile caricare le statistiche.",
     ordersUnavailableTitle: "Gli ordini non sono ancora disponibili per le associazioni",
     ordersUnavailableDesc: "Gli ordini per gli annunci della tua associazione non possono ancora essere mostrati qui.",
+    yourAssociation: "La tua associazione",
+    unknownOrganisation: "Organizzazione sconosciuta",
   },
 };
 

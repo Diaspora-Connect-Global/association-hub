@@ -69,8 +69,8 @@ function mapApiLog(item: AdminAuditLogItem, unknown: string): AuditLog {
     module: moduleMap[upperResource] ?? "settings",
     objectAffected:
       userLabel({ name: item.resourceLabel }, "") ||
-      (personResource ? unknown : `${item.resourceType} ${item.resourceId.slice(0, 8)}`),
-    objectId: personResource ? "" : item.resourceId,
+      // Ids are never displayed — not even a fragment of a non-person resource's.
+      (personResource ? unknown : item.resourceType),
     detailsSummary: `${item.action} on ${item.resourceType}`,
     ipAddress: item.ipAddress ?? "—",
     device: "—",

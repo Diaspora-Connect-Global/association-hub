@@ -22,6 +22,8 @@ import {
   MessageSquare
 } from "lucide-react";
 import { useT } from "@/hooks/useT";
+import { useSettings } from "@/contexts/SettingsContext";
+import { formatMinorUnits } from "@/lib/money";
 
 interface ListingDetailsModalProps {
   open: boolean;
@@ -48,9 +50,12 @@ export function ListingDetailsModal({
 }: ListingDetailsModalProps) {
   // Hooks before the early return (rules of hooks).
   const t = useT();
+  const { settings } = useSettings();
   if (!listing) return null;
 
-  const currencySymbol = listing.currency === "USD" ? "$" : listing.currency === "EUR" ? "€" : "₵";
+  const money = (minor: number) => formatMinorUnits(minor, listing.currency, settings.language);
+  const stat = (value: number | null, format: (v: number) => string = (v) => v.toLocaleString()) =>
+    typeof value === "number" ? format(value) : t.analyticsNotAvailable;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -92,7 +97,7 @@ export function ListingDetailsModal({
 
               <div className="flex items-center gap-4">
                 <span className="text-2xl font-bold text-foreground">
-                  {currencySymbol}{listing.price.toFixed(2)}
+                  {money(listing.price)}
                 </span>
                 {listing.type === "product" && (
                   <span className="text-sm text-muted-foreground">
@@ -157,14 +162,14 @@ export function ListingDetailsModal({
                         <Eye className="h-4 w-4" />
                         <span className="text-xs">{t.views}</span>
                       </div>
-                      <p className="text-lg font-semibold text-foreground">{listing.views}</p>
+                      <p className="text-lg font-semibold text-foreground">{stat(listing.views)}</p>
                     </div>
                     <div className="p-3 rounded-lg border border-border bg-card">
                       <div className="flex items-center gap-2 text-muted-foreground mb-1">
                         <ShoppingCart className="h-4 w-4" />
                         <span className="text-xs">{t.orders}</span>
                       </div>
-                      <p className="text-lg font-semibold text-foreground">{listing.orders}</p>
+                      <p className="text-lg font-semibold text-foreground">{stat(listing.orders)}</p>
                     </div>
                     <div className="p-3 rounded-lg border border-border bg-card">
                       <div className="flex items-center gap-2 text-muted-foreground mb-1">
@@ -172,7 +177,7 @@ export function ListingDetailsModal({
                         <span className="text-xs">{t.revenue}</span>
                       </div>
                       <p className="text-lg font-semibold text-foreground">
-                        {currencySymbol}{listing.revenue.toLocaleString()}
+                        {stat(listing.revenue, money)}
                       </p>
                     </div>
                     {listing.type === "product" && (

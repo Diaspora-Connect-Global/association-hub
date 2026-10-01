@@ -66,7 +66,7 @@ import {
   type AdminRoleAssignment,
   type RoleDefinition,
 } from "@/services/graphql/admin-management";
-import { graphqlErrorMessage } from "@/lib/graphqlErrors";
+import { graphqlErrorMessage, safeServerMessage } from "@/lib/graphqlErrors";
 
 interface AdminsTabProps {
   associationId: string;
@@ -202,7 +202,7 @@ export function AdminsTab({ associationId }: AdminsTabProps) {
         setAdmins((prev) => upsertAdmin(prev, res.admin as AdminAccount));
         setLookupId("");
       } else {
-        toast({ title: res.message ?? t.adminsErrorLookup, variant: "destructive" });
+        toast({ title: safeServerMessage(res.message, t.adminsErrorLookup), variant: "destructive" });
       }
     } catch (err) {
       toast({
@@ -219,10 +219,10 @@ export function AdminsTab({ associationId }: AdminsTabProps) {
     try {
       const res = await revokeAdminRole(assignmentId);
       if (res.success) {
-        toast({ title: res.message ?? t.adminsRoleRevoked });
+        toast({ title: safeServerMessage(res.message, t.adminsRoleRevoked) });
         await refreshAdmin(admin.id);
       } else {
-        toast({ title: res.message ?? t.adminsErrorRevoke, variant: "destructive" });
+        toast({ title: safeServerMessage(res.message, t.adminsErrorRevoke), variant: "destructive" });
       }
     } catch (err) {
       toast({
@@ -240,10 +240,10 @@ export function AdminsTab({ associationId }: AdminsTabProps) {
     try {
       const res = await updateAdminStatus({ adminId: admin.id, status: nextStatus });
       if (res.success) {
-        toast({ title: res.message ?? t.adminsStatusUpdated });
+        toast({ title: safeServerMessage(res.message, t.adminsStatusUpdated) });
         await refreshAdmin(admin.id);
       } else {
-        toast({ title: res.message ?? t.adminsErrorStatus, variant: "destructive" });
+        toast({ title: safeServerMessage(res.message, t.adminsErrorStatus), variant: "destructive" });
       }
     } catch (err) {
       toast({
@@ -494,12 +494,12 @@ function CreateAdminDialog({
         scopeId: associationId,
       });
       if (res.success && res.admin) {
-        toast({ title: res.message ?? t.adminsFormCreated });
+        toast({ title: safeServerMessage(res.message, t.adminsFormCreated) });
         onCreated(res.admin);
         onOpenChange(false);
       } else {
         toast({
-          title: res.message ?? t.adminsErrorCreate,
+          title: safeServerMessage(res.message, t.adminsErrorCreate),
           variant: "destructive",
         });
       }
@@ -639,11 +639,11 @@ function AssignRoleDialog({
         : { ...base, roleType: selection.slice(BUILTIN_PREFIX.length) };
       const res = await assignAdminRole(input);
       if (res.success) {
-        toast({ title: res.message ?? t.adminsRoleAssigned });
+        toast({ title: safeServerMessage(res.message, t.adminsRoleAssigned) });
         onAssigned(admin.id);
         onOpenChange(false);
       } else {
-        toast({ title: res.message ?? t.adminsErrorAssign, variant: "destructive" });
+        toast({ title: safeServerMessage(res.message, t.adminsErrorAssign), variant: "destructive" });
       }
     } catch (err) {
       toast({

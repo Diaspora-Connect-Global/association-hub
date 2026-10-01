@@ -438,9 +438,8 @@ export default function Opportunities() {
     }
 
     const rows = [
-      ["applicationId", "applicant", "status", "createdAt", "reviewedAt"],
+      ["applicant", "status", "createdAt", "reviewedAt"],
       ...applications.map((application) => [
-        application.id,
         personLabel(application.applicantId),
         application.status,
         application.createdAt,

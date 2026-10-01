@@ -1,4 +1,7 @@
 import { Event } from "@/types/events";
+import { useT } from "@/hooks/useT";
+import { useSettings } from "@/contexts/SettingsContext";
+import { formatMinorUnits } from "@/lib/money";
 import {
   Dialog,
   DialogContent,
@@ -52,6 +55,8 @@ export function EventDetailsModal({
   onManageRegistrations,
   onDelete,
 }: EventDetailsModalProps) {
+  const t = useT();
+  const { settings } = useSettings();
   if (!event) return null;
 
   return (
@@ -197,7 +202,9 @@ export function EventDetailsModal({
                             <span className="text-xs">Revenue</span>
                           </div>
                           <p className="text-lg font-semibold text-foreground">
-                            {event.currency || "$"}{event.revenue}
+                            {typeof event.revenue === "number"
+                              ? formatMinorUnits(event.revenue, event.currency, settings.language)
+                              : t.analyticsNotAvailable}
                           </p>
                         </div>
                       </>

@@ -77,7 +77,7 @@ import { CommunityPicker } from "@/components/pickers/CommunityPicker";
 import { PersonPicker } from "@/components/pickers/PersonPicker";
 import type { PersonSearchResult } from "@/services/graphql/association/peopleSearch";
 import type { LinkableCommunity } from "@/services/graphql/association/communitySearch";
-import { graphqlErrorMessage } from "@/lib/graphqlErrors";
+import { graphqlErrorMessage, safeServerMessage } from "@/lib/graphqlErrors";
 
 // ── Constants ────────────────────────────────────────────────────────────────
 
@@ -342,7 +342,7 @@ export default function Profile() {
         if (result?.success === false) {
           toast({
             title: t.linkFailed,
-            description: result.message || t.linkFailed,
+            description: safeServerMessage(result.message, t.linkFailed),
             variant: "destructive",
           });
           return;
@@ -373,7 +373,7 @@ export default function Profile() {
       {
         onSuccess: (result) => {
           if (result?.success === false) {
-            toast({ title: "Error", description: result.message || t.assignAdminFailed, variant: "destructive" });
+            toast({ title: "Error", description: safeServerMessage(result.message, t.assignAdminFailed), variant: "destructive" });
             return;
           }
           closeAssignAdminDialog(false);
@@ -389,7 +389,7 @@ export default function Profile() {
     removeAdmin.mutate(removeAdminTarget.userId, {
       onSuccess: (result) => {
         if (result?.success === false) {
-          toast({ title: "Error", description: result.message || t.removeAdminFailed, variant: "destructive" });
+          toast({ title: "Error", description: safeServerMessage(result.message, t.removeAdminFailed), variant: "destructive" });
           return;
         }
         setRemoveAdminTarget(null);

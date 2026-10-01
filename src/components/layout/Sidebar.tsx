@@ -9,7 +9,6 @@ import {
   Briefcase,
   Calendar,
   ShoppingCart,
-  Package,
   LifeBuoy,
   BarChart2,
   Settings,
@@ -93,7 +92,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
   const associationAvatarUrl = association?.avatarUrl ?? associationQuery?.avatarUrl ?? null;
 
   // Check if any vendor path is active
-  const vendorPaths = ["/marketplace", "/orders", "/vendor-escrow-settings"];
+  const vendorPaths = ["/marketplace", "/vendor-escrow-settings"];
   const isVendorActive = vendorPaths.some((path) => location.pathname === path);
   
   const [vendorOpen, setVendorOpen] = useState(isVendorActive);
@@ -127,7 +126,6 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
     icon: Store,
     children: [
       { id: "marketplace", label: t.marketplace, icon: ShoppingCart, path: "/marketplace" },
-      { id: "orders", label: t.orders, icon: Package, path: "/orders" },
       { id: "escrow", label: t.escrowSettings || "Escrow Settings", icon: Shield, path: "/vendor-escrow-settings" },
     ],
   };

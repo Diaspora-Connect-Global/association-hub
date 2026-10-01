@@ -18,6 +18,8 @@ import {
   Star
 } from "lucide-react";
 import { useT } from "@/hooks/useT";
+import { useSettings } from "@/contexts/SettingsContext";
+import { formatMinorUnits } from "@/lib/money";
 
 interface ListingCardProps {
   listing: Listing;
@@ -41,7 +43,8 @@ export function ListingCard({
   onDelete,
 }: ListingCardProps) {
   const t = useT();
-  
+  const { settings } = useSettings();
+
   const isLowStock = listing.type === "product" && 
     !listing.unlimitedInventory && 
     listing.inventory !== undefined && 
@@ -90,8 +93,7 @@ export function ListingCard({
         {/* Price & Stock */}
         <div className="mb-3 flex items-center justify-between">
           <span className="text-lg font-bold text-foreground">
-            {listing.currency === "USD" ? "$" : listing.currency === "EUR" ? "€" : "₵"}
-            {listing.price.toFixed(2)}
+            {formatMinorUnits(listing.price, listing.currency, settings.language)}
           </span>
           {listing.type === "product" && (
             <span
@@ -114,10 +116,13 @@ export function ListingCard({
 
         {/* Stats */}
         <div className="mb-4 flex items-center gap-4 text-sm text-muted-foreground">
-          <div className="flex items-center gap-1.5">
-            <ShoppingCart className="h-4 w-4" />
-            <span>{listing.orders} {t.orders.toLowerCase()}</span>
-          </div>
+          {/* Shown only when there is a real count — never a made-up "0 orders". */}
+          {typeof listing.orders === "number" && (
+            <div className="flex items-center gap-1.5">
+              <ShoppingCart className="h-4 w-4" />
+              <span>{listing.orders} {t.orders.toLowerCase()}</span>
+            </div>
+          )}
           {listing.allowReviews && listing.reviewCount > 0 && (
             <div className="flex items-center gap-1.5">
               <Star className="h-4 w-4 fill-primary text-primary" />

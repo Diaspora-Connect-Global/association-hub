@@ -1,7 +1,7 @@
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { Suspense } from "react";
 import { SettingsProvider } from "@/contexts/SettingsContext";
 import { RequireAdminAuth } from "@/components/auth/RequireAdminAuth";
@@ -17,7 +17,6 @@ const Members = lazyRoute(() => import("./pages/Members"));
 const Posts = lazyRoute(() => import("./pages/Posts"));
 const Events = lazyRoute(() => import("./pages/Events"));
 const Marketplace = lazyRoute(() => import("./pages/Marketplace"));
-const Orders = lazyRoute(() => import("./pages/Orders"));
 const Groups = lazyRoute(() => import("./pages/Groups"));
 const GroupDetail = lazyRoute(() => import("./pages/GroupDetail"));
 const Profile = lazyRoute(() => import("./pages/Profile"));
@@ -47,7 +46,9 @@ function AppRoutes() {
             <Route path="/posts" element={<Posts />} />
             <Route path="/events" element={<Events />} />
             <Route path="/marketplace" element={<Marketplace />} />
-            <Route path="/orders" element={<Orders />} />
+            {/* No order source exists for an association (the listing dialog says so);
+                old links land on the marketplace instead of an always-empty page. */}
+            <Route path="/orders" element={<Navigate to="/marketplace" replace />} />
             <Route path="/groups" element={<Groups />} />
             <Route path="/groups/:groupId" element={<GroupDetail />} />
             <Route path="/opportunities" element={<Opportunities />} />

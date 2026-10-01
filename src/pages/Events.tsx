@@ -127,7 +127,8 @@ function mapBackendToUiEvent(e: BackendEvent): Event {
     allowComments: true,
     views: e.viewCount ?? 0,
     ticketsSold: e.registrationCount ?? 0,
-    revenue: 0,
+    // The event list carries no revenue; it is not invented as 0.
+    revenue: null,
     createdAt: e.createdAt,
     updatedAt: e.updatedAt,
   };
@@ -220,7 +221,6 @@ export default function Events() {
   // Stats
   const upcomingCount = events.filter((e) => e.status === "published" || e.status === "draft").length;
   const totalRegistrations = events.reduce((sum, e) => sum + e.registeredCount, 0);
-  const totalRevenue = events.reduce((sum, e) => sum + e.revenue, 0);
   const avgAttendance =
     events.length > 0
       ? Math.round(
@@ -436,7 +436,7 @@ export default function Events() {
         </div>
         <div className="rounded-lg border border-border bg-card p-4">
           <p className="text-sm text-muted-foreground">{t.ticketRevenue}</p>
-          <p className="text-2xl font-bold text-foreground">${totalRevenue.toLocaleString()}</p>
+          <p className="text-base font-medium text-muted-foreground">{t.analyticsNotAvailable}</p>
         </div>
         <div className="rounded-lg border border-border bg-card p-4">
           <p className="text-sm text-muted-foreground">{t.avgAttendance}</p>

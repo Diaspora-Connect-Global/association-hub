@@ -1,7 +1,5 @@
 export type ListingType = "product" | "service";
 export type ListingStatus = "published" | "draft" | "unpublished";
-export type PaymentStatus = "paid" | "pending" | "refunded";
-export type FulfillmentStatus = "fulfilled" | "pending" | "cancelled";
 
 export interface Listing {
   id: string;
@@ -10,6 +8,7 @@ export interface Listing {
   description: string;
   category: string;
   tags: string[];
+  /** Integer minor units (pesewas, cents), as the API sends it — ÷100 only at display. */
   price: number;
   currency: string;
   inventory?: number;
@@ -22,35 +21,14 @@ export interface Listing {
   mainImage?: string;
   mainImageEmoji?: string;
   galleryImages: string[];
-  orders: number;
-  revenue: number;
-  views: number;
+  /** null: no data source for it yet — shown as "Not available", never as 0. */
+  orders: number | null;
+  revenue: number | null;
+  views: number | null;
   averageRating?: number;
   reviewCount: number;
   createdAt: string;
   updatedAt: string;
-}
-
-export interface Order {
-  id: string;
-  listingId: string;
-  listingTitle: string;
-  userId: string;
-  userName: string;
-  userEmail: string;
-  quantity: number;
-  totalAmount: number;
-  currency: string;
-  paymentStatus: PaymentStatus;
-  fulfillmentStatus: FulfillmentStatus;
-  orderDate: string;
-  // Escrow fields
-  isEscrow?: boolean;
-  escrowStatus?: "held" | "partially_released" | "fully_released" | "disputed" | "refunded";
-  escrowHeldAmount?: number;
-  escrowReleasedAmount?: number;
-  vendorId?: string;
-  vendorName?: string;
 }
 
 export interface Review {

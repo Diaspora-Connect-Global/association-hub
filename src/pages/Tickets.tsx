@@ -30,7 +30,7 @@ import {
   type ReportStatus,
 } from "@/services/graphql/association";
 import { useMemberLabels } from "@/hooks/useMemberLabels";
-import { graphqlErrorMessage } from "@/lib/graphqlErrors";
+import { graphqlErrorMessage, safeServerMessage } from "@/lib/graphqlErrors";
 
 const resolutionOptions: ReportResolution[] = ["WARNING_ISSUED", "MEMBER_REMOVED", "NO_ACTION"];
 
@@ -85,7 +85,7 @@ export default function Tickets() {
       if (!result.success) {
         throw new Error(result.message ?? "Resolve failed");
       }
-      toast({ title: "Report resolved", description: result.message ?? reportId });
+      toast({ title: "Report resolved", description: safeServerMessage(result.message, "") || undefined });
       await loadReports();
     } catch (err) {
       toast({
@@ -126,7 +126,6 @@ export default function Tickets() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>ID</TableHead>
                   <TableHead>Reported user</TableHead>
                   <TableHead>Reported by</TableHead>
                   <TableHead>Reason</TableHead>
@@ -138,14 +137,13 @@ export default function Tickets() {
               <TableBody>
                 {reports.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center text-muted-foreground">
+                    <TableCell colSpan={6} className="text-center text-muted-foreground">
                       No reports found.
                     </TableCell>
                   </TableRow>
                 ) : (
                   reports.map((report) => (
                     <TableRow key={report.id}>
-                      <TableCell className="font-medium">{report.id}</TableCell>
                       <TableCell>{personOf(report.reportedUserId)}</TableCell>
                       <TableCell>{personOf(report.reportedBy)}</TableCell>
                       <TableCell>

@@ -12,7 +12,6 @@ export interface AuditLog {
   actionType: ActionType;
   module: ModuleType;
   objectAffected: string;
-  objectId?: string;
   detailsSummary: string;
   ipAddress: string;
   device: string;

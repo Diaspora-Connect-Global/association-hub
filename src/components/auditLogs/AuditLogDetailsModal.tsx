@@ -135,9 +135,6 @@ export function AuditLogDetailsModal({
                 <div>
                   <p className="text-xs text-muted-foreground mb-1">Object Affected</p>
                   <p className="text-sm font-medium">{log.objectAffected}</p>
-                  {log.objectId && (
-                    <p className="text-xs text-muted-foreground font-mono">ID: {log.objectId}</p>
-                  )}
                 </div>
                 {log.changesMade && (
                   <div>

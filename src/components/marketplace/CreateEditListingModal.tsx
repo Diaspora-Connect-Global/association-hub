@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Listing, ListingFormData, ListingType } from "@/types/marketplace";
+import { PLATFORM_BASE_CURRENCY } from "@/lib/money";
 import {
   Dialog,
   DialogContent,
@@ -56,8 +57,10 @@ export function CreateEditListingModal({
     tags: listing?.tags || [],
     mainImage: null,
     galleryImages: [],
-    price: listing?.price || 0,
-    currency: listing?.currency || "USD",
+    // The listing holds integer minor units; the form edits major units. Divide,
+    // never round — rounding here would become a write on save.
+    price: listing ? listing.price / 100 : 0,
+    currency: listing?.currency || PLATFORM_BASE_CURRENCY,
     inventory: listing?.inventory || 0,
     unlimitedInventory: listing?.unlimitedInventory || false,
     allowPreorders: listing?.allowPreorders || false,

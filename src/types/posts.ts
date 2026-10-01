@@ -7,6 +7,12 @@ export interface Post {
   body?: string;
   author: string;
   authorAvatar: string;
+  /**
+   * True when the author is this association itself. Its label (the association's
+   * name) is filled in at render time, so a name that loads late still shows —
+   * the entity's id is never used as a label.
+   */
+  authorIsSelf?: boolean;
   media: "none" | "text" | "image" | "video" | "link";
   comments: number;
   reactions: number;
