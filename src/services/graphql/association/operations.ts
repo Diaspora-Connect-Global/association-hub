@@ -150,10 +150,16 @@ const REJECT_MEMBERSHIP = /* GraphQL */ `
   }
 `;
 
+// InviteMemberResponse has no `success` field and InviteMemberInput names the
+// person `targetUserId`; the old document (success/message + userId) failed
+// validation on every call. `status` is the membership state after the call:
+// INVITED (invited now or already), ACTIVE (already a member), PENDING (has a
+// join request waiting).
 const INVITE_MEMBER = /* GraphQL */ `
   mutation InviteMember($input: InviteMemberInput!) {
     inviteMember(input: $input) {
-      success
+      status
+      inviteId
       message
     }
   }
@@ -373,8 +379,22 @@ export function rejectMembership(
   return runMemberMutation(REJECT_MEMBERSHIP, input);
 }
 
-export function inviteMember(input: MemberActionInput): Promise<MutationResultType> {
-  return runMemberMutation(INVITE_MEMBER, input);
+/** `inviteMember` result: the person's membership status after the call. */
+export interface InviteMemberResult {
+  status: string;
+  inviteId?: string | null;
+  message?: string | null;
+}
+
+export async function inviteMember(input: MemberActionInput): Promise<InviteMemberResult> {
+  const client = getGraphQLClient();
+  const data = await client.request<
+    { inviteMember: InviteMemberResult },
+    { input: { targetUserId: string; entityId: string; entityType: string } }
+  >(INVITE_MEMBER, {
+    input: { targetUserId: input.userId, entityId: input.entityId, entityType: input.entityType },
+  });
+  return data.inviteMember;
 }
 
 export function removeMember(input: RemoveMemberInput): Promise<MutationResultType> {
@@ -497,9 +517,13 @@ const UNLINK_ASSOCIATION = /* GraphQL */ `
   }
 `;
 
+// The gateway has no AssignAssociationAdminInput (its assignAssociationAdmin
+// creates a new console account by email and is platform-admin only), so the
+// old document failed validation on every call. Making an existing member an
+// admin or moderator of this association is assignMemberRole.
 const ASSIGN_ASSOCIATION_ADMIN = /* GraphQL */ `
-  mutation AssignAssociationAdmin($input: AssignAssociationAdminInput!) {
-    assignAssociationAdmin(input: $input) {
+  mutation AssignMemberRole($input: AssignMemberRoleInput!) {
+    assignMemberRole(input: $input) {
       success
       message
     }
@@ -558,10 +582,12 @@ export async function assignAssociationAdmin(
 ): Promise<AssociationAdminResult> {
   const client = getGraphQLClient();
   const data = await client.request<
-    { assignAssociationAdmin: AssociationAdminResult },
-    { input: { associationId: string; userId: string; role?: string } }
-  >(ASSIGN_ASSOCIATION_ADMIN, { input: { associationId, userId, role } });
-  return data.assignAssociationAdmin;
+    { assignMemberRole: AssociationAdminResult },
+    { input: { userId: string; entityId: string; entityType: "ASSOCIATION"; role: string } }
+  >(ASSIGN_ASSOCIATION_ADMIN, {
+    input: { userId, entityId: associationId, entityType: "ASSOCIATION", role: role ?? "ADMIN" },
+  });
+  return data.assignMemberRole;
 }
 
 export async function removeAssociationAdmin(

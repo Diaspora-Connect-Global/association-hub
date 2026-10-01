@@ -5,7 +5,6 @@ import { JoinPolicyBanner } from "@/components/JoinPolicyBanner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -36,6 +35,9 @@ import {
   type MemberRole,
 } from "@/services/graphql/association";
 import { userLabel } from "@/lib/userLabel";
+import { inviteOutcome } from "@/lib/inviteOutcome";
+import { PersonPicker } from "@/components/pickers/PersonPicker";
+import type { PersonSearchResult } from "@/services/graphql/association/peopleSearch";
 
 type MembersTab = "ACTIVE" | "PENDING" | "SUSPENDED";
 
@@ -88,7 +90,8 @@ export default function Members() {
   const [pendingRequests, setPendingRequests] = useState<PendingMembershipRequestType[]>([]);
   const [pendingTotal, setPendingTotal] = useState(0);
   const [pendingHasMore, setPendingHasMore] = useState(false);
-  const [inviteUserId, setInviteUserId] = useState("");
+  const [invitee, setInvitee] = useState<PersonSearchResult | null>(null);
+  const [inviting, setInviting] = useState(false);
   const [busyUserId, setBusyUserId] = useState<string | null>(null);
   const setPendingRequestsCount = useAssociationAdminStore((state) => state.setPendingRequestsCount);
   const association = useAssociationAdminStore((state) => state.association);
@@ -269,13 +272,31 @@ export default function Members() {
   };
 
   const handleInvite = async () => {
-    if (!associationId || !inviteUserId.trim()) return;
-    await runMemberAction(
-      inviteUserId.trim(),
-      () => inviteMember({ entityId: associationId, entityType: "ASSOCIATION", userId: inviteUserId.trim() }),
-      "Invite sent"
-    );
-    setInviteUserId("");
+    if (!associationId || !invitee || inviting) return;
+    const name = userLabel({ name: invitee.displayName, username: invitee.username }, t.unknownUser);
+    setInviting(true);
+    try {
+      // The person is picked by name; their id is sent behind the scenes.
+      const result = await inviteMember({ entityId: associationId, entityType: "ASSOCIATION", userId: invitee.id });
+      // "Already a member" / "already asked to join" come back as normal replies, not errors.
+      const outcome = inviteOutcome(result?.status);
+      const copy = {
+        invited: [t.inviteSentTitle, t.inviteSentDesc],
+        alreadyMember: [t.inviteAlreadyMemberTitle, t.inviteAlreadyMemberDesc],
+        alreadyRequested: [t.inviteAlreadyRequestedTitle, t.inviteAlreadyRequestedDesc],
+      }[outcome];
+      toast({ title: copy[0], description: copy[1].replace("{name}", () => name) });
+      setInvitee(null);
+      if (outcome !== "alreadyMember") await loadMembers();
+    } catch (err) {
+      toast({
+        title: t.inviteFailed,
+        description: err instanceof Error && err.message ? err.message : undefined,
+        variant: "destructive",
+      });
+    } finally {
+      setInviting(false);
+    }
   };
 
   const renderMemberRows = (members: AssociationMemberType[]) => (
@@ -429,17 +450,23 @@ export default function Members() {
           <CardHeader>
             <CardTitle>Invite user</CardTitle>
           </CardHeader>
-          <CardContent className="flex gap-2">
-            <Input
-              value={inviteUserId}
-              onChange={(e) => setInviteUserId(e.target.value)}
-              placeholder="User UUID"
+          <CardContent className="flex flex-col gap-2 sm:flex-row sm:items-start">
+            <PersonPicker
+              className="flex-1"
+              label={t.invitePersonLabel}
+              value={invitee}
+              onChange={setInvitee}
+              disabled={inviting}
             />
-            <Button onClick={() => void handleInvite()} disabled={!inviteUserId.trim() || loading}>
-              <UserPlus className="mr-1 h-4 w-4" />
-              Invite
+            <Button className="sm:mt-6" onClick={() => void handleInvite()} disabled={!invitee || inviting || loading}>
+              {inviting ? (
+                <Loader2 className="mr-1 h-4 w-4 animate-spin" aria-hidden="true" />
+              ) : (
+                <UserPlus className="mr-1 h-4 w-4" aria-hidden="true" />
+              )}
+              {t.sendInvite}
             </Button>
-            <Button variant="outline" onClick={() => void loadMembers()} disabled={loading}>
+            <Button className="sm:mt-6" variant="outline" onClick={() => void loadMembers()} disabled={loading}>
               <RefreshCw className={`mr-1 h-4 w-4 ${loading ? "animate-spin" : ""}`} />
               Refresh
             </Button>

@@ -74,6 +74,8 @@ import {
 import { userLabel } from "@/lib/userLabel";
 import { OutgoingLinkRequests } from "@/components/profile/OutgoingLinkRequests";
 import { CommunityPicker } from "@/components/pickers/CommunityPicker";
+import { PersonPicker } from "@/components/pickers/PersonPicker";
+import type { PersonSearchResult } from "@/services/graphql/association/peopleSearch";
 import type { LinkableCommunity } from "@/services/graphql/association/communitySearch";
 
 // ── Constants ────────────────────────────────────────────────────────────────
@@ -172,7 +174,7 @@ export default function Profile() {
 
   // ── Assign admin dialog state ─────────────────────────────────────────────
   const [assignAdminDialogOpen, setAssignAdminDialogOpen] = useState(false);
-  const [assignAdminUserId, setAssignAdminUserId] = useState("");
+  const [assignAdminPerson, setAssignAdminPerson] = useState<PersonSearchResult | null>(null);
   const [assignAdminRole, setAssignAdminRole] = useState<"ADMIN" | "MODERATOR">("ADMIN");
 
   // ── Remove admin confirm state ────────────────────────────────────────────
@@ -353,15 +355,26 @@ export default function Profile() {
   };
 
   // ── Assign admin handlers ─────────────────────────────────────────────────
+  const closeAssignAdminDialog = (open: boolean) => {
+    setAssignAdminDialogOpen(open);
+    if (!open) {
+      setAssignAdminPerson(null);
+      setAssignAdminRole("ADMIN");
+    }
+  };
+
   const handleAssignAdminConfirm = () => {
-    if (!assignAdminUserId.trim()) return;
+    if (!assignAdminPerson) return;
+    // The person is picked by name; their id is sent behind the scenes.
     assignAdmin.mutate(
-      { userId: assignAdminUserId.trim(), role: assignAdminRole },
+      { userId: assignAdminPerson.id, role: assignAdminRole },
       {
-        onSuccess: () => {
-          setAssignAdminDialogOpen(false);
-          setAssignAdminUserId("");
-          setAssignAdminRole("ADMIN");
+        onSuccess: (result) => {
+          if (result?.success === false) {
+            toast({ title: "Error", description: result.message || t.assignAdminFailed, variant: "destructive" });
+            return;
+          }
+          closeAssignAdminDialog(false);
           toast({ title: "Success", description: "Admin assigned." });
         },
       }
@@ -1065,20 +1078,18 @@ export default function Profile() {
           </div>
 
           {/* Assign Admin Dialog */}
-          <Dialog open={assignAdminDialogOpen} onOpenChange={setAssignAdminDialogOpen}>
+          <Dialog open={assignAdminDialogOpen} onOpenChange={closeAssignAdminDialog}>
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>Assign New Admin</DialogTitle>
+                <DialogDescription>{t.assignAdminMemberHint}</DialogDescription>
               </DialogHeader>
               <div className="space-y-4 py-2">
-                <div className="space-y-2">
-                  <Label className="label-small">User ID</Label>
-                  <Input
-                    placeholder="Enter user ID"
-                    value={assignAdminUserId}
-                    onChange={(e) => setAssignAdminUserId(e.target.value)}
-                  />
-                </div>
+                <PersonPicker
+                  value={assignAdminPerson}
+                  onChange={setAssignAdminPerson}
+                  disabled={assignAdmin.isPending}
+                />
                 <div className="space-y-2">
                   <Label className="label-small">Role</Label>
                   <Select
@@ -1096,15 +1107,12 @@ export default function Profile() {
                 </div>
               </div>
               <DialogFooter>
-                <Button
-                  variant="outline"
-                  onClick={() => { setAssignAdminDialogOpen(false); setAssignAdminUserId(""); }}
-                >
+                <Button variant="outline" onClick={() => closeAssignAdminDialog(false)}>
                   Cancel
                 </Button>
                 <Button
                   onClick={handleAssignAdminConfirm}
-                  disabled={assignAdmin.isPending || !assignAdminUserId.trim()}
+                  disabled={assignAdmin.isPending || !assignAdminPerson}
                 >
                   {assignAdmin.isPending ? (
                     <><Loader2 className="h-4 w-4 animate-spin mr-1" /> Assigning…</>

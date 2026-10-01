@@ -196,6 +196,22 @@ type TranslationKeys = {
   pageLoadFailed: string;
   pageLoadFailedHint: string;
   reloadPage: string;
+  personPickerLabel: string;
+  personPickerPlaceholder: string;
+  personPickerNoResults: string;
+  personPickerResultsOne: string;
+  personPickerResultsOther: string;
+  invitePersonLabel: string;
+  inviteSentTitle: string;
+  inviteSentDesc: string;
+  inviteAlreadyMemberTitle: string;
+  inviteAlreadyMemberDesc: string;
+  inviteAlreadyRequestedTitle: string;
+  inviteAlreadyRequestedDesc: string;
+  inviteFailed: string;
+  groupInviteDescription: string;
+  assignAdminMemberHint: string;
+  assignAdminFailed: string;
   primaryAdmin: string;
   admin: string;
   subscriptionPeriod: string;
@@ -1318,6 +1334,22 @@ const translations: Record<Language, TranslationKeys> = {
     pageLoadFailed: "This page couldn't be loaded",
     pageLoadFailedHint: "The app may have been updated while it was open. Reload to get the latest version.",
     reloadPage: "Reload",
+    personPickerLabel: "Find a person",
+    personPickerPlaceholder: "Search by name or @username",
+    personPickerNoResults: "No people found. Try another name or @username.",
+    personPickerResultsOne: "{count} person found",
+    personPickerResultsOther: "{count} people found",
+    invitePersonLabel: "Invite a person",
+    inviteSentTitle: "Invitation sent",
+    inviteSentDesc: "{name} has been invited to join.",
+    inviteAlreadyMemberTitle: "Already a member",
+    inviteAlreadyMemberDesc: "{name} is already a member, so no invitation was sent.",
+    inviteAlreadyRequestedTitle: "Already asked to join",
+    inviteAlreadyRequestedDesc: "{name} has a join request waiting. Review it under Pending.",
+    inviteFailed: "Couldn't send the invitation",
+    groupInviteDescription: "Search for a person by name or @username. They'll appear under the Invitations tab until they accept.",
+    assignAdminMemberHint: "Only existing members of this association can be made admins or moderators.",
+    assignAdminFailed: "Couldn't assign the admin",
     primaryAdmin: "Primary Admin",
     admin: "Admin",
     subscriptionPeriod: "Subscription Period",
@@ -2306,6 +2338,22 @@ const translations: Record<Language, TranslationKeys> = {
     pageLoadFailed: "Impossible de charger cette page",
     pageLoadFailedHint: "L’application a peut-être été mise à jour pendant qu’elle était ouverte. Rechargez pour obtenir la dernière version.",
     reloadPage: "Recharger",
+    personPickerLabel: "Trouver une personne",
+    personPickerPlaceholder: "Rechercher par nom ou @nom d’utilisateur",
+    personPickerNoResults: "Aucune personne trouvée. Essayez un autre nom ou @nom d’utilisateur.",
+    personPickerResultsOne: "{count} personne trouvée",
+    personPickerResultsOther: "{count} personnes trouvées",
+    invitePersonLabel: "Inviter une personne",
+    inviteSentTitle: "Invitation envoyée",
+    inviteSentDesc: "{name} a été invité(e) à rejoindre.",
+    inviteAlreadyMemberTitle: "Déjà membre",
+    inviteAlreadyMemberDesc: "{name} est déjà membre : aucune invitation n’a été envoyée.",
+    inviteAlreadyRequestedTitle: "Demande déjà envoyée",
+    inviteAlreadyRequestedDesc: "{name} a une demande d’adhésion en attente. Consultez-la dans En attente.",
+    inviteFailed: "Impossible d’envoyer l’invitation",
+    groupInviteDescription: "Recherchez une personne par nom ou @nom d’utilisateur. Elle apparaîtra dans l’onglet Invitations jusqu’à ce qu’elle accepte.",
+    assignAdminMemberHint: "Seuls les membres existants de cette association peuvent devenir administrateurs ou modérateurs.",
+    assignAdminFailed: "Impossible d’attribuer le rôle d’administrateur",
     primaryAdmin: "Admin principal",
     admin: "Admin",
     subscriptionPeriod: "Période d'abonnement",
@@ -3295,6 +3343,22 @@ const translations: Record<Language, TranslationKeys> = {
     pageLoadFailed: "Diese Seite konnte nicht geladen werden",
     pageLoadFailedHint: "Die App wurde möglicherweise aktualisiert, während sie geöffnet war. Laden Sie neu, um die neueste Version zu erhalten.",
     reloadPage: "Neu laden",
+    personPickerLabel: "Person suchen",
+    personPickerPlaceholder: "Nach Name oder @Benutzername suchen",
+    personPickerNoResults: "Keine Personen gefunden. Versuchen Sie einen anderen Namen oder @Benutzernamen.",
+    personPickerResultsOne: "{count} Person gefunden",
+    personPickerResultsOther: "{count} Personen gefunden",
+    invitePersonLabel: "Person einladen",
+    inviteSentTitle: "Einladung gesendet",
+    inviteSentDesc: "{name} wurde zum Beitritt eingeladen.",
+    inviteAlreadyMemberTitle: "Bereits Mitglied",
+    inviteAlreadyMemberDesc: "{name} ist bereits Mitglied, daher wurde keine Einladung gesendet.",
+    inviteAlreadyRequestedTitle: "Beitritt bereits angefragt",
+    inviteAlreadyRequestedDesc: "{name} hat eine offene Beitrittsanfrage. Prüfen Sie sie unter „Ausstehend“.",
+    inviteFailed: "Die Einladung konnte nicht gesendet werden",
+    groupInviteDescription: "Suchen Sie eine Person nach Name oder @Benutzername. Sie erscheint im Tab „Einladungen“, bis sie annimmt.",
+    assignAdminMemberHint: "Nur bestehende Mitglieder dieser Vereinigung können Admins oder Moderatoren werden.",
+    assignAdminFailed: "Der Admin konnte nicht zugewiesen werden",
     primaryAdmin: "Hauptadmin",
     admin: "Admin",
     subscriptionPeriod: "Abonnementzeitraum",
@@ -4284,6 +4348,22 @@ const translations: Record<Language, TranslationKeys> = {
     pageLoadFailed: "No se pudo cargar esta página",
     pageLoadFailedHint: "Es posible que la aplicación se haya actualizado mientras estaba abierta. Recarga para obtener la versión más reciente.",
     reloadPage: "Recargar",
+    personPickerLabel: "Buscar a una persona",
+    personPickerPlaceholder: "Busca por nombre o @usuario",
+    personPickerNoResults: "No se encontraron personas. Prueba con otro nombre o @usuario.",
+    personPickerResultsOne: "{count} persona encontrada",
+    personPickerResultsOther: "{count} personas encontradas",
+    invitePersonLabel: "Invitar a una persona",
+    inviteSentTitle: "Invitación enviada",
+    inviteSentDesc: "Se ha invitado a {name} a unirse.",
+    inviteAlreadyMemberTitle: "Ya es miembro",
+    inviteAlreadyMemberDesc: "{name} ya es miembro, así que no se envió ninguna invitación.",
+    inviteAlreadyRequestedTitle: "Ya pidió unirse",
+    inviteAlreadyRequestedDesc: "{name} tiene una solicitud de ingreso pendiente. Revísala en Pendientes.",
+    inviteFailed: "No se pudo enviar la invitación",
+    groupInviteDescription: "Busca a una persona por nombre o @usuario. Aparecerá en la pestaña Invitaciones hasta que acepte.",
+    assignAdminMemberHint: "Solo los miembros actuales de esta asociación pueden ser administradores o moderadores.",
+    assignAdminFailed: "No se pudo asignar el administrador",
     primaryAdmin: "Admin principal",
     admin: "Admin",
     subscriptionPeriod: "Período de suscripción",
@@ -5122,6 +5202,22 @@ const translations: Record<Language, TranslationKeys> = {
     pageLoadFailed: "Impossibile caricare questa pagina",
     pageLoadFailedHint: "L'app potrebbe essere stata aggiornata mentre era aperta. Ricarica per ottenere la versione più recente.",
     reloadPage: "Ricarica",
+    personPickerLabel: "Trova una persona",
+    personPickerPlaceholder: "Cerca per nome o @nomeutente",
+    personPickerNoResults: "Nessuna persona trovata. Prova con un altro nome o @nomeutente.",
+    personPickerResultsOne: "{count} persona trovata",
+    personPickerResultsOther: "{count} persone trovate",
+    invitePersonLabel: "Invita una persona",
+    inviteSentTitle: "Invito inviato",
+    inviteSentDesc: "{name} è stato invitato a unirsi.",
+    inviteAlreadyMemberTitle: "Già membro",
+    inviteAlreadyMemberDesc: "{name} è già membro, quindi non è stato inviato alcun invito.",
+    inviteAlreadyRequestedTitle: "Ha già chiesto di unirsi",
+    inviteAlreadyRequestedDesc: "{name} ha una richiesta di adesione in attesa. Controllala in In attesa.",
+    inviteFailed: "Impossibile inviare l’invito",
+    groupInviteDescription: "Cerca una persona per nome o @nomeutente. Apparirà nella scheda Inviti finché non accetta.",
+    assignAdminMemberHint: "Solo i membri attuali di questa associazione possono diventare amministratori o moderatori.",
+    assignAdminFailed: "Impossibile assegnare l’amministratore",
     primaryAdmin: "Admin principale",
     admin: "Admin",
     subscriptionPeriod: "Periodo abbonamento",

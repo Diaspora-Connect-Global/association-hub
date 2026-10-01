@@ -22,6 +22,7 @@ export {
   getGroupMembers,
 } from "./operations";
 
+export type { InviteMemberResult } from "./operations";
 export type {
   AssociationType,
   AssociationStatsType,
