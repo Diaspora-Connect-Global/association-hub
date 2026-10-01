@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useT } from "@/hooks/useT";
 import { toast } from "@/hooks/use-toast";
 import { getAdminAssociationId } from "@/stores/adminAuthStore";
+import { useShallow } from "zustand/react/shallow";
 import { useAssociationAdminStore } from "@/stores/associationAdminStore";
 import {
   getAssociation,
@@ -23,14 +24,18 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { association, stats, setAssociation, setStats, setPendingRequestsCount, setPendingReportsCount } =
-    useAssociationAdminStore((state) => ({
-      association: state.association,
-      stats: state.stats,
-      setAssociation: state.setAssociation,
-      setStats: state.setStats,
-      setPendingRequestsCount: state.setPendingRequestsCount,
-      setPendingReportsCount: state.setPendingReportsCount,
-    }));
+    // zustand v5: an object selector must be wrapped in useShallow, or every render
+    // returns a new object and React re-renders forever (error #185, blank page).
+    useAssociationAdminStore(
+      useShallow((state) => ({
+        association: state.association,
+        stats: state.stats,
+        setAssociation: state.setAssociation,
+        setStats: state.setStats,
+        setPendingRequestsCount: state.setPendingRequestsCount,
+        setPendingReportsCount: state.setPendingReportsCount,
+      })),
+    );
 
   const associationId = useMemo(() => getAdminAssociationId(), []);
 

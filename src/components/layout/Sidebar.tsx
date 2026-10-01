@@ -30,6 +30,7 @@ import { cn } from "@/lib/utils";
 import { useT } from "@/hooks/useT";
 import { clearAdminSession, decodeAdminJwt, useAdminAuthStore } from "@/stores/adminAuthStore";
 import { getAdminPermissions, hasPermission, MANAGE_ROLES_PERMISSION } from "@/lib/adminAccess";
+import { useShallow } from "zustand/react/shallow";
 import { useAssociationAdminStore } from "@/stores/associationAdminStore";
 import { getAssociation } from "@/services/graphql/association";
 import diaspoPlugLogo from "@/assets/diaspo-plug-logo.svg";
@@ -69,11 +70,15 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
     getAdminPermissions(admin, decodeAdminJwt(accessToken)),
     MANAGE_ROLES_PERMISSION
   );
-  const { pendingRequestsCount, pendingReportsCount, association } = useAssociationAdminStore((state) => ({
-    pendingRequestsCount: state.pendingRequestsCount,
-    pendingReportsCount: state.pendingReportsCount,
-    association: state.association,
-  }));
+  // zustand v5: object selectors need useShallow, otherwise each render returns a new
+  // object and React re-renders forever (error #185) — every page renders this sidebar.
+  const { pendingRequestsCount, pendingReportsCount, association } = useAssociationAdminStore(
+    useShallow((state) => ({
+      pendingRequestsCount: state.pendingRequestsCount,
+      pendingReportsCount: state.pendingReportsCount,
+      association: state.association,
+    })),
+  );
 
   // Fetch the association name directly so the sidebar always shows the entity
   // name (not the UUID) even before the dashboard/profile pages have mounted.
