@@ -19,6 +19,7 @@ import {
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogFooter,
@@ -66,11 +67,14 @@ import {
   useGetAssociationAdmins,
   useLinkCommunity,
   useUnlinkCommunity,
+  useAssociationLinkRequests,
   useAssignAssociationAdmin,
   useRemoveAssociationAdmin,
 } from "@/hooks/adminProfile";
 import { userLabel } from "@/lib/userLabel";
 import { OutgoingLinkRequests } from "@/components/profile/OutgoingLinkRequests";
+import { CommunityPicker } from "@/components/pickers/CommunityPicker";
+import type { LinkableCommunity } from "@/services/graphql/association/communitySearch";
 
 // ── Constants ────────────────────────────────────────────────────────────────
 
@@ -145,7 +149,26 @@ export default function Profile() {
 
   // ── Link community dialog state ───────────────────────────────────────────
   const [linkCommunityDialogOpen, setLinkCommunityDialogOpen] = useState(false);
-  const [linkCommunityId, setLinkCommunityId] = useState("");
+  const [linkTarget, setLinkTarget] = useState<LinkableCommunity | null>(null);
+  // Same query (and cache) as the outgoing-requests list; fetched once the dialog opens.
+  const { requests: linkRequests } = useAssociationLinkRequests(associationId, linkCommunityDialogOpen);
+  const linkedCommunityIds = useMemo(
+    () => new Set(linkedCommunities.map((community) => community.id)),
+    [linkedCommunities],
+  );
+  const pendingLinkCommunityIds = useMemo(
+    () =>
+      new Set(
+        linkRequests
+          .filter((request) => String(request.status).toUpperCase() === "PENDING")
+          .map((request) => request.communityId),
+      ),
+    [linkRequests],
+  );
+  const closeLinkCommunityDialog = (open: boolean) => {
+    setLinkCommunityDialogOpen(open);
+    if (!open) setLinkTarget(null);
+  };
 
   // ── Assign admin dialog state ─────────────────────────────────────────────
   const [assignAdminDialogOpen, setAssignAdminDialogOpen] = useState(false);
@@ -309,8 +332,8 @@ export default function Profile() {
 
   // ── Link community handlers ───────────────────────────────────────────────
   const handleLinkCommunityConfirm = () => {
-    if (!linkCommunityId.trim()) return;
-    linkCommunity.mutate(linkCommunityId.trim(), {
+    if (!linkTarget) return;
+    linkCommunity.mutate(linkTarget.id, {
       onSuccess: (result) => {
         if (result?.success === false) {
           toast({
@@ -320,8 +343,7 @@ export default function Profile() {
           });
           return;
         }
-        setLinkCommunityDialogOpen(false);
-        setLinkCommunityId("");
+        closeLinkCommunityDialog(false);
         // An association admin's link waits for the community's admins to approve it.
         toast({
           title: result?.status === "PENDING" ? t.linkRequestSent : t.linkRequestLinked,
@@ -864,34 +886,33 @@ export default function Profile() {
           </div>
 
           {/* Link Community Dialog */}
-          <Dialog open={linkCommunityDialogOpen} onOpenChange={setLinkCommunityDialogOpen}>
+          <Dialog open={linkCommunityDialogOpen} onOpenChange={closeLinkCommunityDialog}>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Link a Community</DialogTitle>
+                <DialogTitle>{t.linkCommunityTitle}</DialogTitle>
+                <DialogDescription>{t.linkCommunityHelp}</DialogDescription>
               </DialogHeader>
-              <div className="space-y-3 py-2">
-                <Label className="label-small">Community ID</Label>
-                <Input
-                  placeholder="Enter community ID"
-                  value={linkCommunityId}
-                  onChange={(e) => setLinkCommunityId(e.target.value)}
+              <div className="py-2">
+                <CommunityPicker
+                  value={linkTarget}
+                  onChange={setLinkTarget}
+                  linkedIds={linkedCommunityIds}
+                  pendingIds={pendingLinkCommunityIds}
+                  disabled={linkCommunity.isPending}
                 />
               </div>
               <DialogFooter>
-                <Button
-                  variant="outline"
-                  onClick={() => { setLinkCommunityDialogOpen(false); setLinkCommunityId(""); }}
-                >
-                  Cancel
+                <Button variant="outline" onClick={() => closeLinkCommunityDialog(false)}>
+                  {t.cancel}
                 </Button>
                 <Button
                   onClick={handleLinkCommunityConfirm}
-                  disabled={linkCommunity.isPending || !linkCommunityId.trim()}
+                  disabled={linkCommunity.isPending || !linkTarget}
                 >
                   {linkCommunity.isPending ? (
-                    <><Loader2 className="h-4 w-4 animate-spin mr-1" /> Linking…</>
+                    <><Loader2 className="h-4 w-4 animate-spin mr-1" aria-hidden="true" /> {t.sendingLinkRequest}</>
                   ) : (
-                    "Link Community"
+                    t.sendLinkRequest
                   )}
                 </Button>
               </DialogFooter>

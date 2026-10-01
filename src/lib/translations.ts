@@ -176,6 +176,26 @@ type TranslationKeys = {
   unknownCommunity: string;
   requestedOn: string;
   linkRequestsRetry: string;
+  linkCommunityTitle: string;
+  linkCommunityHelp: string;
+  communityPickerLabel: string;
+  communityPickerPlaceholder: string;
+  pickerMinChars: string;
+  pickerSearching: string;
+  communityPickerNoResults: string;
+  pickerError: string;
+  communityPickerResultsOne: string;
+  communityPickerResultsOther: string;
+  pickerSelected: string;
+  pickerClear: string;
+  communityAlreadyLinked: string;
+  communityRequestPending: string;
+  communityMembersCount: string;
+  sendLinkRequest: string;
+  sendingLinkRequest: string;
+  pageLoadFailed: string;
+  pageLoadFailedHint: string;
+  reloadPage: string;
   primaryAdmin: string;
   admin: string;
   subscriptionPeriod: string;
@@ -1278,6 +1298,26 @@ const translations: Record<Language, TranslationKeys> = {
     unknownCommunity: "Unknown community",
     requestedOn: "Requested {date}",
     linkRequestsRetry: "Try again",
+    linkCommunityTitle: "Link a community",
+    linkCommunityHelp: "Only public communities can be requested. The community's admins approve the link.",
+    communityPickerLabel: "Community",
+    communityPickerPlaceholder: "Search public communities by name",
+    pickerMinChars: "Type at least {count} characters to search.",
+    pickerSearching: "Searching…",
+    communityPickerNoResults: "No public communities match. Try another name.",
+    pickerError: "Search isn't available right now. Try again in a moment.",
+    communityPickerResultsOne: "{count} community found",
+    communityPickerResultsOther: "{count} communities found",
+    pickerSelected: "Selected: {name}",
+    pickerClear: "Clear selection",
+    communityAlreadyLinked: "Already linked",
+    communityRequestPending: "Request pending",
+    communityMembersCount: "{count} members",
+    sendLinkRequest: "Send link request",
+    sendingLinkRequest: "Sending…",
+    pageLoadFailed: "This page couldn't be loaded",
+    pageLoadFailedHint: "The app may have been updated while it was open. Reload to get the latest version.",
+    reloadPage: "Reload",
     primaryAdmin: "Primary Admin",
     admin: "Admin",
     subscriptionPeriod: "Subscription Period",
@@ -2246,6 +2286,26 @@ const translations: Record<Language, TranslationKeys> = {
     unknownCommunity: "Communauté inconnue",
     requestedOn: "Demandé le {date}",
     linkRequestsRetry: "Réessayer",
+    linkCommunityTitle: "Lier une communauté",
+    linkCommunityHelp: "Seules les communautés publiques peuvent recevoir une demande. Les administrateurs de la communauté approuvent la liaison.",
+    communityPickerLabel: "Communauté",
+    communityPickerPlaceholder: "Rechercher une communauté publique par nom",
+    pickerMinChars: "Saisissez au moins {count} caractères pour lancer la recherche.",
+    pickerSearching: "Recherche en cours…",
+    communityPickerNoResults: "Aucune communauté publique ne correspond. Essayez un autre nom.",
+    pickerError: "La recherche est indisponible pour le moment. Réessayez dans un instant.",
+    communityPickerResultsOne: "{count} communauté trouvée",
+    communityPickerResultsOther: "{count} communautés trouvées",
+    pickerSelected: "Sélectionnée : {name}",
+    pickerClear: "Effacer la sélection",
+    communityAlreadyLinked: "Déjà liée",
+    communityRequestPending: "Demande en attente",
+    communityMembersCount: "{count} membres",
+    sendLinkRequest: "Envoyer la demande de liaison",
+    sendingLinkRequest: "Envoi…",
+    pageLoadFailed: "Impossible de charger cette page",
+    pageLoadFailedHint: "L’application a peut-être été mise à jour pendant qu’elle était ouverte. Rechargez pour obtenir la dernière version.",
+    reloadPage: "Recharger",
     primaryAdmin: "Admin principal",
     admin: "Admin",
     subscriptionPeriod: "Période d'abonnement",
@@ -3215,6 +3275,26 @@ const translations: Record<Language, TranslationKeys> = {
     unknownCommunity: "Unbekannte Gemeinschaft",
     requestedOn: "Angefragt am {date}",
     linkRequestsRetry: "Erneut versuchen",
+    linkCommunityTitle: "Community verknüpfen",
+    linkCommunityHelp: "Nur öffentliche Communities können angefragt werden. Die Admins der Community bestätigen die Verknüpfung.",
+    communityPickerLabel: "Community",
+    communityPickerPlaceholder: "Öffentliche Communities nach Namen suchen",
+    pickerMinChars: "Geben Sie mindestens {count} Zeichen ein, um zu suchen.",
+    pickerSearching: "Suche läuft…",
+    communityPickerNoResults: "Keine passende öffentliche Community gefunden. Versuchen Sie einen anderen Namen.",
+    pickerError: "Die Suche ist gerade nicht verfügbar. Bitte versuchen Sie es gleich noch einmal.",
+    communityPickerResultsOne: "{count} Community gefunden",
+    communityPickerResultsOther: "{count} Communities gefunden",
+    pickerSelected: "Ausgewählt: {name}",
+    pickerClear: "Auswahl entfernen",
+    communityAlreadyLinked: "Bereits verknüpft",
+    communityRequestPending: "Anfrage ausstehend",
+    communityMembersCount: "{count} Mitglieder",
+    sendLinkRequest: "Verknüpfungsanfrage senden",
+    sendingLinkRequest: "Wird gesendet…",
+    pageLoadFailed: "Diese Seite konnte nicht geladen werden",
+    pageLoadFailedHint: "Die App wurde möglicherweise aktualisiert, während sie geöffnet war. Laden Sie neu, um die neueste Version zu erhalten.",
+    reloadPage: "Neu laden",
     primaryAdmin: "Hauptadmin",
     admin: "Admin",
     subscriptionPeriod: "Abonnementzeitraum",
@@ -4184,6 +4264,26 @@ const translations: Record<Language, TranslationKeys> = {
     unknownCommunity: "Comunidad desconocida",
     requestedOn: "Solicitado el {date}",
     linkRequestsRetry: "Reintentar",
+    linkCommunityTitle: "Vincular una comunidad",
+    linkCommunityHelp: "Solo se puede enviar la solicitud a comunidades públicas. Los administradores de la comunidad aprueban la vinculación.",
+    communityPickerLabel: "Comunidad",
+    communityPickerPlaceholder: "Busca comunidades públicas por nombre",
+    pickerMinChars: "Escribe al menos {count} caracteres para buscar.",
+    pickerSearching: "Buscando…",
+    communityPickerNoResults: "Ninguna comunidad pública coincide. Prueba con otro nombre.",
+    pickerError: "La búsqueda no está disponible ahora mismo. Inténtalo de nuevo en un momento.",
+    communityPickerResultsOne: "{count} comunidad encontrada",
+    communityPickerResultsOther: "{count} comunidades encontradas",
+    pickerSelected: "Seleccionada: {name}",
+    pickerClear: "Quitar selección",
+    communityAlreadyLinked: "Ya vinculada",
+    communityRequestPending: "Solicitud pendiente",
+    communityMembersCount: "{count} miembros",
+    sendLinkRequest: "Enviar solicitud de vinculación",
+    sendingLinkRequest: "Enviando…",
+    pageLoadFailed: "No se pudo cargar esta página",
+    pageLoadFailedHint: "Es posible que la aplicación se haya actualizado mientras estaba abierta. Recarga para obtener la versión más reciente.",
+    reloadPage: "Recargar",
     primaryAdmin: "Admin principal",
     admin: "Admin",
     subscriptionPeriod: "Período de suscripción",
@@ -5002,6 +5102,26 @@ const translations: Record<Language, TranslationKeys> = {
     unknownCommunity: "Comunità sconosciuta",
     requestedOn: "Richiesto il {date}",
     linkRequestsRetry: "Riprova",
+    linkCommunityTitle: "Collega una community",
+    linkCommunityHelp: "Puoi inviare la richiesta solo alle community pubbliche. Gli amministratori della community approvano il collegamento.",
+    communityPickerLabel: "Community",
+    communityPickerPlaceholder: "Cerca community pubbliche per nome",
+    pickerMinChars: "Digita almeno {count} caratteri per cercare.",
+    pickerSearching: "Ricerca in corso…",
+    communityPickerNoResults: "Nessuna community pubblica corrisponde. Prova con un altro nome.",
+    pickerError: "La ricerca non è disponibile al momento. Riprova tra poco.",
+    communityPickerResultsOne: "{count} community trovata",
+    communityPickerResultsOther: "{count} community trovate",
+    pickerSelected: "Selezionata: {name}",
+    pickerClear: "Cancella selezione",
+    communityAlreadyLinked: "Già collegata",
+    communityRequestPending: "Richiesta in attesa",
+    communityMembersCount: "{count} membri",
+    sendLinkRequest: "Invia richiesta di collegamento",
+    sendingLinkRequest: "Invio in corso…",
+    pageLoadFailed: "Impossibile caricare questa pagina",
+    pageLoadFailedHint: "L'app potrebbe essere stata aggiornata mentre era aperta. Ricarica per ottenere la versione più recente.",
+    reloadPage: "Ricarica",
     primaryAdmin: "Admin principale",
     admin: "Admin",
     subscriptionPeriod: "Periodo abbonamento",
