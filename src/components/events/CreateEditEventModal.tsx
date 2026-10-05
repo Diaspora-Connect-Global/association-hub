@@ -299,7 +299,7 @@ export function CreateEditEventModal({
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="ticketPrice">{t.ticketPrice}</Label>
+                    <Label htmlFor="ticketPrice">{`${t.ticketPrice} (${formData.currency})`}</Label>
                     <Input
                       id="ticketPrice"
                       type="number"

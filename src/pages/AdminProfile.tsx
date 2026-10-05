@@ -156,8 +156,11 @@ export default function AdminProfile() {
       if (!file) return;
       try {
         const readUrl = await uploadAvatar(file);
-        setAvatarUrl(readUrl);
-        await saveProfile({ avatarUrl: readUrl });
+        // A refused save resolves with success: false; only show the new photo when it was kept.
+        const saved = await saveProfile({ avatarUrl: readUrl });
+        if (saved.success) setAvatarUrl(readUrl);
+      } catch {
+        // error toast already shown by the hooks
       } finally {
         // reset the input so the same file can be re-selected
         if (fileInputRef.current) fileInputRef.current.value = "";
@@ -167,14 +170,19 @@ export default function AdminProfile() {
   );
 
   const handleRemovePhoto = async () => {
-    setAvatarUrl("");
-    await saveProfile({ avatarUrl: "" });
+    try {
+      const saved = await saveProfile({ avatarUrl: "" });
+      if (saved.success) setAvatarUrl("");
+    } catch {
+      // error toast already shown by the hook
+    }
   };
 
   const handlePasswordChange = async (values: PasswordValues) => {
     try {
-      await changePassword(values.currentPassword, values.newPassword);
-      resetPasswordForm();
+      const result = await changePassword(values.currentPassword, values.newPassword);
+      // A refusal resolves with success: false (toast already shown) — keep the typed values.
+      if (result.success) resetPasswordForm();
     } catch {
       // error toast already shown by hook
     }

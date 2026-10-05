@@ -22,8 +22,23 @@ export function containsId(text: string): boolean {
  */
 export function safeServerMessage(message: string | null | undefined, fallback: string): string {
   const text = message?.trim();
-  if (!text || containsId(text)) return fallback;
+  if (!text || containsId(text) || isTechnicalMessage(text)) return fallback;
   return text;
+}
+
+/**
+ * Browser / transport / framework wording that means nothing to an admin
+ * ("Failed to fetch", "Load failed", "Internal server error", "Unexpected
+ * token <", "Cannot read properties of undefined"). These give way to the
+ * caller's friendly text; the raw message is logged in dev builds only.
+ */
+const TECHNICAL_MESSAGE_RE =
+  /failed to fetch|load failed|networkerror|network request failed|fetch failed|internal server error|unexpected token|unexpected end of json|cannot read propert|is not a function|is not defined|\bECONN|\bETIMEDOUT|\bundefined\b|\[object /i;
+
+function isTechnicalMessage(text: string): boolean {
+  const technical = TECHNICAL_MESSAGE_RE.test(text);
+  if (technical && import.meta.env.DEV) console.debug("[friendly-error] hidden raw message:", text);
+  return technical;
 }
 
 /**
