@@ -55,14 +55,6 @@ export function registrationStatusTone(raw: string | null | undefined): Registra
   return STATUS_TONES[normalizeRegistrationStatus(raw)] ?? "muted";
 }
 
-export const TONE_CLASSES: Record<RegistrationTone, string> = {
-  success: "bg-success/10 text-success",
-  warning: "bg-warning/10 text-warning",
-  danger: "bg-destructive/10 text-destructive",
-  info: "bg-primary/10 text-primary",
-  muted: "bg-secondary text-secondary-foreground",
-};
-
 /**
  * Payment wording that a registration's STATUS dictates regardless of its amount:
  * nothing is charged until an organiser approves, a waitlisted place is unpaid, and
@@ -135,6 +127,14 @@ export interface ErrorLike {
 
 const UUID_RE = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
 
+/** A UUID, or a run of 8+ hex characters mixing digits and letters (an id fragment) — never shown to anyone. */
+function containsId(text: string): boolean {
+  if (UUID_RE.test(text)) return true;
+  return text
+    .split(/[^0-9a-z]+/i)
+    .some((token) => token.length >= 8 && /^[0-9a-f]+$/i.test(token) && /\d/.test(token) && /[a-f]/i.test(token));
+}
+
 /** True when any error is the dark-launch refusal (feature not enabled yet). */
 export function isFeatureUnavailable(errors: ErrorLike[]): boolean {
   return errors.some((e) => String(e.code ?? "").toUpperCase() === "EVENT_FEATURE_UNAVAILABLE");
@@ -153,7 +153,7 @@ export function eventErrorMessage(errors: ErrorLike[], fallback = "Something wen
     if (!code.startsWith("EVENT_")) continue;
     if (ERROR_MESSAGES[code] && code !== "EVENT_REFUSED") return ERROR_MESSAGES[code];
     const text = String(e.message ?? "").trim();
-    if (text && !UUID_RE.test(text)) return text;
+    if (text && !containsId(text)) return text;
     return ERROR_MESSAGES[code] ?? ERROR_MESSAGES.EVENT_REFUSED;
   }
   const auth = errors.some((e) => /FORBIDDEN|UNAUTHENTICATED|UNAUTHORI[SZ]ED|PERMISSION/i.test(String(e.code ?? "")));
