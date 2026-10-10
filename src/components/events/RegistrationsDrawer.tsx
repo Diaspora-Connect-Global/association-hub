@@ -51,6 +51,10 @@ import {
 } from "@/services/graphql/events/operations";
 import { userLabel } from "@/lib/userLabel";
 import { graphqlErrorMessage } from "@/lib/graphqlErrors";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { EventNetworkingTabs } from "@/components/events/networking/EventNetworkingTabs";
+import { RegistrationStatusBadge } from "@/components/events/networking/RegistrationStatusBadge";
+import { paymentLabelOverride } from "@/lib/eventNetworking";
 
 interface RegistrationsDrawerProps {
   open: boolean;
@@ -162,7 +166,8 @@ export function RegistrationsDrawer({
       email.includes(searchQuery.toLowerCase());
 
     const checkedIn = isCheckedIn(reg.status);
-    const paid = !isCancelled(reg.status) && !!reg.totalAmount;
+    // An awaiting-approval / waitlisted / declined registration has not been paid, whatever its amount.
+    const paid = !isCancelled(reg.status) && !!reg.totalAmount && paymentLabelOverride(reg.registrationStatus || reg.status) === null;
 
     const matchesPayment =
       paymentFilter === "all" ||
@@ -185,155 +190,175 @@ export function RegistrationsDrawer({
           <p className="text-sm text-muted-foreground">{t.forEvent}: {event.title}</p>
         </SheetHeader>
 
-        <div className="mt-6 space-y-4">
-          {/* Controls */}
-          <div className="flex flex-wrap gap-3">
-            <div className="relative flex-1 min-w-[200px]">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder={t.searchAttendees}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9"
-              />
-            </div>
-            {event.isPaid && (
-              <Select value={paymentFilter} onValueChange={setPaymentFilter}>
-                <SelectTrigger className="w-[140px]">
-                  <SelectValue placeholder={t.payment} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">{t.allPayments}</SelectItem>
-                  <SelectItem value="paid">{t.paidStatus}</SelectItem>
-                  <SelectItem value="pending">{t.pending}</SelectItem>
-                  <SelectItem value="refunded">{t.refundedPayment}</SelectItem>
-                </SelectContent>
-              </Select>
-            )}
-            <Select value={checkInFilter} onValueChange={setCheckInFilter}>
-              <SelectTrigger className="w-[140px]">
-                <SelectValue placeholder={t.status} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{t.allCheckInStatus}</SelectItem>
-                <SelectItem value="checked-in">{t.checkedIn}</SelectItem>
-                <SelectItem value="not-checked-in">{t.notCheckedIn}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+        <Tabs defaultValue="registrations" className="mt-6">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="registrations">Registrations</TabsTrigger>
+            <TabsTrigger value="manage">Approvals &amp; staff</TabsTrigger>
+          </TabsList>
+          <TabsContent value="registrations">
+            <div className="mt-4 space-y-4">
+              {/* Controls */}
+              <div className="flex flex-wrap gap-3">
+                <div className="relative flex-1 min-w-[200px]">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder={t.searchAttendees}
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-9"
+                  />
+                </div>
+                {event.isPaid && (
+                  <Select value={paymentFilter} onValueChange={setPaymentFilter}>
+                    <SelectTrigger className="w-[140px]">
+                      <SelectValue placeholder={t.payment} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">{t.allPayments}</SelectItem>
+                      <SelectItem value="paid">{t.paidStatus}</SelectItem>
+                      <SelectItem value="pending">{t.pending}</SelectItem>
+                      <SelectItem value="refunded">{t.refundedPayment}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+                <Select value={checkInFilter} onValueChange={setCheckInFilter}>
+                  <SelectTrigger className="w-[140px]">
+                    <SelectValue placeholder={t.status} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">{t.allCheckInStatus}</SelectItem>
+                    <SelectItem value="checked-in">{t.checkedIn}</SelectItem>
+                    <SelectItem value="not-checked-in">{t.notCheckedIn}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-          {/* Table */}
-          {loading ? (
-            <div className="flex items-center justify-center py-12 border border-dashed border-border rounded-lg">
-              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-            </div>
-          ) : filteredRegistrations.length > 0 ? (
-            <div className="rounded-lg border border-border overflow-hidden">
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-muted/50">
-                    <TableHead>{t.attendee}</TableHead>
-                    <TableHead>{t.contact}</TableHead>
-                    {event.isPaid && <TableHead>{t.payment}</TableHead>}
-                    <TableHead>{t.status}</TableHead>
-                    <TableHead>{t.registeredAt}</TableHead>
-                    <TableHead className="w-[50px]"></TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredRegistrations.map((registration) => {
-                    const name = displayName(registration, t.unknownUser);
-                    const checkedIn = isCheckedIn(registration.status);
-                    const cancelled = isCancelled(registration.status);
-                    return (
-                      <TableRow key={registration.id}>
-                        <TableCell>
-                          <div className="flex items-center gap-3">
-                            <Avatar className="h-8 w-8">
-                              <AvatarImage src={registration.user?.avatarUrl ?? undefined} />
-                              <AvatarFallback>
-                                {name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()}
-                              </AvatarFallback>
-                            </Avatar>
-                            <span className="font-medium">{name}</span>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="text-sm">
-                            <p>{registration.user?.email ?? "—"}</p>
-                          </div>
-                        </TableCell>
-                        {event.isPaid && (
-                          <TableCell>
-                            <StatusBadge
-                              variant={cancelled ? "inactive" : registration.totalAmount ? "active" : "warning"}
-                            >
-                              {cancelled
-                                ? t.refundedPayment
-                                : registration.totalAmount
-                                ? // Integer minor units (a string), in the registration's currency, else the event's.
-                                  Number.isFinite(Number(registration.totalAmount))
-                                  ? formatMinorUnits(Number(registration.totalAmount), registration.currency ?? event.currency, settings.language)
-                                  : t.pending
-                                : t.pending}
-                            </StatusBadge>
-                          </TableCell>
-                        )}
-                        <TableCell>
-                          <StatusBadge variant={checkedIn ? "active" : "inactive"}>
-                            {checkedIn ? t.checkedIn : t.notCheckedIn}
-                          </StatusBadge>
-                        </TableCell>
-                        <TableCell className="text-muted-foreground">
-                          {formatDate(registration.registeredAt)}
-                        </TableCell>
-                        <TableCell>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8"
-                                disabled={busyId === registration.id}
-                              >
-                                <MoreHorizontal className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem
-                                disabled={checkedIn || busyId === registration.id}
-                                onClick={() => void handleCheckIn(registration)}
-                              >
-                                <CheckCircle className="mr-2 h-4 w-4" />
-                                {t.markAsCheckedIn}
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                className="text-destructive"
-                                disabled={busyId === registration.id}
-                                onClick={() => void handleRemove(registration)}
-                              >
-                                <UserX className="mr-2 h-4 w-4" />
-                                {t.removeAttendee}
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
+              {/* Table */}
+              {loading ? (
+                <div className="flex items-center justify-center py-12 border border-dashed border-border rounded-lg">
+                  <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                </div>
+              ) : filteredRegistrations.length > 0 ? (
+                <div className="rounded-lg border border-border overflow-hidden">
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="bg-muted/50">
+                        <TableHead>{t.attendee}</TableHead>
+                        <TableHead>{t.contact}</TableHead>
+                        {event.isPaid && <TableHead>{t.payment}</TableHead>}
+                        <TableHead>Registration</TableHead>
+                        <TableHead>{t.status}</TableHead>
+                        <TableHead>{t.registeredAt}</TableHead>
+                        <TableHead className="w-[50px]"></TableHead>
                       </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredRegistrations.map((registration) => {
+                        const name = displayName(registration, t.unknownUser);
+                        const checkedIn = isCheckedIn(registration.status);
+                        const cancelled = isCancelled(registration.status);
+                        return (
+                          <TableRow key={registration.id}>
+                            <TableCell>
+                              <div className="flex items-center gap-3">
+                                <Avatar className="h-8 w-8">
+                                  <AvatarImage src={registration.user?.avatarUrl ?? undefined} />
+                                  <AvatarFallback>
+                                    {name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()}
+                                  </AvatarFallback>
+                                </Avatar>
+                                <span className="font-medium">{name}</span>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <div className="text-sm">
+                                <p>{registration.user?.email ?? "—"}</p>
+                              </div>
+                            </TableCell>
+                            {event.isPaid && (
+                              <TableCell>
+                                <StatusBadge
+                                  variant={cancelled ? "inactive" : registration.totalAmount ? "active" : "warning"}
+                                >
+                                  {cancelled
+                                    ? t.refundedPayment
+                                    : paymentLabelOverride(registration.registrationStatus || registration.status) !== null
+                                    ? t.pending
+                                    : registration.totalAmount
+                                    ? // Integer minor units (a string), in the registration's currency, else the event's.
+                                      Number.isFinite(Number(registration.totalAmount))
+                                      ? formatMinorUnits(Number(registration.totalAmount), registration.currency ?? event.currency, settings.language)
+                                      : t.pending
+                                    : t.pending}
+                                </StatusBadge>
+                              </TableCell>
+                            )}
+                            <TableCell>
+                              <RegistrationStatusBadge status={registration.registrationStatus || registration.status} />
+                              {registration.waitlistPosition != null && (
+                                <span className="ml-1 text-xs text-muted-foreground">#{registration.waitlistPosition}</span>
+                              )}
+                            </TableCell>
+                            <TableCell>
+                              <StatusBadge variant={checkedIn ? "active" : "inactive"}>
+                                {checkedIn ? t.checkedIn : t.notCheckedIn}
+                              </StatusBadge>
+                            </TableCell>
+                            <TableCell className="text-muted-foreground">
+                              {formatDate(registration.registeredAt)}
+                            </TableCell>
+                            <TableCell>
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8"
+                                    disabled={busyId === registration.id}
+                                  >
+                                    <MoreHorizontal className="h-4 w-4" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                  <DropdownMenuItem
+                                    disabled={checkedIn || busyId === registration.id}
+                                    onClick={() => void handleCheckIn(registration)}
+                                  >
+                                    <CheckCircle className="mr-2 h-4 w-4" />
+                                    {t.markAsCheckedIn}
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem
+                                    className="text-destructive"
+                                    disabled={busyId === registration.id}
+                                    onClick={() => void handleRemove(registration)}
+                                  >
+                                    <UserX className="mr-2 h-4 w-4" />
+                                    {t.removeAttendee}
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                    </TableBody>
+                  </Table>
+                </div>
+              ) : (
+                <div className="text-center py-12 border border-dashed border-border rounded-lg">
+                  <Users className="h-12 w-12 mx-auto text-muted-foreground/50 mb-3" />
+                  <h3 className="text-lg font-medium text-foreground mb-1">{t.noRegistrationsYet}</h3>
+                  <p className="text-sm text-muted-foreground">
+                    {t.shareEventToAttract}
+                  </p>
+                </div>
+              )}
             </div>
-          ) : (
-            <div className="text-center py-12 border border-dashed border-border rounded-lg">
-              <Users className="h-12 w-12 mx-auto text-muted-foreground/50 mb-3" />
-              <h3 className="text-lg font-medium text-foreground mb-1">{t.noRegistrationsYet}</h3>
-              <p className="text-sm text-muted-foreground">
-                {t.shareEventToAttract}
-              </p>
-            </div>
-          )}
-        </div>
+          </TabsContent>
+          <TabsContent value="manage" className="mt-4">
+            <EventNetworkingTabs eventId={event.id} onChanged={() => void fetchRegistrations()} />
+          </TabsContent>
+        </Tabs>
       </SheetContent>
     </Sheet>
   );

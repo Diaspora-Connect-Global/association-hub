@@ -20,8 +20,10 @@ import {
   getPendingMembershipRequests,
 } from "@/services/graphql/association";
 import { graphqlErrorMessage } from "@/lib/graphqlErrors";
+import { useEventsOnly } from "@/hooks/useEventsOnly";
+import { EventsOnlyHome } from "@/components/events/networking/EventsOnlyHome";
 
-export default function Dashboard() {
+function FullDashboard() {
   const t = useT();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -134,4 +136,18 @@ export default function Dashboard() {
       <ActivityFeed />
     </AdminLayout>
   );
+}
+
+export default function Dashboard() {
+  const { eventsOnly, loading, associationId } = useEventsOnly();
+  if (loading) {
+    return (
+      <AdminLayout title="Dashboard">
+        <div className="py-24 text-center text-muted-foreground">Loading…</div>
+      </AdminLayout>
+    );
+  }
+  // An events-only association lands on its Events dashboard; every other association keeps the full overview.
+  if (eventsOnly && associationId) return <EventsOnlyHome associationId={associationId} />;
+  return <FullDashboard />;
 }
