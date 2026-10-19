@@ -108,6 +108,9 @@ export interface EventRegistrationRow {
   ticketId: string | null;
   quantity: number;
   status: string;
+  /** Normalised standing: PENDING_APPROVAL / WAITLISTED / REJECTED / … (null when unrecognised). */
+  registrationStatus: string | null;
+  waitlistPosition: number | null;
   totalAmount: string | null;
   currency: string | null;
   registeredAt: string | null;
@@ -246,6 +249,8 @@ const ADMIN_GET_EVENT_REGISTRATIONS = /* GraphQL */ `
         ticketId
         quantity
         status
+        registrationStatus
+        waitlistPosition
         totalAmount
         currency
         registeredAt

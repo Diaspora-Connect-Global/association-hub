@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { lazy, Suspense, useState, useEffect, useCallback, useMemo } from "react";
 import { useLocation } from "react-router-dom";
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import { useT } from "@/hooks/useT";
@@ -36,6 +36,9 @@ import {
 import { toMinorUnits } from "@/lib/money";
 import { uploadEventCoverImage } from "@/services/graphql/events/uploads";
 import { graphqlErrorMessage } from "@/lib/graphqlErrors";
+import { useSettings } from "@/contexts/SettingsContext";
+
+const EventsDashboard = lazy(() => import("@/components/events/networking/EventsDashboard"));
 
 /**
  * Resolve the value that should be sent as `coverImageUrl` on createEvent /
@@ -159,6 +162,7 @@ function mapBackendToUiEvent(e: BackendEvent): Event {
 export default function Events() {
   const location = useLocation();
   const t = useT();
+  const { settings } = useSettings();
   const associationId = useMemo(() => getAdminAssociationId(), []);
 
   const [events, setEvents] = useState<Event[]>([]);
@@ -485,6 +489,10 @@ export default function Events() {
             <Calendar className="h-4 w-4" />
             {t.events}
           </TabsTrigger>
+          <TabsTrigger value="dashboard" className="gap-2">
+            <BarChart3 className="h-4 w-4" />
+            Dashboard
+          </TabsTrigger>
           <TabsTrigger value="analytics" className="gap-2">
             <BarChart3 className="h-4 w-4" />
             {t.analytics}
@@ -525,6 +533,22 @@ export default function Events() {
                 Create Event
               </Button>
             </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="dashboard">
+          {associationId && (
+            <Suspense fallback={<div className="py-16 text-center text-muted-foreground">Loading dashboard…</div>}>
+              <EventsDashboard
+                ownerType="ASSOCIATION"
+                ownerId={associationId}
+                locale={settings.language}
+                onOpenEvent={(id) => {
+                  const ev = events.find((e) => e.id === id);
+                  if (ev) handleManageRegistrations(ev);
+                }}
+              />
+            </Suspense>
           )}
         </TabsContent>
 

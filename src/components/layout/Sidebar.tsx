@@ -32,6 +32,8 @@ import { getAdminPermissions, hasPermission, MANAGE_ROLES_PERMISSION } from "@/l
 import { useShallow } from "zustand/react/shallow";
 import { useAssociationAdminStore } from "@/stores/associationAdminStore";
 import { getAssociation } from "@/services/graphql/association";
+import { useEventsOnly } from "@/hooks/useEventsOnly";
+import { filterNavForEventsOnly } from "@/lib/eventNetworking";
 import diaspoPlugLogo from "@/assets/diaspo-plug-logo.svg";
 import {
   Collapsible,
@@ -59,8 +61,12 @@ interface SidebarProps {
   onToggle: () => void;
 }
 
+/** Entries an events-only association keeps: events, members & join requests, admins, settings, audit. */
+const EVENTS_ONLY_NAV_IDS = ["dashboard", "events", "members", "roles-admins", "settings", "audit"];
+
 export function Sidebar({ collapsed, onToggle }: SidebarProps) {
   const location = useLocation();
+  const { eventsOnly } = useEventsOnly();
   const navigate = useNavigate();
   const t = useT();
   const admin = useAdminAuthStore((state) => state.admin);
@@ -147,11 +153,18 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
     { id: "settings", label: t.settings, icon: Settings, path: "/settings" },
   ];
 
-  const mergedMainNavItems = mainNavItems.map((item) =>
-    item.id === "members"
-      ? { ...item, badge: pendingRequestsCount > 0 ? pendingRequestsCount : undefined }
-      : item
+  const mergedMainNavItems = filterNavForEventsOnly(
+    mainNavItems.map((item) =>
+      item.id === "members"
+        ? { ...item, badge: pendingRequestsCount > 0 ? pendingRequestsCount : undefined }
+        : item.id === "dashboard" && eventsOnly
+          ? { ...item, label: "Events dashboard" }
+          : item,
+    ),
+    eventsOnly,
+    EVENTS_ONLY_NAV_IDS,
   );
+  const visibleBottomNavItems = filterNavForEventsOnly(bottomNavItems, eventsOnly, EVENTS_ONLY_NAV_IDS);
 
   // Quick action handlers
   const handleQuickAction = (action: "post" | "event" | "opportunity" | "listing") => {
@@ -356,6 +369,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
               {t.quickActions}
             </p>
             <div className="grid grid-cols-2 gap-2">
+              {!eventsOnly && (
               <button 
                 onClick={() => handleQuickAction("post")}
                 className="flex items-center justify-center gap-1.5 rounded-lg bg-primary px-3 py-2 caption-small text-primary-foreground transition-all hover:opacity-90"
@@ -363,6 +377,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
                 <Plus className="h-3.5 w-3.5" />
                 {t.newPost}
               </button>
+              )}
               <button 
                 onClick={() => handleQuickAction("event")}
                 className="flex items-center justify-center gap-1.5 rounded-lg bg-sidebar-accent px-3 py-2 caption-small text-sidebar-foreground transition-all hover:bg-sidebar-accent/80"
@@ -370,6 +385,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
                 <CalendarPlus className="h-3.5 w-3.5" />
                 {t.newEvent}
               </button>
+              {!eventsOnly && (
               <button 
                 onClick={() => handleQuickAction("opportunity")}
                 className="flex items-center justify-center gap-1.5 rounded-lg bg-sidebar-accent px-3 py-2 caption-small text-sidebar-foreground transition-all hover:bg-sidebar-accent/80"
@@ -377,6 +393,8 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
                 <PlusCircle className="h-3.5 w-3.5" />
                 {t.newOpportunity}
               </button>
+              )}
+              {!eventsOnly && (
               <button 
                 onClick={() => handleQuickAction("listing")}
                 className="flex items-center justify-center gap-1.5 rounded-lg bg-sidebar-accent px-3 py-2 caption-small text-sidebar-foreground transition-all hover:bg-sidebar-accent/80"
@@ -384,6 +402,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
                 <Tag className="h-3.5 w-3.5" />
                 {t.newListing}
               </button>
+              )}
             </div>
           </div>
         )}
@@ -394,7 +413,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
             <Tooltip>
               <TooltipTrigger asChild>
                 <button 
-                  onClick={() => handleQuickAction("post")}
+                  onClick={() => handleQuickAction(eventsOnly ? "event" : "post")}
                   className="flex w-full items-center justify-center rounded-lg bg-primary p-2.5 text-primary-foreground transition-all hover:opacity-90"
                 >
                   <Plus className="h-4 w-4" />
@@ -411,8 +430,8 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
         <nav className="scrollbar-thin flex-1 overflow-y-auto p-4">
           <ul className="space-y-1">
             {mergedMainNavItems.map(renderNavItem)}
-            {renderVendorSubmenu()}
-            {bottomNavItems.map(renderNavItem)}
+            {!eventsOnly && renderVendorSubmenu()}
+            {visibleBottomNavItems.map(renderNavItem)}
           </ul>
         </nav>
 

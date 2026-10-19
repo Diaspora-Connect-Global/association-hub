@@ -7,6 +7,7 @@ import { SettingsProvider } from "@/contexts/SettingsContext";
 import { RequireAdminAuth } from "@/components/auth/RequireAdminAuth";
 import { PageLoadingFallback, RouteErrorBoundary } from "@/components/routing/RouteFallbacks";
 import { lazyRoute } from "@/lib/lazyRoute";
+import { EventsOnlyGate } from "@/components/events/networking/EventsOnlyGate";
 // Eager: small, and the first thing a signed-out visitor needs.
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
@@ -39,25 +40,27 @@ function AppRoutes() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route element={<RequireAdminAuth />}>
-            <Route path="/" element={<Index />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/admin-profile" element={<AdminProfile />} />
-            <Route path="/members" element={<Members />} />
-            <Route path="/posts" element={<Posts />} />
-            <Route path="/events" element={<Events />} />
-            <Route path="/marketplace" element={<Marketplace />} />
-            {/* No order source exists for an association (the listing dialog says so);
-                old links land on the marketplace instead of an always-empty page. */}
-            <Route path="/orders" element={<Navigate to="/marketplace" replace />} />
-            <Route path="/groups" element={<Groups />} />
-            <Route path="/groups/:groupId" element={<GroupDetail />} />
-            <Route path="/opportunities" element={<Opportunities />} />
-            <Route path="/tickets" element={<Tickets />} />
-            <Route path="/audit-logs" element={<AuditLogs />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/roles-admins" element={<RolesAdmins />} />
-            <Route path="/vendor-escrow-settings" element={<VendorEscrowSettings />} />
-            <Route path="/analytics" element={<Analytics />} />
+            <Route element={<EventsOnlyGate />}>
+              <Route path="/" element={<Index />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/admin-profile" element={<AdminProfile />} />
+              <Route path="/members" element={<Members />} />
+              <Route path="/posts" element={<Posts />} />
+              <Route path="/events" element={<Events />} />
+              <Route path="/marketplace" element={<Marketplace />} />
+              {/* No order source exists for an association (the listing dialog says so);
+                  old links land on the marketplace instead of an always-empty page. */}
+              <Route path="/orders" element={<Navigate to="/marketplace" replace />} />
+              <Route path="/groups" element={<Groups />} />
+              <Route path="/groups/:groupId" element={<GroupDetail />} />
+              <Route path="/opportunities" element={<Opportunities />} />
+              <Route path="/tickets" element={<Tickets />} />
+              <Route path="/audit-logs" element={<AuditLogs />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/roles-admins" element={<RolesAdmins />} />
+              <Route path="/vendor-escrow-settings" element={<VendorEscrowSettings />} />
+              <Route path="/analytics" element={<Analytics />} />
+            </Route>
           </Route>
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
