@@ -1,6 +1,7 @@
-import { Bell, Search, HelpCircle, LogOut, PanelLeft, PanelLeftClose } from "lucide-react";
+import { Search, HelpCircle, LogOut, PanelLeft, PanelLeftClose } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { AdminNotificationsBell } from "@/components/layout/AdminNotificationsBell";
 import { useT } from "@/hooks/useT";
 import { clearAdminSession, useAdminAuthStore } from "@/stores/adminAuthStore";
 import { useAssociationAdminStore } from "@/stores/associationAdminStore";
@@ -108,13 +109,8 @@ export function Header({ title, subtitle, sidebarCollapsed, onToggleSidebar }: H
             <HelpCircle className="h-5 w-5" />
           </button>
 
-          {/* Notifications */}
-          <button className="relative flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
-            <Bell className="h-5 w-5" />
-            <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-destructive caption-small text-primary-foreground">
-              3
-            </span>
-          </button>
+          {/* Notifications: only what is directed to this admin about this association */}
+          <AdminNotificationsBell associationId={admin?.scopeType === "ASSOCIATION" ? admin.scopeId ?? null : null} />
 
           {/* Logout */}
           <button
