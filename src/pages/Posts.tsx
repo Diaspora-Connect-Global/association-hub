@@ -1,3 +1,4 @@
+import { canSubmitPost, hasMeaningfulPostText, isPostEmptyError, POST_EMPTY_HINT, POST_EMPTY_MESSAGE } from "@/lib/postContent";
 import {
   useState,
   useEffect,
@@ -394,11 +395,16 @@ export default function Posts() {
     if (!open) resetComposer();
   };
 
+  // Never an empty post: text, or (new posts only) an attachment. The server enforces the same rule.
+  const canSubmit = composerMode === "edit"
+    ? hasMeaningfulPostText(content)
+    : canSubmitPost(content, selectedFiles.length);
+
   const handleSubmit = async () => {
-    if (!content.trim()) {
+    if (!canSubmit) {
       toast({
-        title: "Post content is required",
-        description: "Enter post text before saving.",
+        title: "Post is empty",
+        description: POST_EMPTY_MESSAGE,
         variant: "destructive",
       });
       return;
@@ -468,7 +474,7 @@ export default function Posts() {
       resetComposer();
       toast({ title: "Post published", description: "Your post is now live." });
     } catch (err) {
-      const message = graphqlErrorMessage(err, "Failed to publish post");
+      const message = isPostEmptyError(err) ? POST_EMPTY_MESSAGE : graphqlErrorMessage(err, "Failed to publish post");
       toast({ title: "Publish failed", description: message, variant: "destructive" });
     } finally {
       setSubmitting(false);
@@ -837,6 +843,10 @@ export default function Posts() {
             )}
           </div>
 
+          {!canSubmit && (
+            <p id="post-empty-hint" className="text-xs text-muted-foreground">{POST_EMPTY_HINT}</p>
+          )}
+
           <DialogFooter>
             <Button
               variant="outline"
@@ -845,7 +855,7 @@ export default function Posts() {
             >
               Cancel
             </Button>
-            <Button onClick={handleSubmit} disabled={submitting}>
+            <Button onClick={handleSubmit} disabled={submitting || !canSubmit} aria-describedby={!canSubmit ? "post-empty-hint" : undefined}>
               {submitting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
               {composerMode === "edit" ? "Save changes" : "Publish"}
             </Button>
