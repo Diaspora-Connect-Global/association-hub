@@ -964,6 +964,12 @@ type TranslationKeys = {
   ordersUnavailableTitle: string;
   ordersUnavailableDesc: string;
   yourAssociation: string;
+  adminNotifTitle: string;
+  adminNotifEmpty: string;
+  adminNotifMarkAllRead: string;
+  adminNotifLoadError: string;
+  adminNotifUnread: string;
+  adminNotifRefresh: string;
   unknownOrganisation: string;
   analyticsUnavailableTitle: string;
   analyticsUnavailableDesc: string;
@@ -1940,6 +1946,12 @@ const translations: Record<Language, TranslationKeys> = {
     ordersUnavailableTitle: "Orders aren't available for associations yet",
     ordersUnavailableDesc: "Orders placed for your association's listings can't be shown here yet.",
     yourAssociation: "Your association",
+    adminNotifTitle: "Notifications",
+    adminNotifEmpty: "Nothing needs your attention right now.",
+    adminNotifMarkAllRead: "Mark all read",
+    adminNotifLoadError: "Couldn't load notifications. Try again.",
+    adminNotifUnread: "unread",
+    adminNotifRefresh: "Refresh",
     unknownOrganisation: "Unknown organisation",
     analyticsUnavailableTitle: "Analytics aren't available yet",
     analyticsUnavailableDesc: "There's no data source for these charts yet, so none are shown.",
@@ -2915,6 +2927,12 @@ const translations: Record<Language, TranslationKeys> = {
     ordersUnavailableTitle: "Les commandes ne sont pas encore disponibles pour les associations",
     ordersUnavailableDesc: "Les commandes passées pour les annonces de votre association ne peuvent pas encore être affichées ici.",
     yourAssociation: "Votre association",
+    adminNotifTitle: "Notifications",
+    adminNotifEmpty: "Rien ne demande votre attention pour le moment.",
+    adminNotifMarkAllRead: "Tout marquer comme lu",
+    adminNotifLoadError: "Impossible de charger les notifications. Réessayez.",
+    adminNotifUnread: "non lues",
+    adminNotifRefresh: "Actualiser",
     unknownOrganisation: "Organisation inconnue",
     analyticsUnavailableTitle: "Les statistiques ne sont pas encore disponibles",
     analyticsUnavailableDesc: "Ces graphiques n’ont pas encore de source de données ; rien n’est donc affiché.",
@@ -3890,6 +3908,12 @@ const translations: Record<Language, TranslationKeys> = {
     ordersUnavailableTitle: "Bestellungen sind für Vereine noch nicht verfügbar",
     ordersUnavailableDesc: "Bestellungen für die Angebote Ihres Vereins können hier noch nicht angezeigt werden.",
     yourAssociation: "Ihr Verein",
+    adminNotifTitle: "Benachrichtigungen",
+    adminNotifEmpty: "Im Moment braucht nichts Ihre Aufmerksamkeit.",
+    adminNotifMarkAllRead: "Alle als gelesen markieren",
+    adminNotifLoadError: "Benachrichtigungen konnten nicht geladen werden. Bitte erneut versuchen.",
+    adminNotifUnread: "ungelesen",
+    adminNotifRefresh: "Aktualisieren",
     unknownOrganisation: "Unbekannte Organisation",
     analyticsUnavailableTitle: "Analysen sind noch nicht verfügbar",
     analyticsUnavailableDesc: "Für diese Diagramme gibt es noch keine Datenquelle, daher wird nichts angezeigt.",
@@ -4852,6 +4876,12 @@ const translations: Record<Language, TranslationKeys> = {
     ordersUnavailableTitle: "Los pedidos aún no están disponibles para las asociaciones",
     ordersUnavailableDesc: "Los pedidos de los anuncios de tu asociación aún no se pueden mostrar aquí.",
     yourAssociation: "Tu asociación",
+    adminNotifTitle: "Notificaciones",
+    adminNotifEmpty: "Nada requiere tu atención ahora mismo.",
+    adminNotifMarkAllRead: "Marcar todo como leído",
+    adminNotifLoadError: "No se pudieron cargar las notificaciones. Inténtalo de nuevo.",
+    adminNotifUnread: "sin leer",
+    adminNotifRefresh: "Actualizar",
     unknownOrganisation: "Organización desconocida",
     analyticsUnavailableTitle: "Las estadísticas aún no están disponibles",
     analyticsUnavailableDesc: "Estos gráficos aún no tienen fuente de datos, así que no se muestra ninguno.",
@@ -5824,6 +5854,12 @@ const translations: Record<Language, TranslationKeys> = {
     ordersUnavailableTitle: "Gli ordini non sono ancora disponibili per le associazioni",
     ordersUnavailableDesc: "Gli ordini per gli annunci della tua associazione non possono ancora essere mostrati qui.",
     yourAssociation: "La tua associazione",
+    adminNotifTitle: "Notifiche",
+    adminNotifEmpty: "Al momento nulla richiede la tua attenzione.",
+    adminNotifMarkAllRead: "Segna tutto come letto",
+    adminNotifLoadError: "Impossibile caricare le notifiche. Riprova.",
+    adminNotifUnread: "da leggere",
+    adminNotifRefresh: "Aggiorna",
     unknownOrganisation: "Organizzazione sconosciuta",
     analyticsUnavailableTitle: "Le statistiche non sono ancora disponibili",
     analyticsUnavailableDesc: "Questi grafici non hanno ancora una fonte di dati, quindi non ne viene mostrato nessuno.",
