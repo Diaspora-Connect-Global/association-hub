@@ -25,8 +25,24 @@ export type OpportunityCategoryEnum =
   | "FINANCE_ECONOMICS"
   | "RETURN_REINTEGRATION";
 
-export type WorkModeEnum = "REMOTE" | "HYBRID" | "ONSITE";
-export type EngagementTypeEnum = "FULL_TIME" | "PART_TIME" | "CONTRACT";
+export type DeliveryModeEnum = "REMOTE" | "IN_PERSON" | "HYBRID" | "ONLINE";
+export type CommitmentTypeEnum =
+  | "FULL_TIME"
+  | "PART_TIME"
+  | "CONTRACT"
+  | "ONE_TIME"
+  | "FLEXIBLE"
+  | "PROJECT_BASED"
+  | "ONGOING";
+export type CompensationTypeEnum =
+  | "SALARY"
+  | "GRANT"
+  | "STIPEND"
+  | "INVESTMENT"
+  | "PRIZE"
+  | "EQUITY"
+  | "HONORARIUM"
+  | "NONE";
 export type VisibilityEnum = "PUBLIC" | "COMMUNITY_ONLY" | "ASSOCIATION_ONLY";
 export type ApplicationMethodEnum = "EXTERNAL_LINK" | "IN_PLATFORM_FORM" | "EMAIL_REQUEST";
 export type OpportunityStatusEnum = "DRAFT" | "PUBLISHED" | "CLOSED" | "ARCHIVED";
@@ -66,17 +82,19 @@ export interface OpportunityType extends OpportunityListItemType {
   ownerId: string;
   subCategory: string | null;
   description: string;
-  responsibilities: string | null;
-  requirements: string | null;
-  workMode: WorkModeEnum | null;
-  engagementType: EngagementTypeEnum | null;
+  scope: string | null;
+  eligibilityCriteria: string | null;
+  deliveryMode: DeliveryModeEnum | null;
+  commitmentType: CommitmentTypeEnum | null;
   location: string | null;
   visibility: VisibilityEnum;
   externalLink: string | null;
   applicationEmail: string | null;
-  salaryMin: number | null;
-  salaryMax: number | null;
-  salaryCurrency: string | null;
+  /** Integer MINOR units (x100) of compensationCurrency; Float on the wire. */
+  compensationMin: number | null;
+  compensationMax: number | null;
+  compensationCurrency: string | null;
+  compensationType: CompensationTypeEnum | null;
   deadline: string | null;
   skills: string[];
   tags: string[];
@@ -100,14 +118,14 @@ export interface ListOpportunitiesInput {
   type?: OpportunityTypeEnum;
   category?: OpportunityCategoryEnum;
   subCategory?: string;
-  workMode?: WorkModeEnum;
-  engagementType?: EngagementTypeEnum;
+  deliveryMode?: DeliveryModeEnum;
+  commitmentType?: CommitmentTypeEnum;
   location?: string;
   ownerType?: OwnerTypeEnum;
   ownerId?: string;
   status?: OpportunityStatusEnum;
-  sortBy?: "CREATED_AT" | "DEADLINE" | "SALARY" | "RELEVANCE";
-  sortOrder?: "ASC" | "DESC";
+  sortBy?: string;
+  sortOrder?: string;
 }
 
 export interface FileRefType {
@@ -136,8 +154,8 @@ export interface ApplicationType {
 }
 
 export interface ApplicationDetailType extends ApplicationType {
-  resumeFileRef: FileRefType | null;
   customAnswers: string | null;
+  applicationFiles: FileRefType[] | null;
   opportunity: ApplicationOpportunityRef | null;
 }
 
@@ -164,16 +182,18 @@ export interface CreateOpportunityInput {
   description: string;
   visibility: VisibilityEnum;
   applicationMethod: ApplicationMethodEnum;
-  responsibilities?: string | null;
-  requirements?: string | null;
-  workMode?: WorkModeEnum | null;
-  engagementType?: EngagementTypeEnum | null;
+  scope?: string | null;
+  eligibilityCriteria?: string | null;
+  deliveryMode?: DeliveryModeEnum | null;
+  commitmentType?: CommitmentTypeEnum | null;
   location?: string | null;
   externalLink?: string | null;
   applicationEmail?: string | null;
-  salaryMin?: number | null;
-  salaryMax?: number | null;
-  salaryCurrency?: string | null;
+  /** Integer MINOR units (x100). */
+  compensationMin?: number | null;
+  compensationMax?: number | null;
+  compensationCurrency?: string | null;
+  compensationType?: CompensationTypeEnum | null;
   deadline?: string | null;
   subCategory?: string | null;
   skills?: string[] | null;
@@ -184,17 +204,19 @@ export interface CreateOpportunityInput {
 export interface UpdateOpportunityInput {
   title?: string;
   description?: string;
-  responsibilities?: string;
-  requirements?: string;
+  scope?: string;
+  eligibilityCriteria?: string;
   applicationMethod?: ApplicationMethodEnum;
   externalLink?: string;
   applicationEmail?: string;
-  workMode?: WorkModeEnum;
-  engagementType?: EngagementTypeEnum;
+  deliveryMode?: DeliveryModeEnum;
+  commitmentType?: CommitmentTypeEnum;
   location?: string;
-  salaryMin?: number;
-  salaryMax?: number;
-  salaryCurrency?: string;
+  /** Integer MINOR units (x100). */
+  compensationMin?: number;
+  compensationMax?: number;
+  compensationCurrency?: string;
+  compensationType?: CompensationTypeEnum;
   deadline?: string;
   subCategory?: string;
   skills?: string[];

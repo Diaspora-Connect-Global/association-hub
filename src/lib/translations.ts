@@ -971,6 +971,7 @@ type TranslationKeys = {
   adminNotifUnread: string;
   adminNotifRefresh: string;
   unknownOrganisation: string;
+  opportunityAmountInvalid: string;
   analyticsUnavailableTitle: string;
   analyticsUnavailableDesc: string;
 };
@@ -1953,6 +1954,7 @@ const translations: Record<Language, TranslationKeys> = {
     adminNotifUnread: "unread",
     adminNotifRefresh: "Refresh",
     unknownOrganisation: "Unknown organisation",
+    opportunityAmountInvalid: "Enter a valid amount with at most 2 decimals (for example 1500.50). It cannot be negative or too large.",
     analyticsUnavailableTitle: "Analytics aren't available yet",
     analyticsUnavailableDesc: "There's no data source for these charts yet, so none are shown.",
   },
@@ -2934,6 +2936,7 @@ const translations: Record<Language, TranslationKeys> = {
     adminNotifUnread: "non lues",
     adminNotifRefresh: "Actualiser",
     unknownOrganisation: "Organisation inconnue",
+    opportunityAmountInvalid: "Saisissez un montant valide avec 2 décimales au maximum (par exemple 1500.50). Il ne peut être ni négatif ni trop élevé.",
     analyticsUnavailableTitle: "Les statistiques ne sont pas encore disponibles",
     analyticsUnavailableDesc: "Ces graphiques n’ont pas encore de source de données ; rien n’est donc affiché.",
   },
@@ -3915,6 +3918,7 @@ const translations: Record<Language, TranslationKeys> = {
     adminNotifUnread: "ungelesen",
     adminNotifRefresh: "Aktualisieren",
     unknownOrganisation: "Unbekannte Organisation",
+    opportunityAmountInvalid: "Geben Sie einen gültigen Betrag mit höchstens 2 Nachkommastellen ein (z. B. 1500.50). Er darf weder negativ noch zu groß sein.",
     analyticsUnavailableTitle: "Analysen sind noch nicht verfügbar",
     analyticsUnavailableDesc: "Für diese Diagramme gibt es noch keine Datenquelle, daher wird nichts angezeigt.",
   },
@@ -4883,6 +4887,7 @@ const translations: Record<Language, TranslationKeys> = {
     adminNotifUnread: "sin leer",
     adminNotifRefresh: "Actualizar",
     unknownOrganisation: "Organización desconocida",
+    opportunityAmountInvalid: "Introduzca un importe válido con un máximo de 2 decimales (por ejemplo 1500.50). No puede ser negativo ni demasiado grande.",
     analyticsUnavailableTitle: "Las estadísticas aún no están disponibles",
     analyticsUnavailableDesc: "Estos gráficos aún no tienen fuente de datos, así que no se muestra ninguno.",
   },
@@ -5861,6 +5866,7 @@ const translations: Record<Language, TranslationKeys> = {
     adminNotifUnread: "da leggere",
     adminNotifRefresh: "Aggiorna",
     unknownOrganisation: "Organizzazione sconosciuta",
+    opportunityAmountInvalid: "Inserisci un importo valido con al massimo 2 decimali (ad esempio 1500.50). Non può essere negativo né troppo grande.",
     analyticsUnavailableTitle: "Le statistiche non sono ancora disponibili",
     analyticsUnavailableDesc: "Questi grafici non hanno ancora una fonte di dati, quindi non ne viene mostrato nessuno.",
   },
