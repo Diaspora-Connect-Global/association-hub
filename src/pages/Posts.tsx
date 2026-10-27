@@ -32,6 +32,7 @@ import { PostsTable } from "@/components/posts/PostsTable";
 import { PostsCardView } from "@/components/posts/PostsCardView";
 import { DeletePostModal } from "@/components/posts/DeletePostModal";
 import { MentionTextarea } from "@/components/posts/MentionTextarea";
+import { clearDraft, draftKey, loadDraft, saveDraft } from "@/lib/composerDraft";
 import { CommentsTree } from "@/components/posts/CommentsTree";
 import {
   Plus,
@@ -238,6 +239,33 @@ export default function Posts() {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
+  // Browser-only drafts (create mode), keyed per signed-in admin + association.
+  const draftStorageKey = useMemo(
+    () => draftKey(admin?.userId ?? admin?.id, associationId),
+    [admin?.userId, admin?.id, associationId],
+  );
+  const [draftRestored, setDraftRestored] = useState(false);
+  const [editorKey, setEditorKey] = useState(0);
+  const latestDraftRef = useRef({ content, visibility, mentions });
+  latestDraftRef.current = { content, visibility, mentions };
+
+  const persistDraftNow = () => {
+    const d = latestDraftRef.current;
+    if (hasMeaningfulPostText(d.content)) {
+      saveDraft(draftStorageKey, { text: d.content, visibility: d.visibility, mentions: d.mentions });
+    } else {
+      clearDraft(draftStorageKey);
+    }
+  };
+
+  // Debounced autosave while the create composer is open.
+  useEffect(() => {
+    if (!createModalOpen || composerMode !== "create") return;
+    const handle = setTimeout(persistDraftNow, 700);
+    return () => clearTimeout(handle);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [content, visibility, mentions, createModalOpen, composerMode, draftStorageKey]);
+
   // View modal
   const [viewModalOpen, setViewModalOpen] = useState(false);
   const [viewPost, setViewPost] = useState<UiPost | null>(null);
@@ -373,11 +401,42 @@ export default function Posts() {
     setMentions([]);
     setComposerMode("create");
     setEditingPostId(null);
+    setDraftRestored(false);
   };
 
   const openCreate = () => {
     resetComposer();
+    const draft = loadDraft(draftStorageKey);
+    if (draft && hasMeaningfulPostText(draft.text)) {
+      setContent(draft.text);
+      setVisibility(draft.visibility === "PUBLIC" ? "PUBLIC" : "ASSOCIATION");
+      setMentions(draft.mentions);
+      setEditorKey((k) => k + 1);
+      setDraftRestored(true);
+    }
     setCreateModalOpen(true);
+  };
+
+  const discardDraft = () => {
+    clearDraft(draftStorageKey);
+    setContent("");
+    setVisibility("ASSOCIATION");
+    setMentions([]);
+    setEditorKey((k) => k + 1);
+    setDraftRestored(false);
+    toast({ title: t.composerDraftDiscarded });
+  };
+
+  const saveDraftAndClose = () => {
+    persistDraftNow();
+    setCreateModalOpen(false);
+    resetComposer();
+    toast({ title: t.composerDraftSaved, description: t.composerDraftSavedDesc });
+  };
+
+  const closeComposer = () => {
+    if (composerMode === "create") persistDraftNow();
+    setCreateModalOpen(false);
   };
 
   const openEdit = (post: UiPost) => {
@@ -391,6 +450,7 @@ export default function Posts() {
   };
 
   const handleComposerOpenChange = (open: boolean) => {
+    if (!open && composerMode === "create") persistDraftNow();
     setCreateModalOpen(open);
     if (!open) resetComposer();
   };
@@ -470,6 +530,7 @@ export default function Posts() {
 
       const created = await associationPostService.post(result.id);
       setPosts((prev) => [mapApiToUi(created, t.unknownUser, t.unknownOrganisation, associationId), ...prev]);
+      clearDraft(draftStorageKey);
       setCreateModalOpen(false);
       resetComposer();
       toast({ title: "Post published", description: "Your post is now live." });
@@ -715,7 +776,13 @@ export default function Posts() {
 
       {/* Composer Dialog */}
       <Dialog open={createModalOpen} onOpenChange={handleComposerOpenChange}>
-        <DialogContent className="sm:max-w-[600px]">
+        <DialogContent
+          className="sm:max-w-[600px]"
+          onEscapeKeyDown={(e) => {
+            // Escape closes an open suggestion list first, not the whole composer.
+            if (document.activeElement?.getAttribute("aria-expanded") === "true") e.preventDefault();
+          }}
+        >
           <DialogHeader>
             <DialogTitle className="font-display">
               {composerMode === "edit" ? t.editPost : t.createPost}
@@ -728,11 +795,24 @@ export default function Posts() {
           </DialogHeader>
 
           <div className="space-y-4 py-4">
+            {draftRestored && composerMode === "create" && (
+              <div role="status" className="flex items-center justify-between gap-3 rounded-md border border-border bg-muted/40 px-3 py-2 text-sm">
+                <div>
+                  <p className="font-medium">{t.composerDraftRestored}</p>
+                  <p className="text-xs text-muted-foreground">{t.composerDraftRestoredDesc}</p>
+                </div>
+                <Button type="button" variant="outline" size="sm" onClick={discardDraft}>
+                  {t.composerDiscardDraft}
+                </Button>
+              </div>
+            )}
             <div className="space-y-2">
               <Label htmlFor="post-content">Content</Label>
               <MentionTextarea
+                key={editorKey}
                 id="post-content"
-                placeholder="Write your post content... Type @ to mention a user, community or association."
+                initialMentions={mentions}
+                placeholder={t.composerPlaceholder}
                 rows={6}
                 value={content}
                 onChange={setContent}
@@ -850,11 +930,21 @@ export default function Posts() {
           <DialogFooter>
             <Button
               variant="outline"
-              onClick={() => setCreateModalOpen(false)}
+              onClick={closeComposer}
               disabled={submitting}
             >
               Cancel
             </Button>
+            {composerMode === "create" && (
+              <Button
+                variant="outline"
+                onClick={saveDraftAndClose}
+                disabled={submitting || !hasMeaningfulPostText(content)}
+                title={selectedFiles.length > 0 ? t.composerAttachmentsNotSaved : undefined}
+              >
+                {t.saveDraft}
+              </Button>
+            )}
             <Button onClick={handleSubmit} disabled={submitting || !canSubmit} aria-describedby={!canSubmit ? "post-empty-hint" : undefined}>
               {submitting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
               {composerMode === "edit" ? "Save changes" : "Publish"}

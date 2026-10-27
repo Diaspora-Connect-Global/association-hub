@@ -414,6 +414,18 @@ type TranslationKeys = {
   contentWarningNote: string;
   preview: string;
   saveDraft: string;
+  composerInsertHashtag: string;
+  composerHashtagSuggestions: string;
+  composerMentionSuggestions: string;
+  composerSearching: string;
+  composerPlaceholder: string;
+  composerDraftRestored: string;
+  composerDraftRestoredDesc: string;
+  composerDiscardDraft: string;
+  composerDraftSaved: string;
+  composerDraftSavedDesc: string;
+  composerDraftDiscarded: string;
+  composerAttachmentsNotSaved: string;
   titleRequired: string;
   titleRequiredDesc: string;
   contentRequired: string;
@@ -1503,6 +1515,18 @@ const translations: Record<Language, TranslationKeys> = {
     contentWarningNote: "Posts with content warnings will display a warning before showing content",
     preview: "Preview",
     saveDraft: "Save Draft",
+    composerInsertHashtag: "Insert a hashtag",
+    composerHashtagSuggestions: "Hashtag suggestions",
+    composerMentionSuggestions: "Mention suggestions",
+    composerSearching: "Searching…",
+    composerPlaceholder: "Write your post content... Type @ to mention a user, community or association, or # to add a hashtag.",
+    composerDraftRestored: "Draft restored",
+    composerDraftRestoredDesc: "We restored your unpublished text from this browser.",
+    composerDiscardDraft: "Discard draft",
+    composerDraftSaved: "Draft saved",
+    composerDraftSavedDesc: "Kept in this browser only. It is removed when you sign out.",
+    composerDraftDiscarded: "Draft discarded",
+    composerAttachmentsNotSaved: "Attachments are not kept in drafts.",
     titleRequired: "Title Required",
     titleRequiredDesc: "Please enter a title before publishing.",
     contentRequired: "Content Required",
@@ -2483,6 +2507,18 @@ const translations: Record<Language, TranslationKeys> = {
     contentWarningNote: "Les publications avec avertissement afficheront un avertissement avant le contenu",
     preview: "Aperçu",
     saveDraft: "Enregistrer le brouillon",
+    composerInsertHashtag: "Insérer un hashtag",
+    composerHashtagSuggestions: "Suggestions de hashtags",
+    composerMentionSuggestions: "Suggestions de mentions",
+    composerSearching: "Recherche…",
+    composerPlaceholder: "Rédigez votre publication... Tapez @ pour mentionner un utilisateur, une communauté ou une association, ou # pour ajouter un hashtag.",
+    composerDraftRestored: "Brouillon restauré",
+    composerDraftRestoredDesc: "Nous avons restauré votre texte non publié depuis ce navigateur.",
+    composerDiscardDraft: "Supprimer le brouillon",
+    composerDraftSaved: "Brouillon enregistré",
+    composerDraftSavedDesc: "Conservé uniquement dans ce navigateur. Il est supprimé à votre déconnexion.",
+    composerDraftDiscarded: "Brouillon supprimé",
+    composerAttachmentsNotSaved: "Les pièces jointes ne sont pas conservées dans les brouillons.",
     titleRequired: "Titre requis",
     titleRequiredDesc: "Veuillez entrer un titre avant de publier.",
     contentRequired: "Contenu requis",
@@ -3464,6 +3500,18 @@ const translations: Record<Language, TranslationKeys> = {
     contentWarningNote: "Beiträge mit Inhaltswarnungen zeigen eine Warnung vor dem Inhalt an",
     preview: "Vorschau",
     saveDraft: "Entwurf speichern",
+    composerInsertHashtag: "Hashtag einfügen",
+    composerHashtagSuggestions: "Hashtag-Vorschläge",
+    composerMentionSuggestions: "Erwähnungsvorschläge",
+    composerSearching: "Suche läuft…",
+    composerPlaceholder: "Schreibe deinen Beitrag... Tippe @, um einen Nutzer, eine Community oder einen Verein zu erwähnen, oder # für einen Hashtag.",
+    composerDraftRestored: "Entwurf wiederhergestellt",
+    composerDraftRestoredDesc: "Wir haben deinen unveröffentlichten Text aus diesem Browser wiederhergestellt.",
+    composerDiscardDraft: "Entwurf verwerfen",
+    composerDraftSaved: "Entwurf gespeichert",
+    composerDraftSavedDesc: "Nur in diesem Browser gespeichert. Beim Abmelden wird er gelöscht.",
+    composerDraftDiscarded: "Entwurf verworfen",
+    composerAttachmentsNotSaved: "Anhänge werden in Entwürfen nicht gespeichert.",
     titleRequired: "Titel erforderlich",
     titleRequiredDesc: "Bitte geben Sie einen Titel ein, bevor Sie veröffentlichen.",
     contentRequired: "Inhalt erforderlich",
@@ -4437,6 +4485,18 @@ const translations: Record<Language, TranslationKeys> = {
     contentWarningNote: "Las publicaciones con advertencias mostrarán un aviso antes del contenido",
     preview: "Vista previa",
     saveDraft: "Guardar borrador",
+    composerInsertHashtag: "Insertar un hashtag",
+    composerHashtagSuggestions: "Sugerencias de hashtags",
+    composerMentionSuggestions: "Sugerencias de menciones",
+    composerSearching: "Buscando…",
+    composerPlaceholder: "Escribe tu publicación... Escribe @ para mencionar a un usuario, comunidad o asociación, o # para añadir un hashtag.",
+    composerDraftRestored: "Borrador restaurado",
+    composerDraftRestoredDesc: "Hemos restaurado tu texto sin publicar desde este navegador.",
+    composerDiscardDraft: "Descartar borrador",
+    composerDraftSaved: "Borrador guardado",
+    composerDraftSavedDesc: "Se guarda solo en este navegador. Se elimina al cerrar sesión.",
+    composerDraftDiscarded: "Borrador descartado",
+    composerAttachmentsNotSaved: "Los archivos adjuntos no se guardan en los borradores.",
     titleRequired: "Título requerido",
     titleRequiredDesc: "Por favor ingresa un título antes de publicar.",
     contentRequired: "Contenido requerido",
@@ -5300,6 +5360,18 @@ const translations: Record<Language, TranslationKeys> = {
     contentWarningNote: "Aggiungi un avviso per contenuti sensibili",
     preview: "Anteprima",
     saveDraft: "Salva bozza",
+    composerInsertHashtag: "Inserisci un hashtag",
+    composerHashtagSuggestions: "Suggerimenti hashtag",
+    composerMentionSuggestions: "Suggerimenti di menzione",
+    composerSearching: "Ricerca in corso…",
+    composerPlaceholder: "Scrivi il tuo post... Digita @ per menzionare un utente, una comunità o un'associazione, oppure # per aggiungere un hashtag.",
+    composerDraftRestored: "Bozza ripristinata",
+    composerDraftRestoredDesc: "Abbiamo ripristinato il tuo testo non pubblicato da questo browser.",
+    composerDiscardDraft: "Scarta bozza",
+    composerDraftSaved: "Bozza salvata",
+    composerDraftSavedDesc: "Conservata solo in questo browser. Viene eliminata quando esci.",
+    composerDraftDiscarded: "Bozza scartata",
+    composerAttachmentsNotSaved: "Gli allegati non vengono conservati nelle bozze.",
     titleRequired: "Titolo richiesto",
     titleRequiredDesc: "Inserisci un titolo per il post",
     contentRequired: "Contenuto richiesto",

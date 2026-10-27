@@ -3,6 +3,7 @@ import { persist } from "zustand/middleware";
 import { adminLogin as adminLoginApi } from "@/services/graphql/adminAuth";
 import type { AdminUserInfo } from "@/services/graphql/adminAuth";
 import { useAssociationAdminStore } from "@/stores/associationAdminStore";
+import { clearAllDrafts } from "@/lib/composerDraft";
 import { graphqlErrorMessage, safeServerMessage } from "@/lib/graphqlErrors";
 
 type JwtRole = "ASSOCIATION_ADMIN";
@@ -147,6 +148,8 @@ export const useAdminAuthStore = create<AdminAuthState>()(
       },
 
       logout: () => {
+        // Shared office machines: never leave an admin's unpublished drafts behind.
+        clearAllDrafts();
         set({
           accessToken: null,
           refreshToken: null,
