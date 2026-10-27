@@ -27,7 +27,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useT } from "@/hooks/useT";
-import { clearAdminSession, decodeAdminJwt, useAdminAuthStore } from "@/stores/adminAuthStore";
+import { signOutAdmin, decodeAdminJwt, useAdminAuthStore } from "@/stores/adminAuthStore";
 import { getAdminPermissions, hasPermission, MANAGE_ROLES_PERMISSION } from "@/lib/adminAccess";
 import { useShallow } from "zustand/react/shallow";
 import { useAssociationAdminStore } from "@/stores/associationAdminStore";
@@ -113,7 +113,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
     .join("") || "AA";
 
   const handleLogout = () => {
-    clearAdminSession();
+    signOutAdmin();
     navigate("/login", { replace: true });
   };
 

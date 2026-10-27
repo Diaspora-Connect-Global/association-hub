@@ -148,8 +148,6 @@ export const useAdminAuthStore = create<AdminAuthState>()(
       },
 
       logout: () => {
-        // Shared office machines: never leave an admin's unpublished drafts behind.
-        clearAllDrafts();
         set({
           accessToken: null,
           refreshToken: null,
@@ -235,6 +233,17 @@ export function isAdminSessionExpired(): boolean {
 export function clearAdminSession(): void {
   useAdminAuthStore.getState().logout();
   useAssociationAdminStore.getState().clear();
+}
+
+/**
+ * Explicit sign-out (the admin chose it): end the session AND delete every post draft in
+ * this browser — consoles run on shared office machines. A forced logout (expired token,
+ * unauthenticated response) uses clearAdminSession alone and keeps the drafts: they are
+ * keyed to this admin, expire after 14 days, and the admin usually signs straight back in.
+ */
+export function signOutAdmin(): void {
+  clearAllDrafts();
+  clearAdminSession();
 }
 
 export function getAdminRefreshToken(): string | null {

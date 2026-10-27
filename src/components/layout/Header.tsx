@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AdminNotificationsBell } from "@/components/layout/AdminNotificationsBell";
 import { useT } from "@/hooks/useT";
-import { clearAdminSession, useAdminAuthStore } from "@/stores/adminAuthStore";
+import { signOutAdmin, useAdminAuthStore } from "@/stores/adminAuthStore";
 import { useAssociationAdminStore } from "@/stores/associationAdminStore";
 import {
   Tooltip,
@@ -31,7 +31,7 @@ export function Header({ title, subtitle, sidebarCollapsed, onToggleSidebar }: H
   const adminLabel = admin?.role?.name || "Association admin";
 
   const handleLogout = () => {
-    clearAdminSession();
+    signOutAdmin();
     navigate("/login", { replace: true });
   };
 
