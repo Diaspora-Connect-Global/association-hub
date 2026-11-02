@@ -33,9 +33,12 @@ import {
   Heart,
   ToggleLeft,
   ToggleRight,
+  Briefcase,
 } from "lucide-react";
 import { Post } from "@/types/posts";
 import { useT } from "@/hooks/useT";
+import { Link } from "react-router-dom";
+import { Badge } from "@/components/ui/badge";
 
 interface PostsTableProps {
   posts: Post[];
@@ -170,6 +173,19 @@ export function PostsTable({
                   <div className="min-w-0">
                     <p className="font-medium text-foreground line-clamp-1">{post.title}</p>
                     <p className="text-sm text-muted-foreground line-clamp-1">{post.excerpt}</p>
+                    {post.linkedOpportunityId && (
+                    <Link
+                      to="/opportunities"
+                      className="mt-1 inline-flex rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      aria-label={t.composerOppBadgeLink}
+                      title={t.composerOppBadgeLink}
+                    >
+                      <Badge variant="secondary" className="gap-1">
+                        <Briefcase className="h-3 w-3" aria-hidden="true" />
+                        {t.composerOppBadge}
+                      </Badge>
+                    </Link>
+                    )}
                   </div>
                 </TableCell>
                 <TableCell>

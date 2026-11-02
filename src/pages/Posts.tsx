@@ -46,6 +46,7 @@ import {
   Heart,
   MessageSquare,
   X,
+  Briefcase,
 } from "lucide-react";
 import type { Post as UiPost } from "@/types/posts";
 import { toast } from "@/hooks/use-toast";
@@ -61,6 +62,21 @@ import type {
   PostVisibility,
 } from "@/services/graphql/posts";
 import { graphqlErrorMessage } from "@/lib/graphqlErrors";
+import { ClientError } from "graphql-request";
+import {
+  OpportunityChip,
+  OpportunityDetailsDialog,
+  OpportunityHint,
+  useOpportunityDetection,
+} from "@/components/posts/OpportunityComposerParts";
+import {
+  buildOpportunityInput,
+  defaultOpportunityDraft,
+  opportunityErrorKey,
+  parseOpportunityDraft,
+  validateOpportunityDraft,
+  type OpportunityDraft,
+} from "@/lib/postOpportunity";
 
 // -------------------------------------------------------------------------
 // Local visibility option for the composer: Public vs Association-only
@@ -164,6 +180,7 @@ function mapApiToUi(p: ApiPost, unknown: string, unknownOrg: string, ownId: stri
     createdAt: formatBackendDate(p.createdAt),
     updatedAt: p.updatedAt ? formatBackendDate(p.updatedAt) : formatBackendDate(p.createdAt),
     attachments,
+    linkedOpportunityId: p.linkedOpportunityId ?? null,
   };
 }
 
@@ -246,13 +263,35 @@ export default function Posts() {
   );
   const [draftRestored, setDraftRestored] = useState(false);
   const [editorKey, setEditorKey] = useState(0);
-  const latestDraftRef = useRef({ content, visibility, mentions });
-  latestDraftRef.current = { content, visibility, mentions };
+  // Optional job/opportunity published together with the post (create mode only).
+  const [oppDraft, setOppDraft] = useState<OpportunityDraft | null>(null);
+  const [oppDialogOpen, setOppDialogOpen] = useState(false);
+  const [oppDialogInitial, setOppDialogInitial] = useState<OpportunityDraft>(() => defaultOpportunityDraft("", null));
+  const [oppHintDismissed, setOppHintDismissed] = useState(false);
+  const oppTr = (key: string) =>
+    (t as unknown as Record<string, string>)[`composerOpp${key.charAt(0).toUpperCase()}${key.slice(1)}`] ?? key;
+  const detection = useOpportunityDetection(
+    content,
+    createModalOpen && composerMode === "create" && !oppDraft && !oppHintDismissed,
+  );
+
+  const openOppDialog = () => {
+    setOppDialogInitial(oppDraft ?? defaultOpportunityDraft(content, detection.type));
+    setOppDialogOpen(true);
+  };
+
+  const latestDraftRef = useRef({ content, visibility, mentions, oppDraft });
+  latestDraftRef.current = { content, visibility, mentions, oppDraft };
 
   const persistDraftNow = () => {
     const d = latestDraftRef.current;
     if (hasMeaningfulPostText(d.content)) {
-      saveDraft(draftStorageKey, { text: d.content, visibility: d.visibility, mentions: d.mentions });
+      saveDraft(draftStorageKey, {
+        text: d.content,
+        visibility: d.visibility,
+        mentions: d.mentions,
+        ...(d.oppDraft ? { opportunity: d.oppDraft } : {}),
+      });
     } else {
       clearDraft(draftStorageKey);
     }
@@ -264,7 +303,7 @@ export default function Posts() {
     const handle = setTimeout(persistDraftNow, 700);
     return () => clearTimeout(handle);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [content, visibility, mentions, createModalOpen, composerMode, draftStorageKey]);
+  }, [content, visibility, mentions, oppDraft, createModalOpen, composerMode, draftStorageKey]);
 
   // View modal
   const [viewModalOpen, setViewModalOpen] = useState(false);
@@ -402,6 +441,9 @@ export default function Posts() {
     setComposerMode("create");
     setEditingPostId(null);
     setDraftRestored(false);
+    setOppDraft(null);
+    setOppDialogOpen(false);
+    setOppHintDismissed(false);
   };
 
   const openCreate = () => {
@@ -411,6 +453,7 @@ export default function Posts() {
       setContent(draft.text);
       setVisibility(draft.visibility === "PUBLIC" ? "PUBLIC" : "ASSOCIATION");
       setMentions(draft.mentions);
+      setOppDraft(parseOpportunityDraft(draft.opportunity));
       setEditorKey((k) => k + 1);
       setDraftRestored(true);
     }
@@ -422,6 +465,8 @@ export default function Posts() {
     setContent("");
     setVisibility("ASSOCIATION");
     setMentions([]);
+    setOppDraft(null);
+    setOppHintDismissed(false);
     setEditorKey((k) => k + 1);
     setDraftRestored(false);
     toast({ title: t.composerDraftDiscarded });
@@ -459,6 +504,19 @@ export default function Posts() {
   const canSubmit = composerMode === "edit"
     ? hasMeaningfulPostText(content)
     : canSubmitPost(content, selectedFiles.length);
+
+  /** Friendly text for the gateway's post+opportunity error codes (null = not one of them). */
+  const opportunityMessage = (err: unknown): string | null => {
+    if (!(err instanceof ClientError)) return null;
+    for (const e of err.response?.errors ?? []) {
+      const code = (e?.extensions as { code?: unknown } | undefined)?.code;
+      const key = opportunityErrorKey(typeof code === "string" ? code : undefined);
+      if (key === "ownerMismatch") return oppTr("errOwnerMismatch");
+      if (key === "failed") return oppTr("errFailed");
+      if (key === "rateLimited") return oppTr("errRateLimited");
+    }
+    return null;
+  };
 
   const handleSubmit = async () => {
     if (!canSubmit) {
@@ -504,6 +562,12 @@ export default function Posts() {
       return;
     }
 
+    if (oppDraft && validateOpportunityDraft(oppDraft).length > 0) {
+      toast({ title: oppTr("dlgTitle"), description: oppTr("errTitle"), variant: "destructive" });
+      openOppDialog();
+      return;
+    }
+
     setSubmitting(true);
     try {
       const attachments = await Promise.all(
@@ -519,23 +583,35 @@ export default function Posts() {
         .filter((m) => m.entityType === "USER")
         .map((m) => m.entityId);
 
-      const result = await associationPostService.createAssociationPost({
+      const postInput = {
         associationId,
         text: content.trim(),
         visibility,
         attachments,
         mentionedUserIds,
         mentions,
-      });
+      };
+      const result = oppDraft
+        ? await associationPostService.createAssociationPostWithOpportunity(
+            postInput,
+            buildOpportunityInput(oppDraft, "ASSOCIATION", associationId),
+          )
+        : await associationPostService.createAssociationPost(postInput);
 
       const created = await associationPostService.post(result.id);
       setPosts((prev) => [mapApiToUi(created, t.unknownUser, t.unknownOrganisation, associationId), ...prev]);
       clearDraft(draftStorageKey);
       setCreateModalOpen(false);
       resetComposer();
-      toast({ title: "Post published", description: "Your post is now live." });
+      if (oppDraft) {
+        toast({ title: oppTr("postedTitle"), description: oppTr("postedDesc") });
+      } else {
+        toast({ title: "Post published", description: "Your post is now live." });
+      }
     } catch (err) {
-      const message = isPostEmptyError(err) ? POST_EMPTY_MESSAGE : graphqlErrorMessage(err, "Failed to publish post");
+      const message = isPostEmptyError(err)
+        ? POST_EMPTY_MESSAGE
+        : (oppDraft && opportunityMessage(err)) || graphqlErrorMessage(err, "Failed to publish post");
       toast({ title: "Publish failed", description: message, variant: "destructive" });
     } finally {
       setSubmitting(false);
@@ -820,6 +896,29 @@ export default function Posts() {
               />
             </div>
 
+            {composerMode === "create" && (
+              <>
+                {oppDraft ? (
+                  <OpportunityChip
+                    tr={oppTr}
+                    title={oppDraft.title}
+                    onEdit={openOppDialog}
+                    onRemove={() => setOppDraft(null)}
+                  />
+                ) : (
+                  <>
+                    {detection.match && !oppHintDismissed && (
+                      <OpportunityHint tr={oppTr} onAdd={openOppDialog} onDismiss={() => setOppHintDismissed(true)} />
+                    )}
+                    <Button type="button" variant="outline" size="sm" onClick={openOppDialog}>
+                      <Briefcase className="h-4 w-4 mr-2" aria-hidden="true" />
+                      {oppTr("toolbar")}
+                    </Button>
+                  </>
+                )}
+              </>
+            )}
+
             <div className="space-y-2">
               <Label htmlFor="post-visibility">Visibility</Label>
               <Select
@@ -1051,6 +1150,17 @@ export default function Posts() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <OpportunityDetailsDialog
+        open={oppDialogOpen}
+        onOpenChange={setOppDialogOpen}
+        initial={oppDialogInitial}
+        tr={oppTr}
+        onSave={(draft) => {
+          setOppDraft(draft);
+          setOppDialogOpen(false);
+        }}
+      />
 
       <DeletePostModal
         open={deleteModalOpen}

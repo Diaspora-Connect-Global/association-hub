@@ -1,9 +1,11 @@
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
-import { Edit, Pin, Trash2, ToggleLeft, ToggleRight, Globe, Users, Image as ImageIcon, Video, FileText } from "lucide-react";
+import { Edit, Pin, Trash2, ToggleLeft, ToggleRight, Globe, Users, Image as ImageIcon, Video, FileText, Briefcase } from "lucide-react";
 import { Post } from "@/types/posts";
 import { useT } from "@/hooks/useT";
+import { Link } from "react-router-dom";
+import { Badge } from "@/components/ui/badge";
 
 interface PostsCardViewProps {
   posts: Post[];
@@ -87,6 +89,19 @@ export function PostsCardView({
               )}
             </div>
             <p className="text-sm text-muted-foreground line-clamp-2">{post.excerpt}</p>
+                    {post.linkedOpportunityId && (
+                    <Link
+                      to="/opportunities"
+                      className="mt-1 inline-flex rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      aria-label={t.composerOppBadgeLink}
+                      title={t.composerOppBadgeLink}
+                    >
+                      <Badge variant="secondary" className="gap-1">
+                        <Briefcase className="h-3 w-3" aria-hidden="true" />
+                        {t.composerOppBadge}
+                      </Badge>
+                    </Link>
+                    )}
           </CardHeader>
 
           <CardContent className="pb-3">

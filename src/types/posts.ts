@@ -30,6 +30,8 @@ export interface Post {
   tags?: string[];
   contentWarning?: "none" | "sensitive" | "age_restricted";
   attachments?: PostAttachment[];
+  /** Set when the post was published together with an Opportunity. */
+  linkedOpportunityId?: string | null;
 }
 
 export interface Comment {
