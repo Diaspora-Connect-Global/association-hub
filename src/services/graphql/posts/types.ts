@@ -55,6 +55,8 @@ export interface Post {
   text?: string;
   visibility: PostVisibility;
   status: PostStatus;
+  /** Set when the post was published together with an Opportunity. */
+  linkedOpportunityId?: string | null;
   attachments?: PostAttachment[];
   engagementCounts?: PostEngagementCounts;
   mentions?: PostMention[];
@@ -151,6 +153,12 @@ export interface CreatePostInput {
   attachments?: PostAttachmentInput[];
   mentionedUserIds?: string[];
   mentions?: MentionInput[];
+}
+
+/** Gateway `CreatePostWithOpportunityInput`: the post and the opportunity it is published with. */
+export interface CreatePostWithOpportunityInput {
+  post: CreatePostInput;
+  opportunity: Record<string, unknown>;
 }
 
 export interface EditPostInput {

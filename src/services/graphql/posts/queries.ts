@@ -55,6 +55,7 @@ export async function post(id: string): Promise<Post> {
         text
         visibility
         status
+        linkedOpportunityId
         attachments {
           id
           type
@@ -173,6 +174,7 @@ export async function getFeed(input: GetFeedInput): Promise<PostListResponse> {
           text
           visibility
           status
+          linkedOpportunityId
           createdAt
           updatedAt
           attachments {

@@ -1,5 +1,6 @@
 import {
   createAssociationPost,
+  createAssociationPostWithOpportunity,
   deletePost as deletePostMutation,
   editPost as editPostMutation,
   getAssociationFeed,
@@ -91,6 +92,14 @@ export class AssociationPostService {
 
   async createAssociationPost(input: CreateAssociationPostInput): Promise<{ id: string }> {
     const result = await createAssociationPost(input);
+    return { id: result.id };
+  }
+
+  async createAssociationPostWithOpportunity(
+    input: CreateAssociationPostInput,
+    opportunity: Record<string, unknown>,
+  ): Promise<{ id: string }> {
+    const result = await createAssociationPostWithOpportunity(input, opportunity);
     return { id: result.id };
   }
 
