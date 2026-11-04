@@ -186,32 +186,32 @@ export function OpportunityModal({
               </div>
             </div>
 
-            {(opportunity.responsibilities || opportunity.requirements) && (
+            {(opportunity.scope || opportunity.eligibilityCriteria) && (
               <div className="grid gap-4 md:grid-cols-2">
-                {opportunity.responsibilities && (
+                {opportunity.scope && (
                   <div>
                     <h4 className="font-medium mb-2">Responsibilities</h4>
                     <div className="rounded-lg border border-border p-4 text-sm whitespace-pre-wrap">
-                      {opportunity.responsibilities}
+                      {opportunity.scope}
                     </div>
                   </div>
                 )}
-                {opportunity.requirements && (
+                {opportunity.eligibilityCriteria && (
                   <div>
                     <h4 className="font-medium mb-2">Requirements</h4>
                     <div className="rounded-lg border border-border p-4 text-sm whitespace-pre-wrap">
-                      {opportunity.requirements}
+                      {opportunity.eligibilityCriteria}
                     </div>
                   </div>
                 )}
               </div>
             )}
 
-            {(opportunity.tags.length > 0 || opportunity.skills.length > 0) && (
+            {((opportunity.tags ?? []).length > 0 || (opportunity.skills ?? []).length > 0) && (
               <div>
                 <h4 className="font-medium mb-2">Tags & Skills</h4>
                 <div className="flex flex-wrap gap-2">
-                  {[...opportunity.tags, ...opportunity.skills].map((tag) => (
+                  {[...(opportunity.tags ?? []), ...(opportunity.skills ?? [])].map((tag) => (
                     <Badge key={tag} variant="secondary">
                       {tag}
                     </Badge>
@@ -264,13 +264,13 @@ export function OpportunityModal({
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-sm">Work Mode</span>
                   <span className="text-sm text-muted-foreground">
-                    {opportunity.workMode ? formatEnumLabel(opportunity.workMode) : "Not set"}
+                    {opportunity.deliveryMode ? formatEnumLabel(opportunity.deliveryMode) : "Not set"}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm">Engagement Type</span>
                   <span className="text-sm text-muted-foreground">
-                    {opportunity.engagementType ? formatEnumLabel(opportunity.engagementType) : "Not set"}
+                    {opportunity.commitmentType ? formatEnumLabel(opportunity.commitmentType) : "Not set"}
                   </span>
                 </div>
               </div>

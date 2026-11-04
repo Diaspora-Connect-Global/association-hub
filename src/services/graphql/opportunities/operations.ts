@@ -32,19 +32,20 @@ const OPPORTUNITY_DETAIL_FIELDS = `
   id
   title
   description
-  responsibilities
-  requirements
+  scope
+  eligibilityCriteria
   status
   priorityLevel
   applicationMethod
   externalLink
   applicationEmail
-  workMode
-  engagementType
+  deliveryMode
+  commitmentType
   location
-  salaryMin
-  salaryMax
-  salaryCurrency
+  compensationMin
+  compensationMax
+  compensationCurrency
+  compensationType
   deadline
   skills
   tags
@@ -60,7 +61,7 @@ const OPPORTUNITY_DETAIL_FIELDS = `
 `;
 
 const GET_OPPORTUNITY = /* GraphQL */ `
-  query GetOpportunity($id: ID!) {
+  query GetOpportunity($id: String!) {
     getOpportunity(id: $id) {
       ${OPPORTUNITY_DETAIL_FIELDS}
     }
@@ -79,7 +80,7 @@ const LIST_OPPORTUNITIES = /* GraphQL */ `
 `;
 
 const GET_APPLICATION = /* GraphQL */ `
-  query GetApplication($id: ID!) {
+  query GetApplication($id: String!) {
     getApplication(id: $id) {
       id
       opportunityId
@@ -92,7 +93,7 @@ const GET_APPLICATION = /* GraphQL */ `
       createdAt
       updatedAt
       customAnswers
-      resumeFileRef { path filename mimeType sizeBytes }
+      applicationFiles { path filename mimeType sizeBytes }
       opportunity { id title }
     }
   }
@@ -113,56 +114,54 @@ const GET_APPLICATIONS = /* GraphQL */ `
 
 const CREATE_OPPORTUNITY = /* GraphQL */ `
   mutation CreateOpportunity($input: CreateOpportunityInput!) {
-    createOpportunity(input: $input) {
-      id
-    }
+    createOpportunity(input: $input)
   }
 `;
 
 const UPDATE_OPPORTUNITY = /* GraphQL */ `
-  mutation UpdateOpportunity($id: ID!, $input: UpdateOpportunityInput!) {
+  mutation UpdateOpportunity($id: String!, $input: UpdateOpportunityInput!) {
     updateOpportunity(id: $id, input: $input)
   }
 `;
 
 const PUBLISH_OPPORTUNITY = /* GraphQL */ `
-  mutation PublishOpportunity($id: ID!) {
+  mutation PublishOpportunity($id: String!) {
     publishOpportunity(id: $id)
   }
 `;
 
 const CLOSE_OPPORTUNITY = /* GraphQL */ `
-  mutation CloseOpportunity($id: ID!, $reason: String) {
+  mutation CloseOpportunity($id: String!, $reason: String) {
     closeOpportunity(id: $id, reason: $reason)
   }
 `;
 
 const DELETE_OPPORTUNITY = /* GraphQL */ `
-  mutation DeleteOpportunity($id: ID!) {
+  mutation DeleteOpportunity($id: String!) {
     deleteOpportunity(id: $id)
   }
 `;
 
 const SET_OPPORTUNITY_PRIORITY = /* GraphQL */ `
-  mutation SetOpportunityPriority($opportunityId: ID!, $priority: String!) {
+  mutation SetOpportunityPriority($opportunityId: String!, $priority: String!) {
     setOpportunityPriority(opportunityId: $opportunityId, priority: $priority)
   }
 `;
 
 const ACCEPT_APPLICATION = /* GraphQL */ `
-  mutation AcceptApplication($id: ID!, $notes: String) {
+  mutation AcceptApplication($id: String!, $notes: String) {
     acceptApplication(id: $id, notes: $notes)
   }
 `;
 
 const REJECT_APPLICATION = /* GraphQL */ `
-  mutation RejectApplication($id: ID!, $reason: String) {
+  mutation RejectApplication($id: String!, $reason: String) {
     rejectApplication(id: $id, reason: $reason)
   }
 `;
 
 const REVIEW_APPLICATION = /* GraphQL */ `
-  mutation ReviewApplication($applicationId: ID!, $notes: String) {
+  mutation ReviewApplication($applicationId: String!, $notes: String) {
     reviewApplication(applicationId: $applicationId, notes: $notes)
   }
 `;
@@ -243,11 +242,9 @@ export async function createOpportunity(
   input: CreateOpportunityInput
 ): Promise<CreateOpportunityResponse> {
   const client = getGraphQLClient();
-  const data = await client.request<{ createOpportunity: CreateOpportunityResponse }>(
-    CREATE_OPPORTUNITY,
-    { input }
-  );
-  return data.createOpportunity;
+  // The gateway returns the new id as a bare ID scalar.
+  const data = await client.request<{ createOpportunity: string }>(CREATE_OPPORTUNITY, { input });
+  return { id: data.createOpportunity };
 }
 
 export async function updateOpportunity(

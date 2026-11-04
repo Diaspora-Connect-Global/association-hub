@@ -40,27 +40,17 @@ import {
   updateOpportunity,
   type ApplicationDetailType,
   type ApplicationType,
-  type CreateOpportunityInput,
   type OpportunityListItemType,
   type OpportunityStatusEnum,
   type OpportunityType,
   type OpportunityTypeEnum,
   type PriorityLevelEnum,
-  type UpdateOpportunityInput,
 } from "@/services/graphql/opportunities";
+import { buildCreateInput, buildUpdateInput } from "@/services/graphql/opportunities/inputs";
 import { toast } from "@/hooks/use-toast";
 import { LayoutGrid, LayoutList, Loader2, Plus, RefreshCw, Search } from "lucide-react";
 import { useMemberLabels } from "@/hooks/useMemberLabels";
 import { graphqlErrorMessage, isPermissionRefusal } from "@/lib/graphqlErrors";
-
-function parseCsvList(value: string): string[] | undefined {
-  const items = value
-    .split(",")
-    .map((item) => item.trim())
-    .filter(Boolean);
-
-  return items.length > 0 ? items : undefined;
-}
 
 function getErrorMessage(error: unknown): string {
   // Never the raw ClientError.message: it embeds the whole request, ids included.
@@ -69,68 +59,6 @@ function getErrorMessage(error: unknown): string {
     return "Forbidden: this admin can only manage opportunities owned by their association.";
   }
   return message;
-}
-
-function buildCreateInput(values: OpportunityFormValues, associationId: string): CreateOpportunityInput {
-  return {
-    ownerType: "ASSOCIATION",
-    ownerId: associationId,
-    type: values.type,
-    category: values.category,
-    title: values.title.trim(),
-    description: values.description.trim(),
-    visibility: values.visibility,
-    applicationMethod: values.applicationMethod,
-    responsibilities: values.responsibilities.trim() || undefined,
-    requirements: values.requirements.trim() || undefined,
-    workMode: values.workMode || undefined,
-    engagementType: values.engagementType || undefined,
-    location: values.location.trim() || undefined,
-    externalLink: values.applicationMethod === "EXTERNAL_LINK" ? values.externalLink.trim() : undefined,
-    applicationEmail: values.applicationMethod === "EMAIL_REQUEST" ? values.applicationEmail.trim() : undefined,
-    salaryMin: values.salaryMin ? Number(values.salaryMin) : undefined,
-    salaryMax: values.salaryMax ? Number(values.salaryMax) : undefined,
-    salaryCurrency: values.salaryCurrency.trim() || undefined,
-    deadline: values.deadline || undefined,
-    subCategory: values.subCategory.trim() || undefined,
-    skills: parseCsvList(values.skillsText),
-    tags: parseCsvList(values.tagsText),
-  };
-}
-
-function buildUpdateInput(values: OpportunityFormValues): UpdateOpportunityInput {
-  const input: UpdateOpportunityInput = {};
-
-  if (values.title.trim()) input.title = values.title.trim();
-  if (values.description.trim()) input.description = values.description.trim();
-  if (values.responsibilities.trim()) input.responsibilities = values.responsibilities.trim();
-  if (values.requirements.trim()) input.requirements = values.requirements.trim();
-  if (values.workMode) input.workMode = values.workMode;
-  if (values.engagementType) input.engagementType = values.engagementType;
-  if (values.location.trim()) input.location = values.location.trim();
-  if (values.salaryMin) input.salaryMin = Number(values.salaryMin);
-  if (values.salaryMax) input.salaryMax = Number(values.salaryMax);
-  if (values.salaryCurrency.trim()) input.salaryCurrency = values.salaryCurrency.trim();
-  if (values.deadline) input.deadline = values.deadline;
-  if (values.subCategory.trim()) input.subCategory = values.subCategory.trim();
-
-  const skills = parseCsvList(values.skillsText);
-  if (skills) input.skills = skills;
-
-  const tags = parseCsvList(values.tagsText);
-  if (tags) input.tags = tags;
-
-  if (values.applicationMethod) {
-    input.applicationMethod = values.applicationMethod;
-    if (values.applicationMethod === "EXTERNAL_LINK") {
-      input.externalLink = values.externalLink.trim();
-    }
-    if (values.applicationMethod === "EMAIL_REQUEST") {
-      input.applicationEmail = values.applicationEmail.trim();
-    }
-  }
-
-  return input;
 }
 
 export default function Opportunities() {

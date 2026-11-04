@@ -20,21 +20,23 @@ import {
 } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "@/hooks/use-toast";
+import { useT } from "@/hooks/useT";
+import { isValidMajorText, minorToMajorText } from "@/lib/minorUnits";
 import type {
   ApplicationMethodEnum,
-  EngagementTypeEnum,
+  CommitmentTypeEnum,
+  DeliveryModeEnum,
   OpportunityCategoryEnum,
   OpportunityType as ApiOpportunity,
   OpportunityTypeEnum,
   VisibilityEnum,
-  WorkModeEnum,
 } from "@/services/graphql/opportunities";
 
 export interface OpportunityFormValues {
   title: string;
   description: string;
-  responsibilities: string;
-  requirements: string;
+  scope: string;
+  eligibilityCriteria: string;
   type: OpportunityTypeEnum;
   category: OpportunityCategoryEnum;
   subCategory: string;
@@ -42,12 +44,13 @@ export interface OpportunityFormValues {
   applicationMethod: ApplicationMethodEnum;
   externalLink: string;
   applicationEmail: string;
-  workMode: WorkModeEnum | "";
-  engagementType: EngagementTypeEnum | "";
+  deliveryMode: DeliveryModeEnum | "";
+  commitmentType: CommitmentTypeEnum | "";
   location: string;
-  salaryMin: string;
-  salaryMax: string;
-  salaryCurrency: string;
+  /** Typed in major units (e.g. 1234.56); sent as integer minor units. */
+  compensationMin: string;
+  compensationMax: string;
+  compensationCurrency: string;
   deadline: string;
   skillsText: string;
   tagsText: string;
@@ -89,14 +92,22 @@ const opportunityCategoryOptions: OpportunityCategoryEnum[] = [
   "RETURN_REINTEGRATION",
 ];
 
-const workModeOptions: WorkModeEnum[] = ["REMOTE", "HYBRID", "ONSITE"];
-const engagementTypeOptions: EngagementTypeEnum[] = ["FULL_TIME", "PART_TIME", "CONTRACT"];
+const deliveryModeOptions: DeliveryModeEnum[] = ["REMOTE", "IN_PERSON", "HYBRID", "ONLINE"];
+const commitmentTypeOptions: CommitmentTypeEnum[] = [
+  "FULL_TIME",
+  "PART_TIME",
+  "CONTRACT",
+  "ONE_TIME",
+  "FLEXIBLE",
+  "PROJECT_BASED",
+  "ONGOING",
+];
 
 const emptyFormValues: OpportunityFormValues = {
   title: "",
   description: "",
-  responsibilities: "",
-  requirements: "",
+  scope: "",
+  eligibilityCriteria: "",
   type: "FELLOWSHIP",
   category: "FELLOWSHIPS_LEADERSHIP",
   subCategory: "",
@@ -104,12 +115,12 @@ const emptyFormValues: OpportunityFormValues = {
   applicationMethod: "IN_PLATFORM_FORM",
   externalLink: "",
   applicationEmail: "",
-  workMode: "",
-  engagementType: "",
+  deliveryMode: "",
+  commitmentType: "",
   location: "",
-  salaryMin: "",
-  salaryMax: "",
-  salaryCurrency: "",
+  compensationMin: "",
+  compensationMax: "",
+  compensationCurrency: "",
   deadline: "",
   skillsText: "",
   tagsText: "",
@@ -136,8 +147,8 @@ function mapOpportunityToForm(opportunity: ApiOpportunity): OpportunityFormValue
   return {
     title: opportunity.title,
     description: opportunity.description,
-    responsibilities: opportunity.responsibilities ?? "",
-    requirements: opportunity.requirements ?? "",
+    scope: opportunity.scope ?? "",
+    eligibilityCriteria: opportunity.eligibilityCriteria ?? "",
     type: opportunity.type,
     category: opportunity.category,
     subCategory: opportunity.subCategory ?? "",
@@ -145,15 +156,16 @@ function mapOpportunityToForm(opportunity: ApiOpportunity): OpportunityFormValue
     applicationMethod: opportunity.applicationMethod,
     externalLink: opportunity.externalLink ?? "",
     applicationEmail: opportunity.applicationEmail ?? "",
-    workMode: opportunity.workMode ?? "",
-    engagementType: opportunity.engagementType ?? "",
+    deliveryMode: opportunity.deliveryMode ?? "",
+    commitmentType: opportunity.commitmentType ?? "",
     location: opportunity.location ?? "",
-    salaryMin: opportunity.salaryMin?.toString() ?? "",
-    salaryMax: opportunity.salaryMax?.toString() ?? "",
-    salaryCurrency: opportunity.salaryCurrency ?? "",
+    // minor units on the wire -> major units for the form (divide once, on display)
+    compensationMin: minorToMajorText(opportunity.compensationMin),
+    compensationMax: minorToMajorText(opportunity.compensationMax),
+    compensationCurrency: opportunity.compensationCurrency ?? "",
     deadline: toInputDate(opportunity.deadline),
-    skillsText: opportunity.skills.join(", "),
-    tagsText: opportunity.tags.join(", "),
+    skillsText: (opportunity.skills ?? []).join(", "),
+    tagsText: (opportunity.tags ?? []).join(", "),
   };
 }
 
@@ -164,6 +176,7 @@ export function CreateEditOpportunityModal({
   submitting = false,
   onSave,
 }: CreateEditOpportunityModalProps) {
+  const t = useT();
   const isEdit = Boolean(opportunity);
   const [form, setForm] = useState<OpportunityFormValues>(emptyFormValues);
 
@@ -197,6 +210,11 @@ export function CreateEditOpportunityModal({
 
     if (form.applicationMethod === "EMAIL_REQUEST" && !form.applicationEmail.trim()) {
       toast({ title: "Application email is required", variant: "destructive" });
+      return false;
+    }
+
+    if (!isValidMajorText(form.compensationMin) || !isValidMajorText(form.compensationMax)) {
+      toast({ title: t.opportunityAmountInvalid, variant: "destructive" });
       return false;
     }
 
@@ -304,21 +322,21 @@ export function CreateEditOpportunityModal({
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="responsibilities">Responsibilities</Label>
+                <Label htmlFor="scope">Responsibilities</Label>
                 <Textarea
-                  id="responsibilities"
-                  value={form.responsibilities}
-                  onChange={(event) => updateField("responsibilities", event.target.value)}
+                  id="scope"
+                  value={form.scope}
+                  onChange={(event) => updateField("scope", event.target.value)}
                   rows={4}
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="requirements">Requirements</Label>
+                <Label htmlFor="eligibilityCriteria">Requirements</Label>
                 <Textarea
-                  id="requirements"
-                  value={form.requirements}
-                  onChange={(event) => updateField("requirements", event.target.value)}
+                  id="eligibilityCriteria"
+                  value={form.eligibilityCriteria}
+                  onChange={(event) => updateField("eligibilityCriteria", event.target.value)}
                   rows={4}
                 />
               </div>
@@ -382,15 +400,15 @@ export function CreateEditOpportunityModal({
               <div className="space-y-2">
                 <Label>Work Mode</Label>
                 <Select
-                  value={form.workMode || "NONE"}
-                  onValueChange={(value) => updateField("workMode", value === "NONE" ? "" : (value as WorkModeEnum))}
+                  value={form.deliveryMode || "NONE"}
+                  onValueChange={(value) => updateField("deliveryMode", value === "NONE" ? "" : (value as DeliveryModeEnum))}
                 >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="NONE">Not set</SelectItem>
-                    {workModeOptions.map((option) => (
+                    {deliveryModeOptions.map((option) => (
                       <SelectItem key={option} value={option}>
                         {formatEnumLabel(option)}
                       </SelectItem>
@@ -402,9 +420,9 @@ export function CreateEditOpportunityModal({
               <div className="space-y-2">
                 <Label>Engagement Type</Label>
                 <Select
-                  value={form.engagementType || "NONE"}
+                  value={form.commitmentType || "NONE"}
                   onValueChange={(value) =>
-                    updateField("engagementType", value === "NONE" ? "" : (value as EngagementTypeEnum))
+                    updateField("commitmentType", value === "NONE" ? "" : (value as CommitmentTypeEnum))
                   }
                 >
                   <SelectTrigger>
@@ -412,7 +430,7 @@ export function CreateEditOpportunityModal({
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="NONE">Not set</SelectItem>
-                    {engagementTypeOptions.map((option) => (
+                    {commitmentTypeOptions.map((option) => (
                       <SelectItem key={option} value={option}>
                         {formatEnumLabel(option)}
                       </SelectItem>
@@ -435,10 +453,10 @@ export function CreateEditOpportunityModal({
                 <Label htmlFor="salary-min">Salary min</Label>
                 <Input
                   id="salary-min"
-                  type="number"
-                  min="0"
-                  value={form.salaryMin}
-                  onChange={(event) => updateField("salaryMin", event.target.value)}
+                  type="text"
+                  inputMode="decimal"
+                  value={form.compensationMin}
+                  onChange={(event) => updateField("compensationMin", event.target.value)}
                 />
               </div>
 
@@ -446,10 +464,10 @@ export function CreateEditOpportunityModal({
                 <Label htmlFor="salary-max">Salary max</Label>
                 <Input
                   id="salary-max"
-                  type="number"
-                  min="0"
-                  value={form.salaryMax}
-                  onChange={(event) => updateField("salaryMax", event.target.value)}
+                  type="text"
+                  inputMode="decimal"
+                  value={form.compensationMax}
+                  onChange={(event) => updateField("compensationMax", event.target.value)}
                 />
               </div>
 
@@ -457,8 +475,8 @@ export function CreateEditOpportunityModal({
                 <Label htmlFor="salary-currency">Currency</Label>
                 <Input
                   id="salary-currency"
-                  value={form.salaryCurrency}
-                  onChange={(event) => updateField("salaryCurrency", event.target.value.toUpperCase())}
+                  value={form.compensationCurrency}
+                  onChange={(event) => updateField("compensationCurrency", event.target.value.toUpperCase())}
                   placeholder="GBP"
                   maxLength={3}
                 />

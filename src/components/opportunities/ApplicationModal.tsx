@@ -126,21 +126,25 @@ export function ApplicationModal({
 
           <div className="space-y-4 pb-4">
             <h4 className="font-medium">Attachments</h4>
-            {application.resumeFileRef ? (
-              <div className="flex items-center justify-between rounded-lg border border-border p-3">
-                <div className="flex items-center gap-3">
-                  <FileText className="h-5 w-5 text-muted-foreground" />
-                  <div>
-                    <p className="text-sm font-medium">{application.resumeFileRef.filename}</p>
-                    <p className="text-xs text-muted-foreground">{application.resumeFileRef.mimeType}</p>
+            {(application.applicationFiles ?? []).length > 0 ? (
+              <div className="space-y-2">
+                {(application.applicationFiles ?? []).map((file) => (
+                  <div key={file.path} className="flex items-center justify-between rounded-lg border border-border p-3">
+                    <div className="flex items-center gap-3">
+                      <FileText className="h-5 w-5 text-muted-foreground" />
+                      <div>
+                        <p className="text-sm font-medium">{file.filename}</p>
+                        <p className="text-xs text-muted-foreground">{file.mimeType}</p>
+                      </div>
+                    </div>
+                    <Button variant="outline" size="sm" className="gap-2" asChild>
+                      <a href={file.path} target="_blank" rel="noreferrer">
+                        <Download className="h-4 w-4" />
+                        Download
+                      </a>
+                    </Button>
                   </div>
-                </div>
-                <Button variant="outline" size="sm" className="gap-2" asChild>
-                  <a href={application.resumeFileRef.path} target="_blank" rel="noreferrer">
-                    <Download className="h-4 w-4" />
-                    Download
-                  </a>
-                </Button>
+                ))}
               </div>
             ) : (
               <p className="text-sm text-muted-foreground">No attachments</p>
