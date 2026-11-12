@@ -30,6 +30,8 @@ import {
   createEvent,
   updateEvent,
   getEventTickets,
+  getEventRegistrationSetup,
+  updateEventFormFields,
   type EventType as BackendEvent,
   type EventLocationInput,
 } from "@/services/graphql/events/operations";
@@ -37,6 +39,15 @@ import { toMinorUnits } from "@/lib/money";
 import { uploadEventCoverImage } from "@/services/graphql/events/uploads";
 import { graphqlErrorMessage } from "@/lib/graphqlErrors";
 import { useSettings } from "@/contexts/SettingsContext";
+import {
+  draftsToInputs,
+  fieldsToDrafts,
+  formSignature,
+  normalizeRegistrationLink,
+  stripErrorCode,
+  validateDrafts,
+} from "@/lib/eventRegistrationForm";
+import { makeEvRegText } from "@/lib/eventRegistrationText";
 
 const EventsDashboard = lazy(() => import("@/components/events/networking/EventsDashboard"));
 
@@ -276,7 +287,22 @@ export default function Events() {
         // Non-fatal: the form still opens; the price field starts empty.
       }
     }
-    setEditingEvent({ ...event, ticketPrice });
+    // Where people register + the organiser's form. When it cannot be loaded the
+    // form says so and sends nothing about registration (nothing is wiped).
+    let registration: Partial<Event> = {};
+    try {
+      const setup = await getEventRegistrationSetup(event.id);
+      if (!setup) throw new Error("not found");
+      registration = {
+        registrationMode: setup.registrationMode === "EXTERNAL" ? "EXTERNAL" : "IN_APP",
+        registrationLink: setup.registrationLink ?? "",
+        registrationFields: setup.registrationFormFields ?? [],
+        registrationLoadFailed: false,
+      };
+    } catch {
+      registration = { registrationLoadFailed: true };
+    }
+    setEditingEvent({ ...event, ticketPrice, ...registration });
     setCreateModalOpen(true);
   };
 
@@ -324,6 +350,36 @@ export default function Events() {
 
   const handleCreateSubmit = async (data: EventFormData) => {
     if (!associationId) return;
+    // Registration is only sent when it can be (an edit whose setup failed to load sends nothing).
+    const sendRegistration = !editingEvent || data.registrationLoaded;
+    let registrationLink: string | null = null;
+    if (sendRegistration) {
+      if (data.registrationMode === "EXTERNAL") {
+        registrationLink = normalizeRegistrationLink(data.registrationLink);
+        if (!registrationLink) return;
+      } else if (!validateDrafts(data.registrationFields).ok) {
+        return;
+      }
+    }
+    // The organiser's form goes up right after the event exists (and before it is published).
+    const saveForm = async (eventId: string): Promise<boolean> => {
+      if (!sendRegistration || data.registrationMode !== "IN_APP") return true;
+      if (editingEvent && formSignature(data.registrationFields) === data.registrationBaseline) return true;
+      try {
+        await updateEventFormFields(eventId, draftsToInputs(data.registrationFields));
+        return true;
+      } catch (formErr) {
+        const tx = makeEvRegText(t);
+        toast({
+          title: "Error",
+          description: tx("saveFormFailed", { message: stripErrorCode(graphqlErrorMessage(formErr, tx("err_form"))) }),
+          variant: "destructive",
+        });
+        setEditingEvent(null);
+        await loadEvents();
+        return false;
+      }
+    };
     try {
       // Resolve the cover image URL BEFORE issuing the create/update mutation.
       // If the user picked a file, this performs the signed-URL upload and
@@ -344,6 +400,8 @@ export default function Events() {
           currency: data.currency,
           capacity: data.hasParticipantLimit ? data.maxParticipants : undefined,
           coverImageUrl,
+          // With a mode the link is authoritative: "" clears it when going back to DiaspoPlug.
+          ...(sendRegistration ? { registrationMode: data.registrationMode, registrationLink: registrationLink ?? "" } : {}),
         };
         if (data.date) {
           const [hours, minutes] = (data.startTime || "00:00").split(":").map(Number);
@@ -357,6 +415,7 @@ export default function Events() {
           input.endAt = end.toISOString();
         }
         await updateEvent(editingEvent.id, input);
+        if (!(await saveForm(editingEvent.id))) return;
         if (data.publishNow) {
           await publishEvent(editingEvent.id);
         }
@@ -387,8 +446,11 @@ export default function Events() {
           eventCategory: DEFAULT_EVENT_CATEGORY,
           ownerType: "ASSOCIATION",
           ownerId: associationId,
+          registrationMode: data.registrationMode,
+          registrationLink: registrationLink ?? undefined,
         });
 
+        if (!(await saveForm(created.id))) return;
         if (data.publishNow) {
           await publishEvent(created.id);
         }
@@ -401,7 +463,7 @@ export default function Events() {
       setEditingEvent(null);
       await loadEvents();
     } catch (err) {
-      const message = graphqlErrorMessage(err, "Failed to save event.");
+      const message = stripErrorCode(graphqlErrorMessage(err, "Failed to save event."));
       toast({ title: "Error saving event", description: message, variant: "destructive" });
     }
   };

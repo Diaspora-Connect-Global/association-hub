@@ -48,6 +48,36 @@ export interface EventLocationInput {
   platform?: string;
 }
 
+export type EventRegistrationMode = "IN_APP" | "EXTERNAL";
+
+/** One question of an event's registration form (the gateway's RegistrationFormField). */
+export interface EventRegistrationFormField {
+  id: string;
+  label: string;
+  type: string;
+  required: boolean;
+  options: string[] | null;
+  /** full_name | email | phone | job_title for a default field; null for the organiser's own. */
+  builtin: string | null;
+}
+
+/** An event's registration setup, as loaded for editing / reading answers. */
+export interface EventRegistrationSetup {
+  /** null from an old gateway ⇒ IN_APP. */
+  registrationMode: EventRegistrationMode | null;
+  registrationLink: string | null;
+  registrationFormFields: EventRegistrationFormField[] | null;
+}
+
+/** Wire shape of RegistrationFormFieldInput. */
+export interface RegistrationFormFieldInput {
+  id?: string;
+  label: string;
+  type: string;
+  required: boolean;
+  options?: string[];
+}
+
 export interface EventListResponse {
   events: EventType[];
   total: number;
@@ -74,6 +104,8 @@ export interface CreateEventInput {
   ticketPrice?: number;
   currency?: string;
   capacity?: number;
+  registrationMode?: EventRegistrationMode;
+  registrationLink?: string;
 }
 
 /** Mirrors the gateway's UpdateEventInput. */
@@ -90,6 +122,9 @@ export interface UpdateEventInput {
   ticketPrice?: number;
   currency?: string;
   capacity?: number;
+  /** With a mode the link is authoritative: "" clears it when switching to IN_APP. */
+  registrationMode?: EventRegistrationMode;
+  registrationLink?: string;
 }
 
 export interface EventRegistrationUser {
@@ -117,6 +152,8 @@ export interface EventRegistrationRow {
   confirmedAt: string | null;
   cancelledAt: string | null;
   createdAt: string | null;
+  /** JSON object { [questionId]: string | string[] | boolean }; null when none. */
+  formResponsesJson: string | null;
 }
 
 export interface EventRegistrationListResponse {
@@ -262,6 +299,89 @@ const ADMIN_GET_EVENT_REGISTRATIONS = /* GraphQL */ `
       page
       limit
       hasMore
+    }
+  }
+`;
+
+/**
+ * The registrant list for the event's own managers. `adminGetEventRegistrations`
+ * is for platform admins only, so an association console token is refused there.
+ */
+const GET_EVENT_REGISTRATIONS = /* GraphQL */ `
+  query GetEventRegistrations(
+    $eventId: ID!
+    $limit: Int
+    $offset: Int
+    $status: String
+  ) {
+    getEventRegistrations(
+      eventId: $eventId
+      limit: $limit
+      offset: $offset
+      status: $status
+    ) {
+      registrations {
+        id
+        eventId
+        userId
+        user {
+          id
+          firstName
+          lastName
+          email
+          avatarUrl
+        }
+        ticketId
+        quantity
+        status
+        registrationStatus
+        waitlistPosition
+        totalAmount
+        currency
+        registeredAt
+        confirmedAt
+        cancelledAt
+        createdAt
+        formResponsesJson
+      }
+      total
+      page
+      limit
+      hasMore
+    }
+  }
+`;
+
+const GET_EVENT_REGISTRATION_SETUP = /* GraphQL */ `
+  query GetEventRegistrationSetup($id: ID!) {
+    getEvent(id: $id) {
+      id
+      registrationMode
+      registrationLink
+      registrationFormFields {
+        id
+        label
+        type
+        required
+        options
+        builtin
+      }
+    }
+  }
+`;
+
+const UPDATE_EVENT_FORM_FIELDS = /* GraphQL */ `
+  mutation UpdateEventFormFields($input: UpdateEventFormFieldsInput!) {
+    updateEventFormFields(input: $input) {
+      id
+      registrationFormFields {
+        id
+        label
+        type
+        required
+        options
+        builtin
+      }
     }
   }
 `;
@@ -440,6 +560,59 @@ export async function adminGetEventRegistrations(
       ? error
       : new Error("Failed to fetch registrations");
   }
+}
+
+/** One page of the event's registrations (offset paging; the gateway authorises the owning entity's admins). */
+export async function getEventRegistrations(
+  eventId: string,
+  limit = 100,
+  offset = 0,
+  status?: string,
+): Promise<EventRegistrationListResponse> {
+  const client = getGraphQLClient();
+  try {
+    const data = await client.request<{ getEventRegistrations: EventRegistrationListResponse }>(
+      GET_EVENT_REGISTRATIONS,
+      { eventId, limit, offset, status: status ?? null },
+    );
+    return data.getEventRegistrations;
+  } catch (error) {
+    throw error instanceof Error ? error : new Error("Failed to fetch registrations");
+  }
+}
+
+/** Every registration of the event, paged and bounded (for the CSV export). */
+export async function getAllEventRegistrations(eventId: string, pageSize = 100, maxPages = 50): Promise<EventRegistrationRow[]> {
+  const all: EventRegistrationRow[] = [];
+  for (let page = 0; page < maxPages; page += 1) {
+    const result = await getEventRegistrations(eventId, pageSize, page * pageSize);
+    const rows = result.registrations ?? [];
+    all.push(...rows);
+    if (rows.length < pageSize || all.length >= (result.total ?? Infinity)) break;
+  }
+  return all;
+}
+
+/** The event's registration mode, link and form. */
+export async function getEventRegistrationSetup(eventId: string): Promise<EventRegistrationSetup | null> {
+  const client = getGraphQLClient();
+  const data = await client.request<{ getEvent: EventRegistrationSetup | null }>(GET_EVENT_REGISTRATION_SETUP, {
+    id: eventId,
+  });
+  return data.getEvent;
+}
+
+/** Replaces the event's WHOLE registration form, in order. */
+export async function updateEventFormFields(
+  eventId: string,
+  fields: RegistrationFormFieldInput[],
+): Promise<EventRegistrationSetup | null> {
+  const client = getGraphQLClient();
+  const data = await client.request<{ updateEventFormFields: EventRegistrationSetup | null }>(
+    UPDATE_EVENT_FORM_FIELDS,
+    { input: { eventId, fields } },
+  );
+  return data.updateEventFormFields;
 }
 
 export async function markRegistrationCheckedIn(

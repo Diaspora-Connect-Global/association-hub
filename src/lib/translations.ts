@@ -1052,6 +1052,76 @@ type TranslationKeys = {
   opportunityAmountInvalid: string;
   analyticsUnavailableTitle: string;
   analyticsUnavailableDesc: string;
+  evRegTitle: string;
+  evRegWhere: string;
+  evRegInApp: string;
+  evRegExternal: string;
+  evRegUrlLabel: string;
+  evRegUrlPlaceholder: string;
+  evRegUrlHelp: string;
+  evRegUrlInvalid: string;
+  evRegAlreadyOne: string;
+  evRegAlreadyOther: string;
+  evRegFormTitle: string;
+  evRegFormHelp: string;
+  evRegDefaultBadge: string;
+  evRegRequired: string;
+  evRegRemove: string;
+  evRegMoveUp: string;
+  evRegMoveDown: string;
+  evRegRestore: string;
+  evRegAddDefaults: string;
+  evRegAddQuestion: string;
+  evRegQuestion: string;
+  evRegQuestionPlaceholder: string;
+  evRegAnswerType: string;
+  evRegOptions: string;
+  evRegOptionN: string;
+  evRegAddOption: string;
+  evRegRemoveOption: string;
+  evRegExistingNote: string;
+  evRegEmptyForm: string;
+  evRegTypeText: string;
+  evRegTypeTextarea: string;
+  evRegTypeEmail: string;
+  evRegTypePhone: string;
+  evRegTypeNumber: string;
+  evRegTypeDate: string;
+  evRegTypeSelect: string;
+  evRegTypeMultiselect: string;
+  evRegTypeCheckbox: string;
+  evRegDefaultFullName: string;
+  evRegDefaultEmail: string;
+  evRegDefaultPhone: string;
+  evRegDefaultJobTitle: string;
+  evRegErrLabelRequired: string;
+  evRegErrLabelTooLong: string;
+  evRegErrOptionsRequired: string;
+  evRegErrOptionsTooMany: string;
+  evRegErrOptionTooLong: string;
+  evRegErrOptionsDuplicate: string;
+  evRegErrTooMany: string;
+  evRegErrForm: string;
+  evRegSaveFormFailed: string;
+  evRegViewAnswers: string;
+  evRegAnswersTitle: string;
+  evRegAnswersFor: string;
+  evRegNoAnswers: string;
+  evRegYes: string;
+  evRegNo: string;
+  evRegCsvQuantity: string;
+  evRegExportCsv: string;
+  evRegClose: string;
+  evRegNothingToExport: string;
+  evRegExportFailed: string;
+  evRegColName: string;
+  evRegColEmail: string;
+  evRegColRegistered: string;
+  evRegColTicket: string;
+  evRegColRegistration: string;
+  evRegColPayment: string;
+  evRegColCheckIn: string;
+  evRegLoadFailed: string;
 };
 
 const translations: Record<Language, TranslationKeys> = {
@@ -2113,6 +2183,76 @@ const translations: Record<Language, TranslationKeys> = {
     opportunityAmountInvalid: "Enter a valid amount with at most 2 decimals (for example 1500.50). It cannot be negative or too large.",
     analyticsUnavailableTitle: "Analytics aren't available yet",
     analyticsUnavailableDesc: "There's no data source for these charts yet, so none are shown.",
+    evRegTitle: "Registration",
+    evRegWhere: "Where do people register?",
+    evRegInApp: "On DiaspoPlug",
+    evRegExternal: "On another website",
+    evRegUrlLabel: "Registration website",
+    evRegUrlPlaceholder: "https://example.com/register",
+    evRegUrlHelp: "People see a short notice that they are leaving DiaspoPlug, then the page opens in a new tab.",
+    evRegUrlInvalid: "Enter a valid web address starting with http:// or https://.",
+    evRegAlreadyOne: "{{count}} person already registered here and keeps their registration.",
+    evRegAlreadyOther: "{{count}} people already registered here and keep their registration.",
+    evRegFormTitle: "Registration form",
+    evRegFormHelp: "The questions people answer when they register.",
+    evRegDefaultBadge: "Default",
+    evRegRequired: "Required",
+    evRegRemove: "Remove {{name}}",
+    evRegMoveUp: "Move {{name}} up",
+    evRegMoveDown: "Move {{name}} down",
+    evRegRestore: "Restore default fields",
+    evRegAddDefaults: "Add default fields",
+    evRegAddQuestion: "Add question",
+    evRegQuestion: "Question",
+    evRegQuestionPlaceholder: "e.g. Dietary requirements",
+    evRegAnswerType: "Answer type",
+    evRegOptions: "Options",
+    evRegOptionN: "Option {{index}}",
+    evRegAddOption: "Add option",
+    evRegRemoveOption: "Remove option {{index}}",
+    evRegExistingNote: "People who already registered won't be asked new questions.",
+    evRegEmptyForm: "No questions yet.",
+    evRegTypeText: "Short text",
+    evRegTypeTextarea: "Long text",
+    evRegTypeEmail: "Email",
+    evRegTypePhone: "Phone",
+    evRegTypeNumber: "Number",
+    evRegTypeDate: "Date",
+    evRegTypeSelect: "Single choice",
+    evRegTypeMultiselect: "Multiple choice",
+    evRegTypeCheckbox: "Checkbox",
+    evRegDefaultFullName: "Full name",
+    evRegDefaultEmail: "Email address",
+    evRegDefaultPhone: "Phone number",
+    evRegDefaultJobTitle: "Job title",
+    evRegErrLabelRequired: "Enter the question.",
+    evRegErrLabelTooLong: "Keep the question under 150 characters.",
+    evRegErrOptionsRequired: "Add at least one option.",
+    evRegErrOptionsTooMany: "Use at most 30 options.",
+    evRegErrOptionTooLong: "Keep each option under 80 characters.",
+    evRegErrOptionsDuplicate: "Options must be different from each other.",
+    evRegErrTooMany: "A form can have at most 25 questions.",
+    evRegErrForm: "Please fix the registration form questions first.",
+    evRegSaveFormFailed: "The event was saved, but its registration form could not be saved: {{message}} Open Edit to try again.",
+    evRegViewAnswers: "View answers",
+    evRegAnswersTitle: "Registration answers",
+    evRegAnswersFor: "Answers from {{name}}",
+    evRegNoAnswers: "No answers were recorded for this registration.",
+    evRegYes: "Yes",
+    evRegNo: "No",
+    evRegCsvQuantity: "Quantity",
+    evRegExportCsv: "Export CSV",
+    evRegClose: "Close",
+    evRegNothingToExport: "There are no registrations to export yet.",
+    evRegExportFailed: "The registrations could not be exported. Please try again.",
+    evRegColName: "Name",
+    evRegColEmail: "Email",
+    evRegColRegistered: "Registered",
+    evRegColTicket: "Ticket",
+    evRegColRegistration: "Registration",
+    evRegColPayment: "Payment",
+    evRegColCheckIn: "Check-in",
+    evRegLoadFailed: "The registration settings could not be loaded, so they can't be changed right now. Close this window and open the event again to retry.",
   },
   fr: {
     // Navigation
@@ -3173,6 +3313,76 @@ const translations: Record<Language, TranslationKeys> = {
     opportunityAmountInvalid: "Saisissez un montant valide avec 2 décimales au maximum (par exemple 1500.50). Il ne peut être ni négatif ni trop élevé.",
     analyticsUnavailableTitle: "Les statistiques ne sont pas encore disponibles",
     analyticsUnavailableDesc: "Ces graphiques n’ont pas encore de source de données ; rien n’est donc affiché.",
+    evRegTitle: "Inscription",
+    evRegWhere: "Où les gens s'inscrivent-ils ?",
+    evRegInApp: "Sur DiaspoPlug",
+    evRegExternal: "Sur un autre site web",
+    evRegUrlLabel: "Site d'inscription",
+    evRegUrlPlaceholder: "https://example.com/register",
+    evRegUrlHelp: "Les gens voient un court avis les informant qu'ils quittent DiaspoPlug, puis la page s'ouvre dans un nouvel onglet.",
+    evRegUrlInvalid: "Saisissez une adresse web valide commençant par http:// ou https://.",
+    evRegAlreadyOne: "{{count}} personne s'est déjà inscrite ici et conserve son inscription.",
+    evRegAlreadyOther: "{{count}} personnes se sont déjà inscrites ici et conservent leur inscription.",
+    evRegFormTitle: "Formulaire d'inscription",
+    evRegFormHelp: "Les questions auxquelles les gens répondent en s'inscrivant.",
+    evRegDefaultBadge: "Par défaut",
+    evRegRequired: "Obligatoire",
+    evRegRemove: "Supprimer {{name}}",
+    evRegMoveUp: "Monter {{name}}",
+    evRegMoveDown: "Descendre {{name}}",
+    evRegRestore: "Rétablir les champs par défaut",
+    evRegAddDefaults: "Ajouter les champs par défaut",
+    evRegAddQuestion: "Ajouter une question",
+    evRegQuestion: "Question",
+    evRegQuestionPlaceholder: "p. ex. Régime alimentaire",
+    evRegAnswerType: "Type de réponse",
+    evRegOptions: "Options",
+    evRegOptionN: "Option {{index}}",
+    evRegAddOption: "Ajouter une option",
+    evRegRemoveOption: "Supprimer l'option {{index}}",
+    evRegExistingNote: "Les personnes déjà inscrites ne se verront pas poser les nouvelles questions.",
+    evRegEmptyForm: "Aucune question pour l'instant.",
+    evRegTypeText: "Texte court",
+    evRegTypeTextarea: "Texte long",
+    evRegTypeEmail: "E-mail",
+    evRegTypePhone: "Téléphone",
+    evRegTypeNumber: "Nombre",
+    evRegTypeDate: "Date",
+    evRegTypeSelect: "Choix unique",
+    evRegTypeMultiselect: "Choix multiple",
+    evRegTypeCheckbox: "Case à cocher",
+    evRegDefaultFullName: "Nom complet",
+    evRegDefaultEmail: "Adresse e-mail",
+    evRegDefaultPhone: "Numéro de téléphone",
+    evRegDefaultJobTitle: "Poste",
+    evRegErrLabelRequired: "Saisissez la question.",
+    evRegErrLabelTooLong: "La question ne peut dépasser 150 caractères.",
+    evRegErrOptionsRequired: "Ajoutez au moins une option.",
+    evRegErrOptionsTooMany: "30 options au maximum.",
+    evRegErrOptionTooLong: "Chaque option ne peut dépasser 80 caractères.",
+    evRegErrOptionsDuplicate: "Les options doivent être différentes.",
+    evRegErrTooMany: "Un formulaire peut contenir 25 questions au maximum.",
+    evRegErrForm: "Veuillez d'abord corriger les questions du formulaire d'inscription.",
+    evRegSaveFormFailed: "L'événement a été enregistré, mais son formulaire d'inscription n'a pas pu l'être : {{message}} Ouvrez Modifier pour réessayer.",
+    evRegViewAnswers: "Voir les réponses",
+    evRegAnswersTitle: "Réponses à l'inscription",
+    evRegAnswersFor: "Réponses de {{name}}",
+    evRegNoAnswers: "Aucune réponse n'a été enregistrée pour cette inscription.",
+    evRegYes: "Oui",
+    evRegNo: "Non",
+    evRegCsvQuantity: "Quantité",
+    evRegExportCsv: "Exporter en CSV",
+    evRegClose: "Fermer",
+    evRegNothingToExport: "Il n'y a pas encore d'inscriptions à exporter.",
+    evRegExportFailed: "Les inscriptions n'ont pas pu être exportées. Veuillez réessayer.",
+    evRegColName: "Nom",
+    evRegColEmail: "E-mail",
+    evRegColRegistered: "Inscrit le",
+    evRegColTicket: "Billet",
+    evRegColRegistration: "Inscription",
+    evRegColPayment: "Paiement",
+    evRegColCheckIn: "Enregistrement",
+    evRegLoadFailed: "Les paramètres d'inscription n'ont pas pu être chargés et ne peuvent pas être modifiés pour l'instant. Fermez cette fenêtre et rouvrez l'événement pour réessayer.",
   },
   de: {
     // Navigation
@@ -4233,6 +4443,76 @@ const translations: Record<Language, TranslationKeys> = {
     opportunityAmountInvalid: "Geben Sie einen gültigen Betrag mit höchstens 2 Nachkommastellen ein (z. B. 1500.50). Er darf weder negativ noch zu groß sein.",
     analyticsUnavailableTitle: "Analysen sind noch nicht verfügbar",
     analyticsUnavailableDesc: "Für diese Diagramme gibt es noch keine Datenquelle, daher wird nichts angezeigt.",
+    evRegTitle: "Anmeldung",
+    evRegWhere: "Wo melden sich die Leute an?",
+    evRegInApp: "Auf DiaspoPlug",
+    evRegExternal: "Auf einer anderen Website",
+    evRegUrlLabel: "Anmelde-Website",
+    evRegUrlPlaceholder: "https://example.com/register",
+    evRegUrlHelp: "Die Leute sehen einen kurzen Hinweis, dass sie DiaspoPlug verlassen, dann öffnet sich die Seite in einem neuen Tab.",
+    evRegUrlInvalid: "Gib eine gültige Webadresse ein, die mit http:// oder https:// beginnt.",
+    evRegAlreadyOne: "{{count}} Person hat sich hier bereits angemeldet und behält ihre Anmeldung.",
+    evRegAlreadyOther: "{{count}} Personen haben sich hier bereits angemeldet und behalten ihre Anmeldung.",
+    evRegFormTitle: "Anmeldeformular",
+    evRegFormHelp: "Die Fragen, die die Leute bei der Anmeldung beantworten.",
+    evRegDefaultBadge: "Standard",
+    evRegRequired: "Pflichtfeld",
+    evRegRemove: "{{name}} entfernen",
+    evRegMoveUp: "{{name}} nach oben",
+    evRegMoveDown: "{{name}} nach unten",
+    evRegRestore: "Standardfelder wiederherstellen",
+    evRegAddDefaults: "Standardfelder hinzufügen",
+    evRegAddQuestion: "Frage hinzufügen",
+    evRegQuestion: "Frage",
+    evRegQuestionPlaceholder: "z. B. Ernährungswünsche",
+    evRegAnswerType: "Antworttyp",
+    evRegOptions: "Optionen",
+    evRegOptionN: "Option {{index}}",
+    evRegAddOption: "Option hinzufügen",
+    evRegRemoveOption: "Option {{index}} entfernen",
+    evRegExistingNote: "Wer sich bereits angemeldet hat, wird nicht zu neuen Fragen befragt.",
+    evRegEmptyForm: "Noch keine Fragen.",
+    evRegTypeText: "Kurzer Text",
+    evRegTypeTextarea: "Langer Text",
+    evRegTypeEmail: "E-Mail",
+    evRegTypePhone: "Telefon",
+    evRegTypeNumber: "Zahl",
+    evRegTypeDate: "Datum",
+    evRegTypeSelect: "Einfachauswahl",
+    evRegTypeMultiselect: "Mehrfachauswahl",
+    evRegTypeCheckbox: "Kontrollkästchen",
+    evRegDefaultFullName: "Vollständiger Name",
+    evRegDefaultEmail: "E-Mail-Adresse",
+    evRegDefaultPhone: "Telefonnummer",
+    evRegDefaultJobTitle: "Berufsbezeichnung",
+    evRegErrLabelRequired: "Gib die Frage ein.",
+    evRegErrLabelTooLong: "Die Frage darf höchstens 150 Zeichen haben.",
+    evRegErrOptionsRequired: "Füge mindestens eine Option hinzu.",
+    evRegErrOptionsTooMany: "Höchstens 30 Optionen.",
+    evRegErrOptionTooLong: "Jede Option darf höchstens 80 Zeichen haben.",
+    evRegErrOptionsDuplicate: "Die Optionen müssen sich unterscheiden.",
+    evRegErrTooMany: "Ein Formular kann höchstens 25 Fragen enthalten.",
+    evRegErrForm: "Bitte korrigiere zuerst die Fragen des Anmeldeformulars.",
+    evRegSaveFormFailed: "Die Veranstaltung wurde gespeichert, aber das Anmeldeformular konnte nicht gespeichert werden: {{message}} Öffne „Bearbeiten“, um es erneut zu versuchen.",
+    evRegViewAnswers: "Antworten ansehen",
+    evRegAnswersTitle: "Antworten zur Anmeldung",
+    evRegAnswersFor: "Antworten von {{name}}",
+    evRegNoAnswers: "Für diese Anmeldung wurden keine Antworten gespeichert.",
+    evRegYes: "Ja",
+    evRegNo: "Nein",
+    evRegCsvQuantity: "Anzahl",
+    evRegExportCsv: "CSV exportieren",
+    evRegClose: "Schließen",
+    evRegNothingToExport: "Es gibt noch keine Anmeldungen zum Exportieren.",
+    evRegExportFailed: "Die Anmeldungen konnten nicht exportiert werden. Bitte versuche es erneut.",
+    evRegColName: "Name",
+    evRegColEmail: "E-Mail",
+    evRegColRegistered: "Angemeldet am",
+    evRegColTicket: "Ticket",
+    evRegColRegistration: "Anmeldung",
+    evRegColPayment: "Zahlung",
+    evRegColCheckIn: "Check-in",
+    evRegLoadFailed: "Die Anmeldeeinstellungen konnten nicht geladen werden und lassen sich derzeit nicht ändern. Schließe das Fenster und öffne die Veranstaltung erneut.",
   },
   es: {
     // Navigation
@@ -5280,6 +5560,76 @@ const translations: Record<Language, TranslationKeys> = {
     opportunityAmountInvalid: "Introduzca un importe válido con un máximo de 2 decimales (por ejemplo 1500.50). No puede ser negativo ni demasiado grande.",
     analyticsUnavailableTitle: "Las estadísticas aún no están disponibles",
     analyticsUnavailableDesc: "Estos gráficos aún no tienen fuente de datos, así que no se muestra ninguno.",
+    evRegTitle: "Inscripción",
+    evRegWhere: "¿Dónde se inscribe la gente?",
+    evRegInApp: "En DiaspoPlug",
+    evRegExternal: "En otro sitio web",
+    evRegUrlLabel: "Sitio web de inscripción",
+    evRegUrlPlaceholder: "https://example.com/register",
+    evRegUrlHelp: "La gente verá un breve aviso de que sale de DiaspoPlug y luego la página se abrirá en una pestaña nueva.",
+    evRegUrlInvalid: "Introduce una dirección web válida que empiece por http:// o https://.",
+    evRegAlreadyOne: "{{count}} persona ya se inscribió aquí y conserva su inscripción.",
+    evRegAlreadyOther: "{{count}} personas ya se inscribieron aquí y conservan su inscripción.",
+    evRegFormTitle: "Formulario de inscripción",
+    evRegFormHelp: "Las preguntas que la gente responde al inscribirse.",
+    evRegDefaultBadge: "Predeterminado",
+    evRegRequired: "Obligatorio",
+    evRegRemove: "Quitar {{name}}",
+    evRegMoveUp: "Subir {{name}}",
+    evRegMoveDown: "Bajar {{name}}",
+    evRegRestore: "Restaurar campos predeterminados",
+    evRegAddDefaults: "Añadir campos predeterminados",
+    evRegAddQuestion: "Añadir pregunta",
+    evRegQuestion: "Pregunta",
+    evRegQuestionPlaceholder: "p. ej. Requisitos alimentarios",
+    evRegAnswerType: "Tipo de respuesta",
+    evRegOptions: "Opciones",
+    evRegOptionN: "Opción {{index}}",
+    evRegAddOption: "Añadir opción",
+    evRegRemoveOption: "Quitar la opción {{index}}",
+    evRegExistingNote: "A quienes ya se inscribieron no se les harán las preguntas nuevas.",
+    evRegEmptyForm: "Aún no hay preguntas.",
+    evRegTypeText: "Texto corto",
+    evRegTypeTextarea: "Texto largo",
+    evRegTypeEmail: "Correo electrónico",
+    evRegTypePhone: "Teléfono",
+    evRegTypeNumber: "Número",
+    evRegTypeDate: "Fecha",
+    evRegTypeSelect: "Elección única",
+    evRegTypeMultiselect: "Elección múltiple",
+    evRegTypeCheckbox: "Casilla",
+    evRegDefaultFullName: "Nombre completo",
+    evRegDefaultEmail: "Correo electrónico",
+    evRegDefaultPhone: "Número de teléfono",
+    evRegDefaultJobTitle: "Cargo",
+    evRegErrLabelRequired: "Escribe la pregunta.",
+    evRegErrLabelTooLong: "La pregunta no puede superar los 150 caracteres.",
+    evRegErrOptionsRequired: "Añade al menos una opción.",
+    evRegErrOptionsTooMany: "Máximo 30 opciones.",
+    evRegErrOptionTooLong: "Cada opción no puede superar los 80 caracteres.",
+    evRegErrOptionsDuplicate: "Las opciones deben ser distintas entre sí.",
+    evRegErrTooMany: "Un formulario puede tener como máximo 25 preguntas.",
+    evRegErrForm: "Corrige primero las preguntas del formulario de inscripción.",
+    evRegSaveFormFailed: "El evento se guardó, pero no se pudo guardar su formulario de inscripción: {{message}} Abre Editar para intentarlo de nuevo.",
+    evRegViewAnswers: "Ver respuestas",
+    evRegAnswersTitle: "Respuestas de la inscripción",
+    evRegAnswersFor: "Respuestas de {{name}}",
+    evRegNoAnswers: "No se registraron respuestas para esta inscripción.",
+    evRegYes: "Sí",
+    evRegNo: "No",
+    evRegCsvQuantity: "Cantidad",
+    evRegExportCsv: "Exportar CSV",
+    evRegClose: "Cerrar",
+    evRegNothingToExport: "Todavía no hay inscripciones que exportar.",
+    evRegExportFailed: "No se pudieron exportar las inscripciones. Inténtalo de nuevo.",
+    evRegColName: "Nombre",
+    evRegColEmail: "Correo electrónico",
+    evRegColRegistered: "Inscrito el",
+    evRegColTicket: "Entrada",
+    evRegColRegistration: "Inscripción",
+    evRegColPayment: "Pago",
+    evRegColCheckIn: "Registro de llegada",
+    evRegLoadFailed: "No se pudieron cargar los ajustes de inscripción, así que no se pueden cambiar ahora. Cierra esta ventana y vuelve a abrir el evento para reintentar.",
   },
   it: {
     // Navigation
@@ -6337,6 +6687,76 @@ const translations: Record<Language, TranslationKeys> = {
     opportunityAmountInvalid: "Inserisci un importo valido con al massimo 2 decimali (ad esempio 1500.50). Non può essere negativo né troppo grande.",
     analyticsUnavailableTitle: "Le statistiche non sono ancora disponibili",
     analyticsUnavailableDesc: "Questi grafici non hanno ancora una fonte di dati, quindi non ne viene mostrato nessuno.",
+    evRegTitle: "Registrazione",
+    evRegWhere: "Dove si registrano le persone?",
+    evRegInApp: "Su DiaspoPlug",
+    evRegExternal: "Su un altro sito web",
+    evRegUrlLabel: "Sito di registrazione",
+    evRegUrlPlaceholder: "https://example.com/register",
+    evRegUrlHelp: "Le persone vedranno un breve avviso che stanno lasciando DiaspoPlug, poi la pagina si aprirà in una nuova scheda.",
+    evRegUrlInvalid: "Inserisci un indirizzo web valido che inizi con http:// o https://.",
+    evRegAlreadyOne: "{{count}} persona si è già registrata qui e mantiene la registrazione.",
+    evRegAlreadyOther: "{{count}} persone si sono già registrate qui e mantengono la registrazione.",
+    evRegFormTitle: "Modulo di registrazione",
+    evRegFormHelp: "Le domande a cui le persone rispondono quando si registrano.",
+    evRegDefaultBadge: "Predefinito",
+    evRegRequired: "Obbligatorio",
+    evRegRemove: "Rimuovi {{name}}",
+    evRegMoveUp: "Sposta {{name}} su",
+    evRegMoveDown: "Sposta {{name}} giù",
+    evRegRestore: "Ripristina i campi predefiniti",
+    evRegAddDefaults: "Aggiungi i campi predefiniti",
+    evRegAddQuestion: "Aggiungi domanda",
+    evRegQuestion: "Domanda",
+    evRegQuestionPlaceholder: "es. Esigenze alimentari",
+    evRegAnswerType: "Tipo di risposta",
+    evRegOptions: "Opzioni",
+    evRegOptionN: "Opzione {{index}}",
+    evRegAddOption: "Aggiungi opzione",
+    evRegRemoveOption: "Rimuovi opzione {{index}}",
+    evRegExistingNote: "Alle persone già registrate non verranno poste le nuove domande.",
+    evRegEmptyForm: "Ancora nessuna domanda.",
+    evRegTypeText: "Testo breve",
+    evRegTypeTextarea: "Testo lungo",
+    evRegTypeEmail: "E-mail",
+    evRegTypePhone: "Telefono",
+    evRegTypeNumber: "Numero",
+    evRegTypeDate: "Data",
+    evRegTypeSelect: "Scelta singola",
+    evRegTypeMultiselect: "Scelta multipla",
+    evRegTypeCheckbox: "Casella di controllo",
+    evRegDefaultFullName: "Nome completo",
+    evRegDefaultEmail: "Indirizzo e-mail",
+    evRegDefaultPhone: "Numero di telefono",
+    evRegDefaultJobTitle: "Professione",
+    evRegErrLabelRequired: "Inserisci la domanda.",
+    evRegErrLabelTooLong: "La domanda non può superare i 150 caratteri.",
+    evRegErrOptionsRequired: "Aggiungi almeno un'opzione.",
+    evRegErrOptionsTooMany: "Al massimo 30 opzioni.",
+    evRegErrOptionTooLong: "Ogni opzione non può superare gli 80 caratteri.",
+    evRegErrOptionsDuplicate: "Le opzioni devono essere diverse tra loro.",
+    evRegErrTooMany: "Un modulo può avere al massimo 25 domande.",
+    evRegErrForm: "Correggi prima le domande del modulo di registrazione.",
+    evRegSaveFormFailed: "L'evento è stato salvato, ma non è stato possibile salvare il modulo di registrazione: {{message}} Apri Modifica per riprovare.",
+    evRegViewAnswers: "Vedi le risposte",
+    evRegAnswersTitle: "Risposte della registrazione",
+    evRegAnswersFor: "Risposte di {{name}}",
+    evRegNoAnswers: "Per questa registrazione non sono state registrate risposte.",
+    evRegYes: "Sì",
+    evRegNo: "No",
+    evRegCsvQuantity: "Quantità",
+    evRegExportCsv: "Esporta CSV",
+    evRegClose: "Chiudi",
+    evRegNothingToExport: "Non ci sono ancora registrazioni da esportare.",
+    evRegExportFailed: "Non è stato possibile esportare le registrazioni. Riprova.",
+    evRegColName: "Nome",
+    evRegColEmail: "E-mail",
+    evRegColRegistered: "Registrato il",
+    evRegColTicket: "Biglietto",
+    evRegColRegistration: "Registrazione",
+    evRegColPayment: "Pagamento",
+    evRegColCheckIn: "Check-in",
+    evRegLoadFailed: "Non è stato possibile caricare le impostazioni di registrazione, quindi al momento non si possono modificare. Chiudi questa finestra e riapri l'evento per riprovare.",
   },
 };
 

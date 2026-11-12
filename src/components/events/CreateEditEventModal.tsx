@@ -25,6 +25,15 @@ import { CalendarIcon, ChevronLeft, ChevronRight, Upload, Check } from "lucide-r
 import { cn } from "@/lib/utils";
 import { useT } from "@/hooks/useT";
 import { PLATFORM_BASE_CURRENCY } from "@/lib/money";
+import { RegistrationSection } from "@/components/events/RegistrationFormBuilder";
+import {
+  defaultFieldDrafts,
+  fieldsToDrafts,
+  formSignature,
+  normalizeRegistrationLink,
+  validateDrafts,
+} from "@/lib/eventRegistrationForm";
+import { makeEvRegText } from "@/lib/eventRegistrationText";
 
 interface CreateEditEventModalProps {
   open: boolean;
@@ -61,13 +70,23 @@ export function CreateEditEventModal({
     publishNow: false,
     notifyMembers: true,
     allowComments: true,
+    // A new event starts with the four default fields; an edited one carries what is saved.
+    registrationMode: event?.registrationMode ?? "IN_APP",
+    registrationLink: event?.registrationLink ?? "",
+    registrationFields: event ? fieldsToDrafts(event.registrationFields) : defaultFieldDrafts(),
+    registrationLoaded: !event || !event.registrationLoadFailed,
+    registrationBaseline: event && !event.registrationLoadFailed ? formSignature(fieldsToDrafts(event.registrationFields)) : null,
+    savedRegistrationMode: event && !event.registrationLoadFailed ? (event.registrationMode ?? "IN_APP") : null,
+    registeredCount: event?.registeredCount ?? 0,
   });
+  const [registrationShowErrors, setRegistrationShowErrors] = useState(false);
 
   const steps = [
     { id: 1, title: t.basicInformation },
     { id: 2, title: t.scheduleLocation },
     { id: 3, title: t.ticketingCapacity },
-    { id: 4, title: t.visibilitySettings },
+    { id: 4, title: t.evRegTitle },
+    { id: 5, title: t.visibilitySettings },
   ];
 
   const updateField = <K extends keyof EventFormData>(field: K, value: EventFormData[K]) => {
@@ -86,7 +105,22 @@ export function CreateEditEventModal({
     }
   };
 
+  /** The registration part can be saved: a usable website, or a valid form. */
+  const registrationProblem = (() => {
+    if (event && !formData.registrationLoaded) return null; // nothing about registration is sent
+    if (formData.registrationMode === "EXTERNAL") {
+      return normalizeRegistrationLink(formData.registrationLink) ? null : makeEvRegText(t)("urlInvalid");
+    }
+    return validateDrafts(formData.registrationFields).ok ? null : makeEvRegText(t)("err_form");
+  })();
+
   const handleSubmit = () => {
+    if (registrationProblem) {
+      // Keep the dialog open on the Registration step so nothing typed is lost.
+      setRegistrationShowErrors(true);
+      setCurrentStep(4);
+      return;
+    }
     onSubmit(formData);
     onOpenChange(false);
     setCurrentStep(1);
@@ -130,7 +164,7 @@ export function CreateEditEventModal({
               {index < steps.length - 1 && (
                 <div
                   className={cn(
-                    "w-12 sm:w-20 h-0.5 mx-2",
+                    "w-6 sm:w-16 h-0.5 mx-1 sm:mx-2",
                     currentStep > step.id ? "bg-primary" : "bg-muted"
                   )}
                 />
@@ -341,6 +375,20 @@ export function CreateEditEventModal({
           )}
 
           {currentStep === 4 && (
+            <div className="space-y-4">
+              <RegistrationSection
+                mode={event ? "edit" : "create"}
+                form={formData}
+                onChange={(patch) => setFormData((prev) => ({ ...prev, ...patch }))}
+                showErrors={registrationShowErrors}
+              />
+              {registrationShowErrors && registrationProblem && (
+                <p className="text-sm text-destructive" role="alert">{registrationProblem}</p>
+              )}
+            </div>
+          )}
+
+          {currentStep === 5 && (
             <>
               <div className="flex items-center justify-between p-4 rounded-lg border border-border">
                 <div>

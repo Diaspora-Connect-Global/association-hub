@@ -38,23 +38,39 @@ import {
   UserX,
   Users,
   Loader2,
+  ClipboardList,
+  Download,
 } from "lucide-react";
 import { useT } from "@/hooks/useT";
 import { useSettings } from "@/contexts/SettingsContext";
 import { formatMinorUnits } from "@/lib/money";
 import { toast } from "@/hooks/use-toast";
 import {
-  adminGetEventRegistrations,
+  getEventRegistrations,
+  getAllEventRegistrations,
+  getEventRegistrationSetup,
+  getEventTickets,
   markRegistrationCheckedIn,
   removeEventRegistration,
   type EventRegistrationRow,
+  type EventRegistrationFormField,
 } from "@/services/graphql/events/operations";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { answerText, buildCsv, downloadCsv, parseFormResponses } from "@/lib/eventRegistrationCsv";
+import { makeEvRegText, registrationFieldName, type EvRegText } from "@/lib/eventRegistrationText";
 import { userLabel } from "@/lib/userLabel";
 import { graphqlErrorMessage } from "@/lib/graphqlErrors";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { EventNetworkingTabs } from "@/components/events/networking/EventNetworkingTabs";
 import { RegistrationStatusBadge } from "@/components/events/networking/RegistrationStatusBadge";
-import { paymentLabelOverride } from "@/lib/eventNetworking";
+import { paymentLabelOverride, registrationStatusLabel } from "@/lib/eventNetworking";
 
 interface RegistrationsDrawerProps {
   open: boolean;
@@ -89,6 +105,39 @@ function displayName(reg: EventRegistrationRow, unknown: string): string {
   return userLabel({ name: `${first} ${last}`.trim(), email: reg.user?.email }, unknown);
 }
 
+/** Question label for display: default fields translated, the organiser's own as typed. */
+function questionLabel(f: EventRegistrationFormField, tx: EvRegText): string {
+  return registrationFieldName(f, tx);
+}
+
+/** Question → answer for one registrant (blank answers left out, never ids). */
+function AnswersList({
+  registration,
+  fields,
+  tx,
+}: {
+  registration: EventRegistrationRow | null;
+  fields: EventRegistrationFormField[];
+  tx: EvRegText;
+}) {
+  const words = { yes: tx("yes"), no: tx("no") };
+  const answers = parseFormResponses(registration?.formResponsesJson);
+  const answered = fields
+    .map((f) => ({ f, text: answerText(answers[f.id], f, words) }))
+    .filter(({ text }) => text !== "");
+  if (answered.length === 0) return <p className="text-sm text-muted-foreground">{tx("noAnswers")}</p>;
+  return (
+    <dl className="space-y-3">
+      {answered.map(({ f, text }) => (
+        <div key={f.id}>
+          <dt className="text-xs text-muted-foreground break-words">{questionLabel(f, tx)}</dt>
+          <dd className="text-sm text-foreground whitespace-pre-wrap break-words">{text}</dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
+
 export function RegistrationsDrawer({
   open,
   onOpenChange,
@@ -100,15 +149,28 @@ export function RegistrationsDrawer({
   const [registrations, setRegistrations] = useState<EventRegistrationRow[]>([]);
   const [loading, setLoading] = useState(false);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [ticketNames, setTicketNames] = useState<Map<string, string>>(new Map());
+  const [formFields, setFormFields] = useState<EventRegistrationFormField[]>([]);
+  const [answersFor, setAnswersFor] = useState<EventRegistrationRow | null>(null);
+  const [exporting, setExporting] = useState(false);
   const t = useT();
+  const tx = makeEvRegText(t);
   const { settings } = useSettings();
 
   const fetchRegistrations = useCallback(async () => {
     if (!event) return;
     setLoading(true);
     try {
-      const result = await adminGetEventRegistrations(event.id, 1, 100);
+      // The owning entity's admins may read their own event's registrants here;
+      // the adminGet… query is for platform admins only.
+      const [result, setup, tickets] = await Promise.all([
+        getEventRegistrations(event.id, 100, 0),
+        getEventRegistrationSetup(event.id).catch(() => null),
+        getEventTickets(event.id).catch(() => [] as { id: string; name: string }[]),
+      ]);
+      setTicketNames(new Map(tickets.map((tk): [string, string] => [tk.id, tk.name])));
       setRegistrations(result.registrations ?? []);
+      setFormFields(setup?.registrationFormFields ?? []);
     } catch {
       setRegistrations([]);
     } finally {
@@ -153,6 +215,60 @@ export function RegistrationsDrawer({
       });
     } finally {
       setBusyId(null);
+    }
+  };
+
+  const handleExport = async () => {
+    if (!event) return;
+    setExporting(true);
+    try {
+      const rows = await getAllEventRegistrations(event.id);
+      if (rows.length === 0) {
+        toast({ title: tx("nothingToExport") });
+        return;
+      }
+      const words = { yes: tx("yes"), no: tx("no") };
+      const headers = [
+        tx("colName"),
+        tx("colEmail"),
+        tx("colRegistered"),
+        tx("colTicket"),
+        tx("csvQuantity"),
+        tx("colRegistration"),
+        ...(event.isPaid ? [tx("colPayment")] : []),
+        tx("colCheckIn"),
+        ...formFields.map((f) => questionLabel(f, tx)),
+      ];
+      const body = rows.map((reg) => {
+        const answers = parseFormResponses(reg.formResponsesJson);
+        return [
+          displayName(reg, t.unknownUser),
+          reg.user?.email ?? "",
+          reg.registeredAt ? new Date(reg.registeredAt).toLocaleString(settings.language) : "",
+          (reg.ticketId && ticketNames.get(reg.ticketId)) || "",
+          String(reg.quantity ?? ""),
+          registrationStatusLabel(reg.registrationStatus || reg.status),
+          ...(event.isPaid
+            ? [
+                isCancelled(reg.status)
+                  ? t.refundedPayment
+                  : paymentLabelOverride(reg.registrationStatus || reg.status) !== null || !reg.totalAmount
+                  ? t.pending
+                  : Number.isFinite(Number(reg.totalAmount))
+                  ? formatMinorUnits(Number(reg.totalAmount), reg.currency ?? event.currency, settings.language)
+                  : t.pending,
+              ]
+            : []),
+          isCheckedIn(reg.status) ? t.checkedIn : t.notCheckedIn,
+          ...formFields.map((f) => answerText(answers[f.id], f, words)),
+        ];
+      });
+      const slug = event.title.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "event";
+      downloadCsv(buildCsv(headers, body), `${slug}-registrations.csv`);
+    } catch {
+      toast({ title: "Error", description: tx("exportFailed"), variant: "destructive" });
+    } finally {
+      setExporting(false);
     }
   };
 
@@ -221,6 +337,19 @@ export function RegistrationsDrawer({
                     </SelectContent>
                   </Select>
                 )}
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={exporting}
+                  onClick={() => void handleExport()}
+                >
+                  {exporting ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
+                  ) : (
+                    <Download className="mr-2 h-4 w-4" aria-hidden="true" />
+                  )}
+                  {tx("exportCsv")}
+                </Button>
                 <Select value={checkInFilter} onValueChange={setCheckInFilter}>
                   <SelectTrigger className="w-[140px]">
                     <SelectValue placeholder={t.status} />
@@ -327,6 +456,10 @@ export function RegistrationsDrawer({
                                     <CheckCircle className="mr-2 h-4 w-4" />
                                     {t.markAsCheckedIn}
                                   </DropdownMenuItem>
+                                  <DropdownMenuItem onClick={() => setAnswersFor(registration)}>
+                                    <ClipboardList className="mr-2 h-4 w-4" />
+                                    {tx("viewAnswers")}
+                                  </DropdownMenuItem>
                                   <DropdownMenuItem
                                     className="text-destructive"
                                     disabled={busyId === registration.id}
@@ -360,6 +493,23 @@ export function RegistrationsDrawer({
           </TabsContent>
         </Tabs>
       </SheetContent>
+
+      <Dialog open={!!answersFor} onOpenChange={(v) => !v && setAnswersFor(null)}>
+        <DialogContent className="sm:max-w-[520px] max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{tx("answersTitle")}</DialogTitle>
+            <DialogDescription>
+              {tx("answersFor", { name: answersFor ? displayName(answersFor, t.unknownUser) : "" })}
+            </DialogDescription>
+          </DialogHeader>
+          <AnswersList registration={answersFor} fields={formFields} tx={tx} />
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setAnswersFor(null)}>
+              {tx("close")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Sheet>
   );
 }

@@ -1,3 +1,9 @@
+import type {
+  RegistrationFieldDraft,
+  RegistrationFormField,
+  RegistrationMode,
+} from "@/lib/eventRegistrationForm";
+
 export type EventStatus = "published" | "unpublished" | "draft" | "ongoing" | "completed" | "cancelled";
 export type EventType = "in-person" | "virtual";
 export type PaymentStatus = "paid" | "pending" | "refunded";
@@ -33,6 +39,12 @@ export interface Event {
   revenue: number | null;
   createdAt: string;
   updatedAt: string;
+  /** Loaded on demand (the list query does not carry them). */
+  registrationMode?: "IN_APP" | "EXTERNAL";
+  registrationLink?: string;
+  registrationFields?: RegistrationFormField[];
+  /** True when the registration setup could not be loaded for editing. */
+  registrationLoadFailed?: boolean;
 }
 
 export interface EventRegistration {
@@ -79,4 +91,18 @@ export interface EventFormData {
   publishNow: boolean;
   notifyMembers: boolean;
   allowComments: boolean;
+  registrationMode: RegistrationMode;
+  registrationLink: string;
+  /** The organiser-built form (IN_APP only). */
+  registrationFields: RegistrationFieldDraft[];
+  /**
+   * Edit mode: false when the event's current setup could not be loaded; then
+   * nothing about registration is sent, so an existing link or form is never wiped.
+   */
+  registrationLoaded: boolean;
+  /** Edit mode: signature of the form as loaded; the form is re-saved only when it differs. */
+  registrationBaseline: string | null;
+  /** Edit mode: the saved mode, and how many people already registered. */
+  savedRegistrationMode: RegistrationMode | null;
+  registeredCount: number;
 }
