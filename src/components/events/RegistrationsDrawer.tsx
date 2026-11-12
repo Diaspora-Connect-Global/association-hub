@@ -63,7 +63,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { answerText, buildCsv, downloadCsv, parseFormResponses } from "@/lib/eventRegistrationCsv";
+import { answerText, buildCsv, downloadCsv, parseFormResponses, registrantEmail } from "@/lib/eventRegistrationCsv";
 import { makeEvRegText, registrationFieldName, type EvRegText } from "@/lib/eventRegistrationText";
 import { userLabel } from "@/lib/userLabel";
 import { graphqlErrorMessage } from "@/lib/graphqlErrors";
@@ -102,7 +102,7 @@ function formatDate(value: string | null): string {
 function displayName(reg: EventRegistrationRow, unknown: string): string {
   const first = reg.user?.firstName ?? "";
   const last = reg.user?.lastName ?? "";
-  return userLabel({ name: `${first} ${last}`.trim(), email: reg.user?.email }, unknown);
+  return userLabel({ name: `${first} ${last}`.trim(), email: registrantEmail(reg.user?.email, reg.formResponsesJson) }, unknown);
 }
 
 /** Question label for display: default fields translated, the organiser's own as typed. */
@@ -243,7 +243,7 @@ export function RegistrationsDrawer({
         const answers = parseFormResponses(reg.formResponsesJson);
         return [
           displayName(reg, t.unknownUser),
-          reg.user?.email ?? "",
+          registrantEmail(reg.user?.email, reg.formResponsesJson),
           reg.registeredAt ? new Date(reg.registeredAt).toLocaleString(settings.language) : "",
           (reg.ticketId && ticketNames.get(reg.ticketId)) || "",
           String(reg.quantity ?? ""),
@@ -276,7 +276,7 @@ export function RegistrationsDrawer({
 
   const filteredRegistrations = registrations.filter((reg) => {
     const name = displayName(reg, t.unknownUser).toLowerCase();
-    const email = (reg.user?.email ?? "").toLowerCase();
+    const email = registrantEmail(reg.user?.email, reg.formResponsesJson).toLowerCase();
     const matchesSearch =
       name.includes(searchQuery.toLowerCase()) ||
       email.includes(searchQuery.toLowerCase());
@@ -401,7 +401,7 @@ export function RegistrationsDrawer({
                             </TableCell>
                             <TableCell>
                               <div className="text-sm">
-                                <p>{registration.user?.email ?? "—"}</p>
+                                <p>{registrantEmail(registration.user?.email, registration.formResponsesJson) || "—"}</p>
                               </div>
                             </TableCell>
                             {event.isPaid && (
