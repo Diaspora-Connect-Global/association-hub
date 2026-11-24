@@ -56,6 +56,7 @@ import { useAssociationAdminStore } from "@/stores/associationAdminStore";
 import { associationPostService } from "@/services/associationPostService";
 import type {
   AttachmentType,
+  Comment as ApiComment,
   MentionInput,
   Post as ApiPost,
   PostAttachment,
@@ -662,7 +663,7 @@ export default function Posts() {
     try {
       const [fresh, topLevel] = await Promise.all([
         associationPostService.post(post.id),
-        associationPostService.postComments(post.id, 100, 0).catch(() => []),
+        associationPostService.postComments(post.id, 100, 0).catch((): ApiComment[] => []),
       ]);
       const mapped = mapApiToUi(fresh, t.unknownUser, t.unknownOrganisation, associationId);
       const derived = topLevel.reduce((sum, c) => sum + 1 + (c.replyCount ?? 0), 0);
