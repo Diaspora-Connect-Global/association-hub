@@ -33,7 +33,6 @@ export interface UpdateAssociationInput {
   description?: string;
   joinPolicy?: JoinPolicy;
   visibility?: AssociationVisibility;
-  avatarKey?: string;
   contactEmail?: string;
   contactPhone?: string;
   website?: string;
@@ -74,7 +73,8 @@ export interface AssociationAnalyticsType {
 
 export interface AssociationAvatarUploadType {
   uploadUrl: string;
-  fileKey: string;
+  /** Public URL of the image; already saved on the association. */
+  fileUrl: string;
 }
 
 export interface AssociationMemberType {

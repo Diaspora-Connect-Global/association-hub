@@ -118,7 +118,8 @@ export const useGetAssociationAvatarUploadUrl = () => {
   const { toast } = useToast();
   const t = useT();
   const mutation = useMutation({
-    mutationFn: (associationId: string) => getAssociationAvatarUploadUrl(associationId),
+    mutationFn: ({ associationId, file }: { associationId: string; file: File }) =>
+      getAssociationAvatarUploadUrl(associationId, file),
     onError: (err) => {
       const message = graphqlErrorMessage(err, t.uploadStartFailed);
       toast({ title: t.error, description: message, variant: "destructive" });

@@ -54,6 +54,7 @@ import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { useT } from "@/hooks/useT";
 import { getAdminAssociationId } from "@/stores/adminAuthStore";
+import { useAssociationAdminStore } from "@/stores/associationAdminStore";
 import {
   getAssociation,
   updateAssociation,
@@ -286,22 +287,30 @@ export default function Profile() {
     toast({ title: t.cancel, description: "Changes discarded." });
   };
 
+  // Re-read the association after an image upload so the sidebar shows the new
+  // logo straight away. Best-effort: the upload itself has already succeeded.
+  const setAssociationInStore = useAssociationAdminStore((state) => state.setAssociation);
+  const refreshAssociationInStore = async () => {
+    if (!associationId) return;
+    try {
+      setAssociationInStore(await getAssociation(associationId));
+    } catch {
+      // keep the current snapshot; the next page load shows the new image
+    }
+  };
+
   // ── Logo upload handler ───────────────────────────────────────────────────
   const handleLogoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !associationId) return;
     setLogoUploading(true);
     try {
-      const { uploadUrl, fileKey } = await getAssociationAvatarUploadUrl(associationId);
+      // Issuing the URL already saves the new logo on the association; once the
+      // PUT succeeds there is nothing else to store.
+      const { uploadUrl } = await getAssociationAvatarUploadUrl(associationId, file);
       await uploadAssociationAvatar(uploadUrl, file);
-      // Build the read URL from the fileKey (S3 CDN pattern used by this codebase)
-      const readUrl = fileKey;
-      setValue("associationName", watch("associationName")); // touch form to mark dirty
-      // Store avatarKey via updateAssociation so the server records the new avatar
-      await updateAssociation({ id: associationId, avatarKey: fileKey });
       toast({ title: "Success", description: "Logo uploaded successfully." });
-      // readUrl can be used for a future <img> preview; suppressing unused-var warning below
-      void readUrl;
+      void refreshAssociationInStore();
       // Reset so the same file can be re-selected
       e.target.value = "";
     } catch (err) {
@@ -321,9 +330,10 @@ export default function Profile() {
     if (!file || !associationId) return;
     setBannerUploading(true);
     try {
-      const { uploadUrl } = await getAssociationCoverUploadUrl(associationId);
+      const { uploadUrl } = await getAssociationCoverUploadUrl(associationId, file);
       await uploadAssociationAvatar(uploadUrl, file);
       toast({ title: "Success", description: "Banner uploaded successfully." });
+      void refreshAssociationInStore();
       e.target.value = "";
     } catch (err) {
       toast({

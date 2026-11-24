@@ -74,20 +74,23 @@ const UPDATE_ASSOCIATION_SERVICES = /* GraphQL */ `
   }
 `;
 
+// The gateway requires filename + contentType and returns uploadUrl + fileUrl
+// (CommunityUploadUrlResponse). Issuing the URL also saves fileUrl on the
+// association, so no follow-up update is needed once the PUT succeeds.
 const GET_ASSOCIATION_AVATAR_UPLOAD_URL = /* GraphQL */ `
-  mutation GetAssociationAvatarUploadUrl($associationId: ID!) {
-    getAssociationAvatarUploadUrl(associationId: $associationId) {
+  mutation GetAssociationAvatarUploadUrl($associationId: ID!, $filename: String!, $contentType: String!) {
+    getAssociationAvatarUploadUrl(associationId: $associationId, filename: $filename, contentType: $contentType) {
       uploadUrl
-      fileKey
+      fileUrl
     }
   }
 `;
 
 const GET_ASSOCIATION_COVER_UPLOAD_URL = /* GraphQL */ `
-  mutation GetAssociationCoverUploadUrl($associationId: ID!) {
-    getAssociationCoverUploadUrl(associationId: $associationId) {
+  mutation GetAssociationCoverUploadUrl($associationId: ID!, $filename: String!, $contentType: String!) {
+    getAssociationCoverUploadUrl(associationId: $associationId, filename: $filename, contentType: $contentType) {
       uploadUrl
-      fileKey
+      fileUrl
     }
   }
 `;
@@ -305,39 +308,63 @@ export async function updateAssociationServices(
   return data.updateAssociationServices;
 }
 
+type ImageUploadVars = { associationId: string; filename: string; contentType: string };
+
+/** The content type an image is signed and uploaded with (must be the same in both places). */
+export function imageContentType(file: File): string {
+  return file.type || "image/jpeg";
+}
+
 export async function getAssociationAvatarUploadUrl(
-  associationId: string
+  associationId: string,
+  file: File,
 ): Promise<AssociationAvatarUploadType> {
   const client = getGraphQLClient();
   const data = await client.request<
     { getAssociationAvatarUploadUrl: AssociationAvatarUploadType },
-    { associationId: string }
-  >(GET_ASSOCIATION_AVATAR_UPLOAD_URL, { associationId });
+    ImageUploadVars
+  >(GET_ASSOCIATION_AVATAR_UPLOAD_URL, {
+    associationId,
+    filename: file.name,
+    contentType: imageContentType(file),
+  });
   return data.getAssociationAvatarUploadUrl;
 }
 
 export async function getAssociationCoverUploadUrl(
-  associationId: string
+  associationId: string,
+  file: File,
 ): Promise<AssociationAvatarUploadType> {
   const client = getGraphQLClient();
   const data = await client.request<
     { getAssociationCoverUploadUrl: AssociationAvatarUploadType },
-    { associationId: string }
-  >(GET_ASSOCIATION_COVER_UPLOAD_URL, { associationId });
+    ImageUploadVars
+  >(GET_ASSOCIATION_COVER_UPLOAD_URL, {
+    associationId,
+    filename: file.name,
+    contentType: imageContentType(file),
+  });
   return data.getAssociationCoverUploadUrl;
 }
 
+/**
+ * PUT the file to a signed upload URL. The URL is signed over `content-type`
+ * and a `cache-control` extension header (community-service
+ * gcs-storage.service.ts), so both must be sent byte-for-byte or storage
+ * answers 403. Used for the logo and the banner.
+ */
 export async function uploadAssociationAvatar(uploadUrl: string, file: File): Promise<void> {
   const response = await fetch(uploadUrl, {
     method: "PUT",
     headers: {
-      "Content-Type": file.type || "image/jpeg",
+      "Content-Type": imageContentType(file),
+      "Cache-Control": "public, max-age=31536000, immutable",
     },
     body: file,
   });
 
   if (!response.ok) {
-    throw new Error("Avatar upload failed. Please try again.");
+    throw new Error("Image upload failed. Please try again.");
   }
 }
 
