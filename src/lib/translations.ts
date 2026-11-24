@@ -1122,6 +1122,14 @@ type TranslationKeys = {
   evRegColPayment: string;
   evRegColCheckIn: string;
   evRegLoadFailed: string;
+
+  // Sidebar groups (merged menu) + Profile join policy
+  navMenu: string;
+  navContent: string;
+  navPeople: string;
+  navSupport: string;
+  inviteOnlyOption: string;
+  paidSetOnPaymentTab: string;
 };
 
 const translations: Record<Language, TranslationKeys> = {
@@ -1142,7 +1150,7 @@ const translations: Record<Language, TranslationKeys> = {
     logout: "Logout",
     analytics: "Analytics",
     associationProfile: "Association Profile",
-    supportTickets: "Support Tickets",
+    supportTickets: "Reports & complaints",
 
     // Quick Actions
     quickActions: "Quick Actions",
@@ -1318,7 +1326,7 @@ const translations: Record<Language, TranslationKeys> = {
     totalGroupMembers: "Total Members",
 
     // Tickets
-    ticketsTitle: "Support Tickets",
+    ticketsTitle: "Reports & complaints",
     ticketsSubtitle: "Manage support requests from members",
     createTicket: "Create Ticket",
     openTickets: "Open Tickets",
@@ -2253,6 +2261,14 @@ const translations: Record<Language, TranslationKeys> = {
     evRegColPayment: "Payment",
     evRegColCheckIn: "Check-in",
     evRegLoadFailed: "The registration settings could not be loaded, so they can't be changed right now. Close this window and open the event again to retry.",
+
+    // Sidebar groups (merged menu) + Profile join policy
+    navMenu: "Main menu",
+    navContent: "Content",
+    navPeople: "People",
+    navSupport: "Support",
+    inviteOnlyOption: "Invite Only",
+    paidSetOnPaymentTab: "Paid (set on the Payment tab)",
   },
   fr: {
     // Navigation
@@ -2271,7 +2287,7 @@ const translations: Record<Language, TranslationKeys> = {
     logout: "Déconnexion",
     analytics: "Analytique",
     associationProfile: "Profil de l'Association",
-    supportTickets: "Tickets de support",
+    supportTickets: "Signalements et plaintes",
 
     // Quick Actions
     quickActions: "Actions rapides",
@@ -2447,7 +2463,7 @@ const translations: Record<Language, TranslationKeys> = {
     totalGroupMembers: "Total des membres",
 
     // Tickets
-    ticketsTitle: "Tickets de support",
+    ticketsTitle: "Signalements et plaintes",
     ticketsSubtitle: "Gérer les demandes de support des membres",
     createTicket: "Créer un ticket",
     openTickets: "Tickets ouverts",
@@ -3383,6 +3399,14 @@ const translations: Record<Language, TranslationKeys> = {
     evRegColPayment: "Paiement",
     evRegColCheckIn: "Enregistrement",
     evRegLoadFailed: "Les paramètres d'inscription n'ont pas pu être chargés et ne peuvent pas être modifiés pour l'instant. Fermez cette fenêtre et rouvrez l'événement pour réessayer.",
+
+    // Sidebar groups (merged menu) + Profile join policy
+    navMenu: "Menu principal",
+    navContent: "Contenu",
+    navPeople: "Personnes",
+    navSupport: "Assistance",
+    inviteOnlyOption: "Sur invitation uniquement",
+    paidSetOnPaymentTab: "Payant (défini dans l'onglet Paiement)",
   },
   de: {
     // Navigation
@@ -3401,7 +3425,7 @@ const translations: Record<Language, TranslationKeys> = {
     logout: "Abmelden",
     analytics: "Analytik",
     associationProfile: "Vereinsprofil",
-    supportTickets: "Support-Tickets",
+    supportTickets: "Meldungen & Beschwerden",
 
     // Quick Actions
     quickActions: "Schnellaktionen",
@@ -3577,7 +3601,7 @@ const translations: Record<Language, TranslationKeys> = {
     totalGroupMembers: "Gesamtmitglieder",
 
     // Tickets
-    ticketsTitle: "Support-Tickets",
+    ticketsTitle: "Meldungen & Beschwerden",
     ticketsSubtitle: "Supportanfragen von Mitgliedern verwalten",
     createTicket: "Ticket erstellen",
     openTickets: "Offene Tickets",
@@ -4513,6 +4537,14 @@ const translations: Record<Language, TranslationKeys> = {
     evRegColPayment: "Zahlung",
     evRegColCheckIn: "Check-in",
     evRegLoadFailed: "Die Anmeldeeinstellungen konnten nicht geladen werden und lassen sich derzeit nicht ändern. Schließe das Fenster und öffne die Veranstaltung erneut.",
+
+    // Sidebar groups (merged menu) + Profile join policy
+    navMenu: "Hauptmenü",
+    navContent: "Inhalte",
+    navPeople: "Personen",
+    navSupport: "Support",
+    inviteOnlyOption: "Nur auf Einladung",
+    paidSetOnPaymentTab: "Kostenpflichtig (im Tab „Zahlung“ festgelegt)",
   },
   es: {
     // Navigation
@@ -4531,7 +4563,7 @@ const translations: Record<Language, TranslationKeys> = {
     logout: "Cerrar sesión",
     analytics: "Análisis",
     associationProfile: "Perfil de la Asociación",
-    supportTickets: "Tickets de soporte",
+    supportTickets: "Reportes y quejas",
 
     // Quick Actions
     quickActions: "Acciones rápidas",
@@ -4707,7 +4739,7 @@ const translations: Record<Language, TranslationKeys> = {
     totalGroupMembers: "Total de miembros",
 
     // Tickets
-    ticketsTitle: "Tickets de soporte",
+    ticketsTitle: "Reportes y quejas",
     ticketsSubtitle: "Gestionar solicitudes de soporte de miembros",
     createTicket: "Crear ticket",
     openTickets: "Tickets abiertos",
@@ -5630,6 +5662,14 @@ const translations: Record<Language, TranslationKeys> = {
     evRegColPayment: "Pago",
     evRegColCheckIn: "Registro de llegada",
     evRegLoadFailed: "No se pudieron cargar los ajustes de inscripción, así que no se pueden cambiar ahora. Cierra esta ventana y vuelve a abrir el evento para reintentar.",
+
+    // Sidebar groups (merged menu) + Profile join policy
+    navMenu: "Menú principal",
+    navContent: "Contenido",
+    navPeople: "Personas",
+    navSupport: "Soporte",
+    inviteOnlyOption: "Solo por invitación",
+    paidSetOnPaymentTab: "De pago (se configura en la pestaña Pago)",
   },
   it: {
     // Navigation
@@ -5648,7 +5688,7 @@ const translations: Record<Language, TranslationKeys> = {
     logout: "Esci",
     analytics: "Analisi",
     associationProfile: "Profilo Associazione",
-    supportTickets: "Ticket di supporto",
+    supportTickets: "Segnalazioni e reclami",
 
     // Quick Actions
     quickActions: "Azioni rapide",
@@ -6211,7 +6251,7 @@ const translations: Record<Language, TranslationKeys> = {
     totalGroupMembers: "Membri totali",
 
     // Tickets
-    ticketsTitle: "Ticket di supporto",
+    ticketsTitle: "Segnalazioni e reclami",
     ticketsSubtitle: "Gestisci le richieste di supporto dei membri",
     createTicket: "Crea ticket",
     openTickets: "Ticket aperti",
@@ -6757,6 +6797,14 @@ const translations: Record<Language, TranslationKeys> = {
     evRegColPayment: "Pagamento",
     evRegColCheckIn: "Check-in",
     evRegLoadFailed: "Non è stato possibile caricare le impostazioni di registrazione, quindi al momento non si possono modificare. Chiudi questa finestra e riapri l'evento per riprovare.",
+
+    // Sidebar groups (merged menu) + Profile join policy
+    navMenu: "Menu principale",
+    navContent: "Contenuti",
+    navPeople: "Persone",
+    navSupport: "Assistenza",
+    inviteOnlyOption: "Solo su invito",
+    paidSetOnPaymentTab: "A pagamento (impostato nella scheda Pagamento)",
   },
 };
 

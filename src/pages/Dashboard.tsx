@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { AdminLayout } from "@/components/layout/AdminLayout";
+import { SectionTabs } from "@/components/layout/SectionTabs";
 import { MetricCard } from "@/components/dashboard/MetricCard";
 import { ActivityFeed } from "@/components/dashboard/ActivityFeed";
 import { EngagementChart } from "@/components/dashboard/EngagementChart";
@@ -81,6 +82,7 @@ function FullDashboard() {
 
   return (
     <AdminLayout title={t.dashboard} subtitle={association?.name ?? "Association overview"}>
+      <SectionTabs section="dashboard" labelKey="dashboard" />
       <div className="mb-6 flex items-center justify-end">
         <Button variant="outline" className="gap-2" onClick={() => void loadDashboard()} disabled={loading}>
           <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />

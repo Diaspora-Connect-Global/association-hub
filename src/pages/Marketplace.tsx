@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useLocation } from "react-router-dom";
 import { AdminLayout } from "@/components/layout/AdminLayout";
+import { SectionTabs } from "@/components/layout/SectionTabs";
 import { useT } from "@/hooks/useT";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,8 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PlusCircle, Search, ShoppingBag, BarChart3, RefreshCw } from "lucide-react";
+import { PlusCircle, Search, ShoppingBag, RefreshCw } from "lucide-react";
 import { Listing, ListingFormData } from "@/types/marketplace";
 import { ListingCard } from "@/components/marketplace/ListingCard";
 import { CreateEditListingModal } from "@/components/marketplace/CreateEditListingModal";
@@ -86,6 +86,9 @@ function mapServiceToListing(s: ServicePackageDTO): Listing {
 
 export default function Marketplace() {
   const location = useLocation();
+  // Listings and Analytics are separate routes so the merged Marketplace
+  // section can show them as tabs beside Escrow.
+  const showAnalytics = location.pathname === "/marketplace/analytics";
   const t = useT();
   const [listings, setListings] = useState<Listing[]>([]);
   const [listingsLoading, setListingsLoading] = useState(false);
@@ -201,6 +204,7 @@ export default function Marketplace() {
 
   return (
     <AdminLayout title={t.marketplaceTitle} subtitle={t.marketplaceSubtitle}>
+      <SectionTabs section="marketplace" labelKey="marketplace" />
       {/* Top Controls */}
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <div className="flex flex-wrap items-center gap-3">
@@ -273,20 +277,8 @@ export default function Marketplace() {
         </div>
       </div>
 
-      {/* Tabs for Listings & Analytics */}
-      <Tabs defaultValue="listings" className="w-full">
-        <TabsList className="mb-6">
-          <TabsTrigger value="listings" className="gap-2">
-            <ShoppingBag className="h-4 w-4" />
-            {t.listings}
-          </TabsTrigger>
-          <TabsTrigger value="analytics" className="gap-2">
-            <BarChart3 className="h-4 w-4" />
-            {t.analytics}
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="listings">
+      {!showAnalytics ? (
+        <div>
           {/* Listings Grid */}
           {listingsLoading ? (
             <div className="flex items-center justify-center py-16 border border-dashed border-border rounded-lg">
@@ -323,12 +315,10 @@ export default function Marketplace() {
               </Button>
             </div>
           )}
-        </TabsContent>
-
-        <TabsContent value="analytics">
-          <MarketplaceAnalyticsWidget />
-        </TabsContent>
-      </Tabs>
+        </div>
+      ) : (
+        <MarketplaceAnalyticsWidget />
+      )}
 
       {/* Modals & Drawers */}
       <CreateEditListingModal

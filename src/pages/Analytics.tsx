@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { AdminLayout } from "@/components/layout/AdminLayout";
+import { SectionTabs } from "@/components/layout/SectionTabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -165,6 +166,7 @@ export default function Analytics() {
 
   return (
     <AdminLayout title={t.analyticsTitle} subtitle={t.analyticsSubtitle}>
+      <SectionTabs section="dashboard" labelKey="dashboard" />
       <div className="space-y-6">
         {/* Header Actions */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">

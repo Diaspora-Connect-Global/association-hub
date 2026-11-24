@@ -3,7 +3,7 @@ import { useEventsOnly } from "@/hooks/useEventsOnly";
 import { isPathAllowed } from "@/lib/eventNetworking";
 
 /** Pages an events-only association may open; anything else sends the admin to the Events dashboard. */
-const EVENTS_ONLY_ALLOWED_PATHS = ["/", "/events", "/members", "/roles-admins", "/settings", "/audit-logs", "/admin-profile"];
+export const EVENTS_ONLY_ALLOWED_PATHS = ["/", "/events", "/members", "/roles-admins", "/settings", "/audit-logs", "/admin-profile"];
 
 export function EventsOnlyGate() {
   const { eventsOnly } = useEventsOnly();

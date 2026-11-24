@@ -48,6 +48,7 @@ function AppRoutes() {
               <Route path="/posts" element={<Posts />} />
               <Route path="/events" element={<Events />} />
               <Route path="/marketplace" element={<Marketplace />} />
+              <Route path="/marketplace/analytics" element={<Marketplace />} />
               {/* No order source exists for an association (the listing dialog says so);
                   old links land on the marketplace instead of an always-empty page. */}
               <Route path="/orders" element={<Navigate to="/marketplace" replace />} />

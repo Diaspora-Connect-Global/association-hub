@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useSearchParams } from "react-router-dom";
 import { AdminLayout } from "@/components/layout/AdminLayout";
+import { SectionTabs } from "@/components/layout/SectionTabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -220,6 +221,7 @@ export default function VendorEscrowSettings() {
 
   return (
     <AdminLayout title={t.escrowMilestones} subtitle={t.secureTransactions}>
+      <SectionTabs section="marketplace" labelKey="marketplace" />
       <TooltipProvider>
         <div className="max-w-4xl space-y-6">
           {/* Escrow Overview Card */}

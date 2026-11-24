@@ -1,45 +1,33 @@
-import { useState } from "react";
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import {
   Home,
-  FileText,
   Users,
   MessageSquare,
   Briefcase,
   Calendar,
   ShoppingCart,
   LifeBuoy,
-  BarChart2,
   Settings,
   Plus,
   PlusCircle,
   CalendarPlus,
   Tag,
   LogOut,
-  Store,
-  ChevronDown,
-  ChevronRight,
-  Shield,
-  ShieldCheck,
   PanelLeftClose,
   PanelLeft,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useT } from "@/hooks/useT";
-import { signOutAdmin, decodeAdminJwt, useAdminAuthStore } from "@/stores/adminAuthStore";
-import { getAdminPermissions, hasPermission, MANAGE_ROLES_PERMISSION } from "@/lib/adminAccess";
+import { signOutAdmin, useAdminAuthStore } from "@/stores/adminAuthStore";
 import { useShallow } from "zustand/react/shallow";
 import { useAssociationAdminStore } from "@/stores/associationAdminStore";
 import { getAssociation } from "@/services/graphql/association";
 import { useEventsOnly } from "@/hooks/useEventsOnly";
-import { filterNavForEventsOnly } from "@/lib/eventNetworking";
+import { filterNavForEventsOnly, isPathAllowed } from "@/lib/eventNetworking";
+import { EVENTS_ONLY_ALLOWED_PATHS } from "@/components/events/networking/EventsOnlyGate";
+import { pathMatches, sectionPaths, visibleTabs } from "@/lib/navSections";
 import diaspoPlugLogo from "@/assets/diaspo-plug-logo.svg";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
 import {
   Tooltip,
   TooltipContent,
@@ -51,9 +39,17 @@ interface NavItem {
   id: string;
   label: string;
   icon: React.ElementType;
-  path?: string;
-  children?: NavItem[];
+  path: string;
+  /** Other routes that light this entry up (its section's tabs). */
+  matchPaths?: readonly string[];
   badge?: number;
+}
+
+interface NavGroup {
+  id: string;
+  /** Group heading; the first and last groups have none. */
+  heading?: string;
+  items: NavItem[];
 }
 
 interface SidebarProps {
@@ -61,8 +57,8 @@ interface SidebarProps {
   onToggle: () => void;
 }
 
-/** Entries an events-only association keeps: events, members & join requests, admins, settings, audit. */
-const EVENTS_ONLY_NAV_IDS = ["dashboard", "events", "members", "roles-admins", "settings", "audit"];
+/** Entries an events-only association keeps: events, members & join requests, settings (with admins and audit). */
+const EVENTS_ONLY_NAV_IDS = ["dashboard", "events", "members", "settings"];
 
 export function Sidebar({ collapsed, onToggle }: SidebarProps) {
   const location = useLocation();
@@ -70,11 +66,6 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
   const navigate = useNavigate();
   const t = useT();
   const admin = useAdminAuthStore((state) => state.admin);
-  const accessToken = useAdminAuthStore((state) => state.accessToken);
-  const canManageRoles = hasPermission(
-    getAdminPermissions(admin, decodeAdminJwt(accessToken)),
-    MANAGE_ROLES_PERMISSION
-  );
   // zustand v5: object selectors need useShallow, otherwise each render returns a new
   // object and React re-renders forever (error #185) — every page renders this sidebar.
   const { pendingRequestsCount, pendingReportsCount, association } = useAssociationAdminStore(
@@ -97,11 +88,6 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
   const associationName = association?.name ?? associationQuery?.name ?? "Admin Portal";
   const associationAvatarUrl = association?.avatarUrl ?? associationQuery?.avatarUrl ?? null;
 
-  // Check if any vendor path is active
-  const vendorPaths = ["/marketplace", "/vendor-escrow-settings"];
-  const isVendorActive = vendorPaths.some((path) => location.pathname === path);
-  
-  const [vendorOpen, setVendorOpen] = useState(isVendorActive);
   // The admin's user id is never displayed — the session carries no name.
   const adminName = "Association Admin";
   const adminRole = admin?.role?.name || "Admin";
@@ -117,54 +103,87 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
     navigate("/login", { replace: true });
   };
 
-  const mainNavItems: NavItem[] = [
-    { id: "dashboard", label: t.dashboard, icon: Home, path: "/" },
-    { id: "profile", label: t.associationProfile, icon: FileText, path: "/profile" },
-    { id: "members", label: t.members, icon: Users, path: "/members" },
-    { id: "posts", label: t.posts, icon: MessageSquare, path: "/posts" },
-    { id: "opportunities", label: t.opportunities, icon: Briefcase, path: "/opportunities" },
-    { id: "events", label: t.events, icon: Calendar, path: "/events" },
-  ];
-
-  const vendorNavItem: NavItem = {
-    id: "vendor",
-    label: t.vendor || "Vendor",
-    icon: Store,
-    children: [
-      { id: "marketplace", label: t.marketplace, icon: ShoppingCart, path: "/marketplace" },
-      { id: "escrow", label: t.escrowSettings || "Escrow Settings", icon: Shield, path: "/vendor-escrow-settings" },
-    ],
-  };
-
-  const bottomNavItems: NavItem[] = [
-    { id: "groups", label: t.groups, icon: Users, path: "/groups" },
-    {
-      id: "tickets",
-      label: t.supportTickets,
-      icon: LifeBuoy,
-      path: "/tickets",
-      badge: pendingReportsCount > 0 ? pendingReportsCount : undefined,
-    },
-    { id: "analytics", label: t.analytics, icon: BarChart2, path: "/analytics" },
-    { id: "audit", label: t.auditLogs, icon: FileText, path: "/audit-logs" },
-    ...(canManageRoles
-      ? [{ id: "roles-admins", label: t.rolesAdminsNav, icon: ShieldCheck, path: "/roles-admins" }]
-      : []),
-    { id: "settings", label: t.settings, icon: Settings, path: "/settings" },
-  ];
-
-  const mergedMainNavItems = filterNavForEventsOnly(
-    mainNavItems.map((item) =>
-      item.id === "members"
-        ? { ...item, badge: pendingRequestsCount > 0 ? pendingRequestsCount : undefined }
-        : item.id === "dashboard" && eventsOnly
-          ? { ...item, label: "Events dashboard" }
-          : item,
-    ),
+  const settingsTabs = visibleTabs("settings", {
     eventsOnly,
-    EVENTS_ONLY_NAV_IDS,
-  );
-  const visibleBottomNavItems = filterNavForEventsOnly(bottomNavItems, eventsOnly, EVENTS_ONLY_NAV_IDS);
+    isAllowed: (path) => isPathAllowed(path, EVENTS_ONLY_ALLOWED_PATHS),
+  });
+
+  const navGroups: NavGroup[] = [
+    {
+      id: "home",
+      items: [
+        {
+          id: "dashboard",
+          label: eventsOnly ? "Events dashboard" : t.dashboard,
+          icon: Home,
+          path: "/",
+          matchPaths: sectionPaths("dashboard"),
+        },
+      ],
+    },
+    {
+      id: "content",
+      heading: t.navContent,
+      items: [
+        { id: "posts", label: t.posts, icon: MessageSquare, path: "/posts" },
+        { id: "events", label: t.events, icon: Calendar, path: "/events" },
+        { id: "opportunities", label: t.opportunities, icon: Briefcase, path: "/opportunities" },
+        // Listings · Analytics · Escrow (was the "Vendor" submenu)
+        {
+          id: "marketplace",
+          label: t.marketplace,
+          icon: ShoppingCart,
+          path: "/marketplace",
+          matchPaths: sectionPaths("marketplace"),
+        },
+        { id: "groups", label: t.groups, icon: Users, path: "/groups" },
+      ],
+    },
+    {
+      id: "people",
+      heading: t.navPeople,
+      items: [
+        {
+          id: "members",
+          label: t.members,
+          icon: Users,
+          path: "/members",
+          badge: pendingRequestsCount > 0 ? pendingRequestsCount : undefined,
+        },
+      ],
+    },
+    {
+      id: "support",
+      heading: t.navSupport,
+      items: [
+        {
+          id: "tickets",
+          label: t.supportTickets,
+          icon: LifeBuoy,
+          path: "/tickets",
+          badge: pendingReportsCount > 0 ? pendingReportsCount : undefined,
+        },
+      ],
+    },
+    {
+      id: "admin",
+      items: [
+        // Profile · Services · Roles & admins · Audit log. Opens the first tab
+        // this admin may see (an events-only association cannot open Profile).
+        {
+          id: "settings",
+          label: t.settings,
+          icon: Settings,
+          path: settingsTabs[0]?.path ?? "/settings",
+          matchPaths: sectionPaths("settings"),
+        },
+      ],
+    },
+  ];
+
+  const visibleNavGroups = navGroups
+    .map((group) => ({ ...group, items: filterNavForEventsOnly(group.items, eventsOnly, EVENTS_ONLY_NAV_IDS) }))
+    .filter((group) => group.items.length > 0);
 
   // Quick action handlers
   const handleQuickAction = (action: "post" | "event" | "opportunity" | "listing") => {
@@ -186,22 +205,21 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
 
   const renderNavItem = (item: NavItem) => {
     const Icon = item.icon;
-    const isActive = item.path && location.pathname === item.path;
+    const isActive = [item.path, ...(item.matchPaths ?? [])].some((p) => pathMatches(location.pathname, p));
 
     const navContent = (
-      <NavLink
-        to={item.path!}
+      <Link
+        to={item.path}
+        aria-current={isActive ? "page" : undefined}
+        aria-label={collapsed ? item.label : undefined}
         className={cn(
           "relative flex items-center gap-3 rounded-lg px-3 py-2.5 body-small font-medium transition-all duration-200",
           collapsed && "justify-center px-2",
           isActive
-            ? "bg-sidebar-accent text-sidebar-foreground"
+            ? "bg-primary/10 text-primary font-semibold"
             : "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground"
         )}
       >
-        {isActive && (
-          <span className="absolute left-0 h-6 w-1 rounded-r-full bg-primary" />
-        )}
         <Icon className="h-4 w-4 flex-shrink-0" />
         {!collapsed && (
           <>
@@ -213,7 +231,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
             )}
           </>
         )}
-      </NavLink>
+      </Link>
     );
 
     if (collapsed) {
@@ -232,98 +250,6 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
     }
 
     return <li key={item.id}>{navContent}</li>;
-  };
-
-  const renderVendorSubmenu = () => {
-    const Icon = vendorNavItem.icon;
-
-    if (collapsed) {
-      // When collapsed, show vendor items directly with tooltips
-      return (
-        <>
-          {vendorNavItem.children?.map((child) => {
-            const ChildIcon = child.icon;
-            const isChildActive = child.path && location.pathname === child.path;
-
-            return (
-              <li key={child.id}>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <NavLink
-                      to={child.path!}
-                      className={cn(
-                        "relative flex items-center justify-center gap-3 rounded-lg px-2 py-2.5 body-small font-medium transition-all duration-200",
-                        isChildActive
-                          ? "bg-sidebar-accent text-sidebar-foreground"
-                          : "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground"
-                      )}
-                    >
-                      {isChildActive && (
-                        <span className="absolute left-0 h-6 w-1 rounded-r-full bg-primary" />
-                      )}
-                      <ChildIcon className="h-4 w-4 flex-shrink-0" />
-                    </NavLink>
-                  </TooltipTrigger>
-                  <TooltipContent side="right">
-                    {child.label}
-                  </TooltipContent>
-                </Tooltip>
-              </li>
-            );
-          })}
-        </>
-      );
-    }
-
-    return (
-      <li>
-        <Collapsible open={vendorOpen} onOpenChange={setVendorOpen}>
-          <CollapsibleTrigger asChild>
-            <button
-              className={cn(
-                "relative flex w-full items-center gap-3 rounded-lg px-3 py-2.5 body-small font-medium transition-all duration-200",
-                isVendorActive
-                  ? "bg-sidebar-accent text-sidebar-foreground"
-                  : "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground"
-              )}
-            >
-              {isVendorActive && (
-                <span className="absolute left-0 h-6 w-1 rounded-r-full bg-primary" />
-              )}
-              <Icon className="h-4 w-4" />
-              <span className="flex-1 text-left">{vendorNavItem.label}</span>
-              {vendorOpen ? (
-                <ChevronDown className="h-4 w-4" />
-              ) : (
-                <ChevronRight className="h-4 w-4" />
-              )}
-            </button>
-          </CollapsibleTrigger>
-          <CollapsibleContent className="pl-4 mt-1 space-y-1">
-            {vendorNavItem.children?.map((child) => {
-              const ChildIcon = child.icon;
-              const isChildActive = child.path && location.pathname === child.path;
-
-              return (
-                <NavLink
-                  key={child.id}
-                  to={child.path!}
-                  className={cn(
-                    "relative flex items-center gap-3 rounded-lg px-3 py-2 caption-small font-medium transition-all duration-200",
-                    isChildActive
-                      ? "bg-primary/10 text-primary"
-                      : "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground"
-                  )}
-                >
-                  <ChildIcon className="h-3.5 w-3.5" />
-                  {child.label}
-                </NavLink>
-              );
-            })}
-          </CollapsibleContent>
-        </Collapsible>
-      </li>
-    );
   };
 
   return (
@@ -427,12 +353,20 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
         )}
 
         {/* Navigation */}
-        <nav className="scrollbar-thin flex-1 overflow-y-auto p-4">
-          <ul className="space-y-1">
-            {mergedMainNavItems.map(renderNavItem)}
-            {!eventsOnly && renderVendorSubmenu()}
-            {visibleBottomNavItems.map(renderNavItem)}
-          </ul>
+        <nav className="scrollbar-thin flex-1 overflow-y-auto p-4" aria-label={t.navMenu}>
+          {visibleNavGroups.map((group, groupIndex) => (
+            <div key={group.id} className={cn(groupIndex > 0 && "mt-4")}>
+              {group.heading &&
+                (collapsed ? (
+                  <div className="mx-2 mb-2 border-t border-sidebar-border" aria-hidden="true" />
+                ) : (
+                  <p className="mb-1 px-3 caption-small font-semibold uppercase tracking-wider text-muted-foreground">
+                    {group.heading}
+                  </p>
+                ))}
+              <ul className="space-y-1">{group.items.map(renderNavItem)}</ul>
+            </div>
+          ))}
         </nav>
 
         {/* User Profile */}

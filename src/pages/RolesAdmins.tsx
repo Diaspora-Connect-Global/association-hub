@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ShieldAlert } from "lucide-react";
 import { AdminLayout } from "@/components/layout/AdminLayout";
+import { SectionTabs } from "@/components/layout/SectionTabs";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { useT } from "@/hooks/useT";
@@ -34,6 +35,7 @@ export default function RolesAdmins() {
   if (!canManage) {
     return (
       <AdminLayout title={t.rolesAdminsTitle} subtitle={t.rolesAdminsSubtitle}>
+        <SectionTabs section="settings" labelKey="settings" />
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-16 text-center">
             <ShieldAlert className="h-12 w-12 text-muted-foreground mb-4" />
@@ -51,6 +53,7 @@ export default function RolesAdmins() {
 
   return (
     <AdminLayout title={t.rolesAdminsTitle} subtitle={t.rolesAdminsSubtitle}>
+      <SectionTabs section="settings" labelKey="settings" />
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
           <TabsTrigger value="roles">{t.rolesTabRoles}</TabsTrigger>

@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { AuditLog, ActionType, ModuleType, UserType } from "@/types/auditLogs";
 import { AdminLayout } from "@/components/layout/AdminLayout";
+import { SectionTabs } from "@/components/layout/SectionTabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -177,6 +178,7 @@ export default function AuditLogs() {
 
   return (
     <AdminLayout title={t.auditLogsTitle} subtitle={t.auditLogsSubtitle}>
+      <SectionTabs section="settings" labelKey="settings" />
       <div className="space-y-6">
         {/* Header Actions */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">

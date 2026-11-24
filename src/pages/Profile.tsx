@@ -3,6 +3,7 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { AdminLayout } from "@/components/layout/AdminLayout";
+import { SectionTabs } from "@/components/layout/SectionTabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -78,6 +79,12 @@ import { PersonPicker } from "@/components/pickers/PersonPicker";
 import type { PersonSearchResult } from "@/services/graphql/association/peopleSearch";
 import type { LinkableCommunity } from "@/services/graphql/association/communitySearch";
 import { graphqlErrorMessage, safeServerMessage } from "@/lib/graphqlErrors";
+import {
+  JOIN_POLICY_OPTION,
+  joinPolicyToOption,
+  normalizeJoinPolicy,
+  optionToJoinPolicy,
+} from "@/lib/profileJoinPolicy";
 
 // ── Constants ────────────────────────────────────────────────────────────────
 
@@ -202,7 +209,7 @@ export default function Profile() {
       website: "",
       address: "",
       countriesServed: [],
-      joinPolicy: "Open (Anyone Can Join)",
+      joinPolicy: JOIN_POLICY_OPTION.OPEN,
       whoCanPost: "Admins Only",
       paidAssociation: false,
       paymentType: "One-time",
@@ -216,20 +223,20 @@ export default function Profile() {
   const paymentType = watch("paymentType");
   const countriesServed = watch("countriesServed");
 
-  // The raw policy as loaded. This 2-option form can only express OPEN vs APPROVAL;
-  // if the association is INVITE_ONLY or PAID we preserve it instead of downgrading.
+  // The policy as loaded. A PAID association keeps PAID (its price lives on the
+  // Payment tab), so saving this form never downgrades it to a free policy.
   const loadedJoinPolicyRef = useRef<JoinPolicy | null>(null);
 
   useEffect(() => {
     if (!associationId) return;
     void getAssociation(associationId).then((assoc) => {
-      loadedJoinPolicyRef.current = (assoc.joinPolicy as JoinPolicy) ?? null;
+      loadedJoinPolicyRef.current = assoc.joinPolicy ? normalizeJoinPolicy(assoc.joinPolicy) : null;
       reset((prev) => ({
         ...prev,
         associationName: assoc.name,
         description: assoc.description ?? "",
         privacyType: assoc.visibility === "PUBLIC" ? "Public" : "Private",
-        joinPolicy: assoc.joinPolicy === "OPEN" ? "Open (Anyone Can Join)" : "Approval Required",
+        joinPolicy: joinPolicyToOption(assoc.joinPolicy),
       }));
     });
   }, [associationId, reset]);
@@ -243,13 +250,8 @@ export default function Profile() {
         name: values.associationName,
         description: values.description || undefined,
         visibility: (values.privacyType === "Public" ? "PUBLIC" : "PRIVATE") as AssociationVisibility,
-        // This form offers only Open vs Approval. If the association is INVITE_ONLY
-        // or PAID, don't overwrite it (would downgrade); otherwise map to the real
-        // backend enum — APPROVAL, not the old "REQUEST" which the backend rejects.
-        joinPolicy:
-          loadedJoinPolicyRef.current === "INVITE_ONLY" || loadedJoinPolicyRef.current === "PAID"
-            ? undefined
-            : ((values.joinPolicy === "Open (Anyone Can Join)" ? "OPEN" : "APPROVAL") as JoinPolicy),
+        // OPEN / APPROVAL / INVITE_ONLY as chosen; a PAID association is left as it is.
+        joinPolicy: optionToJoinPolicy(values.joinPolicy, loadedJoinPolicyRef.current),
         // Contact tab
         contactEmail: values.contactEmail || undefined,
         contactPhone: values.contactPhone || undefined,
@@ -400,6 +402,7 @@ export default function Profile() {
 
   return (
     <AdminLayout title={t.associationProfileSettings} subtitle={t.associationProfileSubtitle}>
+      <SectionTabs section="settings" labelKey="settings" />
       <div className="mb-6 flex items-center justify-end gap-3">
         <Button variant="outline" onClick={handleCancel}>
           {t.cancel}
@@ -688,8 +691,15 @@ export default function Profile() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent className="bg-popover z-50">
-                        <SelectItem value="Open (Anyone Can Join)">{t.openAnyone}</SelectItem>
-                        <SelectItem value="Approval Required">{t.approvalRequired}</SelectItem>
+                        <SelectItem value={JOIN_POLICY_OPTION.OPEN}>{t.openAnyone}</SelectItem>
+                        <SelectItem value={JOIN_POLICY_OPTION.APPROVAL}>{t.approvalRequired}</SelectItem>
+                        <SelectItem value={JOIN_POLICY_OPTION.INVITE_ONLY}>{t.inviteOnlyOption}</SelectItem>
+                        {/* Shown only for an already-paid association; its price is set on the Payment tab. */}
+                        {field.value === JOIN_POLICY_OPTION.PAID && (
+                          <SelectItem value={JOIN_POLICY_OPTION.PAID} disabled>
+                            {t.paidSetOnPaymentTab}
+                          </SelectItem>
+                        )}
                       </SelectContent>
                     </Select>
                   )}
