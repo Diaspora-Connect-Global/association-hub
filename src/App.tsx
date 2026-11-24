@@ -10,6 +10,7 @@ import { lazyRoute } from "@/lib/lazyRoute";
 import { EventsOnlyGate } from "@/components/events/networking/EventsOnlyGate";
 // Eager: small, and the first thing a signed-out visitor needs.
 import Login from "./pages/Login";
+import SetPassword from "./pages/SetPassword";
 import NotFound from "./pages/NotFound";
 
 // Every signed-in page is its own chunk, loaded on first visit.
@@ -39,6 +40,10 @@ function AppRoutes() {
       <Suspense fallback={<PageLoadingFallback />}>
         <Routes>
           <Route path="/login" element={<Login />} />
+          {/* Public: reached from the new-admin welcome email (and the older /reset link). */}
+          <Route path="/set-password" element={<SetPassword />} />
+          <Route path="/reset" element={<SetPassword />} />
+          <Route path="/reset-password" element={<SetPassword />} />
           <Route element={<RequireAdminAuth />}>
             <Route element={<EventsOnlyGate />}>
               <Route path="/" element={<Index />} />

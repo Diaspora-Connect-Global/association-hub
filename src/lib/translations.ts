@@ -1130,6 +1130,42 @@ type TranslationKeys = {
   navSupport: string;
   inviteOnlyOption: string;
   paidSetOnPaymentTab: string;
+
+  // Set-password page (email + one-time code)
+  setPasswordTitle: string;
+  setPasswordDescRequest: string;
+  setPasswordDescReset: string;
+  setPasswordEmail: string;
+  setPasswordSendCode: string;
+  setPasswordSending: string;
+  setPasswordHaveCode: string;
+  setPasswordCodeSent: string;
+  setPasswordCode: string;
+  setPasswordNewPassword: string;
+  setPasswordConfirmPassword: string;
+  setPasswordRules: string;
+  setPasswordShow: string;
+  setPasswordHide: string;
+  setPasswordSubmit: string;
+  setPasswordSubmitting: string;
+  setPasswordResend: string;
+  setPasswordDifferentEmail: string;
+  setPasswordBackToLogin: string;
+  setPasswordErrEmail: string;
+  setPasswordErrCode: string;
+  setPasswordErrTooShort: string;
+  setPasswordErrTooLong: string;
+  setPasswordErrUpper: string;
+  setPasswordErrLower: string;
+  setPasswordErrNumber: string;
+  setPasswordErrSpecial: string;
+  setPasswordErrMismatch: string;
+  setPasswordErrInvalidCode: string;
+  setPasswordErrWeak: string;
+  setPasswordErrGeneric: string;
+  setPasswordErrSend: string;
+  setPasswordSuccessTitle: string;
+  setPasswordSuccessBody: string;
 };
 
 const translations: Record<Language, TranslationKeys> = {
@@ -2269,6 +2305,41 @@ const translations: Record<Language, TranslationKeys> = {
     navSupport: "Support",
     inviteOnlyOption: "Invite Only",
     paidSetOnPaymentTab: "Paid (set on the Payment tab)",
+    // Set-password page (email + one-time code)
+    setPasswordTitle: "Set your password",
+    setPasswordDescRequest: "Enter your email address and we will send you a one-time code to set your password.",
+    setPasswordDescReset: "Enter the code we sent to {{email}} and choose your password.",
+    setPasswordEmail: "Email address",
+    setPasswordSendCode: "Send me a code",
+    setPasswordSending: "Sending…",
+    setPasswordHaveCode: "I already have a code",
+    setPasswordCodeSent: "If an account exists for this email address, a code has been sent.",
+    setPasswordCode: "One-time code",
+    setPasswordNewPassword: "New password",
+    setPasswordConfirmPassword: "Confirm new password",
+    setPasswordRules: "At least 12 characters, with an uppercase letter, a lowercase letter, a number and a symbol.",
+    setPasswordShow: "Show password",
+    setPasswordHide: "Hide password",
+    setPasswordSubmit: "Set password",
+    setPasswordSubmitting: "Saving…",
+    setPasswordResend: "Send a new code",
+    setPasswordDifferentEmail: "Use a different email address",
+    setPasswordBackToLogin: "Back to sign in",
+    setPasswordErrEmail: "Enter a valid email address.",
+    setPasswordErrCode: "Enter the code from your email.",
+    setPasswordErrTooShort: "The password must be at least 12 characters long.",
+    setPasswordErrTooLong: "The password cannot be longer than 128 characters.",
+    setPasswordErrUpper: "Add at least one uppercase letter.",
+    setPasswordErrLower: "Add at least one lowercase letter.",
+    setPasswordErrNumber: "Add at least one number.",
+    setPasswordErrSpecial: "Add at least one symbol, for example ! or #.",
+    setPasswordErrMismatch: "The two passwords do not match.",
+    setPasswordErrInvalidCode: "This code is invalid, has expired or was already used. Send a new code and try again.",
+    setPasswordErrWeak: "That password is too common or has appeared in a data breach. Choose a different one.",
+    setPasswordErrGeneric: "We could not set your password. Please try again.",
+    setPasswordErrSend: "We could not send the code. Please try again.",
+    setPasswordSuccessTitle: "Password set",
+    setPasswordSuccessBody: "Your password has been set. Sign in with your new password.",
   },
   fr: {
     // Navigation
@@ -3407,6 +3478,41 @@ const translations: Record<Language, TranslationKeys> = {
     navSupport: "Assistance",
     inviteOnlyOption: "Sur invitation uniquement",
     paidSetOnPaymentTab: "Payant (défini dans l'onglet Paiement)",
+    // Set-password page (email + one-time code)
+    setPasswordTitle: "Définissez votre mot de passe",
+    setPasswordDescRequest: "Saisissez votre adresse e-mail et nous vous enverrons un code à usage unique pour définir votre mot de passe.",
+    setPasswordDescReset: "Saisissez le code envoyé à {{email}} et choisissez votre mot de passe.",
+    setPasswordEmail: "Adresse e-mail",
+    setPasswordSendCode: "Envoyez-moi un code",
+    setPasswordSending: "Envoi en cours…",
+    setPasswordHaveCode: "J'ai déjà un code",
+    setPasswordCodeSent: "Si un compte existe pour cette adresse e-mail, un code a été envoyé.",
+    setPasswordCode: "Code à usage unique",
+    setPasswordNewPassword: "Nouveau mot de passe",
+    setPasswordConfirmPassword: "Confirmer le nouveau mot de passe",
+    setPasswordRules: "Au moins 12 caractères, avec une majuscule, une minuscule, un chiffre et un symbole.",
+    setPasswordShow: "Afficher le mot de passe",
+    setPasswordHide: "Masquer le mot de passe",
+    setPasswordSubmit: "Définir le mot de passe",
+    setPasswordSubmitting: "Enregistrement…",
+    setPasswordResend: "Envoyer un nouveau code",
+    setPasswordDifferentEmail: "Utiliser une autre adresse e-mail",
+    setPasswordBackToLogin: "Retour à la connexion",
+    setPasswordErrEmail: "Saisissez une adresse e-mail valide.",
+    setPasswordErrCode: "Saisissez le code reçu par e-mail.",
+    setPasswordErrTooShort: "Le mot de passe doit comporter au moins 12 caractères.",
+    setPasswordErrTooLong: "Le mot de passe ne peut pas dépasser 128 caractères.",
+    setPasswordErrUpper: "Ajoutez au moins une lettre majuscule.",
+    setPasswordErrLower: "Ajoutez au moins une lettre minuscule.",
+    setPasswordErrNumber: "Ajoutez au moins un chiffre.",
+    setPasswordErrSpecial: "Ajoutez au moins un symbole, par exemple ! ou #.",
+    setPasswordErrMismatch: "Les deux mots de passe ne correspondent pas.",
+    setPasswordErrInvalidCode: "Ce code est invalide, a expiré ou a déjà été utilisé. Envoyez un nouveau code et réessayez.",
+    setPasswordErrWeak: "Ce mot de passe est trop courant ou figure dans une fuite de données. Choisissez-en un autre.",
+    setPasswordErrGeneric: "Impossible de définir votre mot de passe. Veuillez réessayer.",
+    setPasswordErrSend: "Impossible d'envoyer le code. Veuillez réessayer.",
+    setPasswordSuccessTitle: "Mot de passe défini",
+    setPasswordSuccessBody: "Votre mot de passe a été défini. Connectez-vous avec votre nouveau mot de passe.",
   },
   de: {
     // Navigation
@@ -4545,6 +4651,41 @@ const translations: Record<Language, TranslationKeys> = {
     navSupport: "Support",
     inviteOnlyOption: "Nur auf Einladung",
     paidSetOnPaymentTab: "Kostenpflichtig (im Tab „Zahlung“ festgelegt)",
+    // Set-password page (email + one-time code)
+    setPasswordTitle: "Passwort festlegen",
+    setPasswordDescRequest: "Geben Sie Ihre E-Mail-Adresse ein. Wir senden Ihnen einen Einmalcode zum Festlegen Ihres Passworts.",
+    setPasswordDescReset: "Geben Sie den Code ein, den wir an {{email}} gesendet haben, und wählen Sie Ihr Passwort.",
+    setPasswordEmail: "E-Mail-Adresse",
+    setPasswordSendCode: "Code senden",
+    setPasswordSending: "Wird gesendet…",
+    setPasswordHaveCode: "Ich habe bereits einen Code",
+    setPasswordCodeSent: "Falls zu dieser E-Mail-Adresse ein Konto existiert, wurde ein Code gesendet.",
+    setPasswordCode: "Einmalcode",
+    setPasswordNewPassword: "Neues Passwort",
+    setPasswordConfirmPassword: "Neues Passwort bestätigen",
+    setPasswordRules: "Mindestens 12 Zeichen mit Großbuchstabe, Kleinbuchstabe, Zahl und Sonderzeichen.",
+    setPasswordShow: "Passwort anzeigen",
+    setPasswordHide: "Passwort verbergen",
+    setPasswordSubmit: "Passwort festlegen",
+    setPasswordSubmitting: "Wird gespeichert…",
+    setPasswordResend: "Neuen Code senden",
+    setPasswordDifferentEmail: "Andere E-Mail-Adresse verwenden",
+    setPasswordBackToLogin: "Zurück zur Anmeldung",
+    setPasswordErrEmail: "Geben Sie eine gültige E-Mail-Adresse ein.",
+    setPasswordErrCode: "Geben Sie den Code aus Ihrer E-Mail ein.",
+    setPasswordErrTooShort: "Das Passwort muss mindestens 12 Zeichen lang sein.",
+    setPasswordErrTooLong: "Das Passwort darf höchstens 128 Zeichen lang sein.",
+    setPasswordErrUpper: "Fügen Sie mindestens einen Großbuchstaben hinzu.",
+    setPasswordErrLower: "Fügen Sie mindestens einen Kleinbuchstaben hinzu.",
+    setPasswordErrNumber: "Fügen Sie mindestens eine Zahl hinzu.",
+    setPasswordErrSpecial: "Fügen Sie mindestens ein Sonderzeichen hinzu, zum Beispiel ! oder #.",
+    setPasswordErrMismatch: "Die beiden Passwörter stimmen nicht überein.",
+    setPasswordErrInvalidCode: "Dieser Code ist ungültig, abgelaufen oder wurde bereits verwendet. Senden Sie einen neuen Code und versuchen Sie es erneut.",
+    setPasswordErrWeak: "Dieses Passwort ist zu gebräuchlich oder war in einem Datenleck enthalten. Wählen Sie ein anderes.",
+    setPasswordErrGeneric: "Ihr Passwort konnte nicht festgelegt werden. Bitte versuchen Sie es erneut.",
+    setPasswordErrSend: "Der Code konnte nicht gesendet werden. Bitte versuchen Sie es erneut.",
+    setPasswordSuccessTitle: "Passwort festgelegt",
+    setPasswordSuccessBody: "Ihr Passwort wurde festgelegt. Melden Sie sich mit Ihrem neuen Passwort an.",
   },
   es: {
     // Navigation
@@ -5670,6 +5811,41 @@ const translations: Record<Language, TranslationKeys> = {
     navSupport: "Soporte",
     inviteOnlyOption: "Solo por invitación",
     paidSetOnPaymentTab: "De pago (se configura en la pestaña Pago)",
+    // Set-password page (email + one-time code)
+    setPasswordTitle: "Establece tu contraseña",
+    setPasswordDescRequest: "Introduce tu dirección de correo electrónico y te enviaremos un código de un solo uso para establecer tu contraseña.",
+    setPasswordDescReset: "Introduce el código que enviamos a {{email}} y elige tu contraseña.",
+    setPasswordEmail: "Correo electrónico",
+    setPasswordSendCode: "Enviarme un código",
+    setPasswordSending: "Enviando…",
+    setPasswordHaveCode: "Ya tengo un código",
+    setPasswordCodeSent: "Si existe una cuenta con este correo electrónico, se ha enviado un código.",
+    setPasswordCode: "Código de un solo uso",
+    setPasswordNewPassword: "Nueva contraseña",
+    setPasswordConfirmPassword: "Confirmar nueva contraseña",
+    setPasswordRules: "Al menos 12 caracteres, con una mayúscula, una minúscula, un número y un símbolo.",
+    setPasswordShow: "Mostrar contraseña",
+    setPasswordHide: "Ocultar contraseña",
+    setPasswordSubmit: "Establecer contraseña",
+    setPasswordSubmitting: "Guardando…",
+    setPasswordResend: "Enviar un código nuevo",
+    setPasswordDifferentEmail: "Usar otro correo electrónico",
+    setPasswordBackToLogin: "Volver a iniciar sesión",
+    setPasswordErrEmail: "Introduce una dirección de correo electrónico válida.",
+    setPasswordErrCode: "Introduce el código de tu correo electrónico.",
+    setPasswordErrTooShort: "La contraseña debe tener al menos 12 caracteres.",
+    setPasswordErrTooLong: "La contraseña no puede tener más de 128 caracteres.",
+    setPasswordErrUpper: "Añade al menos una letra mayúscula.",
+    setPasswordErrLower: "Añade al menos una letra minúscula.",
+    setPasswordErrNumber: "Añade al menos un número.",
+    setPasswordErrSpecial: "Añade al menos un símbolo, por ejemplo ! o #.",
+    setPasswordErrMismatch: "Las dos contraseñas no coinciden.",
+    setPasswordErrInvalidCode: "Este código no es válido, ha caducado o ya se utilizó. Envía un código nuevo e inténtalo de nuevo.",
+    setPasswordErrWeak: "Esa contraseña es demasiado común o apareció en una filtración de datos. Elige otra.",
+    setPasswordErrGeneric: "No hemos podido establecer tu contraseña. Inténtalo de nuevo.",
+    setPasswordErrSend: "No hemos podido enviar el código. Inténtalo de nuevo.",
+    setPasswordSuccessTitle: "Contraseña establecida",
+    setPasswordSuccessBody: "Tu contraseña se ha establecido. Inicia sesión con tu nueva contraseña.",
   },
   it: {
     // Navigation
@@ -6805,6 +6981,41 @@ const translations: Record<Language, TranslationKeys> = {
     navSupport: "Assistenza",
     inviteOnlyOption: "Solo su invito",
     paidSetOnPaymentTab: "A pagamento (impostato nella scheda Pagamento)",
+    // Set-password page (email + one-time code)
+    setPasswordTitle: "Imposta la tua password",
+    setPasswordDescRequest: "Inserisci il tuo indirizzo e-mail e ti invieremo un codice monouso per impostare la password.",
+    setPasswordDescReset: "Inserisci il codice inviato a {{email}} e scegli la tua password.",
+    setPasswordEmail: "Indirizzo e-mail",
+    setPasswordSendCode: "Inviami un codice",
+    setPasswordSending: "Invio in corso…",
+    setPasswordHaveCode: "Ho già un codice",
+    setPasswordCodeSent: "Se esiste un account per questo indirizzo e-mail, è stato inviato un codice.",
+    setPasswordCode: "Codice monouso",
+    setPasswordNewPassword: "Nuova password",
+    setPasswordConfirmPassword: "Conferma nuova password",
+    setPasswordRules: "Almeno 12 caratteri, con una maiuscola, una minuscola, un numero e un simbolo.",
+    setPasswordShow: "Mostra password",
+    setPasswordHide: "Nascondi password",
+    setPasswordSubmit: "Imposta password",
+    setPasswordSubmitting: "Salvataggio…",
+    setPasswordResend: "Invia un nuovo codice",
+    setPasswordDifferentEmail: "Usa un altro indirizzo e-mail",
+    setPasswordBackToLogin: "Torna all'accesso",
+    setPasswordErrEmail: "Inserisci un indirizzo e-mail valido.",
+    setPasswordErrCode: "Inserisci il codice ricevuto via e-mail.",
+    setPasswordErrTooShort: "La password deve contenere almeno 12 caratteri.",
+    setPasswordErrTooLong: "La password non può superare i 128 caratteri.",
+    setPasswordErrUpper: "Aggiungi almeno una lettera maiuscola.",
+    setPasswordErrLower: "Aggiungi almeno una lettera minuscola.",
+    setPasswordErrNumber: "Aggiungi almeno un numero.",
+    setPasswordErrSpecial: "Aggiungi almeno un simbolo, ad esempio ! o #.",
+    setPasswordErrMismatch: "Le due password non corrispondono.",
+    setPasswordErrInvalidCode: "Questo codice non è valido, è scaduto o è già stato usato. Invia un nuovo codice e riprova.",
+    setPasswordErrWeak: "Questa password è troppo comune o è comparsa in una violazione di dati. Scegline un'altra.",
+    setPasswordErrGeneric: "Non è stato possibile impostare la password. Riprova.",
+    setPasswordErrSend: "Non è stato possibile inviare il codice. Riprova.",
+    setPasswordSuccessTitle: "Password impostata",
+    setPasswordSuccessBody: "La tua password è stata impostata. Accedi con la nuova password.",
   },
 };
 

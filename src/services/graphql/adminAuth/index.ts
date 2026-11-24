@@ -1,4 +1,4 @@
-export { adminLogin, refreshAdminToken } from "./operations";
+export { adminLogin, refreshAdminToken, forgotPassword, resetPassword } from "./operations";
 export type {
   AdminLoginInput,
   AdminLoginResponse,

@@ -15,11 +15,15 @@ import {
 import { Mail, Lock, Eye, EyeOff, Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useAdminAuthStore } from "@/stores/adminAuthStore";
+import { useSettings } from "@/contexts/SettingsContext";
+import { useTranslation } from "@/lib/translations";
 
 export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { settings } = useSettings();
+  const tr = useTranslation(settings.language);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -67,6 +71,15 @@ export default function Login() {
       navigate(redirectTarget, { replace: true });
     }
   }, [accessToken, admin, isAuthenticated, navigate, redirectTarget, tokenExpiresAt]);
+
+  // After the set-password page: confirm once, then drop the flag from the address.
+  useEffect(() => {
+    if (searchParams.get("passwordSet") !== "1") return;
+    toast({ title: tr.setPasswordSuccessTitle, description: tr.setPasswordSuccessBody });
+    const next = new URLSearchParams(searchParams);
+    next.delete("passwordSet");
+    setSearchParams(next, { replace: true });
+  }, [searchParams, setSearchParams, tr]);
 
   const validateForm = () => {
     const newErrors: { email?: string; password?: string } = {};

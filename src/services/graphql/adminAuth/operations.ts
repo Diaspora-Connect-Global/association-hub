@@ -69,3 +69,37 @@ export async function refreshAdminToken(refreshToken: string): Promise<RefreshAd
   );
   return data.refreshAdminToken;
 }
+
+const FORGOT_PASSWORD = /* GraphQL */ `
+  mutation ForgotPassword($email: String!) {
+    forgotPassword(email: $email)
+  }
+`;
+
+const RESET_PASSWORD = /* GraphQL */ `
+  mutation ResetPassword($email: String!, $resetCode: String!, $newPassword: String!) {
+    resetPassword(email: $email, resetCode: $resetCode, newPassword: $newPassword)
+  }
+`;
+
+/** Sends a one-time reset code. The gateway answers with a status string, not an error. */
+export async function forgotPassword(email: string): Promise<string> {
+  const data = await getGraphQLClient().request<{ forgotPassword: string }, { email: string }>(
+    FORGOT_PASSWORD,
+    { email },
+  );
+  return data.forgotPassword;
+}
+
+/** Consumes the code and sets the password. Failure comes back as "Password reset failed: ...". */
+export async function resetPassword(input: {
+  email: string;
+  resetCode: string;
+  newPassword: string;
+}): Promise<string> {
+  const data = await getGraphQLClient().request<
+    { resetPassword: string },
+    { email: string; resetCode: string; newPassword: string }
+  >(RESET_PASSWORD, input);
+  return data.resetPassword;
+}
