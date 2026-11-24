@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { signedUploadHeaders } from "@/services/uploadFileToSignedUrl";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -309,10 +310,12 @@ export const useAdminAvatarUpload = () => {
       setError(null);
       try {
         const { uploadUrl, readUrl } = await requestAdminAvatarUploadUrl(file.name, file.type);
+        // The gateway signs this URL over content-type + cache-control; send
+        // exactly the headers it lists or storage answers 400.
         const res = await fetch(uploadUrl, {
           method: "PUT",
           body: file,
-          headers: { "Content-Type": file.type },
+          headers: signedUploadHeaders(uploadUrl, file.type),
         });
         if (!res.ok) {
           throw new Error(t.avatarUploadFailed);
