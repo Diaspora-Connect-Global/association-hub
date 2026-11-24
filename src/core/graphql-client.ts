@@ -4,6 +4,29 @@ const graphqlEndpoint = import.meta.env.VITE_GRAPHQL_ENDPOINT ?? "/graphql";
 
 let client: GraphQLClient | null = null;
 
+/** Shared single-flight refresh of the initialised client, for the idle-session hook. */
+let activeRefresh: (() => Promise<string | null>) | null = null;
+let lastRefreshTransient = false;
+
+export type SilentRefreshResult = "ok" | "refused" | "transient";
+
+/**
+ * Refresh the access token in the background (same single-flight as the 401 retry path, so the
+ * rotating refresh token is never spent twice). "refused" = the server says the session is
+ * over (sign out); "transient" = network/5xx (keep the session, retry later).
+ */
+export async function silentRefreshAdminToken(): Promise<SilentRefreshResult> {
+  if (!activeRefresh) return "transient";
+  try {
+    lastRefreshTransient = false;
+    const token = await activeRefresh();
+    if (token) return "ok";
+    return lastRefreshTransient ? "transient" : "refused";
+  } catch {
+    return "transient";
+  }
+}
+
 interface GraphQLClientOptions {
   getAccessToken?: () => string | null;
   getRefreshToken?: () => string | null;
@@ -50,6 +73,7 @@ export function createGraphQLClient(options: GraphQLClientOptions = {}): GraphQL
         });
 
         const payload = (await response.json()) as {
+          errors?: Array<{ extensions?: { code?: string } }>;
           data?: {
             refreshAdminToken?: {
               success?: boolean;
@@ -65,6 +89,9 @@ export function createGraphQLClient(options: GraphQLClientOptions = {}): GraphQL
           return refreshed.accessToken;
         }
 
+        // A GraphQL error that is not "your refresh token is dead" is a server hiccup, not a verdict.
+        const firstCode = payload?.errors?.[0]?.extensions?.code;
+        lastRefreshTransient = !refreshed && Boolean(payload?.errors?.length) && firstCode !== "UNAUTHENTICATED";
         return null;
       })().finally(() => {
         refreshPromise = null;
@@ -73,6 +100,8 @@ export function createGraphQLClient(options: GraphQLClientOptions = {}): GraphQL
 
     return refreshPromise;
   };
+
+  activeRefresh = refreshAccessToken;
 
   return new GraphQLClient(graphqlEndpoint, {
     fetch: async (url, init) => {

@@ -48,6 +48,14 @@ type TranslationKeys = {
   changePassword: string;
   twoFactorAuth: string;
   sessionTimeout: string;
+  idleTitle: string;
+  idleBodyOne: string;
+  idleBodyOther: string;
+  idleStay: string;
+  idleSignedOutTitle: string;
+  idleSignedOutBody: string;
+  sessionEndedTitle: string;
+  sessionEndedBody: string;
   saveSettings: string;
   cancel: string;
   settingsSaved: string;
@@ -1217,6 +1225,14 @@ const translations: Record<Language, TranslationKeys> = {
     changePassword: "Change Password",
     twoFactorAuth: "Two-Factor Authentication",
     sessionTimeout: "Session Timeout",
+    idleTitle: "Still there?",
+    idleBodyOne: "You'll be signed out in {{count}} second because of inactivity.",
+    idleBodyOther: "You'll be signed out in {{count}} seconds because of inactivity.",
+    idleStay: "Stay signed in",
+    idleSignedOutTitle: "Signed out",
+    idleSignedOutBody: "You were signed out after a period of inactivity. Sign in again to continue.",
+    sessionEndedTitle: "Session ended",
+    sessionEndedBody: "Your session could not be extended. Please sign in again.",
     saveSettings: "Save Settings",
     cancel: "Cancel",
     settingsSaved: "Settings saved successfully",
@@ -2389,6 +2405,14 @@ const translations: Record<Language, TranslationKeys> = {
     changePassword: "Changer le mot de passe",
     twoFactorAuth: "Authentification à deux facteurs",
     sessionTimeout: "Délai d'expiration de session",
+    idleTitle: "Vous êtes toujours là ?",
+    idleBodyOne: "Vous serez déconnecté dans {{count}} seconde pour cause d'inactivité.",
+    idleBodyOther: "Vous serez déconnecté dans {{count}} secondes pour cause d'inactivité.",
+    idleStay: "Rester connecté",
+    idleSignedOutTitle: "Déconnecté",
+    idleSignedOutBody: "Vous avez été déconnecté après une période d'inactivité. Reconnectez-vous pour continuer.",
+    sessionEndedTitle: "Session terminée",
+    sessionEndedBody: "Votre session n'a pas pu être prolongée. Veuillez vous reconnecter.",
     saveSettings: "Enregistrer",
     cancel: "Annuler",
     settingsSaved: "Paramètres enregistrés avec succès",
@@ -3562,6 +3586,14 @@ const translations: Record<Language, TranslationKeys> = {
     changePassword: "Passwort ändern",
     twoFactorAuth: "Zwei-Faktor-Authentifizierung",
     sessionTimeout: "Sitzungszeitüberschreitung",
+    idleTitle: "Noch da?",
+    idleBodyOne: "Sie werden in {{count}} Sekunde wegen Inaktivität abgemeldet.",
+    idleBodyOther: "Sie werden in {{count}} Sekunden wegen Inaktivität abgemeldet.",
+    idleStay: "Angemeldet bleiben",
+    idleSignedOutTitle: "Abgemeldet",
+    idleSignedOutBody: "Sie wurden nach einer Zeit der Inaktivität abgemeldet. Melden Sie sich erneut an, um fortzufahren.",
+    sessionEndedTitle: "Sitzung beendet",
+    sessionEndedBody: "Ihre Sitzung konnte nicht verlängert werden. Bitte melden Sie sich erneut an.",
     saveSettings: "Einstellungen speichern",
     cancel: "Abbrechen",
     settingsSaved: "Einstellungen erfolgreich gespeichert",
@@ -4735,6 +4767,14 @@ const translations: Record<Language, TranslationKeys> = {
     changePassword: "Cambiar contraseña",
     twoFactorAuth: "Autenticación de dos factores",
     sessionTimeout: "Tiempo de espera de sesión",
+    idleTitle: "¿Sigues ahí?",
+    idleBodyOne: "Se cerrará tu sesión en {{count}} segundo por inactividad.",
+    idleBodyOther: "Se cerrará tu sesión en {{count}} segundos por inactividad.",
+    idleStay: "Mantener la sesión iniciada",
+    idleSignedOutTitle: "Sesión cerrada",
+    idleSignedOutBody: "Tu sesión se cerró tras un período de inactividad. Inicia sesión de nuevo para continuar.",
+    sessionEndedTitle: "Sesión finalizada",
+    sessionEndedBody: "No se pudo prolongar tu sesión. Inicia sesión de nuevo.",
     saveSettings: "Guardar configuración",
     cancel: "Cancelar",
     settingsSaved: "Configuración guardada exitosamente",
@@ -5895,6 +5935,14 @@ const translations: Record<Language, TranslationKeys> = {
     changePassword: "Cambia password",
     twoFactorAuth: "Autenticazione a due fattori",
     sessionTimeout: "Timeout sessione",
+    idleTitle: "Sei ancora lì?",
+    idleBodyOne: "Verrai disconnesso tra {{count}} secondo per inattività.",
+    idleBodyOther: "Verrai disconnesso tra {{count}} secondi per inattività.",
+    idleStay: "Resta connesso",
+    idleSignedOutTitle: "Disconnesso",
+    idleSignedOutBody: "Sei stato disconnesso dopo un periodo di inattività. Accedi di nuovo per continuare.",
+    sessionEndedTitle: "Sessione terminata",
+    sessionEndedBody: "Non è stato possibile prolungare la sessione. Accedi di nuovo.",
     saveSettings: "Salva impostazioni",
     cancel: "Annulla",
     settingsSaved: "Impostazioni salvate con successo",
