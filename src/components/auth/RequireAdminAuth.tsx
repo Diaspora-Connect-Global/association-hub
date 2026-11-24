@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { IdleSessionDialog } from "@/components/auth/IdleSessionDialog";
 import { clearAdminSession, useAdminAuthStore } from "@/stores/adminAuthStore";
 
 export function RequireAdminAuth() {
@@ -24,5 +25,10 @@ export function RequireAdminAuth() {
     return <Navigate to="/login" replace state={{ from: location }} />;
   }
 
-  return <Outlet />;
+  return (
+    <>
+      <Outlet />
+      <IdleSessionDialog />
+    </>
+  );
 }

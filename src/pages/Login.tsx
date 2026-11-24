@@ -17,6 +17,7 @@ import { toast } from "@/hooks/use-toast";
 import { useAdminAuthStore } from "@/stores/adminAuthStore";
 import { useSettings } from "@/contexts/SettingsContext";
 import { useTranslation } from "@/lib/translations";
+import { consumeSignOutReason } from "@/lib/idleSessionChannel";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -39,6 +40,18 @@ export default function Login() {
   const isAuthenticated = useAdminAuthStore((state) => state.isAuthenticated);
   const tokenExpiresAt = useAdminAuthStore((state) => state.tokenExpiresAt);
   const logout = useAdminAuthStore((state) => state.logout);
+
+  // After an inactivity / expired sign-out: say why, once.
+  useEffect(() => {
+    const reason = consumeSignOutReason();
+    if (!reason) return;
+    toast(
+      reason === "idle"
+        ? { title: tr.idleSignedOutTitle, description: tr.idleSignedOutBody }
+        : { title: tr.sessionEndedTitle, description: tr.sessionEndedBody },
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const redirectTarget = useMemo(() => {
     const requestedRedirect = searchParams.get("redirect");

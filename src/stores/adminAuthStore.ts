@@ -1,3 +1,4 @@
+import { onLocalSignOut, writeStoredActivity } from "@/lib/idleSessionChannel";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { adminLogin as adminLoginApi } from "@/services/graphql/adminAuth";
@@ -113,6 +114,7 @@ export const useAdminAuthStore = create<AdminAuthState>()(
             jwtScopeType === "ASSOCIATION" &&
             jwtRole === "ASSOCIATION_ADMIN"
           ) {
+            writeStoredActivity(Date.now()); // a fresh sign-in is activity (a stale value must not sign it straight out)
             set({
               accessToken: response.accessToken,
               refreshToken: response.refreshToken ?? null,
@@ -157,6 +159,7 @@ export const useAdminAuthStore = create<AdminAuthState>()(
           isAuthenticated: false,
           error: null,
         });
+        onLocalSignOut();
       },
 
       setError: (error) => set({ error }),
