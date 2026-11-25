@@ -37,6 +37,8 @@ import {
 } from "@/services/graphql/events/operations";
 import { toMinorUnits } from "@/lib/money";
 import { uploadEventCoverImage } from "@/services/graphql/events/uploads";
+import { resolveCoverImageUrl } from "@/lib/eventCoverImage";
+import { physicalLocationFields } from "@/lib/eventLocation";
 import { graphqlErrorMessage } from "@/lib/graphqlErrors";
 import { useSettings } from "@/contexts/SettingsContext";
 import {
@@ -50,33 +52,6 @@ import {
 import { makeEvRegText } from "@/lib/eventRegistrationText";
 
 const EventsDashboard = lazy(() => import("@/components/events/networking/EventsDashboard"));
-
-/**
- * Resolve the value that should be sent as `coverImageUrl` on createEvent /
- * updateEvent.
- *
- * - If the form carries a freshly-picked `File` (the user just dropped/selected
- *   an image), upload it via the signed-URL flow and return the resulting
- *   public URL.
- * - Otherwise return undefined. We explicitly drop `data:` URLs to defensively
- *   guard against any caller that might still be sending base64 inline (which
- *   was the original bug: the GraphQL request body grew to multiple MB and
- *   timed out at the gateway / nginx body limit).
- */
-async function resolveCoverImageUrl(
-  bannerImage: unknown,
-): Promise<string | undefined> {
-  if (bannerImage instanceof File) {
-    return uploadEventCoverImage(bannerImage);
-  }
-  if (typeof bannerImage === "string") {
-    const trimmed = bannerImage.trim();
-    if (!trimmed) return undefined;
-    if (trimmed.startsWith("data:")) return undefined;
-    return trimmed;
-  }
-  return undefined;
-}
 
 // -------------------------------------------------------------------------
 // Helpers: map backend EventType → UI Event type
@@ -126,7 +101,7 @@ function mapBackendStatus(
 /** The form's location as the gateway's CreateEventLocationInput. */
 function toLocationInput(data: EventFormData): EventLocationInput {
   return data.eventType === "in-person"
-    ? { type: "physical", venue: data.location || undefined }
+    ? { type: "physical", ...physicalLocationFields(data) }
     : { type: "virtual", virtualLink: data.virtualLink || undefined };
 }
 
@@ -147,6 +122,10 @@ function mapBackendToUiEvent(e: BackendEvent): Event {
     endTime: formatBackendTime(e.endAt),
     eventType: e.locationType?.toLowerCase() === "physical" ? "in-person" : "virtual",
     location: e.locationDetails?.venueName ?? e.locationDetails?.address ?? undefined,
+    venue: e.locationDetails?.venueName ?? undefined,
+    address: e.locationDetails?.address ?? undefined,
+    city: e.locationDetails?.city ?? undefined,
+    country: e.locationDetails?.country ?? undefined,
     virtualLink: e.locationDetails?.virtualLink ?? undefined,
     isPaid: e.isPaid,
     currency: e.currency ?? undefined,
@@ -385,7 +364,7 @@ export default function Events() {
       // If the user picked a file, this performs the signed-URL upload and
       // returns the resulting https URL, so the GraphQL request body stays
       // small (just a URL string) instead of a multi-MB base64 data URL.
-      const coverImageUrl = await resolveCoverImageUrl(data.bannerImage);
+      const coverImageUrl = await resolveCoverImageUrl(data.bannerImage, uploadEventCoverImage);
 
       if (editingEvent) {
         // Update existing

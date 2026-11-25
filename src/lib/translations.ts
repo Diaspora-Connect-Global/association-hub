@@ -359,6 +359,20 @@ type TranslationKeys = {
   virtual: string;
   location: string;
   enterVenueAddress: string;
+  eventLocationLegend: string;
+  eventVenue: string;
+  eventVenuePh: string;
+  eventAddress: string;
+  eventAddressPh: string;
+  eventCity: string;
+  eventCityPh: string;
+  eventCountry: string;
+  eventCountryPh: string;
+  eventLocationRequired: string;
+  eventLocationTooLong: string;
+  coverNoImage: string;
+  coverTypeError: string;
+  coverSizeError: string;
   virtualLinkLabel: string;
   addVirtualLink: string;
   isPaidEvent: string;
@@ -1649,6 +1663,20 @@ const translations: Record<Language, TranslationKeys> = {
     virtual: "Virtual",
     location: "Location",
     enterVenueAddress: "Enter physical venue address",
+    eventLocationLegend: "Event location",
+    eventVenue: "Venue name",
+    eventVenuePh: "e.g. Town Hall",
+    eventAddress: "Street address",
+    eventAddressPh: "Street and number",
+    eventCity: "City",
+    eventCityPh: "e.g. Accra",
+    eventCountry: "Country",
+    eventCountryPh: "e.g. Ghana",
+    eventLocationRequired: "This field is required.",
+    eventLocationTooLong: "Too long (200 characters at most).",
+    coverNoImage: "No cover image",
+    coverTypeError: "Use a PNG, JPG, WebP or GIF image.",
+    coverSizeError: "The image must be 5MB or smaller.",
     virtualLinkLabel: "Virtual Link",
     addVirtualLink: "Add Zoom/Google Meet link",
     isPaidEvent: "Is this a paid event?",
@@ -2829,6 +2857,20 @@ const translations: Record<Language, TranslationKeys> = {
     virtual: "Virtuel",
     location: "Lieu",
     enterVenueAddress: "Entrez l'adresse du lieu",
+    eventLocationLegend: "Lieu de l'événement",
+    eventVenue: "Nom du lieu",
+    eventVenuePh: "ex. Hôtel de ville",
+    eventAddress: "Adresse postale",
+    eventAddressPh: "Rue et numéro",
+    eventCity: "Ville",
+    eventCityPh: "ex. Accra",
+    eventCountry: "Pays",
+    eventCountryPh: "ex. Ghana",
+    eventLocationRequired: "Ce champ est obligatoire.",
+    eventLocationTooLong: "Trop long (200 caractères maximum).",
+    coverNoImage: "Aucune image de couverture",
+    coverTypeError: "Utilisez une image PNG, JPG, WebP ou GIF.",
+    coverSizeError: "L'image ne doit pas dépasser 5 Mo.",
     virtualLinkLabel: "Lien virtuel",
     addVirtualLink: "Ajouter un lien Zoom/Google Meet",
     isPaidEvent: "Est-ce un événement payant ?",
@@ -4010,6 +4052,20 @@ const translations: Record<Language, TranslationKeys> = {
     virtual: "Virtuell",
     location: "Ort",
     enterVenueAddress: "Adresse des Veranstaltungsortes eingeben",
+    eventLocationLegend: "Veranstaltungsort",
+    eventVenue: "Name des Veranstaltungsortes",
+    eventVenuePh: "z. B. Rathaus",
+    eventAddress: "Straße und Hausnummer",
+    eventAddressPh: "Straße und Nummer",
+    eventCity: "Stadt",
+    eventCityPh: "z. B. Accra",
+    eventCountry: "Land",
+    eventCountryPh: "z. B. Ghana",
+    eventLocationRequired: "Dieses Feld ist erforderlich.",
+    eventLocationTooLong: "Zu lang (höchstens 200 Zeichen).",
+    coverNoImage: "Kein Titelbild",
+    coverTypeError: "Verwende ein PNG-, JPG-, WebP- oder GIF-Bild.",
+    coverSizeError: "Das Bild darf höchstens 5 MB groß sein.",
     virtualLinkLabel: "Virtueller Link",
     addVirtualLink: "Zoom/Google Meet Link hinzufügen",
     isPaidEvent: "Ist dies eine kostenpflichtige Veranstaltung?",
@@ -5187,6 +5243,20 @@ const translations: Record<Language, TranslationKeys> = {
     virtual: "Virtual",
     location: "Ubicación",
     enterVenueAddress: "Ingresa la dirección del lugar",
+    eventLocationLegend: "Ubicación del evento",
+    eventVenue: "Nombre del lugar",
+    eventVenuePh: "p. ej. Ayuntamiento",
+    eventAddress: "Dirección",
+    eventAddressPh: "Calle y número",
+    eventCity: "Ciudad",
+    eventCityPh: "p. ej. Accra",
+    eventCountry: "País",
+    eventCountryPh: "p. ej. Ghana",
+    eventLocationRequired: "Este campo es obligatorio.",
+    eventLocationTooLong: "Demasiado largo (máximo 200 caracteres).",
+    coverNoImage: "Sin imagen de portada",
+    coverTypeError: "Usa una imagen PNG, JPG, WebP o GIF.",
+    coverSizeError: "La imagen debe pesar 5 MB o menos.",
     virtualLinkLabel: "Enlace virtual",
     addVirtualLink: "Añadir enlace de Zoom/Google Meet",
     isPaidEvent: "¿Es un evento de pago?",
@@ -6246,6 +6316,20 @@ const translations: Record<Language, TranslationKeys> = {
     virtual: "Virtuale",
     location: "Posizione",
     enterVenueAddress: "Inserisci indirizzo sede",
+    eventLocationLegend: "Luogo dell'evento",
+    eventVenue: "Nome della sede",
+    eventVenuePh: "es. Municipio",
+    eventAddress: "Indirizzo",
+    eventAddressPh: "Via e numero",
+    eventCity: "Città",
+    eventCityPh: "es. Accra",
+    eventCountry: "Paese",
+    eventCountryPh: "es. Ghana",
+    eventLocationRequired: "Questo campo è obbligatorio.",
+    eventLocationTooLong: "Troppo lungo (massimo 200 caratteri).",
+    coverNoImage: "Nessuna immagine di copertina",
+    coverTypeError: "Usa un'immagine PNG, JPG, WebP o GIF.",
+    coverSizeError: "L'immagine deve essere di 5 MB o meno.",
     virtualLinkLabel: "Link virtuale",
     addVirtualLink: "Aggiungi link meeting",
     isPaidEvent: "Evento a pagamento",

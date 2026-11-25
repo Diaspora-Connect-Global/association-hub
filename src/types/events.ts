@@ -20,6 +20,11 @@ export interface Event {
   endTime: string;
   eventType: EventType;
   location?: string;
+  /** Saved physical address parts, so an edit loads and keeps them. */
+  venue?: string;
+  address?: string;
+  city?: string;
+  country?: string;
   virtualLink?: string;
   isPaid: boolean;
   /** Integer minor units (from the event's General Admission ticket) — ÷100 only at display. */
@@ -80,7 +85,10 @@ export interface EventFormData {
   startTime: string;
   endTime: string;
   eventType: EventType;
-  location: string;
+  venue: string;
+  address: string;
+  city: string;
+  country: string;
   virtualLink: string;
   isPaid: boolean;
   /** MAJOR units, as typed — converted to minor units once, on submit. */

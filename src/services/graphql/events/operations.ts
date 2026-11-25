@@ -44,6 +44,8 @@ export interface EventLocationInput {
   type: "physical" | "virtual" | "hybrid";
   venue?: string;
   address?: string;
+  city?: string;
+  country?: string;
   virtualLink?: string;
   platform?: string;
 }
