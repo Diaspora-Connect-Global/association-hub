@@ -1,3 +1,4 @@
+import { EventCoverImage } from "@/components/events/EventCoverImage";
 import { Event } from "@/types/events";
 import { useT } from "@/hooks/useT";
 import { useSettings } from "@/contexts/SettingsContext";
@@ -70,11 +71,7 @@ export function EventDetailsModal({
           <div className="mt-4 space-y-6">
             {/* Banner */}
             <div className="relative h-40 rounded-lg overflow-hidden bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center">
-              {event.bannerImage ? (
-                <img src={event.bannerImage} alt={event.title} className="w-full h-full object-cover" />
-              ) : (
-                <span className="text-6xl">{event.bannerEmoji || "📅"}</span>
-              )}
+              <EventCoverImage src={event.bannerImage} title={event.title} fallback={<span className="text-6xl">{event.bannerEmoji || "📅"}</span>} />
             </div>
 
             {/* Header Info */}

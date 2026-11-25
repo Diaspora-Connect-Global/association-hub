@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Event, EventFormData, EventType } from "@/types/events";
 import {
   Dialog,
@@ -33,7 +33,28 @@ import {
   normalizeRegistrationLink,
   validateDrafts,
 } from "@/lib/eventRegistrationForm";
+import { MAX_LOCATION_FIELD, validatePhysicalLocation } from "@/lib/eventLocation";
+import { COVER_ALLOWED_TYPES, validateCoverFile } from "@/lib/eventCoverImage";
+import { EventCoverImage } from "@/components/events/EventCoverImage";
 import { makeEvRegText } from "@/lib/eventRegistrationText";
+
+const LOCATION_INPUTS = [
+  { key: "venue", autoComplete: "organization", span: "sm:col-span-2", label: "eventVenue", ph: "eventVenuePh" },
+  { key: "address", autoComplete: "street-address", span: "sm:col-span-2", label: "eventAddress", ph: "eventAddressPh" },
+  { key: "city", autoComplete: "address-level2", span: "", label: "eventCity", ph: "eventCityPh" },
+  { key: "country", autoComplete: "country-name", span: "", label: "eventCountry", ph: "eventCountryPh" },
+] as const;
+
+/** Preview of the picked cover; the object URL lives only here and is revoked, never saved. */
+function PickedPreview({ file, alt }: { file: File; alt: string }) {
+  const [url, setUrl] = useState<string>();
+  useEffect(() => {
+    const u = URL.createObjectURL(file);
+    setUrl(u);
+    return () => URL.revokeObjectURL(u);
+  }, [file]);
+  return url ? <img src={url} alt={alt} className="h-full w-full object-cover" /> : null;
+}
 
 interface CreateEditEventModalProps {
   open: boolean;
@@ -58,7 +79,10 @@ export function CreateEditEventModal({
     startTime: event?.startTime || "",
     endTime: event?.endTime || "",
     eventType: event?.eventType || "in-person",
-    location: event?.location || "",
+    venue: event?.venue || "",
+    address: event?.address || "",
+    city: event?.city || "",
+    country: event?.country || "",
     virtualLink: event?.virtualLink || "",
     isPaid: event?.isPaid || false,
     // Saved prices are integer minor units; the form edits major units. Divide,
@@ -80,6 +104,9 @@ export function CreateEditEventModal({
     registeredCount: event?.registeredCount ?? 0,
   });
   const [registrationShowErrors, setRegistrationShowErrors] = useState(false);
+  const [locationAttempted, setLocationAttempted] = useState(false);
+  const [coverError, setCoverError] = useState<"type" | "size" | null>(null);
+  const locationErrors = formData.eventType === "in-person" ? validatePhysicalLocation(formData) : {};
 
   const steps = [
     { id: 1, title: t.basicInformation },
@@ -115,6 +142,12 @@ export function CreateEditEventModal({
   })();
 
   const handleSubmit = () => {
+    if (Object.keys(locationErrors).length > 0) {
+      // Keep the dialog open on the Schedule & Location step so nothing typed is lost.
+      setLocationAttempted(true);
+      setCurrentStep(2);
+      return;
+    }
     if (registrationProblem) {
       // Keep the dialog open on the Registration step so nothing typed is lost.
       setRegistrationShowErrors(true);
@@ -198,15 +231,46 @@ export function CreateEditEventModal({
               </div>
               <div className="space-y-2">
                 <Label>{t.bannerImageLabel}</Label>
-                <div className="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-primary/50 transition-colors cursor-pointer">
-                  <Upload className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
-                  <p className="text-sm text-muted-foreground">
-                    {t.clickToUpload}
+                <Label
+                  htmlFor="eventCover"
+                  className="block cursor-pointer rounded-lg border-2 border-dashed border-border p-4 text-center transition-colors hover:border-primary/50 focus-within:ring-2 focus-within:ring-ring"
+                >
+                  <div className="mb-2 aspect-video max-h-40 overflow-hidden rounded-md bg-muted">
+                    {formData.bannerImage ? (
+                      <PickedPreview file={formData.bannerImage} alt={t.bannerImageLabel} />
+                    ) : event?.bannerImage ? (
+                      <EventCoverImage src={event.bannerImage} title={event.title} />
+                    ) : (
+                      <div className="flex h-full items-center justify-center">
+                        <Upload className="h-8 w-8 text-muted-foreground" aria-hidden="true" />
+                      </div>
+                    )}
+                  </div>
+                  <span className="text-sm text-muted-foreground">
+                    {formData.bannerImage ? formData.bannerImage.name : t.clickToUpload}
+                  </span>
+                  <span className="mt-1 block text-xs text-muted-foreground">{t.imageFormat}</span>
+                  <input
+                    id="eventCover"
+                    type="file"
+                    className="sr-only"
+                    accept={COVER_ALLOWED_TYPES.join(",")}
+                    aria-describedby={coverError ? "eventCover-error" : undefined}
+                    onChange={(e) => {
+                      const file = e.target.files?.[0] ?? null;
+                      e.target.value = "";
+                      if (!file) return;
+                      const problem = validateCoverFile(file);
+                      setCoverError(problem);
+                      if (!problem) updateField("bannerImage", file);
+                    }}
+                  />
+                </Label>
+                {coverError && (
+                  <p id="eventCover-error" className="text-xs text-destructive" role="alert">
+                    {coverError === "type" ? t.coverTypeError : t.coverSizeError}
                   </p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {t.imageFormat}
-                  </p>
-                </div>
+                )}
               </div>
             </>
           )}
@@ -275,15 +339,36 @@ export function CreateEditEventModal({
                 </Select>
               </div>
               {formData.eventType === "in-person" ? (
-                <div className="space-y-2">
-                  <Label htmlFor="location">{t.location}</Label>
-                  <Input
-                    id="location"
-                    placeholder={t.enterVenueAddress}
-                    value={formData.location}
-                    onChange={(e) => updateField("location", e.target.value)}
-                  />
-                </div>
+                <fieldset className="space-y-3">
+                  <legend className="mb-2 text-sm font-medium">{t.eventLocationLegend}</legend>
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    {LOCATION_INPUTS.map(({ key, autoComplete, span, label, ph }) => {
+                      const err = locationAttempted ? locationErrors[key] : undefined;
+                      const errId = `event-${key}-error`;
+                      return (
+                        <div key={key} className={`space-y-2 ${span}`}>
+                          <Label htmlFor={`event-${key}`}>{t[label]} *</Label>
+                          <Input
+                            id={`event-${key}`}
+                            placeholder={t[ph]}
+                            value={formData[key]}
+                            maxLength={MAX_LOCATION_FIELD}
+                            autoComplete={autoComplete}
+                            required
+                            aria-invalid={err ? true : undefined}
+                            aria-describedby={err ? errId : undefined}
+                            onChange={(e) => updateField(key, e.target.value)}
+                          />
+                          {err && (
+                            <p id={errId} className="text-xs text-destructive" role="alert">
+                              {err === "required" ? t.eventLocationRequired : t.eventLocationTooLong}
+                            </p>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </fieldset>
               ) : (
                 <div className="space-y-2">
                   <Label htmlFor="virtualLink">{t.virtualLinkLabel}</Label>

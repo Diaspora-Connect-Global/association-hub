@@ -1,3 +1,4 @@
+import { EventCoverImage } from "@/components/events/EventCoverImage";
 import { Event } from "@/types/events";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { Button } from "@/components/ui/button";
@@ -70,15 +71,7 @@ export function EventCard({
     <div className="group overflow-hidden rounded-xl border border-border bg-card transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
       {/* Banner */}
       <div className="relative flex h-36 items-center justify-center bg-gradient-to-br from-primary/10 to-accent/10">
-        {event.bannerImage ? (
-          <img 
-            src={event.bannerImage} 
-            alt={event.title} 
-            className="h-full w-full object-cover"
-          />
-        ) : (
-          <span className="text-5xl">{event.bannerEmoji || "📅"}</span>
-        )}
+        <EventCoverImage src={event.bannerImage} title={event.title} fallback={<span className="text-5xl">{event.bannerEmoji || "📅"}</span>} />
         <div className="absolute right-3 top-3">
           <StatusBadge variant={statusVariants[event.status]}>
             {statusLabels[event.status] || event.status}
