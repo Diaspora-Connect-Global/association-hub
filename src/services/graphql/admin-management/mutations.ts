@@ -7,6 +7,7 @@ import type {
   AssignAdminRoleInput,
   AssignAdminRoleResponse,
   CreateRoleDefinitionInput,
+  UpdateRoleDefinitionInput,
 } from "./types";
 
 const CREATE_ADMIN = /* GraphQL */ `
@@ -127,4 +128,36 @@ export async function createRoleDefinition(
     { input: CreateRoleDefinitionInput }
   >(CREATE_ROLE_DEFINITION, { input });
   return data.createRoleDefinition;
+}
+
+const UPDATE_ROLE_DEFINITION = /* GraphQL */ `
+  mutation UpdateRoleDefinition($input: UpdateRoleDefinitionInput!) {
+    updateRoleDefinition(input: $input)
+  }
+`;
+
+const DELETE_ROLE_DEFINITION = /* GraphQL */ `
+  mutation DeleteRoleDefinition($roleId: String!) {
+    deleteRoleDefinition(roleId: $roleId)
+  }
+`;
+
+/** Edit a custom role of this association (name, description, permissions). */
+export async function updateRoleDefinition(input: UpdateRoleDefinitionInput): Promise<boolean> {
+  const client = getGraphQLClient();
+  const data = await client.request<{ updateRoleDefinition: boolean }, { input: UpdateRoleDefinitionInput }>(
+    UPDATE_ROLE_DEFINITION,
+    { input },
+  );
+  return data.updateRoleDefinition;
+}
+
+/** Delete a custom role of this association. Admins holding it lose its permissions. */
+export async function deleteRoleDefinition(roleId: string): Promise<boolean> {
+  const client = getGraphQLClient();
+  const data = await client.request<{ deleteRoleDefinition: boolean }, { roleId: string }>(
+    DELETE_ROLE_DEFINITION,
+    { roleId },
+  );
+  return data.deleteRoleDefinition;
 }

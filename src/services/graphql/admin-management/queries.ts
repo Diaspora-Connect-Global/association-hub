@@ -2,6 +2,7 @@ import { getGraphQLClient } from "@/core/graphql-client";
 import type {
   GetAdminByIdResponse,
   GetRoleDefinitionsResponse,
+  EntityRoleCatalogue,
   ListAdminsResponse,
 } from "./types";
 
@@ -133,4 +134,29 @@ export async function listAdmins(params?: {
     adminType: params?.adminType,
   });
   return data.listAdmins;
+}
+
+const ENTITY_ROLE_CATALOGUE = /* GraphQL */ `
+  query EntityRoleCatalogue($scopeType: String) {
+    entityRoleCatalogue(scopeType: $scopeType) {
+      permissions {
+        key
+        module
+      }
+      templates {
+        key
+        permissions
+      }
+    }
+  }
+`;
+
+/** The permission catalogue and role templates for custom roles (one backend definition). */
+export async function getEntityRoleCatalogue(scopeType = "ASSOCIATION"): Promise<EntityRoleCatalogue> {
+  const client = getGraphQLClient();
+  const data = await client.request<{ entityRoleCatalogue: EntityRoleCatalogue }, { scopeType: string }>(
+    ENTITY_ROLE_CATALOGUE,
+    { scopeType },
+  );
+  return data.entityRoleCatalogue;
 }

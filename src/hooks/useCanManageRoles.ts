@@ -1,9 +1,10 @@
-import { useAdminAuthStore, decodeAdminJwt } from "@/stores/adminAuthStore";
-import { getAdminPermissions, hasPermission, MANAGE_ROLES_PERMISSION } from "@/lib/adminAccess";
+import { useConsoleAccess } from "@/hooks/useConsoleAccess";
+import { canManageRolesPage } from "@/lib/rolePermissions";
 
-/** Whether the signed-in admin may manage roles and console admins (same rule as the Roles & Admins page). */
+/**
+ * Whether the signed-in admin may open Roles & Admins: a built-in admin with the
+ * manage-roles permission (as before), or a custom role with "Manage roles".
+ */
 export function useCanManageRoles(): boolean {
-  const admin = useAdminAuthStore((state) => state.admin);
-  const accessToken = useAdminAuthStore((state) => state.accessToken);
-  return hasPermission(getAdminPermissions(admin, decodeAdminJwt(accessToken)), MANAGE_ROLES_PERMISSION);
+  return canManageRolesPage(useConsoleAccess());
 }

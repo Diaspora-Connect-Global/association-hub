@@ -5,22 +5,16 @@ import { SectionTabs } from "@/components/layout/SectionTabs";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { useT } from "@/hooks/useT";
-import { useAdminAuthStore, decodeAdminJwt } from "@/stores/adminAuthStore";
-import {
-  getAdminPermissions,
-  hasPermission,
-  MANAGE_ROLES_PERMISSION,
-} from "@/lib/adminAccess";
+import { useAdminAuthStore } from "@/stores/adminAuthStore";
+import { useConsoleAccess } from "@/hooks/useConsoleAccess";
+import { canManageAdminAccounts, canManageRolesPage } from "@/lib/rolePermissions";
 import { RolesTab } from "@/pages/roles/RolesTab";
 import { AdminsTab } from "@/pages/roles/AdminsTab";
 
 export default function RolesAdmins() {
   const t = useT();
   const admin = useAdminAuthStore((s) => s.admin);
-  const accessToken = useAdminAuthStore((s) => s.accessToken);
   const [activeTab, setActiveTab] = useState("roles");
-
-  const jwt = decodeAdminJwt(accessToken);
 
   // Scope is derived strictly from the authenticated admin's own association —
   // never from the UI — so an association admin can only ever manage
@@ -28,9 +22,11 @@ export default function RolesAdmins() {
   const associationId =
     admin?.scopeType === "ASSOCIATION" ? admin.scopeId ?? "" : "";
 
-  const permissions = getAdminPermissions(admin, jwt);
-  const canManage =
-    hasPermission(permissions, MANAGE_ROLES_PERMISSION) && !!associationId;
+  // Built-in admins: the manage-roles permission, as before. A custom role:
+  // "Manage roles" (it then manages roles, not admin accounts).
+  const access = useConsoleAccess();
+  const canManage = canManageRolesPage(access) && !!associationId;
+  const canManageAccounts = canManageAdminAccounts(access);
 
   if (!canManage) {
     return (
@@ -65,7 +61,7 @@ export default function RolesAdmins() {
         </TabsContent>
 
         <TabsContent value="admins" className="mt-4">
-          <AdminsTab associationId={associationId} />
+          <AdminsTab associationId={associationId} canManageAccounts={canManageAccounts} />
         </TabsContent>
       </Tabs>
     </AdminLayout>
