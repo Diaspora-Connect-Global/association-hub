@@ -50,6 +50,8 @@ export interface CreateAdminInput {
   password: string;
   /** e.g. "ASSOCIATION_ADMIN" | "MODERATOR" */
   adminType: string;
+  /** Optional custom role: the new admin gets exactly this role (in the caller's scope) and no built-in one. */
+  roleDefinitionId?: string;
   /** Must be "ASSOCIATION" */
   scopeType: string;
   scopeId: string;
@@ -102,4 +104,17 @@ export interface ListAdminsResponse {
   total: number;
   page: number;
   limit: number;
+}
+
+export interface UpdateRoleDefinitionInput {
+  roleId: string;
+  name: string;
+  description?: string;
+  permissions: string[];
+}
+
+/** Permission catalogue + ready-made templates (backend: entityRoleCatalogue). */
+export interface EntityRoleCatalogue {
+  permissions: Array<{ key: string; module: string }>;
+  templates: Array<{ key: string; permissions: string[] }>;
 }

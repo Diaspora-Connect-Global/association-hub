@@ -3,6 +3,8 @@ import { cn } from "@/lib/utils";
 import { useT } from "@/hooks/useT";
 import { useEventsOnly } from "@/hooks/useEventsOnly";
 import { useCanManageRoles } from "@/hooks/useCanManageRoles";
+import { useConsoleAccess } from "@/hooks/useConsoleAccess";
+import { canOpenPath } from "@/lib/rolePermissions";
 import { isPathAllowed } from "@/lib/eventNetworking";
 import { EVENTS_ONLY_ALLOWED_PATHS } from "@/components/events/networking/EventsOnlyGate";
 import { activeTabPath, visibleTabs, type SectionId } from "@/lib/navSections";
@@ -17,19 +19,21 @@ interface SectionTabsProps {
 /**
  * Tab bar shared by the pages of one merged section. Each tab is a link to its
  * own route, so the browser's back button and old bookmarks keep working.
- * Tabs the admin may not open (no role permission, events-only) are hidden.
+ * Tabs the admin may not open (no role permission, events-only) are hidden;
+ * a custom-role admin only sees the tabs its role covers.
  */
 export function SectionTabs({ section, labelKey }: SectionTabsProps) {
   const { pathname } = useLocation();
   const t = useT();
   const { eventsOnly } = useEventsOnly();
+  const access = useConsoleAccess();
   const canManageRoles = useCanManageRoles();
 
   const tabs = visibleTabs(section, {
     hiddenPaths: canManageRoles ? [] : ["/roles-admins"],
     eventsOnly,
     isAllowed: (path) => isPathAllowed(path, EVENTS_ONLY_ALLOWED_PATHS),
-  });
+  }).filter((tab) => canOpenPath(access, tab.path));
   if (tabs.length < 2) return null;
 
   const active = activeTabPath(tabs, pathname);

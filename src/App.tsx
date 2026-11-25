@@ -8,6 +8,7 @@ import { RequireAdminAuth } from "@/components/auth/RequireAdminAuth";
 import { PageLoadingFallback, RouteErrorBoundary } from "@/components/routing/RouteFallbacks";
 import { lazyRoute } from "@/lib/lazyRoute";
 import { EventsOnlyGate } from "@/components/events/networking/EventsOnlyGate";
+import { PermissionGate } from "@/components/layout/PermissionGate";
 // Eager: small, and the first thing a signed-out visitor needs.
 import Login from "./pages/Login";
 import SetPassword from "./pages/SetPassword";
@@ -46,6 +47,7 @@ function AppRoutes() {
           <Route path="/reset-password" element={<SetPassword />} />
           <Route element={<RequireAdminAuth />}>
             <Route element={<EventsOnlyGate />}>
+            <Route element={<PermissionGate />}>
               <Route path="/" element={<Index />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/admin-profile" element={<AdminProfile />} />
@@ -66,6 +68,7 @@ function AppRoutes() {
               <Route path="/roles-admins" element={<RolesAdmins />} />
               <Route path="/vendor-escrow-settings" element={<VendorEscrowSettings />} />
               <Route path="/analytics" element={<Analytics />} />
+            </Route>
             </Route>
           </Route>
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

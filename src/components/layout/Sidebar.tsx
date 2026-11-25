@@ -26,7 +26,9 @@ import { getAssociation } from "@/services/graphql/association";
 import { useEventsOnly } from "@/hooks/useEventsOnly";
 import { filterNavForEventsOnly, isPathAllowed } from "@/lib/eventNetworking";
 import { EVENTS_ONLY_ALLOWED_PATHS } from "@/components/events/networking/EventsOnlyGate";
-import { pathMatches, sectionPaths, visibleTabs } from "@/lib/navSections";
+import { filterNavItemsByAccess, pathMatches, sectionPaths, visibleTabs, type SectionId } from "@/lib/navSections";
+import { useConsoleAccess } from "@/hooks/useConsoleAccess";
+import { canOpenPath, hasConsolePermission } from "@/lib/rolePermissions";
 import diaspoPlugLogo from "@/assets/diaspo-plug-logo.svg";
 import {
   Tooltip,
@@ -42,6 +44,8 @@ interface NavItem {
   path: string;
   /** Other routes that light this entry up (its section's tabs). */
   matchPaths?: readonly string[];
+  /** Set when the entry stands for a section of tabs (it opens the first tab the admin may use). */
+  section?: SectionId;
   badge?: number;
 }
 
@@ -65,6 +69,10 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
   const { eventsOnly } = useEventsOnly();
   const navigate = useNavigate();
   const t = useT();
+  // A custom-role admin sees only the entries its role covers; a section whose
+  // every tab is hidden disappears, and so does an emptied group.
+  const access = useConsoleAccess();
+  const canOpen = (path: string) => canOpenPath(access, path);
   const admin = useAdminAuthStore((state) => state.admin);
   // zustand v5: object selectors need useShallow, otherwise each render returns a new
   // object and React re-renders forever (error #185) — every page renders this sidebar.
@@ -106,7 +114,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
   const settingsTabs = visibleTabs("settings", {
     eventsOnly,
     isAllowed: (path) => isPathAllowed(path, EVENTS_ONLY_ALLOWED_PATHS),
-  });
+  }).filter((tab) => canOpen(tab.path));
 
   const navGroups: NavGroup[] = [
     {
@@ -118,6 +126,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
           icon: Home,
           path: "/",
           matchPaths: sectionPaths("dashboard"),
+          section: "dashboard",
         },
       ],
     },
@@ -135,6 +144,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
           icon: ShoppingCart,
           path: "/marketplace",
           matchPaths: sectionPaths("marketplace"),
+          section: "marketplace",
         },
         { id: "groups", label: t.groups, icon: Users, path: "/groups" },
       ],
@@ -176,14 +186,30 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
           icon: Settings,
           path: settingsTabs[0]?.path ?? "/settings",
           matchPaths: sectionPaths("settings"),
+          section: "settings",
         },
       ],
     },
   ];
 
   const visibleNavGroups = navGroups
-    .map((group) => ({ ...group, items: filterNavForEventsOnly(group.items, eventsOnly, EVENTS_ONLY_NAV_IDS) }))
+    .map((group) => ({
+      ...group,
+      items: filterNavItemsByAccess(filterNavForEventsOnly(group.items, eventsOnly, EVENTS_ONLY_NAV_IDS), canOpen),
+    }))
     .filter((group) => group.items.length > 0);
+
+  // Quick actions: events-only associations keep only "event"; a custom role
+  // keeps those its permissions cover. Order: post, event, opportunity, listing.
+  const quickActions = [
+    { action: "post", icon: Plus, labelKey: "newPost", permission: "posts.publish" },
+    { action: "event", icon: CalendarPlus, labelKey: "newEvent", permission: "events.manage" },
+    { action: "opportunity", icon: PlusCircle, labelKey: "newOpportunity", permission: "opportunities.manage" },
+    { action: "listing", icon: Tag, labelKey: "newListing", permission: "marketplace.manage" },
+  ] as const;
+  const visibleQuickActions = quickActions.filter(
+    (qa) => (!eventsOnly || qa.action === "event") && hasConsolePermission(access, qa.permission),
+  );
 
   // Quick action handlers
   const handleQuickAction = (action: "post" | "event" | "opportunity" | "listing") => {
@@ -288,58 +314,45 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
           </div>
         </div>
 
-        {/* Quick Actions */}
-        {!collapsed && (
+        {/* Quick Actions — only those the admin's role covers. */}
+        {!collapsed && visibleQuickActions.length > 0 && (
           <div className="border-b border-sidebar-border p-4">
             <p className="mb-3 caption-small uppercase tracking-wider text-muted-foreground">
               {t.quickActions}
             </p>
             <div className="grid grid-cols-2 gap-2">
-              {!eventsOnly && (
-              <button 
-                onClick={() => handleQuickAction("post")}
-                className="flex items-center justify-center gap-1.5 rounded-lg bg-primary px-3 py-2 caption-small text-primary-foreground transition-all hover:opacity-90"
-              >
-                <Plus className="h-3.5 w-3.5" />
-                {t.newPost}
-              </button>
-              )}
-              <button 
-                onClick={() => handleQuickAction("event")}
-                className="flex items-center justify-center gap-1.5 rounded-lg bg-sidebar-accent px-3 py-2 caption-small text-sidebar-foreground transition-all hover:bg-sidebar-accent/80"
-              >
-                <CalendarPlus className="h-3.5 w-3.5" />
-                {t.newEvent}
-              </button>
-              {!eventsOnly && (
-              <button 
-                onClick={() => handleQuickAction("opportunity")}
-                className="flex items-center justify-center gap-1.5 rounded-lg bg-sidebar-accent px-3 py-2 caption-small text-sidebar-foreground transition-all hover:bg-sidebar-accent/80"
-              >
-                <PlusCircle className="h-3.5 w-3.5" />
-                {t.newOpportunity}
-              </button>
-              )}
-              {!eventsOnly && (
-              <button 
-                onClick={() => handleQuickAction("listing")}
-                className="flex items-center justify-center gap-1.5 rounded-lg bg-sidebar-accent px-3 py-2 caption-small text-sidebar-foreground transition-all hover:bg-sidebar-accent/80"
-              >
-                <Tag className="h-3.5 w-3.5" />
-                {t.newListing}
-              </button>
-              )}
+              {visibleQuickActions.map((qa, index) => {
+                const Icon = qa.icon;
+                return (
+                  <button
+                    key={qa.action}
+                    type="button"
+                    onClick={() => handleQuickAction(qa.action)}
+                    className={cn(
+                      "flex items-center justify-center gap-1.5 rounded-lg px-3 py-2 caption-small transition-all",
+                      index === 0
+                        ? "bg-primary text-primary-foreground hover:opacity-90"
+                        : "bg-sidebar-accent text-sidebar-foreground hover:bg-sidebar-accent/80",
+                    )}
+                  >
+                    <Icon className="h-3.5 w-3.5" />
+                    {t[qa.labelKey]}
+                  </button>
+                );
+              })}
             </div>
           </div>
         )}
 
         {/* Collapsed Quick Action */}
-        {collapsed && (
+        {collapsed && visibleQuickActions.length > 0 && (
           <div className="border-b border-sidebar-border p-2">
             <Tooltip>
               <TooltipTrigger asChild>
-                <button 
-                  onClick={() => handleQuickAction(eventsOnly ? "event" : "post")}
+                <button
+                  type="button"
+                  aria-label={t.quickActions}
+                  onClick={() => handleQuickAction(visibleQuickActions[0].action)}
                   className="flex w-full items-center justify-center rounded-lg bg-primary p-2.5 text-primary-foreground transition-all hover:opacity-90"
                 >
                   <Plus className="h-4 w-4" />

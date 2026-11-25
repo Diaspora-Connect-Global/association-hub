@@ -47,6 +47,7 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
 import { useT } from "@/hooks/useT";
+import { useRoleT } from "@/hooks/useRoleT";
 import {
   ASSOCIATION_ADMIN_TYPES,
   roleTypeLabel,
@@ -70,6 +71,12 @@ import { graphqlErrorMessage, safeServerMessage } from "@/lib/graphqlErrors";
 
 interface AdminsTabProps {
   associationId: string;
+  /**
+   * Creating admins, assigning / revoking roles and (de)activating accounts.
+   * Built-in admins only — a custom role (even with "Manage roles") sees the
+   * list read-only, matching the backend.
+   */
+  canManageAccounts?: boolean;
 }
 
 /**
@@ -104,8 +111,9 @@ function upsertAdmin(list: AdminAccount[], admin: AdminAccount): AdminAccount[] 
   return next;
 }
 
-export function AdminsTab({ associationId }: AdminsTabProps) {
+export function AdminsTab({ associationId, canManageAccounts = true }: AdminsTabProps) {
   const t = useT();
+  const rt = useRoleT();
   const authAdmin = useAdminAuthStore((s) => s.admin);
   const accessToken = useAdminAuthStore((s) => s.accessToken);
   const jwt = decodeAdminJwt(accessToken);
@@ -259,10 +267,14 @@ export function AdminsTab({ associationId }: AdminsTabProps) {
     <div className="space-y-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-sm text-muted-foreground">{t.adminsDescription}</p>
-        <Button onClick={() => setCreateOpen(true)}>
-          <Plus className="h-4 w-4 mr-2" />
-          {t.adminsCreate}
-        </Button>
+        {canManageAccounts ? (
+          <Button onClick={() => setCreateOpen(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            {t.adminsCreate}
+          </Button>
+        ) : (
+          <p className="text-xs text-muted-foreground">{rt("readOnly")}</p>
+        )}
       </div>
 
       {/* Manual lookup by ID — fallback path when no scoped list is available */}
@@ -357,15 +369,17 @@ export function AdminsTab({ associationId }: AdminsTabProps) {
                               className="font-normal gap-1"
                             >
                               {assignmentRoleName(r, roleDefs)}
-                              <button
-                                type="button"
-                                aria-label={t.adminsRevoke}
-                                className="ml-0.5 hover:text-destructive disabled:opacity-50"
-                                disabled={rowBusy === admin.id}
-                                onClick={() => handleRevoke(admin, r.id)}
-                              >
-                                <X className="h-3 w-3" />
-                              </button>
+                              {canManageAccounts && (
+                                <button
+                                  type="button"
+                                  aria-label={t.adminsRevoke}
+                                  className="ml-0.5 hover:text-destructive disabled:opacity-50"
+                                  disabled={rowBusy === admin.id}
+                                  onClick={() => handleRevoke(admin, r.id)}
+                                >
+                                  <X className="h-3 w-3" />
+                                </button>
+                              )}
                             </Badge>
                           ))
                         )}
@@ -377,6 +391,7 @@ export function AdminsTab({ associationId }: AdminsTabProps) {
                       </Badge>
                     </TableCell>
                     <TableCell>
+                      {canManageAccounts && (
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button
@@ -409,6 +424,7 @@ export function AdminsTab({ associationId }: AdminsTabProps) {
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
+                      )}
                     </TableCell>
                   </TableRow>
                 );
@@ -423,6 +439,7 @@ export function AdminsTab({ associationId }: AdminsTabProps) {
         onOpenChange={setCreateOpen}
         associationId={associationId}
         roleTypes={assignableRoleTypes}
+        customRoles={roleDefs}
         onCreated={(admin) => setAdmins((prev) => upsertAdmin(prev, admin))}
       />
 
@@ -445,20 +462,37 @@ interface CreateAdminDialogProps {
   onOpenChange: (open: boolean) => void;
   associationId: string;
   roleTypes: AdminRoleTypeOption[];
+  /** This association's custom roles, offered next to the built-in types. */
+  customRoles: RoleDefinition[];
   onCreated: (admin: AdminAccount) => void;
 }
+
+// The role picker encodes each choice as "builtin:<roleType>" or
+// "custom:<roleDefinitionId>" so a single <Select> can offer both kinds.
+const BUILTIN_PREFIX = "builtin:";
+const CUSTOM_PREFIX = "custom:";
+
+/** admin-service's policy: at least 12 characters (it also refuses breached passwords and reports that). */
+const ADMIN_PASSWORD_MIN_LENGTH = 12;
 
 function CreateAdminDialog({
   open,
   onOpenChange,
   associationId,
   roleTypes,
+  customRoles,
   onCreated,
 }: CreateAdminDialogProps) {
   const t = useT();
+  const rt = useRoleT();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [adminType, setAdminType] = useState(roleTypes[0]?.value ?? "");
+  const defaultSelection = roleTypes[0]
+    ? `${BUILTIN_PREFIX}${roleTypes[0].value}`
+    : customRoles[0]
+      ? `${CUSTOM_PREFIX}${customRoles[0].id}`
+      : "";
+  const [selection, setSelection] = useState(defaultSelection);
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
@@ -466,30 +500,35 @@ function CreateAdminDialog({
     if (!open) return;
     setEmail("");
     setPassword("");
-    setAdminType(roleTypes[0]?.value ?? "");
+    setSelection(defaultSelection);
     setFormError(null);
-  }, [open, roleTypes]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, roleTypes, customRoles]);
 
   const handleSubmit = async () => {
     if (!email.trim()) {
       setFormError(t.adminsFormEmailRequired);
       return;
     }
-    if (password.length < 8) {
-      setFormError(t.adminsFormPasswordRequired);
+    if (password.length < ADMIN_PASSWORD_MIN_LENGTH) {
+      setFormError(rt("admins.passwordTooShort"));
       return;
     }
-    if (!adminType) {
+    if (!selection) {
       setFormError(t.adminsFormTypeRequired);
       return;
     }
     setFormError(null);
     setSaving(true);
     try {
+      // A custom role is sent as roleDefinitionId (the server ignores adminType
+      // for role purposes then); the built-in path is unchanged.
+      const isCustom = selection.startsWith(CUSTOM_PREFIX);
       const res = await createAdmin({
         email: email.trim(),
         password,
-        adminType,
+        adminType: isCustom ? roleTypes[0]?.value ?? "ASSOCIATION_ADMIN" : selection.slice(BUILTIN_PREFIX.length),
+        ...(isCustom ? { roleDefinitionId: selection.slice(CUSTOM_PREFIX.length) } : {}),
         scopeType: "ASSOCIATION",
         scopeId: associationId,
       });
@@ -541,24 +580,40 @@ function CreateAdminDialog({
               placeholder="••••••••"
               onChange={(e) => setPassword(e.target.value)}
             />
-            <p className="text-xs text-muted-foreground">
-              {t.adminsFormPasswordHint}
-            </p>
+            <p className="text-xs text-muted-foreground">{rt("admins.passwordHint")}</p>
           </div>
           <div className="space-y-1.5">
-            <Label>{t.adminsFormType}</Label>
-            <Select value={adminType} onValueChange={setAdminType}>
-              <SelectTrigger>
+            <Label htmlFor="admin-role">{t.adminsFormType}</Label>
+            <Select value={selection} onValueChange={setSelection}>
+              <SelectTrigger id="admin-role">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {roleTypes.map((r) => (
-                  <SelectItem key={r.value} value={r.value}>
-                    {r.label}
-                  </SelectItem>
-                ))}
+                {roleTypes.length > 0 && (
+                  <SelectGroup>
+                    <SelectLabel>{rt("admins.builtInRoles")}</SelectLabel>
+                    {roleTypes.map((r) => (
+                      <SelectItem key={`${BUILTIN_PREFIX}${r.value}`} value={`${BUILTIN_PREFIX}${r.value}`}>
+                        {r.label}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                )}
+                {customRoles.length > 0 && (
+                  <SelectGroup>
+                    <SelectLabel>{rt("admins.customRoles")}</SelectLabel>
+                    {customRoles.map((r) => (
+                      <SelectItem key={`${CUSTOM_PREFIX}${r.id}`} value={`${CUSTOM_PREFIX}${r.id}`}>
+                        {r.name}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                )}
               </SelectContent>
             </Select>
+            {customRoles.length === 0 && (
+              <p className="text-xs text-muted-foreground">{rt("admins.noCustomRoles")}</p>
+            )}
           </div>
 
           {formError && <p className="text-sm text-destructive">{formError}</p>}
@@ -576,7 +631,7 @@ function CreateAdminDialog({
           <Button
             type="button"
             onClick={handleSubmit}
-            disabled={saving || roleTypes.length === 0}
+            disabled={saving || (roleTypes.length === 0 && customRoles.length === 0)}
           >
             {saving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
             {t.adminsFormSubmit}
@@ -596,12 +651,6 @@ interface AssignRoleDialogProps {
   onAssigned: (adminId: string) => void;
 }
 
-// The role picker encodes each choice as "builtin:<roleType>" or
-// "custom:<roleDefinitionId>" so a single <Select> can offer both kinds while
-// keeping them unambiguous on submit.
-const BUILTIN_PREFIX = "builtin:";
-const CUSTOM_PREFIX = "custom:";
-
 function AssignRoleDialog({
   admin,
   associationId,
@@ -611,6 +660,7 @@ function AssignRoleDialog({
   onAssigned,
 }: AssignRoleDialogProps) {
   const t = useT();
+  const rt = useRoleT();
   const defaultValue = roleTypes[0]
     ? `${BUILTIN_PREFIX}${roleTypes[0].value}`
     : customRoles[0]
@@ -678,7 +728,7 @@ function AssignRoleDialog({
             <SelectContent>
               {roleTypes.length > 0 && (
                 <SelectGroup>
-                  <SelectLabel>Built-in roles</SelectLabel>
+                  <SelectLabel>{rt("admins.builtInRoles")}</SelectLabel>
                   {roleTypes.map((r) => (
                     <SelectItem
                       key={`${BUILTIN_PREFIX}${r.value}`}
@@ -691,7 +741,7 @@ function AssignRoleDialog({
               )}
               {customRoles.length > 0 && (
                 <SelectGroup>
-                  <SelectLabel>Custom roles</SelectLabel>
+                  <SelectLabel>{rt("admins.customRoles")}</SelectLabel>
                   {customRoles.map((r) => (
                     <SelectItem
                       key={`${CUSTOM_PREFIX}${r.id}`}

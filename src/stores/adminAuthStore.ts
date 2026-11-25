@@ -13,9 +13,13 @@ type JwtScopeType = "ASSOCIATION";
 export interface DecodedAdminJwt {
   sub?: string;
   userId?: string;
-  role?: JwtRole;
+  role?: JwtRole | string;
+  /** Every role the token carries (a custom-role admin holds "CUSTOM"). */
+  roles?: string[];
   scopeType?: JwtScopeType;
   scopeId?: string;
+  /** Permissions of the admin's CUSTOM role(s) in its own association (enforced by the gateway). */
+  entityPermissions?: string[];
   exp?: number;
 }
 
@@ -34,6 +38,10 @@ function decodeJwtPayload(token: string): Record<string, unknown> | null {
   }
 }
 
+function stringList(value: unknown): string[] | undefined {
+  return Array.isArray(value) ? value.filter((v): v is string => typeof v === "string") : undefined;
+}
+
 export function decodeAdminJwt(token: string | null): DecodedAdminJwt | null {
   if (!token) return null;
   const payload = decodeJwtPayload(token);
@@ -43,6 +51,8 @@ export function decodeAdminJwt(token: string | null): DecodedAdminJwt | null {
     role: typeof payload.role === "string" ? (payload.role as JwtRole) : undefined,
     scopeType: typeof payload.scopeType === "string" ? (payload.scopeType as JwtScopeType) : undefined,
     scopeId: typeof payload.scopeId === "string" ? payload.scopeId : undefined,
+    roles: stringList(payload.roles),
+    entityPermissions: stringList(payload.entityPermissions),
     exp: typeof payload.exp === "number" ? payload.exp : undefined,
     sub: typeof payload.sub === "string" ? payload.sub : undefined,
     userId: typeof payload.userId === "string" ? payload.userId : undefined,

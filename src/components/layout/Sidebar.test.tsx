@@ -15,6 +15,13 @@ vi.mock("@/hooks/useT", async () => {
 });
 
 import { Sidebar } from "./Sidebar";
+import { useAdminAuthStore } from "@/stores/adminAuthStore";
+
+/** A JWT carrying only the claims the console reads (signature is irrelevant client-side). */
+const tokenWith = (claims: Record<string, unknown>) => {
+  const b64 = (o: object) => btoa(JSON.stringify(o)).replace(/=+$/, "");
+  return `${b64({ alg: "none" })}.${b64(claims)}.sig`;
+};
 
 const renderAt = (path: string) =>
   render(
@@ -32,6 +39,34 @@ describe("Sidebar (association)", () => {
   afterEach(() => {
     cleanup();
     state.eventsOnly = false;
+    useAdminAuthStore.setState({ accessToken: null, admin: null });
+  });
+
+  it("shows a custom-role admin only what its role covers; emptied sections and groups disappear", () => {
+    useAdminAuthStore.setState({
+      accessToken: tokenWith({
+        role: "CUSTOM",
+        roles: ["CUSTOM"],
+        scopeType: "ASSOCIATION",
+        scopeId: "a-1",
+        entityPermissions: ["events.manage", "reports.manage", "audit.view"],
+      }),
+    });
+    renderAt("/");
+    expect(menuHrefs()).toEqual(["/", "/events", "/tickets", "/audit-logs"]);
+    expect(within(menu()).queryByText("People")).toBeNull();
+    // Quick actions follow the same permissions.
+    const labels = screen.getAllByRole("button").map((b) => b.textContent);
+    expect(labels).toContain("Event");
+    expect(labels).not.toContain("Post");
+  });
+
+  it("a custom role with no permission hides the quick actions entirely", () => {
+    useAdminAuthStore.setState({
+      accessToken: tokenWith({ role: "CUSTOM", roles: ["CUSTOM"], entityPermissions: ["audit.view"] }),
+    });
+    renderAt("/");
+    expect(screen.queryByText("Quick Actions")).toBeNull();
   });
 
   it("groups the menu, with no Vendor submenu and one Settings entry", () => {
